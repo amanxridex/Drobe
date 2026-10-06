@@ -1,0 +1,69 @@
+
+==================== SECTION 8: heading=None (id=2547) ====================
+  [0] title=None, deeplink=/collections/homepage-bbc-TheSouledStore-men, img=
+  [1] title=None, deeplink=/collections/home_discover_brand_Underratedclub_men2, img=
+  [2] title=None, deeplink=/collections/homepage-brand-banner-carousel-Bonkers-Corner-men, img=
+  [3] title=None, deeplink=/collections/home_banner_carousel_Foul_Child_men, img=
+  [4] title=None, deeplink=/collections/home-banner-carousel-SaltyAlpha-men, img=
+  [5] title=None, deeplink=/collections/homepage-bbc-Bewakoof-men, img=
+  [6] title=None, deeplink=/collections/homepage-bbc-XKIND-men, img=
+
+==================== SECTION 15: heading= What's your next iconic look? (id=858) ====================
+  [0] title=None, deeplink=/collections/ethnic-edit-home?layout=hp_men, img=
+  [1] title=None, deeplink=/collections/streetwear-2026-page?layout=hp_men, img=
+  [2] title=None, deeplink=/collections/men-home-page-banner-Night-Out, img=
+  [3] title=None, deeplink=/collections/men-home-page-banner-Beach, img=
+  [4] title=None, deeplink=/collections/active-fits-2026-page?layout=hp_men, img=
+  [5] title=None, deeplink=/collections/workwear-2026-page?layout=hp_men, img=
+  [6] title=None, deeplink=/collections/men-home-page-banner-Comfy-Fits, img=
+  [7] title=None, deeplink=/collections/men-home-page-banner-Concert-Fits, img=
+  [8] title=None, deeplink=/collections/men-home-page-banner-date-ready, img=
+  [9] title=None, deeplink=/collections/men-home-page-banner-Gifting-Box, img=
+  [10] title=None, deeplink=/collections/men-home-page-banner-accessories, img=
+  [11] title=None, deeplink=/collections/men-home-page-banner-foot-wear, img=
+
+==================== SECTION 16: heading=Latest Drops (id=861) ====================
+  [0] title=None, deeplink=/collections/home_latest_drops_bluetyga_men, img=
+  [1] title=None, deeplink=/collections/homepage_chumbak, img=
+  [2] title=None, deeplink=/collections/home_discover_brand_Bonkers_Corner_men, img=
+  [3] title=None, deeplink=/collections/home_discover_brand_Hancock_men, img=
+  [4] title=None, deeplink=/collections/latest-drops-The-Bear-House-men, img=
+  [5] title=None, deeplink=/collections/latest-drops-knide-men, img=
+  [6] title=None, deeplink=/collections/latest-drops-snitch-men, img=
+  [7] title=None, deeplink=/collections/hp-the-kurta-studio-men, img=
+  [8] title=None, deeplink=/collections/latest-drops-DL-street-men, img=
+  [9] title=None, deeplink=/collections/latest-drops-rawayi-men, img=
+  [10] title=None, deeplink=/collections/latest-drops-cove&lane-men, img=
+  [11] title=None, deeplink=/collections/latest-drops-salty-alpha-men, img=
+
+==================== SECTION 17: heading=Offers (id=1643) ====================
+  [0] title=None, deeplink=/collections/homepage-offers-minimum-30pct-off-men, img=
+  [1] title=None, deeplink=/collections/homepage-offers-starting-from-₹499-men, img=
+  [2] title=None, deeplink=/collections/homepage-offers-minimum-50pct-off-men, img=
+  [3] title=None, deeplink=/collections/homepage-offers-everything-under-₹1299-men, img=
+  [4] title=None, deeplink=/collections/homepage-offers-up-to-80pct-off-men, img=
+  [5] title=None, deeplink=/collections/homepage-offers-everything-under-₹1999-men, img=
+
+==================== SECTION 48: heading=None (id=media_coupons_row_hp_men) ====================
+  [0] title=None, deeplink=None, img=
+  [1] title=None, deeplink=None, img=
+  [2] title=None, deeplink=None, img=
+  [3] title=None, deeplink=None, img=
+
+==================== SECTION 69: heading=Discover Brands (id=99999999999) ====================
+  [0] title=None, deeplink=None, img=
+  [1] title=None, deeplink=None, img=
+  [2] title=None, deeplink=None, img=
+  [3] title=None, deeplink=None, img=
+  [4] title=None, deeplink=None, img=
+  [5] title=None, deeplink=None, img=
+  [6] title=None, deeplink=None, img=
+  [7] title=None, deeplink=None, img=
+  [8] title=None, deeplink=None, img=
+  [9] title=None, deeplink=None, img=
+  [10] title=None, deeplink=None, img=
+  [11] title=None, deeplink=None, img=
+  [12] title=None, deeplink=None, img=
+  [13] title=None, deeplink=None, img=
+  [14] title=None, deeplink=None, img=
+  [15] title=None, deeplink=None, img=
