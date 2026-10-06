@@ -7,6 +7,7 @@ import { useApp } from '@/context/AppContext';
 import { PRODUCTS, CATEGORIES_DATA } from '@/data/catalog';
 import BottomNav from '@/components/BottomNav';
 import WishlistButton from '@/components/WishlistButton';
+import ProductCard from '@/components/ProductCard';
 
 export default function CollectionPage() {
   const params = useParams();
@@ -127,96 +128,15 @@ export default function CollectionPage() {
       {/* Product Grid */}
       <main style={{ flex: 1, overflowY: 'auto', padding: '16px 12px 80px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
-          {products.map((product) => {
-            const isWishlisted = wishlist.includes(product.id);
-
-            return (
-              <div
-                key={product.id}
-                onClick={() => router.push(`/product/${product.id}`)}
-                style={{
-                  background: '#1f1f26',
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                  border: '1px solid #2e2e3a',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ position: 'relative', width: '100%', aspectRatio: '1/1.25', background: '#252530' }}>
-                  <img src={product.thumbnail} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 8,
-                      left: 8,
-                      background: 'rgba(0, 0, 0, 0.75)',
-                      padding: '3px 7px',
-                      borderRadius: 6,
-                      fontSize: 10,
-                      fontWeight: 700,
-                      color: '#38bdf8',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 3
-                    }}
-                  >
-                    <span>⚡</span> 60 Mins
-                  </div>
-
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      width: 28,
-                      height: 28,
-                      borderRadius: '50%',
-                      background: 'rgba(0,0,0,0.5)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      zIndex: 3
-                    }}
-                  >
-                    <WishlistButton
-                      isWishlisted={isWishlisted}
-                      onToggle={() => toggleWishlist(product.id)}
-                      size={14}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ padding: '10px', display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <span style={{ fontSize: 10, fontWeight: 800, color: '#9090a0', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                    {product.brand}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: '#fff',
-                      lineHeight: '15px',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden'
-                    }}
-                  >
-                    {product.title}
-                  </span>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>₹{product.price}</span>
-                    <span style={{ fontSize: 11, color: '#707080', textDecoration: 'line-through' }}>₹{product.originalPrice}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#10b981' }}>{product.discountPercentage}% OFF</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              isWishlisted={wishlist.includes(product.id)}
+              onToggleWishlist={() => toggleWishlist(product.id)}
+              onClick={() => router.push(`/product/${product.id}`)}
+            />
+          ))}
         </div>
       </main>
 

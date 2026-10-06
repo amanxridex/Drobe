@@ -9,6 +9,7 @@ import BottomNav from '@/components/BottomNav';
 import { PRODUCTS, SECTIONS_MANIFEST, CATEGORIES_GRID_MANIFEST } from '@/data/catalog';
 import { motion, AnimatePresence } from 'framer-motion';
 import WishlistButton from '@/components/WishlistButton';
+import ProductCard from '@/components/ProductCard';
 
 export default function HomePage() {
   const { wishlist, toggleWishlist, setIsCouponOpen } = useApp();
@@ -494,53 +495,14 @@ export default function HomePage() {
                 }}
               >
                 {snitchProducts.map((prod) => (
-                  <div
+                  <ProductCard
                     key={prod.id}
+                    product={prod}
+                    isWishlisted={wishlist.includes(prod.id)}
+                    onToggleWishlist={() => toggleWishlist(prod.id)}
                     onClick={() => router.push(`/product/${prod.id}`)}
-                    style={{
-                      flexShrink: 0,
-                      width: 140,
-                      background: '#1d1d25',
-                      borderRadius: 14,
-                      overflow: 'hidden',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{ width: '100%', aspectRatio: '1/1.25', position: 'relative', background: '#121217' }}>
-                      <img
-                        src={prod.thumbnail}
-                        alt={prod.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: 6,
-                          left: 6,
-                          background: 'rgba(0, 0, 0, 0.75)',
-                          padding: '2px 6px',
-                          borderRadius: 6,
-                          fontSize: 9,
-                          fontWeight: 700,
-                          color: '#38bdf8'
-                        }}
-                      >
-                        ⚡ 60 Mins
-                      </div>
-                    </div>
-                    <div style={{ padding: '8px 10px' }}>
-                      <span style={{ fontSize: 9, fontWeight: 800, color: '#9090a0', textTransform: 'uppercase' }}>
-                        {prod.brand}
-                      </span>
-                      <p style={{ fontSize: 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 1 }}>
-                        {prod.title}
-                      </p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 3 }}>
-                        <span style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>₹{prod.price}</span>
-                        <span style={{ fontSize: 10, color: '#707080', textDecoration: 'line-through' }}>₹{prod.originalPrice}</span>
-                      </div>
-                    </div>
-                  </div>
+                    style={{ flexShrink: 0, width: 145 }}
+                  />
                 ))}
               </div>
             )}
@@ -624,53 +586,14 @@ export default function HomePage() {
                 }}
               >
                 {tigcProducts.map((prod) => (
-                  <div
+                  <ProductCard
                     key={prod.id}
+                    product={prod}
+                    isWishlisted={wishlist.includes(prod.id)}
+                    onToggleWishlist={() => toggleWishlist(prod.id)}
                     onClick={() => router.push(`/product/${prod.id}`)}
-                    style={{
-                      flexShrink: 0,
-                      width: 140,
-                      background: '#1d1d25',
-                      borderRadius: 14,
-                      overflow: 'hidden',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{ width: '100%', aspectRatio: '1/1.25', position: 'relative', background: '#121217' }}>
-                      <img
-                        src={prod.thumbnail}
-                        alt={prod.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: 6,
-                          left: 6,
-                          background: 'rgba(0, 0, 0, 0.75)',
-                          padding: '2px 6px',
-                          borderRadius: 6,
-                          fontSize: 9,
-                          fontWeight: 700,
-                          color: '#38bdf8'
-                        }}
-                      >
-                        ⚡ 60 Mins
-                      </div>
-                    </div>
-                    <div style={{ padding: '8px 10px' }}>
-                      <span style={{ fontSize: 9, fontWeight: 800, color: '#9090a0', textTransform: 'uppercase' }}>
-                        {prod.brand}
-                      </span>
-                      <p style={{ fontSize: 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 1 }}>
-                        {prod.title}
-                      </p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 3 }}>
-                        <span style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>₹{prod.price}</span>
-                        <span style={{ fontSize: 10, color: '#707080', textDecoration: 'line-through' }}>₹{prod.originalPrice}</span>
-                      </div>
-                    </div>
-                  </div>
+                    style={{ flexShrink: 0, width: 145 }}
+                  />
                 ))}
               </div>
             )}
@@ -750,125 +673,13 @@ export default function HomePage() {
             }}
           >
             {trendingProducts.map((prod) => (
-              <div
+              <ProductCard
                 key={prod.id}
+                product={prod}
+                isWishlisted={wishlist.includes(prod.id)}
+                onToggleWishlist={() => toggleWishlist(prod.id)}
                 onClick={() => router.push(`/product/${prod.id}`)}
-                style={{
-                  background: '#1d1d25',
-                  borderRadius: 14,
-                  overflow: 'hidden',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  position: 'relative'
-                }}
-              >
-                {/* Product Thumbnail */}
-                <div style={{ width: '100%', aspectRatio: '1/1.25', position: 'relative', background: '#121217', overflow: 'hidden' }}>
-                  <img
-                    src={prod.thumbnail}
-                    alt={prod.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-
-                  {/* Delivery Pill */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 8,
-                      left: 8,
-                      background: 'rgba(0, 0, 0, 0.75)',
-                      padding: '3px 7px',
-                      borderRadius: 6,
-                      fontSize: 10,
-                      fontWeight: 700,
-                      color: '#38bdf8',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 3
-                    }}
-                  >
-                    <span>⚡</span> {prod.deliveryMinutes} Mins
-                  </div>
-
-                  {/* Try & Buy Badge */}
-                  {prod.tryAndBuyEligible && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        bottom: 8,
-                        left: 8,
-                        background: '#0f382c',
-                        border: '1px solid #10b981',
-                        padding: '2px 6px',
-                        borderRadius: 4,
-                        fontSize: 9,
-                        fontWeight: 800,
-                        color: '#34d399'
-                      }}
-                    >
-                      TRY & BUY
-                    </div>
-                  )}
-
-                  {/* Wishlist Heart with Pop Animation */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      width: 28,
-                      height: 28,
-                      borderRadius: '50%',
-                      background: 'rgba(0,0,0,0.5)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      zIndex: 3
-                    }}
-                  >
-                    <WishlistButton
-                      isWishlisted={wishlist.includes(prod.id)}
-                      onToggle={() => toggleWishlist(prod.id)}
-                      size={14}
-                    />
-                  </div>
-                </div>
-
-                {/* Details */}
-                <div style={{ padding: 10, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <span style={{ fontSize: 10, fontWeight: 800, color: '#9090a0', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                    {prod.brand}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: '#fff',
-                      lineHeight: '15px',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden'
-                    }}
-                  >
-                    {prod.title}
-                  </span>
-
-                  {/* Knot's Promo Tag */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: '#ff2a85', background: 'rgba(255,42,133,0.1)', padding: '2px 4px', borderRadius: 4 }}>
-                      {prod.couponPromo || 'Coupon: KNOTFESTIVE999'}
-                    </span>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>₹{prod.price}</span>
-                    <span style={{ fontSize: 11, color: '#707080', textDecoration: 'line-through' }}>₹{prod.originalPrice}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#10b981' }}>{prod.discountPercentage}% OFF</span>
-                  </div>
-                </div>
-              </div>
+              />
             ))}
           </div>
         </section>

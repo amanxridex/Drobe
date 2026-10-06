@@ -3,10 +3,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useApp } from '@/context/AppContext';
 import { PRODUCTS } from '@/data/catalog';
+import ProductCard from '@/components/ProductCard';
 
 export default function SearchPage() {
   const router = useRouter();
+  const { wishlist, toggleWishlist } = useApp();
   const [query, setQuery] = useState('');
 
   const trendingTags = [
@@ -173,45 +176,15 @@ export default function SearchPage() {
               Found {searchResults.length} {searchResults.length === 1 ? 'match' : 'matches'} for "{query}"
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
               {searchResults.map((p) => (
-                <div
+                <ProductCard
                   key={p.id}
+                  product={p}
+                  isWishlisted={wishlist.includes(p.id)}
+                  onToggleWishlist={() => toggleWishlist(p.id)}
                   onClick={() => router.push(`/product/${p.id}`)}
-                  style={{
-                    background: '#202029',
-                    borderRadius: 16,
-                    overflow: 'hidden',
-                    border: '1px solid #2e2e3c',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ position: 'relative', width: '100%', aspectRatio: '1/1.25', background: '#181820' }}>
-                    <img src={p.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: 6,
-                        left: 6,
-                        background: 'rgba(0, 0, 0, 0.75)',
-                        padding: '2px 6px',
-                        borderRadius: 6,
-                        fontSize: 9,
-                        fontWeight: 700,
-                        color: '#38bdf8'
-                      }}
-                    >
-                      ⚡ 60 Mins
-                    </div>
-                  </div>
-                  <div style={{ padding: '10px 12px' }}>
-                    <div style={{ fontSize: 10, fontWeight: 800, color: '#888', textTransform: 'uppercase' }}>{p.brand}</div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2 }}>
-                      {p.title}
-                    </div>
-                    <div style={{ fontSize: 13, fontWeight: 900, color: '#fff', marginTop: 4 }}>₹{p.price}</div>
-                  </div>
-                </div>
+                />
               ))}
             </div>
           </div>
