@@ -115,14 +115,16 @@ export default function TryAndBuySlider({ onBuyNow, onAddToBag }: TryAndBuySlide
               border: '2px solid rgba(255,255,255,0.8)'
             }}
           >
-            <img
-              src="/assets/icons/t_shirt.svg"
-              alt="Folded T-Shirt"
-              style={{ width: 24, height: 24, pointerEvents: 'none' }}
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/assets/icons/bag_outline.svg';
-              }}
-            />
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 24 24"
+              fill="#f59e0b"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ pointerEvents: 'none' }}
+            >
+              <path d="M21.2341 8.0065L18.8272 4.84474C18.2661 4.30037 17.5073 4 16.69 4H14.8834C14.3817 4 13.9757 4.38535 13.9757 4.86157C13.9757 5.8544 13.1248 6.66212 12.0788 6.66212C11.0328 6.66212 10.1818 5.8544 10.1818 4.86157C10.1818 4.38535 9.77583 4 9.27411 4H7.4587C6.6423 4 5.88351 4.29953 5.32772 4.83801L2.76593 8.0065C2.41136 8.34305 2.41136 8.88827 2.76593 9.22482L5.67963 11.1126V19.1384C5.67963 19.6146 6.08562 20 6.58734 20H17.5613C18.0631 20 18.4691 19.6146 18.4691 19.1384L18.501 11.1126L21.2341 9.22482C21.5886 8.88827 21.5886 8.34305 21.2341 8.0065Z" />
+            </svg>
           </motion.div>
         </div>
 

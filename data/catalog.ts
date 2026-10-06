@@ -44,6 +44,39 @@ export const CATEGORIES_DATA = {
 
 export const PRODUCTS: Product[] = [
   {
+    "id": "12886",
+    "brand": "SPYKAR",
+    "title": "Spykar Military Green Cotton Full Sleeve Raised Collar Shirt For Men",
+    "price": 1203,
+    "originalPrice": 2999,
+    "discountPercentage": 60,
+    "gender": "men",
+    "category": "top",
+    "subCategory": "shirts",
+    "images": [
+      "/assets/real/products/12886/angle_1.webp",
+      "/assets/real/products/12886/angle_2.webp",
+      "/assets/real/products/12886/angle_3.webp",
+      "/assets/real/products/12886/angle_4.webp",
+      "/assets/real/products/12886/angle_5.webp",
+      "/assets/real/products/12886/angle_6.webp"
+    ],
+    "thumbnail": "/assets/real/products/12886/angle_1.webp",
+    "description": "Men's olive green printed casual shirt crafted from 100% breathable cotton. Perfect for daily wear, travel, and casual outings.",
+    "fabric": "Cotton",
+    "fit": "Regular Fit",
+    "rating": 4.9,
+    "reviewsCount": 168,
+    "sizes": ["S", "M", "L", "XL"],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "extraDiscountBadge": "EXTRA ₹999 OFF",
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Andheri East • 400093",
+    "promoTag": "Today's Best Price",
+    "couponPromo": "EXTRA ₹999 OFF"
+  },
+  {
     "id": "33058",
     "brand": "Chapter 2",
     "title": "Unisex Oversized Beige Mineral Wash T-Shirt",
