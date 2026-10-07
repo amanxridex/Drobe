@@ -577,7 +577,7 @@ export default function HomePage() {
               onError={(e) => {
                 // Direct fallback to Knot CDN
                 (e.target as HTMLImageElement).src =
-                  'https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-375/app_images%2FFrame-r%26e-tote.png?ik-t=9999999999&ik-s=dc6526136e1da89e31f4bdb25d85bb5b3a910b2c';
+                  'https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-343,h-86,cm-pad_resize,bgcolor-171717/app_images%2F500R%26EFLAT.png?ik-t=9999999999&ik-s=c6b2ddee1b325fee704492f077d01ce5f7bb28cd';
               }}
             />
           </div>
