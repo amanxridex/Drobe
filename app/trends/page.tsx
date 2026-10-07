@@ -10,15 +10,22 @@ import confetti from 'canvas-confetti';
 
 export default function TrendsPage() {
   const router = useRouter();
-  const { addToCart } = useApp();
+  const { addToCart, gender, setGender } = useApp();
 
   const [activeReelIdx, setActiveReelIdx] = useState(0);
   const [likedReels, setLikedReels] = useState<Record<string, boolean>>({});
   const [isMuted, setIsMuted] = useState(true);
 
-  const currentReel = REELS_DATA[activeReelIdx] || REELS_DATA[0];
-  const linkedProduct = PRODUCTS.find((p) => p.id === currentReel.productId) || PRODUCTS[0];
+  // 100% Strict gender separation for Trends
+  const genderReels = REELS_DATA.filter((r) => r.gender === gender);
+  const currentReel = genderReels[activeReelIdx % (genderReels.length || 1)] || REELS_DATA[0];
+  const linkedProduct = PRODUCTS.find((p) => p.id === currentReel.productId) || PRODUCTS.find((p) => p.gender === gender) || PRODUCTS[0];
   const isLiked = likedReels[currentReel.id];
+
+  // Reset index when gender changes
+  React.useEffect(() => {
+    setActiveReelIdx(0);
+  }, [gender]);
 
   const handleLike = () => {
     setLikedReels((prev) => ({ ...prev, [currentReel.id]: !prev[currentReel.id] }));
@@ -28,11 +35,11 @@ export default function TrendsPage() {
   };
 
   const handleNextReel = () => {
-    setActiveReelIdx((prev) => (prev + 1) % REELS_DATA.length);
+    setActiveReelIdx((prev) => (prev + 1) % genderReels.length);
   };
 
   const handlePrevReel = () => {
-    setActiveReelIdx((prev) => (prev - 1 + REELS_DATA.length) % REELS_DATA.length);
+    setActiveReelIdx((prev) => (prev - 1 + genderReels.length) % genderReels.length);
   };
 
   const handleQuickAdd = () => {
@@ -61,21 +68,61 @@ export default function TrendsPage() {
             top: 0,
             left: 0,
             right: 0,
-            padding: '16px',
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)',
+            padding: '14px 16px',
+            background: 'linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             zIndex: 20
           }}
         >
+          {/* Left: PICKS + Gender switcher */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 18, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>PICKS</span>
-            <span style={{ background: '#ff2a85', color: '#fff', fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 10 }}>
-              LIVE
-            </span>
+            <span style={{ fontSize: 17, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>PICKS</span>
+            <div
+              style={{
+                display: 'flex',
+                background: 'rgba(0,0,0,0.6)',
+                backdropFilter: 'blur(8px)',
+                borderRadius: 9999,
+                padding: 2,
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}
+            >
+              <button
+                onClick={() => setGender('men')}
+                style={{
+                  background: gender === 'men' ? '#2563eb' : 'transparent',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 9999,
+                  padding: '3px 10px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  cursor: 'pointer'
+                }}
+              >
+                Men
+              </button>
+              <button
+                onClick={() => setGender('women')}
+                style={{
+                  background: gender === 'women' ? '#ec4899' : 'transparent',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 9999,
+                  padding: '3px 10px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  cursor: 'pointer'
+                }}
+              >
+                Women
+              </button>
+            </div>
           </div>
 
+          {/* Right: Mute / Sound button */}
           <button
             onClick={() => setIsMuted(!isMuted)}
             style={{

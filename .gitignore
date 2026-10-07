@@ -40,3 +40,5 @@ next-env.d.ts
 /*.png
 /*.py
 /pages*.md
+scripts/*.png
+scripts/*.webp

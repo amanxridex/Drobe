@@ -6,22 +6,30 @@ import { useParams, useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { PRODUCTS, CATEGORIES_DATA } from '@/data/catalog';
 import BottomNav from '@/components/BottomNav';
-import WishlistButton from '@/components/WishlistButton';
 import ProductCard from '@/components/ProductCard';
 
 export default function CollectionPage() {
   const params = useParams();
   const router = useRouter();
-  const { gender, wishlist, toggleWishlist } = useApp();
+  const { gender, wishlist, toggleWishlist, cart } = useApp();
 
   const collectionId = params?.id as string;
   const categories = gender === 'men' ? CATEGORIES_DATA.men : CATEGORIES_DATA.women;
-  const currentCat = categories.find((c) => c.id === collectionId) || { id: collectionId, name: 'Curated Collection' };
+  const currentCat = categories.find((c) => c.id === collectionId) || { id: collectionId, name: collectionId ? collectionId.toUpperCase() : 'ALL PRODUCTS' };
 
   const [sortBy, setSortBy] = useState<'popular' | 'low' | 'high'>('popular');
 
-  let products = PRODUCTS.filter((p) => !collectionId || collectionId === 'all' || p.category === collectionId);
-  if (products.length === 0) products = PRODUCTS;
+  // STRICT 100% GENDER ISOLATION: Never leak opposite gender products
+  let products = PRODUCTS.filter((p) => {
+    if (p.gender !== gender) return false;
+    if (!collectionId || collectionId === 'all') return true;
+    return p.category.toLowerCase() === collectionId.toLowerCase();
+  });
+
+  // If a specific subcategory had zero items, fall back ONLY to products of the same gender
+  if (products.length === 0) {
+    products = PRODUCTS.filter((p) => p.gender === gender);
+  }
 
   if (sortBy === 'low') {
     products = [...products].sort((a, b) => a.price - b.price);
@@ -29,43 +37,115 @@ export default function CollectionPage() {
     products = [...products].sort((a, b) => b.price - a.price);
   }
 
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', background: '#171717', overflow: 'hidden' }}>
-      {/* Header */}
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', background: '#121214', overflow: 'hidden' }}>
+      {/* ========================================================
+          1. AUTHENTIC KNOT PLP HEADER
+          Back Arrow + Knot Blue Logo | Title | Search + Heart + Bag
+          ======================================================== */}
       <header
         style={{
-          padding: '14px 16px',
-          background: '#171717',
-          borderBottom: '1px solid #242424',
+          padding: '12px 16px',
+          background: '#121214',
+          borderBottom: '1px solid #1f1f23',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          zIndex: 40
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        {/* Left: Back Arrow + Knot Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button
             onClick={() => router.back()}
             style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', padding: 0 }}
+            aria-label="Back"
           >
-            <img src="/assets/icons/back_arrow.svg" alt="Back" style={{ width: 22, height: 22 }} />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
           </button>
-          <div>
-            <h1 style={{ fontSize: 17, fontWeight: 800, color: '#fff' }}>{currentCat.name}</h1>
-            <p style={{ fontSize: 11, color: '#888' }}>{products.length} Products • 60-min delivery</p>
-          </div>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <img
+              src="/assets/images/knot-mono.png"
+              alt="KNOT"
+              style={{ height: 24, width: 'auto', objectFit: 'contain' }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/knot-logo.webp';
+              }}
+            />
+          </Link>
         </div>
 
-        <Link href="/search" style={{ color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-          <img src="/assets/icons/search.svg" alt="Search" style={{ width: 20, height: 20 }} />
-        </Link>
+        {/* Center Title */}
+        <div style={{ textAlign: 'center' }}>
+          <h1
+            style={{
+              fontSize: 14.5,
+              fontWeight: 800,
+              color: '#ffffff',
+              letterSpacing: 0.5,
+              textTransform: 'uppercase',
+              margin: 0,
+              fontFamily: 'Satoshi, sans-serif'
+            }}
+          >
+            {currentCat.name}
+          </h1>
+          <p style={{ fontSize: 10.5, color: '#8e8e93', margin: '2px 0 0 0', fontWeight: 500 }}>
+            {products.length} Items • 60-min delivery
+          </p>
+        </div>
+
+        {/* Right: Search, Wishlist, Bag with count */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <Link href="/search" style={{ color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </Link>
+
+          <Link href="/cart" style={{ position: 'relative', display: 'flex', alignItems: 'center', textDecoration: 'none', color: '#fff' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+            {cartCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: -6,
+                  right: -7,
+                  background: '#6678FF',
+                  color: '#ffffff',
+                  fontSize: 10,
+                  fontWeight: 800,
+                  minWidth: 15,
+                  height: 15,
+                  borderRadius: 9999,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 2px'
+                }}
+              >
+                {cartCount}
+              </span>
+            )}
+          </Link>
+        </div>
       </header>
 
       {/* Filter / Sort bar */}
       <div
         style={{
-          padding: '10px 16px',
-          background: '#1c1c24',
-          borderBottom: '1px solid #282834',
+          padding: '8px 16px',
+          background: '#161619',
+          borderBottom: '1px solid #222227',
           display: 'flex',
           alignItems: 'center',
           gap: 8,
@@ -76,12 +156,12 @@ export default function CollectionPage() {
         <button
           onClick={() => setSortBy(sortBy === 'low' ? 'high' : 'low')}
           style={{
-            background: '#252532',
-            border: '1px solid #363646',
+            background: '#222228',
+            border: '1px solid #32323c',
             color: '#fff',
-            borderRadius: 16,
+            borderRadius: 9999,
             padding: '6px 12px',
-            fontSize: 12,
+            fontSize: 11.5,
             fontWeight: 700,
             display: 'flex',
             alignItems: 'center',
@@ -90,7 +170,7 @@ export default function CollectionPage() {
             whiteSpace: 'nowrap'
           }}
         >
-          <img src="/assets/icons/sort.svg" alt="" style={{ width: 12, height: 12, filter: 'brightness(0) invert(1)' }} />
+          <span>↕</span>
           Price: {sortBy === 'low' ? 'Low to High' : 'High to Low'}
         </button>
 
@@ -99,9 +179,9 @@ export default function CollectionPage() {
             background: 'rgba(56, 189, 248, 0.1)',
             border: '1px solid rgba(56, 189, 248, 0.3)',
             color: '#38bdf8',
-            borderRadius: 16,
+            borderRadius: 9999,
             padding: '6px 12px',
-            fontSize: 12,
+            fontSize: 11.5,
             fontWeight: 700,
             whiteSpace: 'nowrap'
           }}
@@ -111,12 +191,12 @@ export default function CollectionPage() {
 
         <span
           style={{
-            background: '#252532',
-            border: '1px solid #363646',
-            color: '#aaa',
-            borderRadius: 16,
+            background: '#222228',
+            border: '1px solid #32323c',
+            color: '#a1a1aa',
+            borderRadius: 9999,
             padding: '6px 12px',
-            fontSize: 12,
+            fontSize: 11.5,
             fontWeight: 600,
             whiteSpace: 'nowrap'
           }}
@@ -125,8 +205,8 @@ export default function CollectionPage() {
         </span>
       </div>
 
-      {/* Product Grid */}
-      <main style={{ flex: 1, overflowY: 'auto', padding: '16px 12px 80px' }}>
+      {/* Product Grid - 2 Column Knot Layout */}
+      <main style={{ flex: 1, overflowY: 'auto', padding: '14px 10px 85px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
           {products.map((product) => (
             <ProductCard

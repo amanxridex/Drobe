@@ -6,7 +6,10 @@ import { useApp } from '@/context/AppContext';
 export default function LocationModal() {
   const { isLocationOpen, setIsLocationOpen, location, setLocation } = useApp();
   const [pincode, setPincode] = useState('');
-  const [pincodeStatus, setPincodeStatus] = useState<string | null>(null);
+  const [showAddressInput, setShowAddressInput] = useState(false);
+  const [newAddress, setNewAddress] = useState('');
+  const [showHubs, setShowHubs] = useState(false);
+  const [detectingGps, setDetectingGps] = useState(false);
 
   if (!isLocationOpen) return null;
 
@@ -19,14 +22,51 @@ export default function LocationModal() {
     { name: 'Vesu Main Road, Surat', area: 'Vesu, Surat - 395007', eta: '60 mins' }
   ];
 
-  const handleCheckPincode = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (pincode === '400093' || pincode === '400050' || pincode === '560034' || pincode === '395007') {
-      setPincodeStatus('⚡ Lightning 60-Min delivery available in this area!');
-    } else if (pincode.length === 6) {
-      setPincodeStatus('⚡ 60-Min Express delivery active for pincode ' + pincode);
+  const handleSetDeliveryLocation = () => {
+    setDetectingGps(true);
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        () => {
+          setLocation('Andheri East, Mumbai (Current GPS)');
+          setDetectingGps(false);
+          setIsLocationOpen(false);
+        },
+        () => {
+          setLocation('Shreepal Complex, Suren Rd, Mumbai');
+          setDetectingGps(false);
+          setIsLocationOpen(false);
+        },
+        { timeout: 3500 }
+      );
     } else {
-      setPincodeStatus('Please enter a valid 6-digit pincode');
+      setLocation('Shreepal Complex, Suren Rd, Mumbai');
+      setDetectingGps(false);
+      setIsLocationOpen(false);
+    }
+  };
+
+  const handleContinuePincode = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pincode.length === 6) {
+      if (pincode === '400093') {
+        setLocation('Shreepal Complex, Mumbai - 400093');
+      } else if (pincode === '400050') {
+        setLocation('Bandra West, Mumbai - 400050');
+      } else if (pincode === '560034') {
+        setLocation('Koramangala, Bangalore - 560034');
+      } else {
+        setLocation(`Mumbai Area - ${pincode}`);
+      }
+      setIsLocationOpen(false);
+    }
+  };
+
+  const handleSaveNewAddress = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newAddress.trim()) {
+      setLocation(newAddress.trim());
+      setShowAddressInput(false);
+      setIsLocationOpen(false);
     }
   };
 
@@ -38,8 +78,9 @@ export default function LocationModal() {
         width: '100%',
         height: '100%',
         zIndex: 100,
-        background: 'rgba(0, 0, 0, 0.75)',
+        background: 'rgba(0, 0, 0, 0.72)',
         backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-end',
@@ -50,176 +91,394 @@ export default function LocationModal() {
       <div
         className="animate-slide-up"
         style={{
-          background: '#191920',
-          borderTopLeftRadius: 28,
-          borderTopRightRadius: 28,
-          border: '1px solid #2e2e3a',
-          maxHeight: '85vh',
+          background: '#151518',
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          border: '1px solid #24242c',
+          borderBottom: 'none',
+          maxHeight: '90vh',
           overflowY: 'auto',
-          padding: '20px 20px 32px'
+          padding: '12px 18px 28px',
+          boxSizing: 'border-box',
+          boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.7)'
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <div>
-            <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff' }}>Select Delivery Location</h3>
-            <p style={{ fontSize: 12, color: '#888', marginTop: 2 }}>We guarantee 60-minute delivery to serviceable areas</p>
-          </div>
-          <button
-            onClick={() => setIsLocationOpen(false)}
-            style={{
-              background: '#252530',
-              border: 'none',
-              borderRadius: '50%',
-              width: 32,
-              height: 32,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer'
-            }}
-          >
-            <img src="/assets/icons/cross_close.svg" alt="Close" style={{ width: 14, height: 14 }} />
-          </button>
-        </div>
-
-        {/* GPS Button */}
-        <button
-          onClick={() => {
-            setLocation('Shreepal Complex, Suren Rd, Mumbai');
-            setIsLocationOpen(false);
-          }}
+        {/* Top Centered Drag Handle Pill */}
+        <div
           style={{
-            width: '100%',
-            background: 'linear-gradient(135deg, rgba(102,120,255,0.15) 0%, rgba(139,92,246,0.15) 100%)',
-            border: '1px solid rgba(102,120,255,0.3)',
-            borderRadius: 16,
-            padding: '12px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            color: '#fff',
-            cursor: 'pointer',
-            marginBottom: 16
+            width: 38,
+            height: 4,
+            background: '#44444d',
+            borderRadius: 99,
+            margin: '0 auto 16px'
+          }}
+        />
+
+        {/* Modal Header */}
+        <h3
+          style={{
+            fontSize: 17,
+            fontWeight: 700,
+            color: '#ffffff',
+            textAlign: 'center',
+            marginBottom: 20
           }}
         >
-          <div
-            style={{
-              background: '#6678ff',
-              borderRadius: '50%',
-              width: 36,
-              height: 36,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
+          Select Location
+        </h3>
+
+        {/* Primary Action Button: "Set delivery location" */}
+        <button
+          onClick={handleSetDeliveryLocation}
+          disabled={detectingGps}
+          style={{
+            width: '100%',
+            background: '#5865f2',
+            borderRadius: 16,
+            padding: '14px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            border: 'none',
+            color: '#ffffff',
+            cursor: 'pointer',
+            boxSizing: 'border-box',
+            transition: 'opacity 0.2s ease, transform 0.1s ease',
+            opacity: detectingGps ? 0.7 : 1
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Paper Airplane / Navigation pointer icon */}
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m22 2-7 20-4-9-9-4Z" />
+              <path d="M22 2 11 13" />
+            </svg>
+            <span style={{ fontSize: 15, fontWeight: 600, color: '#ffffff' }}>
+              {detectingGps ? 'Detecting coordinates...' : 'Set delivery location'}
+            </span>
+          </div>
+
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <img src="/assets/icons/current_location.svg" alt="" style={{ width: 18, height: 18, filter: 'brightness(0) invert(1)' }} />
-          </div>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#6678ff' }}>Use Current GPS Location</div>
-            <div style={{ fontSize: 11, color: '#aaa' }}>Auto-detect via device coordinates</div>
-          </div>
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
         </button>
 
-        {/* Pincode Input */}
-        <form onSubmit={handleCheckPincode} style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-          <input
-            type="text"
-            placeholder="Enter 6-digit Pincode (e.g. 400093)"
-            value={pincode}
-            maxLength={6}
-            onChange={(e) => {
-              setPincode(e.target.value);
-              setPincodeStatus(null);
-            }}
+        {/* Secondary Action Button: "Add new address" */}
+        <button
+          onClick={() => setShowAddressInput((prev) => !prev)}
+          style={{
+            width: '100%',
+            background: '#222227',
+            borderRadius: 16,
+            padding: '14px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            border: 'none',
+            color: '#ffffff',
+            cursor: 'pointer',
+            marginTop: 12,
+            boxSizing: 'border-box',
+            transition: 'background 0.2s ease'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Plus icon in vibrant periwinkle blue */}
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#5865f2"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span style={{ fontSize: 15, fontWeight: 600, color: '#ffffff' }}>
+              Add new address
+            </span>
+          </div>
+
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#9ca3af"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+
+        {/* Optional Expandable Add Address Form */}
+        {showAddressInput && (
+          <form
+            onSubmit={handleSaveNewAddress}
             style={{
-              flex: 1,
-              background: '#22222c',
-              border: '1px solid #363644',
-              borderRadius: 12,
-              padding: '10px 14px',
-              color: '#fff',
-              fontSize: 13,
-              outline: 'none'
-            }}
-          />
-          <button
-            type="submit"
-            style={{
-              background: '#6678ff',
-              border: 'none',
-              borderRadius: 12,
-              padding: '0 16px',
-              color: '#fff',
-              fontSize: 13,
-              fontWeight: 700,
-              cursor: 'pointer'
+              marginTop: 12,
+              background: '#1d1d23',
+              border: '1px solid #30303b',
+              borderRadius: 16,
+              padding: '14px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 10
             }}
           >
-            Check
+            <input
+              type="text"
+              placeholder="Flat / Building / Street address"
+              value={newAddress}
+              onChange={(e) => setNewAddress(e.target.value)}
+              autoFocus
+              style={{
+                background: '#15151a',
+                border: '1px solid #3d3d4b',
+                borderRadius: 10,
+                padding: '10px 12px',
+                color: '#fff',
+                fontSize: 14,
+                outline: 'none'
+              }}
+            />
+            <button
+              type="submit"
+              disabled={!newAddress.trim()}
+              style={{
+                background: newAddress.trim() ? '#5865f2' : '#2b2b34',
+                color: newAddress.trim() ? '#fff' : '#686875',
+                border: 'none',
+                borderRadius: 10,
+                padding: '10px',
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: newAddress.trim() ? 'pointer' : 'default'
+              }}
+            >
+              Save Address
+            </button>
+          </form>
+        )}
+
+        {/* Separator "or" */}
+        <div
+          style={{
+            textAlign: 'center',
+            color: '#ffffff',
+            fontSize: 15,
+            fontWeight: 700,
+            margin: '22px 0 18px'
+          }}
+        >
+          or
+        </div>
+
+        {/* Section Label: "Your Pincode" */}
+        <div
+          style={{
+            fontSize: 16,
+            fontWeight: 800,
+            color: '#ffffff',
+            marginBottom: 12,
+            textAlign: 'left'
+          }}
+        >
+          Your Pincode
+        </div>
+
+        {/* Pincode Input Box with Integrated Continue Button */}
+        <form
+          onSubmit={handleContinuePincode}
+          style={{
+            background: '#1c1c21',
+            border: '1.5px solid #5865f2',
+            borderRadius: 14,
+            padding: '7px 8px 7px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxSizing: 'border-box'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+            {/* Map Pin Icon in blue */}
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#5865f2"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ flexShrink: 0 }}
+            >
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="4000XX"
+              value={pincode}
+              maxLength={6}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, '');
+                setPincode(val);
+              }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                color: '#ffffff',
+                fontSize: 15,
+                fontWeight: 600,
+                letterSpacing: pincode ? '1px' : '0.5px',
+                width: '100%'
+              }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={pincode.length !== 6}
+            style={{
+              padding: '9px 18px',
+              borderRadius: 10,
+              fontSize: 14,
+              fontWeight: 600,
+              border: 'none',
+              background: pincode.length === 6 ? '#5865f2' : '#2b2b34',
+              color: pincode.length === 6 ? '#ffffff' : '#686875',
+              cursor: pincode.length === 6 ? 'pointer' : 'default',
+              transition: 'all 0.2s ease',
+              flexShrink: 0
+            }}
+          >
+            Continue
           </button>
         </form>
 
-        {pincodeStatus && (
-          <div
+        {/* Helper Footer Link: "Don't remember your pincode? Click here" */}
+        <div
+          style={{
+            marginTop: 14,
+            fontSize: 13,
+            color: '#8e8e93',
+            textAlign: 'left',
+            fontWeight: 500
+          }}
+        >
+          Don’t remember your pincode?{' '}
+          <span
+            onClick={() => setShowHubs((prev) => !prev)}
             style={{
-              background: pincodeStatus.includes('⚡') ? '#0f382c' : '#3d1a1a',
-              color: pincodeStatus.includes('⚡') ? '#34d399' : '#ff7777',
-              borderRadius: 10,
-              padding: '8px 12px',
-              fontSize: 12,
+              color: '#5865f2',
               fontWeight: 700,
-              marginBottom: 16
+              cursor: 'pointer'
             }}
           >
-            {pincodeStatus}
+            Click here
+          </span>
+        </div>
+
+        {/* Expandable Hubs List when "Click here" is tapped */}
+        {showHubs && (
+          <div
+            style={{
+              marginTop: 18,
+              paddingTop: 16,
+              borderTop: '1px solid #272733',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 800,
+                color: '#888',
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+                marginBottom: 4
+              }}
+            >
+              Select Nearest Delivery Hub
+            </div>
+
+            {popularLocations.map((loc) => {
+              const isSelected = location.includes(loc.name.split(',')[0]);
+              return (
+                <div
+                  key={loc.name}
+                  onClick={() => {
+                    setLocation(loc.name);
+                    setIsLocationOpen(false);
+                  }}
+                  style={{
+                    background: isSelected ? 'rgba(88, 101, 242, 0.15)' : '#1e1e25',
+                    border: isSelected ? '1px solid #5865f2' : '1px solid #2c2c38',
+                    borderRadius: 14,
+                    padding: '12px 14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#5865f2"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{loc.name}</div>
+                      <div style={{ fontSize: 11, color: '#888', marginTop: 1 }}>{loc.area}</div>
+                    </div>
+                  </div>
+
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8' }}>⚡ {loc.eta}</span>
+                </div>
+              );
+            })}
           </div>
         )}
-
-        {/* Popular Locations */}
-        <div style={{ fontSize: 11, fontWeight: 800, color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
-          Serviceable Delivery Hubs
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {popularLocations.map((loc) => {
-            const isSelected = location.includes(loc.name.split(',')[0]);
-            return (
-              <div
-                key={loc.name}
-                onClick={() => {
-                  setLocation(loc.name);
-                  setIsLocationOpen(false);
-                }}
-                style={{
-                  background: isSelected ? 'rgba(102,120,255,0.1)' : '#202029',
-                  border: isSelected ? '1px solid #6678ff' : '1px solid #2d2d3a',
-                  borderRadius: 14,
-                  padding: '12px 14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <img src="/assets/icons/pin_marker_outline_v3.svg" alt="" style={{ width: 16, height: 16, opacity: 0.8 }} />
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{loc.name}</div>
-                    <div style={{ fontSize: 11, color: '#888', marginTop: 1 }}>{loc.area}</div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8' }}>⚡ {loc.eta}</span>
-                  {isSelected && <img src="/assets/icons/check.svg" alt="" style={{ width: 14, height: 14, filter: 'invert(54%) sepia(85%) saturate(2371%) hue-rotate(210deg)' }} />}
-                </div>
-              </div>
-            );
-          })}
-        </div>
       </div>
     </div>
   );

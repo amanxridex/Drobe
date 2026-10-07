@@ -34,110 +34,704 @@ export const CATEGORIES_DATA = {
     { id: 'accessories', name: 'Accessories', icon: '/assets/icons/collection/accessories.svg', image: '/assets/real/cat_accessories.webp' }
   ],
   women: [
-    { id: 'ethnic', name: 'Ethnic Wear', icon: '/assets/icons/collection/ethnic.svg', image: '/assets/real/cat_ethnic.webp' },
-    { id: 'bottom', name: 'Bottom Wear', icon: '/assets/icons/collection/denims.svg', image: '/assets/real/cat_bottom.webp' },
-    { id: 'top', name: 'Top Wear', icon: '/assets/icons/collection/casualwear.svg', image: '/assets/real/cat_top.webp' },
-    { id: 'footwear', name: 'Foot Wear', icon: '/assets/icons/collection/footwear.svg', image: '/assets/real/cat_footwear.webp' },
-    { id: 'accessories', name: 'Accessories', icon: '/assets/icons/collection/accessories.svg', image: '/assets/real/cat_accessories.webp' }
+    { id: 'ethnic', name: 'Ethnic Wear', icon: '/assets/icons/collection/ethnic.svg', image: '/assets/real/cat_women_ethnic_card.png' },
+    { id: 'dresses', name: 'Dresses', icon: '/assets/icons/collection/casualwear.svg', image: '/assets/real/cat_women_dresses_card.png' },
+    { id: 'bottom', name: 'Bottom Wear', icon: '/assets/icons/collection/denims.svg', image: '/assets/real/cat_women_bottom_card.png' },
+    { id: 'top', name: 'Top Wear', icon: '/assets/icons/collection/casualwear.svg', image: '/assets/real/cat_women_top_card.png' },
+    { id: 'footwear', name: 'Foot Wear', icon: '/assets/icons/collection/footwear.svg', image: '/assets/real/cat_women_footwear_card.png' }
   ]
 };
 
 export const PRODUCTS: Product[] = [
   {
-    "id": "12886",
-    "brand": "SPYKAR",
-    "title": "Spykar Military Green Cotton Full Sleeve Raised Collar Shirt For Men",
-    "price": 1203,
-    "originalPrice": 2999,
-    "discountPercentage": 60,
-    "gender": "men",
-    "category": "top",
-    "subCategory": "shirts",
+    "id": "w-eth-1",
+    "brand": "Pink Fort",
+    "title": "Mustard Yellow Embroidered Chanderi Kurta Set",
+    "price": 2699,
+    "originalPrice": 4999,
+    "discountPercentage": 46,
+    "gender": "women",
+    "category": "ethnic",
+    "subCategory": "kurta sets",
     "images": [
-      "/assets/real/products/12886/angle_1.webp",
-      "/assets/real/products/12886/angle_2.webp",
-      "/assets/real/products/12886/angle_3.webp",
-      "/assets/real/products/12886/angle_4.webp",
-      "/assets/real/products/12886/angle_5.webp",
-      "/assets/real/products/12886/angle_6.webp"
+      "/assets/real/women/asset_107_catalog_ingestion_pixyle_input_101790c1aa69d43650465fdd71ed22a1a7d251427b181416dd5127ffd9c060d3.jpg"
     ],
-    "thumbnail": "/assets/real/products/12886/angle_1.webp",
-    "description": "Men's olive green printed casual shirt crafted from 100% breathable cotton. Perfect for daily wear, travel, and casual outings.",
-    "fabric": "Cotton",
-    "fit": "Regular Fit",
+    "thumbnail": "/assets/real/women/asset_107_catalog_ingestion_pixyle_input_101790c1aa69d43650465fdd71ed22a1a7d251427b181416dd5127ffd9c060d3.jpg",
+    "description": "Festive pure Chanderi silk kurta with delicate white resham floral embroidery paired with matching cigarette trousers.",
+    "fabric": "Chanderi Silk",
+    "fit": "Regular Straight Fit",
     "rating": 4.9,
-    "reviewsCount": 168,
-    "sizes": ["S", "M", "L", "XL"],
-    "inStock": true,
-    "tryAndBuyEligible": true,
-    "extraDiscountBadge": "EXTRA ₹999 OFF",
-    "deliveryMinutes": 60,
-    "deliveryLocation": "Andheri East • 400093",
-    "promoTag": "Today's Best Price",
-    "couponPromo": "EXTRA ₹999 OFF"
-  },
-  {
-    "id": "33058",
-    "brand": "Chapter 2",
-    "title": "Unisex Oversized Beige Mineral Wash T-Shirt",
-    "price": 2490,
-    "originalPrice": 3362,
-    "discountPercentage": 26,
-    "gender": "men",
-    "category": "top",
-    "subCategory": "t-shirts",
-    "images": [
-      "/assets/real/products/33058/angle_1.jpg",
-      "/assets/real/products/33058/angle_2.jpg",
-      "/assets/real/products/33058/angle_3.jpg",
-      "/assets/real/products/33058/angle_4.jpg",
-      "/assets/real/products/33058/angle_5.jpg",
-      "/assets/real/products/33058/angle_6.jpg"
+    "reviewsCount": 312,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
     ],
-    "thumbnail": "/assets/real/products/33058/angle_1.jpg",
-    "description": "Unisex oversized streetwear t-shirt from Chapter 2.",
-    "fabric": "100% French Terry Cotton",
-    "fit": "Oversized Fit",
-    "rating": 4.9,
-    "reviewsCount": 124,
-    "sizes": ["S", "M", "L", "XL"],
     "inStock": true,
     "tryAndBuyEligible": true,
     "deliveryMinutes": 60,
-    "deliveryLocation": "Mumbai",
-    "promoTag": "Today's Best Price",
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Festive Bestseller",
     "couponPromo": "Coupon: KNOTFESTIVE999"
   },
   {
-    "id": "36216",
-    "brand": "Chapter 2",
-    "title": "Unisex Charcoal Vintage Rugby Polo Shirt",
-    "price": 2990,
-    "originalPrice": 4037,
-    "discountPercentage": 26,
-    "gender": "men",
-    "category": "top",
-    "subCategory": "polo t-shirts",
+    "id": "w-eth-2",
+    "brand": "Vasavi",
+    "title": "Desi Baddie Festive Garba Lehenga Choli Set",
+    "price": 3999,
+    "originalPrice": 7999,
+    "discountPercentage": 50,
+    "gender": "women",
+    "category": "ethnic",
+    "subCategory": "lehenga choli",
     "images": [
-      "/assets/real/products/36216/angle_1.jpg",
-      "/assets/real/products/36216/angle_2.jpg",
-      "/assets/real/products/36216/angle_3.jpg",
-      "/assets/real/products/36216/angle_4.jpg",
-      "/assets/real/products/36216/angle_5.jpg",
-      "/assets/real/products/36216/angle_6.jpg"
+      "/assets/real/lookbook_women_2_desibaddie.webp"
     ],
-    "thumbnail": "/assets/real/products/36216/angle_1.jpg",
-    "description": "Unisex vintage washed polo shirt from Chapter 2.",
-    "fabric": "Cotton Blend",
-    "fit": "Relaxed Fit",
-    "rating": 4.8,
-    "reviewsCount": 98,
-    "sizes": ["S", "M", "L", "XL"],
+    "thumbnail": "/assets/real/lookbook_women_2_desibaddie.webp",
+    "description": "Statement festive magenta & parakeet green flared lehenga choli with ornate mirrorwork border and mirror embellished dupatta.",
+    "fabric": "Georgette Silk",
+    "fit": "Flared Fit",
+    "rating": 4.9,
+    "reviewsCount": 450,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
     "inStock": true,
     "tryAndBuyEligible": true,
     "deliveryMinutes": 60,
-    "deliveryLocation": "Mumbai",
-    "promoTag": "Today's Best Price",
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Garba Special",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-eth-3",
+    "brand": "Pink Fort",
+    "title": "Blush Pink Silk Anarkali Gown with Embroidered Cape",
+    "price": 2899,
+    "originalPrice": 5499,
+    "discountPercentage": 47,
+    "gender": "women",
+    "category": "ethnic",
+    "subCategory": "anarkalis",
+    "images": [
+      "/assets/real/cat_women_ethnic_card.png"
+    ],
+    "thumbnail": "/assets/real/cat_women_ethnic_card.png",
+    "description": "Floor-length pure mulmul silk anarkali with delicate scalloped borders and matching organza dupatta.",
+    "fabric": "Mulmul Silk",
+    "fit": "Flared Fit",
+    "rating": 4.8,
+    "reviewsCount": 219,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Dandiya Drops",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-eth-4",
+    "brand": "KALKI",
+    "title": "Champagne Gold Embellished Ready-to-Wear Georgette Saree",
+    "price": 4999,
+    "originalPrice": 8999,
+    "discountPercentage": 44,
+    "gender": "women",
+    "category": "ethnic",
+    "subCategory": "sarees",
+    "images": [
+      "/assets/real/cat_women_sub_sarees.webp"
+    ],
+    "thumbnail": "/assets/real/cat_women_sub_sarees.webp",
+    "description": "Pre-draped festive georgette saree featuring shimmering sequin work with matching sleeveless designer blouse.",
+    "fabric": "Georgette Silk",
+    "fit": "Pre-stitched Drape",
+    "rating": 4.9,
+    "reviewsCount": 421,
+    "sizes": [
+      "Free Size"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Celebrity Pick",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-eth-5",
+    "brand": "trueBrowns",
+    "title": "Ivory Floral Embroidered Salwar Kameez Suit Set",
+    "price": 2450,
+    "originalPrice": 4900,
+    "discountPercentage": 50,
+    "gender": "women",
+    "category": "ethnic",
+    "subCategory": "suit sets",
+    "images": [
+      "/assets/real/cat_women_sub_suits.webp"
+    ],
+    "thumbnail": "/assets/real/cat_women_sub_suits.webp",
+    "description": "Timeless handloom cotton silk kurta suit set with intricate pearl thread work and tapered churidar pants.",
+    "fabric": "Cotton Silk",
+    "fit": "Comfort Regular Fit",
+    "rating": 4.8,
+    "reviewsCount": 165,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Classic Grace",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-eth-6",
+    "brand": "Pink Fort",
+    "title": "Cream Zari Work Designer Kurta Sharara Set",
+    "price": 3199,
+    "originalPrice": 5999,
+    "discountPercentage": 46,
+    "gender": "women",
+    "category": "ethnic",
+    "subCategory": "sharara sets",
+    "images": [
+      "/assets/real/cat_women_sub_kurtas.webp"
+    ],
+    "thumbnail": "/assets/real/cat_women_sub_kurtas.webp",
+    "description": "Tiered flared sharara set cut from soft viscose silk featuring antique gold zari work and scalloped hemlines.",
+    "fabric": "Viscose Silk",
+    "fit": "Flared Fit",
+    "rating": 4.9,
+    "reviewsCount": 198,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Diwali Special",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-dr-1",
+    "brand": "Pink Fort",
+    "title": "Royal Purple Silk A-Line Sleeveless Midi Dress",
+    "price": 2199,
+    "originalPrice": 4299,
+    "discountPercentage": 49,
+    "gender": "women",
+    "category": "dresses",
+    "subCategory": "midi dresses",
+    "images": [
+      "/assets/real/lookbook_women_5_pinkfort.webp"
+    ],
+    "thumbnail": "/assets/real/lookbook_women_5_pinkfort.webp",
+    "description": "Minimalist statement jewel-toned A-line dress in raw silk with piped vertical details and back zip closure.",
+    "fabric": "Raw Silk Blend",
+    "fit": "A-Line Fit",
+    "rating": 4.8,
+    "reviewsCount": 174,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Trending Now",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-dr-2",
+    "brand": "The Souled Store",
+    "title": "Powerpuff Girls 1998 Varsity Bomber Dress - Limited Drop",
+    "price": 1899,
+    "originalPrice": 2899,
+    "discountPercentage": 34,
+    "gender": "women",
+    "category": "dresses",
+    "subCategory": "street dresses",
+    "images": [
+      "/assets/real/lookbook_women_4_souledstore.webp"
+    ],
+    "thumbnail": "/assets/real/lookbook_women_4_souledstore.webp",
+    "description": "Cozy relaxed streetwear varsity oversized dress with iconic 90s nostalgia graphic embroidery.",
+    "fabric": "Heavyweight French Terry",
+    "fit": "Relaxed Fit",
+    "rating": 4.9,
+    "reviewsCount": 520,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Buy 1 Get 1",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-dr-3",
+    "brand": "Tequila",
+    "title": "Midnight Black Halter Neck Slinky Maxi Slip Dress",
+    "price": 1999,
+    "originalPrice": 3499,
+    "discountPercentage": 43,
+    "gender": "women",
+    "category": "dresses",
+    "subCategory": "party dresses",
+    "images": [
+      "/assets/real/lookbook_women_7_tequila.webp"
+    ],
+    "thumbnail": "/assets/real/lookbook_women_7_tequila.webp",
+    "description": "Chic bodycon halter neck slip dress cut from liquid satin fabric with a high side-slit for party nights.",
+    "fabric": "Satin Elastane",
+    "fit": "Slim Fit",
+    "rating": 4.9,
+    "reviewsCount": 268,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Dress Like a Shot",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-dr-4",
+    "brand": "Sassafras",
+    "title": "Classic White Pleated Fit & Flare Midi Dress",
+    "price": 1299,
+    "originalPrice": 2499,
+    "discountPercentage": 48,
+    "gender": "women",
+    "category": "dresses",
+    "subCategory": "day dresses",
+    "images": [
+      "/assets/real/cat_women_dresses_card.png"
+    ],
+    "thumbnail": "/assets/real/cat_women_dresses_card.png",
+    "description": "Breezy white skater dress with sweetheart neckline and fitted bodice made for brunch and summer getaways.",
+    "fabric": "Cotton Poplin",
+    "fit": "Fit & Flare",
+    "rating": 4.8,
+    "reviewsCount": 195,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Day Outing Pick",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-tp-1",
+    "brand": "Chkokko",
+    "title": "Sky Blue \"One More Rep\" Athletic Training Crop Tee",
+    "price": 699,
+    "originalPrice": 1399,
+    "discountPercentage": 50,
+    "gender": "women",
+    "category": "top",
+    "subCategory": "activewear tops",
+    "images": [
+      "/assets/real/lookbook_women_3_chkokko.webp"
+    ],
+    "thumbnail": "/assets/real/lookbook_women_3_chkokko.webp",
+    "description": "Moisture-wicking breathable dry-fit athletic crop t-shirt engineered for workouts, running and casual street style.",
+    "fabric": "Quick-Dry Poly Spandex",
+    "fit": "Athletic Regular Fit",
+    "rating": 4.9,
+    "reviewsCount": 380,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Buy 2 Get 5% Off",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-tp-2",
+    "brand": "Chkokko",
+    "title": "Chic Seamless Black Strappy Tube Corset Top",
+    "price": 799,
+    "originalPrice": 1599,
+    "discountPercentage": 50,
+    "gender": "women",
+    "category": "top",
+    "subCategory": "corsets",
+    "images": [
+      "/assets/real/women/asset_108_brand_mywishbag_61050895_1.jpg"
+    ],
+    "thumbnail": "/assets/real/women/asset_108_brand_mywishbag_61050895_1.jpg",
+    "description": "Double-lined premium ribbed stretch bandeau tube top with built-in silicone grip for all-day non-slip hold.",
+    "fabric": "Ribbed Cotton Elastane",
+    "fit": "Fitted Bodycon",
+    "rating": 4.8,
+    "reviewsCount": 290,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Wardrobe Essential",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-tp-3",
+    "brand": "नी",
+    "title": "Azure Blue Hand-Block Halter Neck Tunic Top",
+    "price": 1399,
+    "originalPrice": 2499,
+    "discountPercentage": 44,
+    "gender": "women",
+    "category": "top",
+    "subCategory": "tunics",
+    "images": [
+      "/assets/real/lookbook_women_6_nee.webp"
+    ],
+    "thumbnail": "/assets/real/lookbook_women_6_nee.webp",
+    "description": "Artisanal indigo block-printed halter top featuring subtle tie-back detailing and natural breathable organic cotton.",
+    "fabric": "100% Organic Cotton",
+    "fit": "Relaxed Fit",
+    "rating": 4.9,
+    "reviewsCount": 142,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "New Collection",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-tp-4",
+    "brand": "Sassafras",
+    "title": "Vintage Boned Satin Underbust Corset Top - Ivory",
+    "price": 1199,
+    "originalPrice": 2299,
+    "discountPercentage": 48,
+    "gender": "women",
+    "category": "top",
+    "subCategory": "corsets",
+    "images": [
+      "/assets/real/cat_women_sub_corsets.webp"
+    ],
+    "thumbnail": "/assets/real/cat_women_sub_corsets.webp",
+    "description": "Structured corset featuring flexible boning and sweetheart bustier styling with lace-up back eyelets.",
+    "fabric": "Duchess Satin",
+    "fit": "Structured Corset Fit",
+    "rating": 4.8,
+    "reviewsCount": 310,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Viral Trend",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-tp-5",
+    "brand": "Sassafras",
+    "title": "Oversized Cloud-Soft Cashmere Blend Knit Sweater",
+    "price": 1699,
+    "originalPrice": 2999,
+    "discountPercentage": 43,
+    "gender": "women",
+    "category": "top",
+    "subCategory": "sweaters",
+    "images": [
+      "/assets/real/cat_women_sub_sweaters.webp"
+    ],
+    "thumbnail": "/assets/real/cat_women_sub_sweaters.webp",
+    "description": "Super-soft drop shoulder knit sweater in creamy vanilla hue featuring chunky ribbed cuffs and hemline.",
+    "fabric": "Cashmere Acrylic Blend",
+    "fit": "Oversized Slouchy Fit",
+    "rating": 4.9,
+    "reviewsCount": 225,
+    "sizes": [
+      "Free Size"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Winter Warmth",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-tp-6",
+    "brand": "The Souled Store",
+    "title": "Lilac Pastel Crew-Neck Fitted Cotton Baby Tee",
+    "price": 599,
+    "originalPrice": 999,
+    "discountPercentage": 40,
+    "gender": "women",
+    "category": "top",
+    "subCategory": "t-shirts",
+    "images": [
+      "/assets/real/cat_women_top_card.png"
+    ],
+    "thumbnail": "/assets/real/cat_women_top_card.png",
+    "description": "Everyday 90s baby tee cut in super-combed cotton with subtle ribbed neckline and cropped waist length.",
+    "fabric": "100% Combed Cotton",
+    "fit": "Fitted Baby Tee",
+    "rating": 4.7,
+    "reviewsCount": 480,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Daily Fit",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-bt-1",
+    "brand": "Tilt",
+    "title": "Butter Soft Bamboo Wide-Leg High-Waist Relaxed Trousers",
+    "price": 1499,
+    "originalPrice": 2499,
+    "discountPercentage": 40,
+    "gender": "women",
+    "category": "bottom",
+    "subCategory": "wide leg trousers",
+    "images": [
+      "/assets/real/lookbook_women_8_tilt.webp"
+    ],
+    "thumbnail": "/assets/real/lookbook_women_8_tilt.webp",
+    "description": "Breathable ultra-luxe bamboo cotton relaxed wide-leg trousers designed for effortlessly chic street outings.",
+    "fabric": "Bamboo Spandex",
+    "fit": "Wide Leg Loose Fit",
+    "rating": 4.9,
+    "reviewsCount": 341,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Bamboo Comfort",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-bt-2",
+    "brand": "Sassafras",
+    "title": "Ivory Wide-Leg Relaxed High-Waist Denim Trousers",
+    "price": 1599,
+    "originalPrice": 2999,
+    "discountPercentage": 47,
+    "gender": "women",
+    "category": "bottom",
+    "subCategory": "denim jeans",
+    "images": [
+      "/assets/real/cat_women_bottom_card.png"
+    ],
+    "thumbnail": "/assets/real/cat_women_bottom_card.png",
+    "description": "High-rise relaxed fit rigid cotton denim trousers with clean front pockets and full-length wide leg silhouette.",
+    "fabric": "100% Rigid Cotton Denim",
+    "fit": "High-Rise Wide Leg",
+    "rating": 4.8,
+    "reviewsCount": 298,
+    "sizes": [
+      "26",
+      "28",
+      "30",
+      "32"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Trending Fit",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-bt-3",
+    "brand": "Tilt",
+    "title": "Rose Piped Silk-Satin Relaxed Sleepwear Pyjamas",
+    "price": 1199,
+    "originalPrice": 2199,
+    "discountPercentage": 45,
+    "gender": "women",
+    "category": "bottom",
+    "subCategory": "loungewear",
+    "images": [
+      "/assets/real/cat_women_sub_pyjamas.webp"
+    ],
+    "thumbnail": "/assets/real/cat_women_sub_pyjamas.webp",
+    "description": "Silky smooth drawstring lounge trousers with contrast piping and side pockets for bedtime luxury.",
+    "fabric": "Mulberry Satin Poly",
+    "fit": "Relaxed Comfort Fit",
+    "rating": 4.9,
+    "reviewsCount": 167,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Lounge Luxury",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-ft-1",
+    "brand": "Sassafras",
+    "title": "Nude Strappy Block-Heel Party Sandals",
+    "price": 1499,
+    "originalPrice": 2799,
+    "discountPercentage": 46,
+    "gender": "women",
+    "category": "footwear",
+    "subCategory": "heels",
+    "images": [
+      "/assets/real/cat_women_footwear_card.png"
+    ],
+    "thumbnail": "/assets/real/cat_women_footwear_card.png",
+    "description": "Comfortable 2.5-inch block heel sandals with cushioned footbed and minimal criss-cross ankle straps.",
+    "fabric": "Faux Patent Leather",
+    "fit": "True to Size",
+    "rating": 4.8,
+    "reviewsCount": 310,
+    "sizes": [
+      "UK 4",
+      "UK 5",
+      "UK 6",
+      "UK 7"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Party Ready",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-acc-1",
+    "brand": "GIVA",
+    "title": "Sterling Silver 925 Sparkling Zircon Halo Stud Earrings",
+    "price": 1199,
+    "originalPrice": 2199,
+    "discountPercentage": 45,
+    "gender": "women",
+    "category": "accessories",
+    "subCategory": "fine jewellery",
+    "images": [
+      "/assets/real/cat_women_sub_jewellery.webp"
+    ],
+    "thumbnail": "/assets/real/cat_women_sub_jewellery.webp",
+    "description": "Hypoallergenic authentic 925 sterling silver stud earrings with rhodium anti-tarnish e-coating.",
+    "fabric": "925 Sterling Silver",
+    "fit": "Studs",
+    "rating": 4.9,
+    "reviewsCount": 489,
+    "sizes": [
+      "Free Size"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Certified 925",
+    "couponPromo": "Coupon: KNOTFESTIVE999"
+  },
+  {
+    "id": "w-acc-2",
+    "brand": "Chumbak",
+    "title": "Tropical Paradise Peacock Print Padded Laptop Sleeve & Tote",
+    "price": 1299,
+    "originalPrice": 2299,
+    "discountPercentage": 43,
+    "gender": "women",
+    "category": "accessories",
+    "subCategory": "bags & sleeves",
+    "images": [
+      "/assets/real/sections/16_chumbak_1.webp"
+    ],
+    "thumbnail": "/assets/real/sections/16_chumbak_1.webp",
+    "description": "Quirky signature Chumbak print padded sleeve with vegan leather handles and plush microfiber inner lining.",
+    "fabric": "Canvas & Vegan Leather",
+    "fit": "Fits Up to 15.6\"",
+    "rating": 4.9,
+    "reviewsCount": 320,
+    "sizes": [
+      "Free Size"
+    ],
+    "inStock": true,
+    "tryAndBuyEligible": true,
+    "deliveryMinutes": 60,
+    "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
+    "promoTag": "Quirky Icon",
     "couponPromo": "Coupon: KNOTFESTIVE999"
   },
   {
@@ -1834,7 +2428,7 @@ export const PRODUCTS: Product[] = [
   {
     "id": "37111",
     "brand": "The Indian Garage Co",
-    "title": "Charcoal Men's Button-Front Shirt \u2014 Casual Streetwear",
+    "title": "Charcoal Men's Button-Front Shirt — Casual Streetwear",
     "price": 1427,
     "originalPrice": 1926,
     "discountPercentage": 26,
@@ -2056,7 +2650,7 @@ export const PRODUCTS: Product[] = [
   {
     "id": "37143",
     "brand": "The Indian Garage Co",
-    "title": "Charcoal Gray Men's Cigarette Jeans \u2013 Daily Wear",
+    "title": "Charcoal Gray Men's Cigarette Jeans – Daily Wear",
     "price": 1549,
     "originalPrice": 2091,
     "discountPercentage": 26,
@@ -2721,9 +3315,9 @@ export const PRODUCTS: Product[] = [
     "price": 395,
     "originalPrice": 533,
     "discountPercentage": 26,
-    "gender": "men",
+    "gender": "women",
     "category": "accessories",
-    "subCategory": "fridge magnets",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19397/angle_1.jpg",
       "/assets/real/products/19397/angle_2.jpg",
@@ -2757,9 +3351,9 @@ export const PRODUCTS: Product[] = [
     "price": 2746,
     "originalPrice": 3707,
     "discountPercentage": 26,
-    "gender": "men",
+    "gender": "women",
     "category": "accessories",
-    "subCategory": "candles",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19402/angle_1.jpg",
       "/assets/real/products/19402/angle_2.jpg",
@@ -2795,9 +3389,9 @@ export const PRODUCTS: Product[] = [
     "price": 1373,
     "originalPrice": 1854,
     "discountPercentage": 26,
-    "gender": "men",
+    "gender": "women",
     "category": "accessories",
-    "subCategory": "wall decor",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19404/angle_1.jpg",
       "/assets/real/products/19404/angle_2.jpg",
@@ -2833,9 +3427,9 @@ export const PRODUCTS: Product[] = [
     "price": 799,
     "originalPrice": 1079,
     "discountPercentage": 26,
-    "gender": "men",
+    "gender": "women",
     "category": "accessories",
-    "subCategory": "sculptures & figurines",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19389/angle_1.jpg",
       "/assets/real/products/19389/angle_2.jpg",
@@ -2871,9 +3465,9 @@ export const PRODUCTS: Product[] = [
     "price": 637,
     "originalPrice": 860,
     "discountPercentage": 26,
-    "gender": "men",
+    "gender": "women",
     "category": "accessories",
-    "subCategory": "faux plants & planters",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19408/angle_1.jpg",
       "/assets/real/products/19408/angle_2.jpg",
@@ -2945,9 +3539,9 @@ export const PRODUCTS: Product[] = [
     "price": 1464,
     "originalPrice": 1976,
     "discountPercentage": 26,
-    "gender": "men",
+    "gender": "women",
     "category": "accessories",
-    "subCategory": "wall decor",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19442/angle_1.jpg",
       "/assets/real/products/19442/angle_2.jpg",
@@ -2983,9 +3577,9 @@ export const PRODUCTS: Product[] = [
     "price": 1099,
     "originalPrice": 1484,
     "discountPercentage": 26,
-    "gender": "men",
-    "category": "top",
-    "subCategory": "pillows & cushions",
+    "gender": "women",
+    "category": "accessories",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19410/angle_1.jpg",
       "/assets/real/products/19410/angle_2.jpg",
@@ -3021,9 +3615,9 @@ export const PRODUCTS: Product[] = [
     "price": 795,
     "originalPrice": 1073,
     "discountPercentage": 26,
-    "gender": "men",
+    "gender": "women",
     "category": "accessories",
-    "subCategory": "storage & organizers",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19411/angle_1.jpg",
       "/assets/real/products/19411/angle_2.jpg",
@@ -3058,9 +3652,9 @@ export const PRODUCTS: Product[] = [
     "price": 1186,
     "originalPrice": 1601,
     "discountPercentage": 26,
-    "gender": "men",
+    "gender": "women",
     "category": "accessories",
-    "subCategory": "wall decor",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19382/angle_1.jpg",
       "/assets/real/products/19382/angle_2.jpg",
@@ -3094,9 +3688,9 @@ export const PRODUCTS: Product[] = [
     "price": 1271,
     "originalPrice": 1716,
     "discountPercentage": 26,
-    "gender": "men",
-    "category": "top",
-    "subCategory": "tableware",
+    "gender": "women",
+    "category": "accessories",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19415/angle_1.jpg",
       "/assets/real/products/19415/angle_2.jpg",
@@ -3130,9 +3724,9 @@ export const PRODUCTS: Product[] = [
     "price": 535,
     "originalPrice": 722,
     "discountPercentage": 26,
-    "gender": "men",
+    "gender": "women",
     "category": "accessories",
-    "subCategory": "candles",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19387/angle_1.jpg",
       "/assets/real/products/19387/angle_2.jpg"
@@ -3196,9 +3790,9 @@ export const PRODUCTS: Product[] = [
     "price": 1595,
     "originalPrice": 2153,
     "discountPercentage": 26,
-    "gender": "men",
-    "category": "top",
-    "subCategory": "pillows & cushions",
+    "gender": "women",
+    "category": "accessories",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19421/angle_1.jpg",
       "/assets/real/products/19421/angle_2.jpg",
@@ -3234,9 +3828,9 @@ export const PRODUCTS: Product[] = [
     "price": 1176,
     "originalPrice": 1588,
     "discountPercentage": 26,
-    "gender": "men",
+    "gender": "women",
     "category": "accessories",
-    "subCategory": "candles",
+    "subCategory": "home decor & lifestyle",
     "images": [
       "/assets/real/products/19359/angle_1.jpg",
       "/assets/real/products/19359/angle_2.jpg",
@@ -3309,7 +3903,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 753,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/37382/angle_1.jpg",
@@ -5715,7 +6309,7 @@ export const PRODUCTS: Product[] = [
   {
     "id": "36593",
     "brand": "The Souled Store",
-    "title": "Warm Beige Parallel Pants Men \u2014 Daily Casual",
+    "title": "Warm Beige Parallel Pants Men — Daily Casual",
     "price": 2058,
     "originalPrice": 2778,
     "discountPercentage": 26,
@@ -6483,7 +7077,7 @@ export const PRODUCTS: Product[] = [
   {
     "id": "14565",
     "brand": "The Souled Store",
-    "title": "Freedom Tactical Division Men\u2019s Camouflage T-Shirt",
+    "title": "Freedom Tactical Division Men’s Camouflage T-Shirt",
     "price": 1486,
     "originalPrice": 2006,
     "discountPercentage": 26,
@@ -7259,7 +7853,7 @@ export const PRODUCTS: Product[] = [
   {
     "id": "38746",
     "brand": "Chapter 2",
-    "title": "Charcoal Washed Oversized Linen Shirt \u2013 Streetwear",
+    "title": "Charcoal Washed Oversized Linen Shirt – Streetwear",
     "price": 3490,
     "originalPrice": 4712,
     "discountPercentage": 26,
@@ -7740,8 +8334,8 @@ export const PRODUCTS: Product[] = [
     "price": 2250,
     "originalPrice": 3038,
     "discountPercentage": 26,
-    "gender": "men",
-    "category": "top",
+    "gender": "women",
+    "category": "ethnic",
     "subCategory": "co-ord sets",
     "images": [
       "/assets/real/products/14195/angle_1.jpg",
@@ -8726,7 +9320,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 4517,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "perfumes",
     "images": [
       "/assets/real/products/20210/angle_1.jpg",
@@ -9307,7 +9901,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 539,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/36705/angle_1.jpg",
@@ -9345,7 +9939,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 608,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/20289/angle_1.jpg",
@@ -9381,7 +9975,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 528,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/31012/angle_1.jpg",
@@ -9418,7 +10012,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 602,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/20709/angle_1.jpg",
@@ -9455,7 +10049,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 608,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/20284/angle_1.jpg",
@@ -9489,7 +10083,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 512,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/36776/angle_1.jpg",
@@ -9525,7 +10119,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 602,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/37387/angle_1.jpg",
@@ -9561,7 +10155,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 942,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/22860/angle_1.jpg",
@@ -9599,7 +10193,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 539,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/36748/angle_1.jpg",
@@ -9636,7 +10230,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 1008,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/20686/angle_1.jpg",
@@ -9674,7 +10268,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 1011,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/35825/angle_1.jpg",
@@ -9711,7 +10305,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 473,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/14674/angle_1.jpg",
@@ -9745,7 +10339,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 1234,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/20692/angle_1.jpg",
@@ -9783,7 +10377,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 807,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/22844/angle_1.jpg",
@@ -9821,7 +10415,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 524,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "socks",
     "images": [
       "/assets/real/products/8253/angle_1.jpg",
@@ -12083,7 +12677,7 @@ export const PRODUCTS: Product[] = [
   {
     "id": "32468",
     "brand": "CHKOKKO",
-    "title": "Navy Men's Polyester Piqu\u00e9 Polo T-Shirt",
+    "title": "Navy Men's Polyester Piqué Polo T-Shirt",
     "price": 499,
     "originalPrice": 674,
     "discountPercentage": 26,
@@ -12120,7 +12714,7 @@ export const PRODUCTS: Product[] = [
   {
     "id": "29206",
     "brand": "Underrated club",
-    "title": "Men\u2019s White Navy Colorblocked Polo Shirt",
+    "title": "Men’s White Navy Colorblocked Polo Shirt",
     "price": 1080,
     "originalPrice": 1458,
     "discountPercentage": 26,
@@ -12805,7 +13399,7 @@ export const PRODUCTS: Product[] = [
   {
     "id": "30437",
     "brand": "Vastramay",
-    "title": "Light Gray Pathani Kurta - Men\u2019s Wedding Wear",
+    "title": "Light Gray Pathani Kurta - Men’s Wedding Wear",
     "price": 2286,
     "originalPrice": 3086,
     "discountPercentage": 26,
@@ -14118,7 +14712,7 @@ export const PRODUCTS: Product[] = [
   {
     "id": "8666",
     "brand": "Veirdo",
-    "title": "Men's Navy Tapered Cargo Pants \u2013 Casual",
+    "title": "Men's Navy Tapered Cargo Pants – Casual",
     "price": 940,
     "originalPrice": 1269,
     "discountPercentage": 26,
@@ -14449,7 +15043,7 @@ export const PRODUCTS: Product[] = [
     "originalPrice": 1543,
     "discountPercentage": 26,
     "gender": "men",
-    "category": "accessories",
+    "category": "top",
     "subCategory": "perfumes",
     "images": [
       "/assets/real/products/37709/angle_1.jpg",
@@ -15170,11 +15764,11 @@ export const REELS_DATA = [
   {
     "id": "reel-1",
     "creator": "@thesouledstore",
-    "caption": "Fire fits delivered in 60 mins! Check out the new cable knit polo combo \ud83d\udd25",
+    "caption": "Fire fits delivered in 60 mins! Check out the new cable knit polo combo 🔥",
     "videoUrl": "/assets/videos/knot_splash.mp4",
     "likes": "24.2k",
     "productId": "36440",
-    "productName": "Men's Colorblocked Cable-Knit Polo T-Shirt Dark Chocolate Daily",
+    "productName": "Men's Colorblocked Cable-Knit Polo T-Shirt",
     "price": 1715,
     "gender": "men"
   },
@@ -15184,9 +15778,9 @@ export const REELS_DATA = [
     "caption": "Everyday Essentials Elevated. 3 fire looks for everyday street luxury.",
     "videoUrl": "/assets/videos/knot_splash.mp4",
     "likes": "32.8k",
-    "productId": "37600",
-    "productName": "Black Jersey T-Shirt Men Casual Streetwear Tee",
-    "price": 799,
+    "productId": "33058",
+    "productName": "Men's Relaxed Fit Cotton Shirt",
+    "price": 999,
     "gender": "men"
   },
   {
@@ -15195,10 +15789,43 @@ export const REELS_DATA = [
     "caption": "Festive season styling with authentic designer kurtas. Try at home before paying!",
     "videoUrl": "/assets/videos/knot_splash.mp4",
     "likes": "18.7k",
-    "productId": "31561",
-    "productName": "Men's Beige Solid Long Sleeve Shirt",
-    "price": 1019,
+    "productId": "12886",
+    "productName": "Designer Festive Kurta",
+    "price": 1499,
     "gender": "men"
+  },
+  {
+    "id": "reel-w-1",
+    "creator": "@pinkfort_india",
+    "caption": "Dandiya Night Glam! Pure Silk Anarkalis and Sets delivered in 60 mins ✨",
+    "videoUrl": "/assets/videos/knot_splash.mp4",
+    "likes": "38.4k",
+    "productId": "w-eth-1",
+    "productName": "Mustard Yellow Embroidered Chanderi Kurta Set",
+    "price": 2699,
+    "gender": "women"
+  },
+  {
+    "id": "reel-w-2",
+    "creator": "@chkokko_women",
+    "caption": "Effortless fits for workouts and chilling. Buy 2 Get 5% Off, Buy 3 Get 10% Off 🔥",
+    "videoUrl": "/assets/videos/knot_splash.mp4",
+    "likes": "45.1k",
+    "productId": "w-top-1",
+    "productName": "CHKOKKO Mauve Pink Performance Workout Tee",
+    "price": 899,
+    "gender": "women"
+  },
+  {
+    "id": "reel-w-3",
+    "creator": "@tequila_fits",
+    "caption": "Dress like a shot! Party season is live with statement drops 🌸",
+    "videoUrl": "/assets/videos/knot_splash.mp4",
+    "likes": "29.3k",
+    "productId": "w-dr-1",
+    "productName": "Royal Purple Silk A-Line Maxi Dress",
+    "price": 2199,
+    "gender": "women"
   }
 ];
 
@@ -15435,9 +16062,9 @@ export const SECTIONS_MANIFEST = {
       "title": null
     },
     {
-      "alt": "Starting From \u20b9499",
+      "alt": "Starting From ₹499",
       "img": "/assets/real/sections/17_starting_from__499_1.webp",
-      "deeplink": "/collections/homepage-offers-starting-from-\u20b9499-men",
+      "deeplink": "/collections/homepage-offers-starting-from-₹499-men",
       "title": null
     },
     {
@@ -15447,9 +16074,9 @@ export const SECTIONS_MANIFEST = {
       "title": null
     },
     {
-      "alt": "Everything Under \u20b91299",
+      "alt": "Everything Under ₹1299",
       "img": "/assets/real/sections/17_everything_under__1299_3.webp",
-      "deeplink": "/collections/homepage-offers-everything-under-\u20b91299-men",
+      "deeplink": "/collections/homepage-offers-everything-under-₹1299-men",
       "title": null
     },
     {
@@ -15459,9 +16086,9 @@ export const SECTIONS_MANIFEST = {
       "title": null
     },
     {
-      "alt": "Everything Under \u20b91999",
+      "alt": "Everything Under ₹1999",
       "img": "/assets/real/sections/17_everything_under__1999_5.webp",
-      "deeplink": "/collections/homepage-offers-everything-under-\u20b91999-men",
+      "deeplink": "/collections/homepage-offers-everything-under-₹1999-men",
       "title": null
     }
   ]
@@ -15679,3 +16306,98 @@ export const CATEGORIES_GRID_MANIFEST = {
     }
   ]
 };
+
+export const WOMEN_SECTIONS_MANIFEST = {
+  "brandPartners": [
+    {
+      "name": "Pink Fort",
+      "img": "/assets/real/lookbook_women_5_pinkfort.webp",
+      "tag": "New Collection"
+    },
+    {
+      "name": "Chkokko",
+      "img": "/assets/real/lookbook_women_3_chkokko.webp",
+      "tag": "Buy 2 Get 5% Off"
+    },
+    {
+      "name": "The Souled Store",
+      "img": "/assets/real/lookbook_women_4_souledstore.webp",
+      "tag": "Buy 1 Get 1"
+    },
+    {
+      "name": "Vasavi",
+      "img": "/assets/real/lookbook_women_1_dandiya.webp",
+      "tag": "Dandiya Drops"
+    },
+    {
+      "name": "trueBrowns",
+      "img": "/assets/real/lookbook_women_2_desibaddie.webp",
+      "tag": "Desi Baddie"
+    },
+    {
+      "name": "Chumbak",
+      "img": "/assets/real/sections/16_chumbak_1.webp",
+      "tag": "Festive Decor"
+    },
+    {
+      "name": "Tequila",
+      "img": "/assets/real/lookbook_women_7_tequila.webp",
+      "tag": "Dress Like a Shot"
+    },
+    {
+      "name": "Tilt",
+      "img": "/assets/real/lookbook_women_8_tilt.webp",
+      "tag": "Bamboo Loungewear"
+    }
+  ],
+  "banners": {
+    "pinkFort": "/assets/real/lookbook_women_5_pinkfort.webp",
+    "chkokko": "/assets/real/lookbook_women_3_chkokko.webp",
+    "souledStore": "/assets/real/lookbook_women_4_souledstore.webp",
+    "desiBaddie": "/assets/real/lookbook_women_2_desibaddie.webp",
+    "dandiyaDrops": "/assets/real/lookbook_women_1_dandiya.webp"
+  }
+};
+
+export const WOMEN_CATEGORIES_GRID = [
+  {
+    "name": "Kurtas & Sets",
+    "img": "/assets/real/cat_women_sub_kurtas.webp",
+    "route": "/collection/ethnic"
+  },
+  {
+    "name": "Party Dresses",
+    "img": "/assets/real/cat_women_dresses_card.png",
+    "route": "/collection/dresses"
+  },
+  {
+    "name": "Sarees",
+    "img": "/assets/real/cat_women_sub_sarees.webp",
+    "route": "/collection/ethnic"
+  },
+  {
+    "name": "Suits",
+    "img": "/assets/real/cat_women_sub_suits.webp",
+    "route": "/collection/ethnic"
+  },
+  {
+    "name": "Corsets & Tops",
+    "img": "/assets/real/cat_women_sub_corsets.webp",
+    "route": "/collection/top"
+  },
+  {
+    "name": "Sweaters & Knits",
+    "img": "/assets/real/cat_women_sub_sweaters.webp",
+    "route": "/collection/top"
+  },
+  {
+    "name": "Pyjamas & Lounge",
+    "img": "/assets/real/cat_women_sub_pyjamas.webp",
+    "route": "/collection/bottom"
+  },
+  {
+    "name": "Jewellery",
+    "img": "/assets/real/cat_women_sub_jewellery.webp",
+    "route": "/collection/accessories"
+  }
+];

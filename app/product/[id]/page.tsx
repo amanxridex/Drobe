@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { PRODUCTS, Product } from '@/data/catalog';
+import MEN_CURATED_SECTIONS from '@/data/men_curated_sections.json';
 import confetti from 'canvas-confetti';
 import TryAndBuySlider from '@/components/TryAndBuySlider';
 import ProductCard from '@/components/ProductCard';
@@ -16,7 +17,11 @@ export default function ProductDetailPage() {
   const { cart, addToCart, wishlist, toggleWishlist } = useApp();
 
   const productId = params?.id as string;
-  const product = PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
+  const curatedProduct = (MEN_CURATED_SECTIONS as any[])
+    .flatMap((s: any) => s.products)
+    .find((p: any) => p.id === productId);
+
+  const product = curatedProduct || PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
 
   const thumbnails = product.images.length > 0 ? product.images : [product.thumbnail];
   const [activeThumbIndex, setActiveThumbIndex] = useState(0);
@@ -30,8 +35,8 @@ export default function ProductDetailPage() {
   const isWishlisted = wishlist.includes(product.id);
   const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Paired products for "Style it with"
-  const styleItWithProducts = [
+  // Paired products for "Style it with" strictly adhering to product.gender
+  const menStyleProducts = [
     {
       id: 'style_1',
       brand: 'Veirdo',
@@ -54,8 +59,33 @@ export default function ProductDetailPage() {
     }
   ];
 
-  // Similar products for bottom grid
-  const similarProducts = PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4);
+  const womenStyleProducts = [
+    {
+      id: 'style_w_1',
+      brand: 'GIVA',
+      title: '925 Silver Classic Zircon Pearl Drop Earrings',
+      price: 1299,
+      originalPrice: 2499,
+      discount: '48% off',
+      badge: 'EXTRA ₹999 OFF',
+      image: '/assets/real/cat_women_sub_jewellery.webp'
+    },
+    {
+      id: 'style_w_2',
+      brand: 'Chumbak',
+      title: 'Boho Chic Classic Analog Wrist Watch',
+      price: 1895,
+      originalPrice: 2995,
+      discount: '37% off',
+      badge: 'EXTRA ₹999 OFF',
+      image: '/assets/real/cat_women_footwear_card.png'
+    }
+  ];
+
+  const styleItWithProducts = product.gender === 'women' ? womenStyleProducts : menStyleProducts;
+
+  // Similar products for bottom grid strictly matching product.gender
+  const similarProducts = PRODUCTS.filter((p) => p.gender === product.gender && p.id !== product.id).slice(0, 4);
 
   const handleSliderCommit = (direction: 'buy' | 'add') => {
     addToCart(product, selectedSize, 'tryAndBuy');

@@ -119,7 +119,7 @@ export default function TryAndBuySlider({ onBuyNow, onAddToBag }: TryAndBuySlide
               width="26"
               height="26"
               viewBox="0 0 24 24"
-              fill="#f59e0b"
+              fill="#38bdf8"
               xmlns="http://www.w3.org/2000/svg"
               style={{ pointerEvents: 'none' }}
             >

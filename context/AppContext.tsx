@@ -57,7 +57,23 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [gender, setGender] = useState<'men' | 'women'>('men');
+  const [gender, setGenderState] = useState<'men' | 'women'>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('drobe_gender') as 'men' | 'women';
+        if (saved === 'men' || saved === 'women') return saved;
+      } catch (e) {}
+    }
+    return 'men';
+  });
+
+  const setGender = (g: 'men' | 'women') => {
+    setGenderState(g);
+    try {
+      localStorage.setItem('drobe_gender', g);
+    } catch (e) {}
+  };
+
   const [location, setLocation] = useState<string>('Shreepal Complex, Suren Rd, Mumbai');
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
