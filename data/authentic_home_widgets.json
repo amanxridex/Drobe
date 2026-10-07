@@ -1,0 +1,205 @@
+{
+  "bonkersBanner": {
+    "name": "Bonkers Corner",
+    "img": "/assets/real/home_sections/banner_1923_bonkers.webp",
+    "deeplink": "/collections/homepage-stripbanner-BonkersCorner-men"
+  },
+  "couponCarousel": [
+    {
+      "name": "Referral & Earn",
+      "img": "/assets/real/500R&EFLAT.png",
+      "action": "referral"
+    },
+    {
+      "name": "Virtual Try On",
+      "img": "/assets/real/home_sections/coupon_carousel_vto.png",
+      "action": "vto"
+    }
+  ],
+  "iconicLooks": [
+    {
+      "name": "Ethnic",
+      "img": "/assets/real/home_sections/iconic_0.png",
+      "alt": "Ethnic",
+      "deeplink": "/collections/ethnic-edit-home?layout=hp_men"
+    },
+    {
+      "name": "Everyday Street",
+      "img": "/assets/real/home_sections/iconic_1.png",
+      "alt": "Everyday Street",
+      "deeplink": "/collections/streetwear-2026-page?layout=hp_men"
+    },
+    {
+      "name": "Night Out",
+      "img": "/assets/real/home_sections/iconic_2.png",
+      "alt": "Night Out",
+      "deeplink": "/collections/men-home-page-banner-Night-Out"
+    },
+    {
+      "name": "Beach and Vacay Fits",
+      "img": "/assets/real/home_sections/iconic_3.png",
+      "alt": "Beach and Vacay Fits",
+      "deeplink": "/collections/men-home-page-banner-Beach"
+    },
+    {
+      "name": "Sports Unleashed",
+      "img": "/assets/real/home_sections/iconic_4.png",
+      "alt": "Sports Unleashed",
+      "deeplink": "/collections/active-fits-2026-page?layout=hp_men"
+    },
+    {
+      "name": "Workwear",
+      "img": "/assets/real/home_sections/iconic_5.png",
+      "alt": "Workwear",
+      "deeplink": "/collections/workwear-2026-page?layout=hp_men"
+    },
+    {
+      "name": "Comfy Fits",
+      "img": "/assets/real/home_sections/iconic_6.png",
+      "alt": "Comfy Fits",
+      "deeplink": "/collections/men-home-page-banner-Comfy-Fits"
+    },
+    {
+      "name": "Concert Fits",
+      "img": "/assets/real/home_sections/iconic_7.png",
+      "alt": "Concert Fits",
+      "deeplink": "/collections/men-home-page-banner-Concert-Fits"
+    },
+    {
+      "name": "Date Ready",
+      "img": "/assets/real/home_sections/iconic_8.png",
+      "alt": "Date Ready",
+      "deeplink": "/collections/men-home-page-banner-date-ready"
+    },
+    {
+      "name": "Gifting Box",
+      "img": "/assets/real/home_sections/iconic_9.png",
+      "alt": "Gifting Box",
+      "deeplink": "/collections/men-home-page-banner-Gifting-Box"
+    },
+    {
+      "name": "Accesories",
+      "img": "/assets/real/home_sections/iconic_10.png",
+      "alt": "Accesories",
+      "deeplink": "/collections/men-home-page-banner-accessories"
+    },
+    {
+      "name": "Foot Wear",
+      "img": "/assets/real/home_sections/iconic_11.png",
+      "alt": "Foot Wear",
+      "deeplink": "/collections/men-home-page-banner-foot-wear"
+    }
+  ],
+  "latestDrops": [
+    {
+      "name": "Blue Tyga",
+      "img": "/assets/real/home_sections/latest_0.webp",
+      "alt": "Blue Tyga",
+      "deeplink": "/collections/home_latest_drops_bluetyga_men"
+    },
+    {
+      "name": "Chumbak",
+      "img": "/assets/real/home_sections/latest_1.webp",
+      "alt": "Chumbak",
+      "deeplink": "/collections/homepage_chumbak"
+    },
+    {
+      "name": "Bonkers Corner",
+      "img": "/assets/real/home_sections/latest_2.webp",
+      "alt": "Bonkers Corner",
+      "deeplink": "/collections/home_discover_brand_Bonkers_Corner_men"
+    },
+    {
+      "name": "Hancock",
+      "img": "/assets/real/home_sections/latest_3.webp",
+      "alt": "Hancock",
+      "deeplink": "/collections/home_discover_brand_Hancock_men"
+    },
+    {
+      "name": "The Bear House",
+      "img": "/assets/real/home_sections/latest_4.webp",
+      "alt": "The Bear House",
+      "deeplink": "/collections/latest-drops-The-Bear-House-men"
+    },
+    {
+      "name": "KNIDE",
+      "img": "/assets/real/home_sections/latest_5.webp",
+      "alt": "KNIDE",
+      "deeplink": "/collections/latest-drops-knide-men"
+    },
+    {
+      "name": "Snitch",
+      "img": "/assets/real/home_sections/latest_6.webp",
+      "alt": "Snitch",
+      "deeplink": "/collections/latest-drops-snitch-men"
+    },
+    {
+      "name": "The Kurta Studio",
+      "img": "/assets/real/home_sections/latest_7.webp",
+      "alt": "The Kurta Studio",
+      "deeplink": "/collections/hp-the-kurta-studio-men"
+    },
+    {
+      "name": "DL Street",
+      "img": "/assets/real/home_sections/latest_8.webp",
+      "alt": "DL Street",
+      "deeplink": "/collections/latest-drops-DL-street-men"
+    },
+    {
+      "name": "Rawayi",
+      "img": "/assets/real/home_sections/latest_9.webp",
+      "alt": "Rawayi",
+      "deeplink": "/collections/latest-drops-rawayi-men"
+    },
+    {
+      "name": "Cove & Lane",
+      "img": "/assets/real/home_sections/latest_10.webp",
+      "alt": "Cove & Lane",
+      "deeplink": "/collections/latest-drops-cove&lane-men"
+    },
+    {
+      "name": "Salty Alpha",
+      "img": "/assets/real/home_sections/latest_11.webp",
+      "alt": "Salty Alpha",
+      "deeplink": "/collections/latest-drops-salty-alpha-men"
+    }
+  ],
+  "offers": [
+    {
+      "name": "Min 30% Off",
+      "img": "/assets/real/home_sections/offer_0.webp",
+      "alt": "Min 30% Off",
+      "deeplink": "/collections/homepage-offers-minimum-30pct-off-men"
+    },
+    {
+      "name": "Starting From ₹499",
+      "img": "/assets/real/home_sections/offer_1.webp",
+      "alt": "Starting From ₹499",
+      "deeplink": "/collections/homepage-offers-starting-from-₹499-men"
+    },
+    {
+      "name": "Min 50% Off",
+      "img": "/assets/real/home_sections/offer_2.webp",
+      "alt": "Min 50% Off",
+      "deeplink": "/collections/homepage-offers-minimum-50pct-off-men"
+    },
+    {
+      "name": "Everything Under ₹1299",
+      "img": "/assets/real/home_sections/offer_3.webp",
+      "alt": "Everything Under ₹1299",
+      "deeplink": "/collections/homepage-offers-everything-under-₹1299-men"
+    },
+    {
+      "name": "Upto 80% Off",
+      "img": "/assets/real/home_sections/offer_4.webp",
+      "alt": "Upto 80% Off",
+      "deeplink": "/collections/homepage-offers-up-to-80pct-off-men"
+    },
+    {
+      "name": "Everything Under ₹1999",
+      "img": "/assets/real/home_sections/offer_5.webp",
+      "alt": "Everything Under ₹1999",
+      "deeplink": "/collections/homepage-offers-everything-under-₹1999-men"
+    }
+  ]
+}

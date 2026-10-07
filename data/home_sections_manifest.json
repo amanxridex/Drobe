@@ -1,0 +1,190 @@
+[
+  {
+    "name": "banner_1923_bonkers.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-375.0/app_images%2F87833959694412_fb735a34-24ed-4f15-bd0f-a9d8c0b099b2_20260928-102158?ik-t=9999999999&ik-s=b8a80f7429f6fbbe1dc529197c199a680132463f"
+  },
+  {
+    "name": "coupon_carousel_vto.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-375/app_images%2Fhome_page_Virtual_Try_On.png?ik-t=9999999999&ik-s=2780c6b490bded3b0067162650a5a599dde6679b"
+  },
+  {
+    "name": "iconic_0.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2F39978504678518_d9829bc7-a1aa-41b8-9739-7fe0a6488485_20260409-092107?ik-t=9999999999&ik-s=a1f50d936407e0e94be1e63eaa8fa1caa818e5a4",
+    "alt": "Ethnic",
+    "deeplink": "/collections/ethnic-edit-home?layout=hp_men"
+  },
+  {
+    "name": "iconic_1.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2FICO_Streetwear_%7BM%7D.png?ik-t=9999999999&ik-s=36ec428a864f2afc99b37badef1b2cc11dbccd6b",
+    "alt": "Everyday Street",
+    "deeplink": "/collections/streetwear-2026-page?layout=hp_men"
+  },
+  {
+    "name": "iconic_2.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2FICO_NightOut_%7BM%7D.png?ik-t=9999999999&ik-s=35b596ff2708796179c175d9f42826b4fc38aa5f",
+    "alt": "Night Out",
+    "deeplink": "/collections/men-home-page-banner-Night-Out"
+  },
+  {
+    "name": "iconic_3.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2FICO_Beachwear_%7BM%7D.png?ik-t=9999999999&ik-s=554c3e08b558c26962c3bcc9796022ff4cff6fc3",
+    "alt": "Beach and Vacay Fits",
+    "deeplink": "/collections/men-home-page-banner-Beach"
+  },
+  {
+    "name": "iconic_4.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2FICO_Athleisure_%7BM%7D.png?ik-t=9999999999&ik-s=1a3b718942160dce1535fe19151dde55d5157bbe",
+    "alt": "Sports Unleashed",
+    "deeplink": "/collections/active-fits-2026-page?layout=hp_men"
+  },
+  {
+    "name": "iconic_5.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2FICO_Workear_%7BM%7D.png?ik-t=9999999999&ik-s=8e3d27dcd0d10a2858294cd3f462738cb24f3a7c",
+    "alt": "Workwear",
+    "deeplink": "/collections/workwear-2026-page?layout=hp_men"
+  },
+  {
+    "name": "iconic_6.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2FICO_ComfyFits_%7BM%7D.png?ik-t=9999999999&ik-s=8b5d796c3f19f83074dec6ebed3abe3d2173de35",
+    "alt": "Comfy Fits",
+    "deeplink": "/collections/men-home-page-banner-Comfy-Fits"
+  },
+  {
+    "name": "iconic_7.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2FICO_ConcertFits_%7BM%7D.png?ik-t=9999999999&ik-s=6bae9efaf2a69b15b6253d18d0d878fd3ab294ee",
+    "alt": "Concert Fits",
+    "deeplink": "/collections/men-home-page-banner-Concert-Fits"
+  },
+  {
+    "name": "iconic_8.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2FDate_%7BM%7D.png?ik-t=9999999999&ik-s=76ab2a4b5a425d60a57500cbcf481cf7fde3d8da",
+    "alt": "Date Ready",
+    "deeplink": "/collections/men-home-page-banner-date-ready"
+  },
+  {
+    "name": "iconic_9.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2FICO_GiftZone_%7BM%7D.png?ik-t=9999999999&ik-s=790e7833c533452c5787cd0d30189a53d7bbe9db",
+    "alt": "Gifting Box",
+    "deeplink": "/collections/men-home-page-banner-Gifting-Box"
+  },
+  {
+    "name": "iconic_10.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2FICO_Accessories_%7BM%7D.png?ik-t=9999999999&ik-s=a65ad70557da063769c079dac3f45a2efdcb63b1",
+    "alt": "Accesories",
+    "deeplink": "/collections/men-home-page-banner-accessories"
+  },
+  {
+    "name": "iconic_11.png",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-76.0/app_images%2FICO_Footwear_%7BM%7D.png?ik-t=9999999999&ik-s=c469929c54633421a889dd8ab9e24519de394f22",
+    "alt": "Foot Wear",
+    "deeplink": "/collections/men-home-page-banner-foot-wear"
+  },
+  {
+    "name": "latest_0.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2F16506342783459_f6f14e09-f6aa-4968-95e0-9cb406b50223_20260709-061536?ik-t=9999999999&ik-s=f1c5fc2a86b0fab160f3f05c2fe61b80dfdfda90",
+    "alt": "Blue Tyga",
+    "deeplink": "/collections/home_latest_drops_bluetyga_men"
+  },
+  {
+    "name": "latest_1.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2FChumbak%20-%20Light%20%28M%29.png?ik-t=9999999999&ik-s=c537c825295c5b70ae95ebd00ad02ab2e6032ca3",
+    "alt": "Chumbak",
+    "deeplink": "/collections/homepage_chumbak"
+  },
+  {
+    "name": "latest_2.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2F33629695992531_fa619aa6-84a7-46b4-8471-38ad798b1105_20260305-102032?ik-t=9999999999&ik-s=224fa92bae449b6c175fd61bbf4402a3c0c84e47",
+    "alt": "Bonkers Corner",
+    "deeplink": "/collections/home_discover_brand_Bonkers_Corner_men"
+  },
+  {
+    "name": "latest_3.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2FHancock%20-%20Light%20%28M%29.png?ik-t=9999999999&ik-s=f5c810a396bf7f27521de4c13af6f4a236706df4",
+    "alt": "Hancock",
+    "deeplink": "/collections/home_discover_brand_Hancock_men"
+  },
+  {
+    "name": "latest_4.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2F52136207703496_5dba9ccc-f483-44db-9d95-b84f63a6dae3_20260305-102209?ik-t=9999999999&ik-s=f2858650d6f8bf25e5a9d4a122d56ee52fe46bbf",
+    "alt": "The Bear House",
+    "deeplink": "/collections/latest-drops-The-Bear-House-men"
+  },
+  {
+    "name": "latest_5.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2F36143585546259_8777c7ca-e6f0-42c0-8ef1-8577cd486547_20260331-061803?ik-t=9999999999&ik-s=24ab18c93afa5ba6bde911b21d4937323fedfe05",
+    "alt": "KNIDE",
+    "deeplink": "/collections/latest-drops-knide-men"
+  },
+  {
+    "name": "latest_6.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2F86059250307110_49f97c50-748d-49ad-9537-61977492af68_20260331-062802?ik-t=9999999999&ik-s=6d094d8ad7e213919233ac6409f1db47822e8278",
+    "alt": "Snitch",
+    "deeplink": "/collections/latest-drops-snitch-men"
+  },
+  {
+    "name": "latest_7.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2FLD_The%20Kurta%20Studio%20-%20Light%20%28M%29.png?ik-t=9999999999&ik-s=925614f7d00e81148175dc321f8a8cda17261686",
+    "alt": "The Kurta Studio",
+    "deeplink": "/collections/hp-the-kurta-studio-men"
+  },
+  {
+    "name": "latest_8.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2F52848240244940_2e663d21-3e2e-4e5a-9dc7-e0c801a00b04_20260331-060452?ik-t=9999999999&ik-s=ed0b9136eb4f082843df6b0d72ab15daabd675eb",
+    "alt": "DL Street",
+    "deeplink": "/collections/latest-drops-DL-street-men"
+  },
+  {
+    "name": "latest_9.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2F36926645060392_ad1f172c-1948-4a1f-afb6-d9f78d906204_20260331-062333?ik-t=9999999999&ik-s=fc3c7b0fde832b91e10436c96b32ad96345f8539",
+    "alt": "Rawayi",
+    "deeplink": "/collections/latest-drops-rawayi-men"
+  },
+  {
+    "name": "latest_10.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2F5690756805849_1ddb157e-7504-4753-843f-6a41da05b7f2_20260331-060221?ik-t=9999999999&ik-s=ba023c678be09ac657657a8aed911957266c724d",
+    "alt": "Cove & Lane",
+    "deeplink": "/collections/latest-drops-cove&lane-men"
+  },
+  {
+    "name": "latest_11.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-136.0/app_images%2F41464193242170_2d2b2eb0-ce6a-48a3-bb5f-813b5f421093_20260424-162454?ik-t=9999999999&ik-s=c5d372855fda64bb8a5823a36b1b66ad038976d9",
+    "alt": "Salty Alpha",
+    "deeplink": "/collections/latest-drops-salty-alpha-men"
+  },
+  {
+    "name": "offer_0.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-105.0/app_images%2F25378502791203_4cf7316c-81f6-43cd-bbc4-bc64dddb4af0_20260413-085208?ik-t=9999999999&ik-s=dfdf83646eb2c7b1cc99b521e66e4fce81ab7622",
+    "alt": "Min 30% Off",
+    "deeplink": "/collections/homepage-offers-minimum-30pct-off-men"
+  },
+  {
+    "name": "offer_1.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-105.0/app_images%2F41619845258950_d0ff4f46-0fcb-466c-a645-ee193f99b353_20260526-074936?ik-t=9999999999&ik-s=966fd8644ff8633a7789e1cebbfe2989e32e3a4f",
+    "alt": "Starting From ₹499",
+    "deeplink": "/collections/homepage-offers-starting-from-₹499-men"
+  },
+  {
+    "name": "offer_2.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-105.0/app_images%2F9535430519176_9541239f-ef57-421f-a1ed-0583ca1a196f_20260526-074638?ik-t=9999999999&ik-s=8fff3667019031406d3af705b168cea22450f641",
+    "alt": "Min 50% Off",
+    "deeplink": "/collections/homepage-offers-minimum-50pct-off-men"
+  },
+  {
+    "name": "offer_3.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-105.0/app_images%2F64846299059105_f7903032-b139-428e-8e6e-97f17bb1c643_20260526-074843?ik-t=9999999999&ik-s=335ac8843fd056298f22b80c14c2d6c9508eec55",
+    "alt": "Everything Under ₹1299",
+    "deeplink": "/collections/homepage-offers-everything-under-₹1299-men"
+  },
+  {
+    "name": "offer_4.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-105.0/app_images%2F42290324896627_87c72119-ed07-4bba-a826-4202b2557437_20260526-075032?ik-t=9999999999&ik-s=0b2d1664f2379c282c9df62c6499c50ef6cd307c",
+    "alt": "Upto 80% Off",
+    "deeplink": "/collections/homepage-offers-up-to-80pct-off-men"
+  },
+  {
+    "name": "offer_5.webp",
+    "url": "https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-105.0/app_images%2F55422873153706_7c40fd6e-34ad-4686-bc81-a2a3396d6289_20260526-075107?ik-t=9999999999&ik-s=4840ccfbb5de81e95a2791f4a54336fff4034e5c",
+    "alt": "Everything Under ₹1999",
+    "deeplink": "/collections/homepage-offers-everything-under-₹1999-men"
+  }
+]

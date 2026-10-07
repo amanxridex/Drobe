@@ -16,6 +16,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard from '@/components/ProductCard';
 import MEN_CURATED_SECTIONS from '@/data/men_curated_sections.json';
+import DISCOVER_BRANDS_DATA from '@/data/discover_brands_manifest.json';
+import AUTHENTIC_HOME_WIDGETS from '@/data/authentic_home_widgets.json';
 
 export default function HomePage() {
   const { gender, wishlist, toggleWishlist, setIsCouponOpen } = useApp();
@@ -26,6 +28,8 @@ export default function HomePage() {
   const [categorySlideIndex, setCategorySlideIndex] = useState(0);
   const [isReferralOpen, setIsReferralOpen] = useState(false);
   const [copiedReferral, setCopiedReferral] = useState(false);
+  const [selectedBrandCategory, setSelectedBrandCategory] = useState('all');
+  const [currentBrandSlide, setCurrentBrandSlide] = useState(0);
   const categoryScrollRef = useRef<HTMLDivElement>(null);
 
   // Exact authentic lookbook banners downloaded from Knot's ImageKit CDN
@@ -250,20 +254,65 @@ export default function HomePage() {
     }
   };
 
-  // Brand Partners Rail (Row 4)
-  const menBrandPartners = (SECTIONS_MANIFEST['8'] || []).map(b => ({
-    name: b.alt,
-    img: b.img,
-    tag: 'Official Partner',
-    route: '/categories'
-  }));
-  const womenBrandPartners = (WOMEN_SECTIONS_MANIFEST.brandPartners || []).map(b => ({
+  // Brand Wide Banners
+  const menWideBrandBanners = [
+    {
+      name: 'XKIND',
+      img: '/assets/real/sections/8_xkind_6.webp',
+      deeplink: '/collections/homepage-bbc-XKIND-men'
+    },
+    {
+      name: 'The Souled Store',
+      img: '/assets/real/sections/8_the_souled_store_0.webp',
+      deeplink: '/collections/homepage-bbc-TheSouledStore-men'
+    },
+    {
+      name: 'Underrated club',
+      img: '/assets/real/sections/8_underrated_club_1.webp',
+      deeplink: '/collections/home_discover_brand_Underratedclub_men2'
+    },
+    {
+      name: 'Bonkers Corner',
+      img: '/assets/real/sections/8_bonkers_corner_2.webp',
+      deeplink: '/collections/homepage-brand-banner-carousel-Bonkers-Corner-men'
+    },
+    {
+      name: 'Foul Child',
+      img: '/assets/real/sections/8_foul_child_3.webp',
+      deeplink: '/collections/home_banner_carousel_Foul_Child_men'
+    },
+    {
+      name: 'Salty Alpha',
+      img: '/assets/real/sections/8_salty_alpha_4.webp',
+      deeplink: '/collections/home-banner-carousel-SaltyAlpha-men'
+    },
+    {
+      name: 'Bewakoof',
+      img: '/assets/real/sections/8_bewakoof_5.webp',
+      deeplink: '/collections/homepage-bbc-Bewakoof-men'
+    }
+  ];
+  const womenWideBrandBanners = (WOMEN_SECTIONS_MANIFEST.brandPartners || []).map(b => ({
     name: b.name,
     img: b.img,
-    tag: b.tag,
-    route: '/categories'
+    deeplink: '/categories'
   }));
-  const brandPartners = gender === 'women' ? womenBrandPartners : menBrandPartners;
+  const wideBrandBanners = gender === 'women' ? womenWideBrandBanners : menWideBrandBanners;
+
+  // Discover Brands Filter
+  const activeBrandSlideTiles = DISCOVER_BRANDS_DATA.slides[currentBrandSlide] || [];
+  const filteredBrandTiles = selectedBrandCategory === 'all'
+    ? activeBrandSlideTiles
+    : (activeBrandSlideTiles.filter((t: any) => t.categories && t.categories.includes(selectedBrandCategory)).length > 0
+        ? activeBrandSlideTiles.filter((t: any) => t.categories && t.categories.includes(selectedBrandCategory))
+        : activeBrandSlideTiles);
+
+  // Curated Brand Showcases (SNITCH, TIGC, Bear House)
+  const snitchSection = (MEN_CURATED_SECTIONS as any[]).find((s: any) => s.id === '2966');
+  const tigcSection = (MEN_CURATED_SECTIONS as any[]).find((s: any) => s.id === '2988');
+  const snitchProductsList = snitchSection && snitchSection.products ? snitchSection.products : PRODUCTS.filter((p) => p.gender === 'men' && p.brand.toLowerCase().includes('snitch')).slice(0, 10);
+  const tigcProductsList = tigcSection && tigcSection.products ? tigcSection.products : PRODUCTS.filter((p) => p.gender === 'men' && p.brand.toLowerCase().includes('indian garage')).slice(0, 10);
+  const bearHouseProducts = PRODUCTS.filter((p) => p.gender === 'men' && p.brand.toLowerCase().includes('bear house')).slice(0, 10);
 
   // MEN Curated Sections
   const iconicLooks = SECTIONS_MANIFEST['15'] || [];
@@ -272,10 +321,6 @@ export default function HomePage() {
   const snitchBanner = SECTIONS_MANIFEST['10']?.[0];
   const tigcBanner = SECTIONS_MANIFEST['12']?.[0];
   const bearHouseBanner = SECTIONS_MANIFEST['14']?.[0];
-
-  const snitchProducts = PRODUCTS.filter((p) => p.gender === 'men' && p.brand.toLowerCase().includes('snitch')).slice(0, 8);
-  const tigcProducts = PRODUCTS.filter((p) => p.gender === 'men' && p.brand.toLowerCase().includes('indian garage')).slice(0, 8);
-  const bearHouseProducts = PRODUCTS.filter((p) => p.gender === 'men' && p.brand.toLowerCase().includes('bear house')).slice(0, 8);
 
   // WOMEN Curated Sections & Products
   const pinkFortBanner = WOMEN_SECTIONS_MANIFEST.banners.pinkFort;
@@ -551,39 +596,6 @@ export default function HomePage() {
         </section>
 
         {/* ========================================================
-            AUTHENTIC REFERRAL / TOTE BAG BANNER
-            Exact purple banner: "Invite your friends / EARN ₹500 + TOTE BAG / ONE FOR YOU ONE FOR THEM ->"
-            ======================================================== */}
-        <section style={{ padding: '0 12px 14px' }}>
-          <div
-            onClick={() => setIsReferralOpen(true)}
-            style={{
-              width: '100%',
-              borderRadius: 14,
-              overflow: 'hidden',
-              cursor: 'pointer',
-              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.4)',
-              transition: 'transform 0.15s ease'
-            }}
-          >
-            <img
-              src="/assets/real/referral_tote_banner.png"
-              alt="Invite your friends - Earn ₹500 + Tote Bag"
-              style={{
-                width: '100%',
-                height: 'auto',
-                display: 'block'
-              }}
-              onError={(e) => {
-                // Direct fallback to Knot CDN
-                (e.target as HTMLImageElement).src =
-                  'https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-343,h-86,cm-pad_resize,bgcolor-171717/app_images%2F500R%26EFLAT.png?ik-t=9999999999&ik-s=c6b2ddee1b325fee704492f077d01ce5f7bb28cd';
-              }}
-            />
-          </div>
-        </section>
-
-        {/* ========================================================
             AUTHENTIC CATEGORY GRID CAROUSEL (4x2 Grids, 5 Pages)
             Slide 1: Kurtas, Kurta Sets, Ethnic Jackets, Pyjamas | Rings, Necklaces & Chains, Bracelets, Perfumes
             ...through 5 slides (40 total categories) with 5 pagination dots
@@ -715,66 +727,622 @@ export default function HomePage() {
               })}
             </div>
           )}
+          {/* ========================================================
+              AUTHENTIC "SEE ALL CATEGORIES >" BUTTON
+              Exact 3 overlapping circular product thumbnails + text + chevron
+              ======================================================== */}
+          <div style={{ padding: '4px 12px 14px' }}>
+            <div
+              onClick={() => router.push('/categories')}
+              style={{
+                width: '100%',
+                background: '#202026',
+                border: '1px solid #303038',
+                borderRadius: 12,
+                padding: '8px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 12,
+                cursor: 'pointer',
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
+                transition: 'transform 0.15s ease'
+              }}
+            >
+              {/* 3 Overlapping Avatar Thumbnails */}
+              <div style={{ position: 'relative', width: 58, height: 28, flexShrink: 0 }}>
+                <img
+                  src="/assets/real/cat_avatar_1.webp"
+                  alt="Category preview 1"
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    border: '2px solid #202026',
+                    objectFit: 'cover'
+                  }}
+                />
+                <img
+                  src="/assets/real/cat_avatar_2.webp"
+                  alt="Category preview 2"
+                  style={{
+                    position: 'absolute',
+                    left: 15,
+                    top: 0,
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    border: '2px solid #202026',
+                    objectFit: 'cover'
+                  }}
+                />
+                <img
+                  src="/assets/real/cat_avatar_3.webp"
+                  alt="Category preview 3"
+                  style={{
+                    position: 'absolute',
+                    left: 30,
+                    top: 0,
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    border: '2px solid #202026',
+                    objectFit: 'cover'
+                  }}
+                />
+              </div>
+
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#f5f5f5', letterSpacing: -0.2 }}>
+                See all Categories
+              </span>
+
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5f5f5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </div>
+          </div>
         </section>
 
         {/* ========================================================
-            ROW 4: BRAND PARTNERS CAROUSEL
+            ROW 4: BRAND WIDE BANNERS RAIL (Row 2547)
+            XKIND "STRAIGHT FORWARD", The Souled Store "WEAR IT LOUD", Underrated Club, etc.
             ======================================================== */}
-        {brandPartners.length > 0 && (
-          <section style={{ padding: '0 0 16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', marginBottom: 10 }}>
-              <h2 style={{ fontSize: 15, fontWeight: 800, color: '#fff' }}>Featured Brands</h2>
-              <span onClick={() => router.push('/categories')} style={{ fontSize: 11, fontWeight: 700, color: gender === 'women' ? '#ff5768' : '#38bdf8', cursor: 'pointer' }}>
-                All Brands →
-              </span>
-            </div>
-
-            <div
-              style={{
-                display: 'flex',
-                gap: 10,
-                overflowX: 'auto',
-                padding: '0 12px',
-                scrollbarWidth: 'none'
-              }}
-            >
-              {brandPartners.map((b, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => router.push('/categories')}
+        <section style={{ padding: '0 0 16px' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: 12,
+              overflowX: 'auto',
+              padding: '0 12px',
+              scrollbarWidth: 'none',
+              scrollSnapType: 'x mandatory',
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
+            {wideBrandBanners.map((banner, idx) => (
+              <div
+                key={idx}
+                onClick={() => router.push(banner.deeplink || '/categories')}
+                style={{
+                  flexShrink: 0,
+                  width: 'calc(100% - 46px)',
+                  maxWidth: 346,
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  scrollSnapAlign: 'start',
+                  boxShadow: '0 4px 18px rgba(0, 0, 0, 0.4)',
+                  position: 'relative'
+                }}
+              >
+                <img
+                  src={banner.img}
+                  alt={banner.name}
                   style={{
-                    flexShrink: 0,
-                    width: 110,
-                    height: 140,
-                    borderRadius: 16,
-                    overflow: 'hidden',
-                    cursor: 'pointer',
-                    background: '#1c1c24',
-                    boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-                    position: 'relative'
+                    width: '100%',
+                    height: 'auto',
+                    display: 'block'
                   }}
-                >
-                  <img
-                    src={b.img}
-                    alt={b.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* ========================================================
             GENDER SPECIFIC CURATED CONTENT
             ======================================================== */}
         {gender === 'men' ? (
           <>
-            {/* ROW 5 (MEN): What's your next iconic look? */}
-            {iconicLooks.length > 0 && (
+            {/* ========================================================
+                BONKERS CORNER STRIP BANNER (banner_1923_hp_men)
+                ======================================================== */}
+            <section style={{ padding: '0 12px 14px' }}>
+              <div
+                onClick={() => router.push(AUTHENTIC_HOME_WIDGETS.bonkersBanner.deeplink || '/categories')}
+                style={{
+                  width: '100%',
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 18px rgba(0, 0, 0, 0.4)'
+                }}
+              >
+                <img
+                  src={AUTHENTIC_HOME_WIDGETS.bonkersBanner.img}
+                  alt={AUTHENTIC_HOME_WIDGETS.bonkersBanner.name}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </div>
+            </section>
+
+            {/* ========================================================
+                AUTHENTIC DISCOVER BRANDS SECTION
+                Title, Filter Pills, 4x3 Brand Logo Tiles Grid, 16 Pagination Dots
+                ======================================================== */}
+            <section style={{ padding: '0 0 10px' }}>
+              <div style={{ padding: '0 14px', marginBottom: 12 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 800, color: '#ffffff', letterSpacing: -0.2 }}>
+                  Discover Brands
+                </h2>
+              </div>
+
+              {/* Category Filter Pills */}
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 8,
+                  padding: '0 12px 14px',
+                  overflowX: 'auto',
+                  scrollbarWidth: 'none',
+                  WebkitOverflowScrolling: 'touch'
+                }}
+              >
+                {/* All Pill */}
+                <button
+                  onClick={() => setSelectedBrandCategory('all')}
+                  style={{
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '7px 12px',
+                    borderRadius: 10,
+                    border: selectedBrandCategory === 'all' ? '1px solid #ffffff' : '1px solid #2e2f38',
+                    background: selectedBrandCategory === 'all' ? '#2a2b34' : '#1c1d24',
+                    color: selectedBrandCategory === 'all' ? '#ffffff' : '#a1a1aa',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                    <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                    <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                    <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                  </svg>
+                </button>
+
+                {/* Category Pills from manifest */}
+                {DISCOVER_BRANDS_DATA.categories.slice(0, 10).map((cat) => {
+                  const isSelected = selectedBrandCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedBrandCategory(cat.id)}
+                      style={{
+                        flexShrink: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        padding: '7px 12px',
+                        borderRadius: 10,
+                        border: isSelected ? '1px solid #ffffff' : '1px solid #2e2f38',
+                        background: isSelected ? '#2a2b34' : '#1c1d24',
+                        color: isSelected ? '#ffffff' : '#a1a1aa',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      {cat.id === '1' && <span>👔</span>}
+                      {cat.id === '3' && <span>🛹</span>}
+                      {cat.id === '7' && <span>🍸</span>}
+                      {cat.id === '4' && <span>👖</span>}
+                      {cat.id === '9' && <span>💍</span>}
+                      {cat.id === '13' && <span>💼</span>}
+                      {cat.id === '6' && <span>⚡</span>}
+                      {cat.id === '5' && <span>👕</span>}
+                      {cat.id === '8' && <span>👟</span>}
+                      {cat.id === '15' && <span>🌴</span>}
+                      <span>{cat.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* 4x3 Brand Tiles Grid with Floating Left & Right Arrows */}
+              <div style={{ position: 'relative', padding: '0 12px' }}>
+                {/* Left Floating Arrow */}
+                {currentBrandSlide > 0 && (
+                  <button
+                    onClick={() => setCurrentBrandSlide(prev => Math.max(0, prev - 1))}
+                    style={{
+                      position: 'absolute',
+                      left: 2,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: 30,
+                      height: 30,
+                      borderRadius: '50%',
+                      background: 'rgba(20, 20, 26, 0.85)',
+                      backdropFilter: 'blur(6px)',
+                      border: '1px solid #363642',
+                      color: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 6,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                    }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                  </button>
+                )}
+
+                {/* Right Floating Arrow */}
+                {currentBrandSlide < 15 && (
+                  <button
+                    onClick={() => setCurrentBrandSlide(prev => Math.min(15, prev + 1))}
+                    style={{
+                      position: 'absolute',
+                      right: 2,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: 30,
+                      height: 30,
+                      borderRadius: '50%',
+                      background: 'rgba(20, 20, 26, 0.85)',
+                      backdropFilter: 'blur(6px)',
+                      border: '1px solid #363642',
+                      color: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 6,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                    }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 18l6-6-6-6" />
+                    </svg>
+                  </button>
+                )}
+
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(4, 1fr)',
+                    gap: 8
+                  }}
+                >
+                  {filteredBrandTiles.map((tile: any, idx: number) => (
+                    <div
+                      key={idx}
+                      onClick={() => router.push(tile.deeplink || '/categories')}
+                      style={{
+                        background: '#ffffff',
+                        borderRadius: 14,
+                        width: '100%',
+                        aspectRatio: '1 / 1.08',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                        cursor: 'pointer',
+                        transition: 'transform 0.15s ease'
+                      }}
+                    >
+                      {/* Badge Ribbon if present */}
+                      {tile.badge === 'NEW' && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: 14,
+                            background: '#581c87',
+                            color: '#ffffff',
+                            fontSize: 8.5,
+                            fontWeight: 900,
+                            letterSpacing: 0.5,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 2,
+                            borderTopLeftRadius: 14,
+                            borderTopRightRadius: 14
+                          }}
+                        >
+                          NEW
+                        </div>
+                      )}
+                      {tile.badge === 'ETHNIC' && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: 14,
+                            background: '#991b1c',
+                            color: '#ffffff',
+                            fontSize: 8.5,
+                            fontWeight: 900,
+                            letterSpacing: 0.5,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 2,
+                            borderTopLeftRadius: 14,
+                            borderTopRightRadius: 14
+                          }}
+                        >
+                          ETHNIC
+                        </div>
+                      )}
+
+                      <img
+                        src={tile.img}
+                        alt={tile.name}
+                        style={{
+                          maxWidth: '78%',
+                          maxHeight: '66%',
+                          objectFit: 'contain',
+                          marginTop: tile.badge ? 8 : 0
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Pagination Indicator Dots (16 dots matching Knot) */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: 5,
+                  marginTop: 14
+                }}
+              >
+                {Array.from({ length: 16 }).map((_, dotIdx) => {
+                  const isActive = dotIdx === currentBrandSlide;
+                  return (
+                    <div
+                      key={dotIdx}
+                      onClick={() => setCurrentBrandSlide(dotIdx)}
+                      style={{
+                        width: isActive ? 18 : 5,
+                        height: 5,
+                        borderRadius: isActive ? 3 : '50%',
+                        background: isActive ? '#ffffff' : '#44444a',
+                        transition: 'all 0.25s ease',
+                        cursor: 'pointer'
+                      }}
+                    />
+                  );
+                })}
+              </div>
+
+              {/* "See all Brands >" Button */}
+              <div style={{ padding: '14px 12px 16px' }}>
+                <div
+                  onClick={() => router.push('/categories')}
+                  style={{
+                    width: '100%',
+                    background: '#202026',
+                    border: '1px solid #303038',
+                    borderRadius: 12,
+                    padding: '8px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 12,
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
+                    transition: 'transform 0.15s ease'
+                  }}
+                >
+                  {/* 3 Overlapping Brand Logos */}
+                  <div style={{ position: 'relative', width: 58, height: 28, flexShrink: 0 }}>
+                    <img
+                      src="/assets/real/brand_avatar_1.webp"
+                      alt="Brand preview 1"
+                      style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        border: '2px solid #202026',
+                        objectFit: 'cover'
+                      }}
+                    />
+                    <img
+                      src="/assets/real/brand_avatar_2.webp"
+                      alt="Brand preview 2"
+                      style={{
+                        position: 'absolute',
+                        left: 15,
+                        top: 0,
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        border: '2px solid #202026',
+                        objectFit: 'cover'
+                      }}
+                    />
+                    <img
+                      src="/assets/real/brand_avatar_3.webp"
+                      alt="Brand preview 3"
+                      style={{
+                        position: 'absolute',
+                        left: 30,
+                        top: 0,
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        border: '2px solid #202026',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  </div>
+
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#f5f5f5', letterSpacing: -0.2 }}>
+                    See all Brands
+                  </span>
+
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5f5f5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </div>
+              </div>
+            </section>
+
+            {/* ========================================================
+                SNITCH BRAND SHOWCASE (Exact Banner + Product Slider)
+                ======================================================== */}
+            <section style={{ padding: '0 12px 18px' }}>
+              <div
+                onClick={() => router.push('/collection/snitch')}
+                style={{
+                  width: '100%',
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  marginBottom: 10,
+                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)'
+                }}
+              >
+                <img
+                  src="/assets/real/sections/10_snitch_0.webp"
+                  alt="SNITCH - Wear What's Next"
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 10,
+                  overflowX: 'auto',
+                  scrollbarWidth: 'none',
+                  WebkitOverflowScrolling: 'touch'
+                }}
+              >
+                {snitchProductsList.map((prod: any) => (
+                  <ProductCard
+                    key={prod.id}
+                    product={prod}
+                    isWishlisted={wishlist.includes(prod.id)}
+                    onToggleWishlist={() => toggleWishlist(prod.id)}
+                    onClick={() => router.push(`/product/${prod.id}`)}
+                    style={{ flexShrink: 0, width: 145 }}
+                  />
+                ))}
+              </div>
+            </section>
+
+            {/* ========================================================
+                THE INDIAN GARAGE CO (TIGC) SHOWCASE
+                ======================================================== */}
+            <section style={{ padding: '0 12px 18px' }}>
+              <div
+                onClick={() => router.push('/collection/indian-garage-co')}
+                style={{
+                  width: '100%',
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  marginBottom: 10,
+                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)'
+                }}
+              >
+                <img
+                  src="/assets/real/sections/12_the_indian_garage_co_0.webp"
+                  alt="The Indian Garage Co - Fit For What's Next"
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 10,
+                  overflowX: 'auto',
+                  scrollbarWidth: 'none',
+                  WebkitOverflowScrolling: 'touch'
+                }}
+              >
+                {tigcProductsList.map((prod: any) => (
+                  <ProductCard
+                    key={prod.id}
+                    product={prod}
+                    isWishlisted={wishlist.includes(prod.id)}
+                    onToggleWishlist={() => toggleWishlist(prod.id)}
+                    onClick={() => router.push(`/product/${prod.id}`)}
+                    style={{ flexShrink: 0, width: 145 }}
+                  />
+                ))}
+              </div>
+            </section>
+
+            {/* ========================================================
+                THE BEAR HOUSE BANNER (banner_2242_hp_men)
+                ======================================================== */}
+            <section style={{ padding: '0 12px 18px' }}>
+              <div
+                onClick={() => router.push('/collection/bear-house')}
+                style={{
+                  width: '100%',
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)'
+                }}
+              >
+                <img
+                  src="/assets/real/sections/14_the_bear_house_0.webp"
+                  alt="The Bear House"
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </div>
+            </section>
+
+            {/* ========================================================
+                WHAT'S YOUR NEXT ICONIC LOOK? (grid_858)
+                ======================================================== */}
+            {AUTHENTIC_HOME_WIDGETS.iconicLooks.length > 0 && (
               <section style={{ padding: '0 0 18px' }}>
                 <div style={{ padding: '0 14px', marginBottom: 10 }}>
-                  <h2 style={{ fontSize: 15, fontWeight: 800, color: '#fff' }}>What's your next iconic look?</h2>
+                  <h2 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', letterSpacing: -0.2 }}>
+                    What's your next iconic look?
+                  </h2>
                 </div>
 
                 <div
@@ -783,13 +1351,14 @@ export default function HomePage() {
                     gap: 10,
                     overflowX: 'auto',
                     padding: '0 12px',
-                    scrollbarWidth: 'none'
+                    scrollbarWidth: 'none',
+                    WebkitOverflowScrolling: 'touch'
                   }}
                 >
-                  {iconicLooks.map((item, idx) => (
+                  {AUTHENTIC_HOME_WIDGETS.iconicLooks.map((item, idx) => (
                     <div
                       key={idx}
-                      onClick={() => router.push('/collection/top')}
+                      onClick={() => router.push(item.deeplink || '/categories')}
                       style={{
                         flexShrink: 0,
                         width: 78,
@@ -797,89 +1366,8 @@ export default function HomePage() {
                         borderRadius: 14,
                         overflow: 'hidden',
                         cursor: 'pointer',
-                        background: '#1a1a24'
-                      }}
-                    >
-                      <img
-                        src={item.img}
-                        alt={item.alt}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* ROW 6 (MEN): Latest Drops */}
-            {latestDrops.length > 0 && (
-              <section style={{ padding: '0 0 18px' }}>
-                <div style={{ padding: '0 14px', marginBottom: 10 }}>
-                  <h2 style={{ fontSize: 15, fontWeight: 800, color: '#fff' }}>Latest Drops</h2>
-                </div>
-
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: 10,
-                    overflowX: 'auto',
-                    padding: '0 12px',
-                    scrollbarWidth: 'none'
-                  }}
-                >
-                  {latestDrops.map((item, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => router.push('/collection/bottom')}
-                      style={{
-                        flexShrink: 0,
-                        width: 100,
-                        height: 140,
-                        borderRadius: 16,
-                        overflow: 'hidden',
-                        cursor: 'pointer',
-                        background: '#1c1c24'
-                      }}
-                    >
-                      <img
-                        src={item.img}
-                        alt={item.alt}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* ROW 7 (MEN): Offers */}
-            {offersList.length > 0 && (
-              <section style={{ padding: '0 0 18px' }}>
-                <div style={{ padding: '0 14px', marginBottom: 10 }}>
-                  <h2 style={{ fontSize: 15, fontWeight: 800, color: '#fff' }}>Offers</h2>
-                </div>
-
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: 10,
-                    overflowX: 'auto',
-                    padding: '0 12px',
-                    scrollbarWidth: 'none'
-                  }}
-                >
-                  {offersList.map((item, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => router.push('/collection/ethnic')}
-                      style={{
-                        flexShrink: 0,
-                        width: 105,
-                        height: 140,
-                        borderRadius: 16,
-                        overflow: 'hidden',
-                        cursor: 'pointer',
-                        background: '#1c1c24'
+                        background: '#1a1a24',
+                        boxShadow: '0 4px 14px rgba(0, 0, 0, 0.35)'
                       }}
                     >
                       <img
@@ -894,305 +1382,409 @@ export default function HomePage() {
             )}
 
             {/* ========================================================
-                ALL 29 AUTHENTIC CURATED ROWS WITH REAL DOWNLOADED BACKGROUNDS
-                Exact Section-by-Section 1:1 Mirroring of Knot Men's Feed
+                COUPON & PROMO CAROUSEL (coupon_carousel)
+                Referral & Earn ₹500 Flat Tote Bag Banner + Virtual Try On Banner
                 ======================================================== */}
-            {(MEN_CURATED_SECTIONS as any[]).map((section: any) => {
-              if (section.hasBg) {
-                return (
-                  <section
-                    key={section.id}
-                    id={`section-${section.id}`}
-                    style={{
-                      width: '100%',
-                      position: 'relative',
-                      marginBottom: 18,
-                      backgroundImage: `url("${section.bgImage}")`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'top center',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundColor: '#121216',
-                      paddingTop: 116,
-                      paddingBottom: 16,
-                      overflow: 'hidden'
-                    }}
-                  >
+            <section style={{ padding: '0 0 18px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 12,
+                  overflowX: 'auto',
+                  padding: '0 12px',
+                  scrollbarWidth: 'none',
+                  scrollSnapType: 'x mandatory',
+                  WebkitOverflowScrolling: 'touch'
+                }}
+              >
+                {/* Slide 0: Referral & Earn ₹500 Tote Bag Banner */}
+                <div
+                  onClick={() => setIsReferralOpen(true)}
+                  style={{
+                    flexShrink: 0,
+                    width: 'calc(100% - 32px)',
+                    maxWidth: 346,
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    cursor: 'pointer',
+                    scrollSnapAlign: 'start',
+                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.45)'
+                  }}
+                >
+                  <img
+                    src="/assets/real/500R&EFLAT.png"
+                    alt="Invite your friends - Earn ₹500 + Tote Bag"
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                  />
+                </div>
+
+                {/* Slide 1: Virtual Try On Banner */}
+                <div
+                  onClick={() => router.push('/trends')}
+                  style={{
+                    flexShrink: 0,
+                    width: 'calc(100% - 32px)',
+                    maxWidth: 346,
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    cursor: 'pointer',
+                    scrollSnapAlign: 'start',
+                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.45)'
+                  }}
+                >
+                  <img
+                    src="/assets/real/home_sections/coupon_carousel_vto.png"
+                    alt="Virtual Try On"
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* ========================================================
+                LATEST DROPS (row_861)
+                ======================================================== */}
+            {AUTHENTIC_HOME_WIDGETS.latestDrops.length > 0 && (
+              <section style={{ padding: '0 0 18px' }}>
+                <div style={{ padding: '0 14px', marginBottom: 10 }}>
+                  <h2 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', letterSpacing: -0.2 }}>
+                    Latest Drops
+                  </h2>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: 10,
+                    overflowX: 'auto',
+                    padding: '0 12px',
+                    scrollbarWidth: 'none',
+                    WebkitOverflowScrolling: 'touch'
+                  }}
+                >
+                  {AUTHENTIC_HOME_WIDGETS.latestDrops.map((item, idx) => (
                     <div
+                      key={idx}
+                      onClick={() => router.push(item.deeplink || '/categories')}
                       style={{
-                        display: 'flex',
-                        gap: 10,
-                        overflowX: 'auto',
-                        paddingLeft: 12,
-                        paddingRight: 12,
-                        scrollbarWidth: 'none',
-                        WebkitOverflowScrolling: 'touch'
+                        flexShrink: 0,
+                        width: 136,
+                        height: 196,
+                        borderRadius: 16,
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        background: '#1c1c24',
+                        boxShadow: '0 4px 14px rgba(0, 0, 0, 0.35)'
                       }}
                     >
-                      {section.products.map((prod: any) => (
-                        <div
-                          key={prod.id}
-                          onClick={() => router.push(`/product/${prod.id}`)}
-                          style={{
-                            flexShrink: 0,
-                            width: 162,
-                            borderRadius: 16,
-                            overflow: 'hidden',
-                            background: '#1d1e24',
-                            boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                            cursor: 'pointer',
-                            position: 'relative',
-                            display: 'flex',
-                            flexDirection: 'column'
-                          }}
-                        >
-                          {/* Image Box */}
-                          <div
-                            style={{
-                              position: 'relative',
-                              width: '100%',
-                              height: 190,
-                              background: '#25262e',
-                              overflow: 'hidden'
-                            }}
-                          >
-                            <img
-                              src={prod.thumbnail || prod.images[0]}
-                              alt={prod.title}
-                              style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                display: 'block'
-                              }}
-                            />
-
-                            {/* Wishlist Heart Button */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleWishlist(prod.id);
-                              }}
-                              style={{
-                                position: 'absolute',
-                                top: 8,
-                                right: 8,
-                                width: 30,
-                                height: 30,
-                                borderRadius: '50%',
-                                background: 'rgba(0, 0, 0, 0.4)',
-                                backdropFilter: 'blur(4px)',
-                                border: 'none',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                zIndex: 3
-                              }}
-                            >
-                              <svg
-                                width="15"
-                                height="15"
-                                viewBox="0 0 24 24"
-                                fill={wishlist.includes(prod.id) ? '#ff3b30' : 'none'}
-                                stroke={wishlist.includes(prod.id) ? '#ff3b30' : '#ffffff'}
-                                strokeWidth="2.2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                              </svg>
-                            </button>
-
-                            {/* Authentic Badge Pill */}
-                            <div
-                              style={{
-                                position: 'absolute',
-                                bottom: 8,
-                                left: 8,
-                                background: 'linear-gradient(90deg, #6b21a8, #9333ea)',
-                                padding: '2px 7px',
-                                borderRadius: 4,
-                                fontSize: 9,
-                                fontWeight: 800,
-                                color: '#ffffff',
-                                letterSpacing: 0.2,
-                                boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 2
-                              }}
-                            >
-                              EXTRA ₹999 OFF
-                            </div>
-                          </div>
-
-                          {/* Card Content */}
-                          <div
-                            style={{
-                              padding: '10px 10px 12px',
-                              display: 'flex',
-                              flexDirection: 'column',
-                              gap: 3,
-                              background: '#1d1e24'
-                            }}
-                          >
-                            <div
-                              style={{
-                                fontSize: 13,
-                                fontWeight: 800,
-                                color: '#ffffff',
-                                fontFamily: 'Satoshi, sans-serif',
-                                letterSpacing: -0.2
-                              }}
-                            >
-                              {prod.brand}
-                            </div>
-
-                            <div
-                              style={{
-                                fontSize: 11,
-                                color: '#a0a0ab',
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                fontFamily: 'Satoshi, sans-serif'
-                              }}
-                            >
-                              {prod.title}
-                            </div>
-
-                            {/* Price Row */}
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                marginTop: 2
-                              }}
-                            >
-                              <span
-                                style={{
-                                  fontSize: 13,
-                                  fontWeight: 800,
-                                  color: '#ffffff',
-                                  fontFamily: 'Satoshi, sans-serif'
-                                }}
-                              >
-                                {prod.priceFormatted || `₹${prod.price}`}
-                              </span>
-                              {prod.mrpFormatted && (
-                                <span
-                                  style={{
-                                    fontSize: 11,
-                                    color: '#71717a',
-                                    textDecoration: 'line-through'
-                                  }}
-                                >
-                                  {prod.mrpFormatted}
-                                </span>
-                              )}
-                              {prod.discountPercentage && (
-                                <span
-                                  style={{
-                                    fontSize: 11,
-                                    fontWeight: 700,
-                                    color: '#4f7fff'
-                                  }}
-                                >
-                                  {prod.discountPercentage}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Best Price */}
-                            <div
-                              style={{
-                                fontSize: 10,
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 3,
-                                marginTop: 1
-                              }}
-                            >
-                              <span style={{ color: '#00e676', fontWeight: 700 }}>
-                                Best Price {prod.bestPrice || `₹${Math.round(prod.price * 0.75)}`}
-                              </span>
-                              <span style={{ color: '#9e9ea7', fontWeight: 500 }}>
-                                {prod.withCouponText || ' with coupon'}
-                              </span>
-                            </div>
-
-                            {/* Delivery */}
-                            <div
-                              style={{
-                                fontSize: 10,
-                                fontWeight: 600,
-                                color: '#ffffff',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 4,
-                                marginTop: 2
-                              }}
-                            >
-                              <span style={{ color: '#00e5ff' }}>⚡</span>
-                              <span>{prod.deliveryText || '60 mins delivery'}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                      <img
+                        src={item.img}
+                        alt={item.alt}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
                     </div>
-                  </section>
-                );
-              }
+                  ))}
+                </div>
+              </section>
+            )}
 
-              // Brand Carousel rows without background (SNITCH, The Indian Garage Co)
-              const brandBannerImg = section.id === '2966'
-                ? '/assets/real/sections/10_snitch_0.webp'
-                : '/assets/real/sections/12_the_indian_garage_co_0.webp';
+            {/* ========================================================
+                OFFERS (grid_1643)
+                ======================================================== */}
+            {AUTHENTIC_HOME_WIDGETS.offers.length > 0 && (
+              <section style={{ padding: '0 0 18px' }}>
+                <div style={{ padding: '0 14px', marginBottom: 10 }}>
+                  <h2 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', letterSpacing: -0.2 }}>
+                    Offers
+                  </h2>
+                </div>
 
-              return (
-                <section key={section.id} id={`section-${section.id}`} style={{ padding: '0 12px 18px' }}>
-                  <div
-                    onClick={() => router.push('/categories')}
-                    style={{
-                      width: '100%',
-                      borderRadius: 16,
-                      overflow: 'hidden',
-                      cursor: 'pointer',
-                      marginBottom: 10,
-                      boxShadow: '0 6px 20px rgba(0,0,0,0.4)'
-                    }}
-                  >
-                    <img
-                      src={brandBannerImg}
-                      alt={section.title}
-                      style={{ width: '100%', height: 'auto', display: 'block' }}
-                    />
-                  </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: 10,
+                    overflowX: 'auto',
+                    padding: '0 12px',
+                    scrollbarWidth: 'none',
+                    WebkitOverflowScrolling: 'touch'
+                  }}
+                >
+                  {AUTHENTIC_HOME_WIDGETS.offers.map((item, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => router.push(item.deeplink || '/categories')}
+                      style={{
+                        flexShrink: 0,
+                        width: 105,
+                        height: 84,
+                        borderRadius: 14,
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        background: '#1c1c24',
+                        boxShadow: '0 4px 14px rgba(0, 0, 0, 0.35)'
+                      }}
+                    >
+                      <img
+                        src={item.img}
+                        alt={item.alt}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
+            {/* ========================================================
+                ALL 27 AUTHENTIC CURATED ROWS WITH REAL DOWNLOADED BACKGROUNDS
+                Exact Section-by-Section 1:1 Mirroring of Knot Men's Feed
+                ======================================================== */}
+            {(MEN_CURATED_SECTIONS as any[])
+              .filter((section: any) => section.hasBg)
+              .map((section: any) => (
+                <section
+                  key={section.id}
+                  id={`section-${section.id}`}
+                  style={{
+                    width: '100%',
+                    position: 'relative',
+                    marginBottom: 18,
+                    backgroundImage: `url("${section.bgImage}")`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'top center',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundColor: '#121216',
+                    paddingTop: 116,
+                    paddingBottom: 16,
+                    overflow: 'hidden'
+                  }}
+                >
                   <div
                     style={{
                       display: 'flex',
                       gap: 10,
                       overflowX: 'auto',
+                      paddingLeft: 12,
+                      paddingRight: 12,
                       scrollbarWidth: 'none',
                       WebkitOverflowScrolling: 'touch'
                     }}
                   >
                     {section.products.map((prod: any) => (
-                      <ProductCard
+                      <div
                         key={prod.id}
-                        product={prod}
-                        isWishlisted={wishlist.includes(prod.id)}
-                        onToggleWishlist={() => toggleWishlist(prod.id)}
                         onClick={() => router.push(`/product/${prod.id}`)}
-                        style={{ flexShrink: 0, width: 145 }}
-                      />
+                        style={{
+                          flexShrink: 0,
+                          width: 162,
+                          borderRadius: 16,
+                          overflow: 'hidden',
+                          background: '#1d1e24',
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                          cursor: 'pointer',
+                          position: 'relative',
+                          display: 'flex',
+                          flexDirection: 'column'
+                        }}
+                      >
+                        {/* Image Box */}
+                        <div
+                          style={{
+                            position: 'relative',
+                            width: '100%',
+                            height: 190,
+                            background: '#25262e',
+                            overflow: 'hidden'
+                          }}
+                        >
+                          <img
+                            src={prod.thumbnail || prod.images[0]}
+                            alt={prod.title}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                              display: 'block'
+                            }}
+                          />
+
+                          {/* Wishlist Heart Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleWishlist(prod.id);
+                            }}
+                            style={{
+                              position: 'absolute',
+                              top: 8,
+                              right: 8,
+                              width: 30,
+                              height: 30,
+                              borderRadius: '50%',
+                              background: 'rgba(0, 0, 0, 0.4)',
+                              backdropFilter: 'blur(4px)',
+                              border: 'none',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              zIndex: 3
+                            }}
+                          >
+                            <svg
+                              width="15"
+                              height="15"
+                              viewBox="0 0 24 24"
+                              fill={wishlist.includes(prod.id) ? '#ff3b30' : 'none'}
+                              stroke={wishlist.includes(prod.id) ? '#ff3b30' : '#ffffff'}
+                              strokeWidth="2.2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                            </svg>
+                          </button>
+
+                          {/* Authentic Badge Pill */}
+                          <div
+                            style={{
+                              position: 'absolute',
+                              bottom: 8,
+                              left: 8,
+                              background: 'linear-gradient(90deg, #6b21a8, #9333ea)',
+                              padding: '2px 7px',
+                              borderRadius: 4,
+                              fontSize: 9,
+                              fontWeight: 800,
+                              color: '#ffffff',
+                              letterSpacing: 0.2,
+                              boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 2
+                            }}
+                          >
+                            EXTRA ₹999 OFF
+                          </div>
+                        </div>
+
+                        {/* Card Content */}
+                        <div
+                          style={{
+                            padding: '10px 10px 12px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 3,
+                            background: '#1d1e24'
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 800,
+                              color: '#ffffff',
+                              fontFamily: 'Satoshi, sans-serif',
+                              letterSpacing: -0.2
+                            }}
+                          >
+                            {prod.brand}
+                          </div>
+
+                          <div
+                            style={{
+                              fontSize: 11,
+                              color: '#a0a0ab',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              fontFamily: 'Satoshi, sans-serif'
+                            }}
+                          >
+                            {prod.title}
+                          </div>
+
+                          {/* Price Row */}
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              marginTop: 2
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontSize: 13,
+                                fontWeight: 800,
+                                color: '#ffffff',
+                                fontFamily: 'Satoshi, sans-serif'
+                              }}
+                            >
+                              {prod.priceFormatted || `₹${prod.price}`}
+                            </span>
+                            {prod.mrpFormatted && (
+                              <span
+                                style={{
+                                  fontSize: 11,
+                                  color: '#71717a',
+                                  textDecoration: 'line-through'
+                                }}
+                              >
+                                {prod.mrpFormatted}
+                              </span>
+                            )}
+                            {prod.discountPercentage && (
+                              <span
+                                style={{
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                  color: '#4f7fff'
+                                }}
+                              >
+                                {prod.discountPercentage}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Best Price */}
+                          <div
+                            style={{
+                              fontSize: 10,
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 3,
+                              marginTop: 1
+                            }}
+                          >
+                            <span style={{ color: '#00e676', fontWeight: 700 }}>
+                              Best Price {prod.bestPrice || `₹${Math.round(prod.price * 0.75)}`}
+                            </span>
+                            <span style={{ color: '#9e9ea7', fontWeight: 500 }}>
+                              {prod.withCouponText || ' with coupon'}
+                            </span>
+                          </div>
+
+                          {/* Delivery */}
+                          <div
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 600,
+                              color: '#ffffff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              marginTop: 2
+                            }}
+                          >
+                            <span style={{ color: '#00e5ff' }}>⚡</span>
+                            <span>{prod.deliveryText || '60 mins delivery'}</span>
+                          </div>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </section>
-              );
-            })}
+              ))}
           </>
         ) : (
           <>

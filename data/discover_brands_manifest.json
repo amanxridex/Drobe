@@ -1,0 +1,1919 @@
+{
+  "heading": "Discover Brands",
+  "categories": [
+    {
+      "id": "1",
+      "title": "Casualwear",
+      "icon": "assets/icons/collection/casualwear.svg"
+    },
+    {
+      "id": "3",
+      "title": "Streetwear",
+      "icon": "assets/icons/collection/streetwear.svg"
+    },
+    {
+      "id": "7",
+      "title": "Partywear",
+      "icon": "assets/icons/collection/partywear.svg"
+    },
+    {
+      "id": "4",
+      "title": "Denims",
+      "icon": "assets/icons/collection/denims.svg"
+    },
+    {
+      "id": "9",
+      "title": "Accessories",
+      "icon": "assets/icons/collection/accessories.svg"
+    },
+    {
+      "id": "13",
+      "title": "Workwear",
+      "icon": "assets/icons/collection/workwear.svg"
+    },
+    {
+      "id": "6",
+      "title": "Athleisure",
+      "icon": "assets/icons/collection/athleisure.svg"
+    },
+    {
+      "id": "5",
+      "title": "Basics",
+      "icon": "assets/icons/collection/basics.svg"
+    },
+    {
+      "id": "8",
+      "title": "Footwear",
+      "icon": "assets/icons/collection/footwear.svg"
+    },
+    {
+      "id": "15",
+      "title": "Vacation",
+      "icon": "assets/icons/collection/vacation.svg"
+    },
+    {
+      "id": "11",
+      "title": "Indo-Western",
+      "icon": "assets/icons/collection/indo-western.svg"
+    },
+    {
+      "id": "2",
+      "title": "Ethnicwear",
+      "icon": "https://ik.imagekit.io/slickapp/droplet/app_images%2Fethnic_updated.svg?ik-t=9999999999&ik-s=6b5f80538c46c08d81b19599316a5ee5ad7908d1"
+    },
+    {
+      "id": "16",
+      "title": "Resortwear",
+      "icon": "assets/icons/collection/resortwear.svg"
+    },
+    {
+      "id": "14",
+      "title": "Jewellery",
+      "icon": "assets/icons/collection/jewellery.svg"
+    },
+    {
+      "id": "19",
+      "title": "Fragrances",
+      "icon": "https://ik.imagekit.io/slickapp/droplet/app_images%2Ffragnance_updated.svg?ik-t=9999999999&ik-s=43ec4c9cbfe921da8893456e001aecd5a0fb114c"
+    },
+    {
+      "id": "18",
+      "title": "Innerwear",
+      "icon": "assets/icons/collection/innerwear.svg"
+    },
+    {
+      "id": "17",
+      "title": "Sustainable",
+      "icon": "assets/icons/collection/sustainable.svg"
+    },
+    {
+      "id": "10",
+      "title": "Loungewear",
+      "icon": "assets/icons/collection/loungewear.svg"
+    }
+  ],
+  "slides": [
+    [
+      {
+        "name": "WHAT THE FLEX",
+        "img": "/assets/real/brands/brand_0.webp",
+        "badge": null,
+        "categories": [
+          "1",
+          "3",
+          "7"
+        ],
+        "deeplink": "/collections/home_discover_brand_WHAT_THE_FLEX_men"
+      },
+      {
+        "name": "Chapter 2",
+        "img": "/assets/real/brands/brand_1.webp",
+        "badge": null,
+        "categories": [
+          "1",
+          "3"
+        ],
+        "deeplink": "/collections/home_discover_brand_Chapter_2_men"
+      },
+      {
+        "name": "Main Character",
+        "img": "/assets/real/brands/brand_4.webp",
+        "badge": null,
+        "categories": [
+          "1",
+          "3"
+        ],
+        "deeplink": "/collections/home_discover_brand_Main_Character_men"
+      },
+      {
+        "name": "The Souled Store",
+        "img": "/assets/real/brands/brand_2.webp",
+        "badge": null,
+        "categories": [
+          "1",
+          "3",
+          "5"
+        ],
+        "deeplink": "/collections/home_discover_brand_The_Souled_Store_men"
+      },
+      {
+        "name": "GENRAGE",
+        "img": "/assets/real/brands/brand_3.webp",
+        "badge": "NEW",
+        "categories": [
+          "3",
+          "7"
+        ],
+        "deeplink": "/collections/home_discover_brand_GENRAGE_men"
+      },
+      {
+        "name": "Ikoho",
+        "img": "/assets/real/brands/brand_7.webp",
+        "badge": null,
+        "categories": [
+          "1",
+          "5"
+        ],
+        "deeplink": "/collections/home_discover_brand_Ikoho_men"
+      },
+      {
+        "name": "Powerlook",
+        "img": "/assets/real/brands/brand_5.webp",
+        "badge": null,
+        "categories": [
+          "1",
+          "3",
+          "4"
+        ],
+        "deeplink": "/collections/home_discover_brand_Powerlook_men"
+      },
+      {
+        "name": "Rawayi",
+        "img": "/assets/real/brands/brand_6.webp",
+        "badge": "ETHNIC",
+        "categories": [
+          "2",
+          "11"
+        ],
+        "deeplink": "/collections/home_discover_brand_Rawayi_men"
+      },
+      {
+        "name": "CALDRI",
+        "img": "/assets/real/brands/brand_10.webp",
+        "badge": null,
+        "categories": [
+          "1",
+          "3"
+        ],
+        "deeplink": "/collections/home_discover_brand_CALDRI_men"
+      },
+      {
+        "name": "House of Koala",
+        "img": "/assets/real/brands/brand_11.webp",
+        "badge": null,
+        "categories": [
+          "1",
+          "5"
+        ],
+        "deeplink": "/collections/home_discover_brand_House_of_Koala_men"
+      },
+      {
+        "name": "IWE STUDIOS",
+        "img": "/assets/real/brands/brand_8.webp",
+        "badge": "NEW",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "deeplink": "/collections/home_discover_brand_IWE_STUDIOS_men"
+      },
+      {
+        "name": "Vastramay",
+        "img": "/assets/real/brands/brand_9.webp",
+        "badge": null,
+        "categories": [
+          "2",
+          "11"
+        ],
+        "deeplink": "/collections/home_discover_brand_Vastramay_men"
+      }
+    ],
+    [
+      {
+        "name": "SNITCH",
+        "img": "/assets/real/brands/brand_s1_0.webp",
+        "deeplink": "/collections/home_discover_brand_SNITCH_men",
+        "categories": [
+          "3",
+          "4",
+          "7"
+        ],
+        "badge": "NEW"
+      },
+      {
+        "name": "XKIND",
+        "img": "/assets/real/brands/brand_s1_1.webp",
+        "deeplink": "/collections/home_discover_brand_XKIND_men",
+        "categories": [
+          "1",
+          "3",
+          "7"
+        ],
+        "badge": null
+      },
+      {
+        "name": "The Kurta Studio",
+        "img": "/assets/real/brands/brand_s1_2.webp",
+        "deeplink": "/collections/home_discover_brand_The Kurta Studio_men",
+        "categories": [
+          "2",
+          "11"
+        ],
+        "badge": "ETHNIC"
+      },
+      {
+        "name": "French Connection",
+        "img": "/assets/real/brands/brand_s1_3.webp",
+        "deeplink": "/collections/home_discover_brand_French Connection_men",
+        "categories": [
+          "1",
+          "9",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Campus Sutra",
+        "img": "/assets/real/brands/brand_s1_4.webp",
+        "deeplink": "/collections/home_discover_brand_Campus Sutra_men",
+        "categories": [
+          "1",
+          "3",
+          "7"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Underrated club",
+        "img": "/assets/real/brands/brand_s1_5.webp",
+        "deeplink": "/collections/home_discover_brand_Underrated club_men",
+        "categories": [
+          "1",
+          "4",
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Bewakoof",
+        "img": "/assets/real/brands/brand_s1_6.webp",
+        "deeplink": "/collections/home_discover_brand_Bewakoof_men",
+        "categories": [
+          "1",
+          "3",
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "HIGHLANDER",
+        "img": "/assets/real/brands/brand_s1_7.webp",
+        "deeplink": "/collections/home_discover_brand_HIGHLANDER_men",
+        "categories": [
+          "1",
+          "7"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Veirdo",
+        "img": "/assets/real/brands/brand_s1_8.webp",
+        "deeplink": "/collections/home_discover_brand_Veirdo_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Fur Jaden",
+        "img": "/assets/real/brands/brand_s1_9.webp",
+        "deeplink": "/collections/home_discover_brand_Fur Jaden_men",
+        "categories": [
+          "9",
+          "13",
+          "15"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Fabindia",
+        "img": "/assets/real/brands/brand_s1_10.webp",
+        "deeplink": "/collections/home_discover_brand_Fabindia_men",
+        "categories": [
+          "2",
+          "11",
+          "17"
+        ],
+        "badge": "ETHNIC"
+      },
+      {
+        "name": "HEXAFUN",
+        "img": "/assets/real/brands/brand_s1_11.webp",
+        "deeplink": "/collections/home_discover_brand_HEXAFUN_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "Smokeshow",
+        "img": "/assets/real/brands/brand_s2_0.webp",
+        "deeplink": "/collections/home_discover_brand_Smokeshow_men",
+        "categories": [
+          "1",
+          "3",
+          "7"
+        ],
+        "badge": null
+      },
+      {
+        "name": "ROOKIES",
+        "img": "/assets/real/brands/brand_s2_1.webp",
+        "deeplink": "/collections/home_discover_brand_ROOKIES_men",
+        "categories": [
+          "1",
+          "3",
+          "4"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Rustlines",
+        "img": "/assets/real/brands/brand_s2_2.webp",
+        "deeplink": "/collections/home_discover_brand_Rustlines_men",
+        "categories": [
+          "1",
+          "3",
+          "4"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Technosport",
+        "img": "/assets/real/brands/brand_s2_3.webp",
+        "deeplink": "/collections/home_discover_brand_Technosport_men",
+        "categories": [
+          "6"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Fraganote",
+        "img": "/assets/real/brands/brand_s2_4.webp",
+        "deeplink": "/collections/home_discover_brand_Fraganote_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Tauxxic",
+        "img": "/assets/real/brands/brand_s2_5.webp",
+        "deeplink": "/collections/home_discover_brand_Tauxxic_men",
+        "categories": [
+          "1",
+          "3",
+          "7"
+        ],
+        "badge": null
+      },
+      {
+        "name": "FREECULTR",
+        "img": "/assets/real/brands/brand_s2_6.webp",
+        "deeplink": "/collections/home_discover_brand_FREECULTR_men",
+        "categories": [
+          "1",
+          "3",
+          "6"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Rigo",
+        "img": "/assets/real/brands/brand_s2_7.webp",
+        "deeplink": "/collections/home_discover_brand_Rigo_men",
+        "categories": [
+          "1",
+          "4"
+        ],
+        "badge": null
+      },
+      {
+        "name": "The Indian Garage Co",
+        "img": "/assets/real/brands/brand_s2_8.webp",
+        "deeplink": "/collections/home_discover_brand_The Indian Garage Co_men",
+        "categories": [
+          "1",
+          "16"
+        ],
+        "badge": null
+      },
+      {
+        "name": "French Accent",
+        "img": "/assets/real/brands/brand_s2_9.webp",
+        "deeplink": "/collections/home_discover_brand_French Accent_men",
+        "categories": [
+          "9",
+          "14"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Aesthetic Nation",
+        "img": "/assets/real/brands/brand_s2_10.webp",
+        "deeplink": "/collections/home_discover_brand_Aesthetic Nation_men",
+        "categories": [
+          "6"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Banana Club",
+        "img": "/assets/real/brands/brand_s2_11.webp",
+        "deeplink": "/collections/home_discover_brand_Banana Club_men",
+        "categories": [
+          "3",
+          "7",
+          "15"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "Bersache",
+        "img": "/assets/real/brands/brand_s3_0.webp",
+        "deeplink": "/collections/home_discover_brand_Bersache_men",
+        "categories": [
+          "8"
+        ],
+        "badge": null
+      },
+      {
+        "name": "WEEZY",
+        "img": "/assets/real/brands/brand_s3_1.webp",
+        "deeplink": "/collections/home_discover_brand_WEEZY_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Uri",
+        "img": "/assets/real/brands/brand_s3_2.webp",
+        "deeplink": "/collections/home_discover_brand_Uri_men",
+        "categories": [
+          "1",
+          "11",
+          "15"
+        ],
+        "badge": null
+      },
+      {
+        "name": "The Men Thing",
+        "img": "/assets/real/brands/brand_s3_3.webp",
+        "deeplink": "/collections/home_discover_brand_The Men Thing_men",
+        "categories": [
+          "14"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Project Shades",
+        "img": "/assets/real/brands/brand_s3_4.webp",
+        "deeplink": "/collections/home_discover_brand_Project Shades_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Zonny",
+        "img": "/assets/real/brands/brand_s3_5.webp",
+        "deeplink": "/collections/home_discover_brand_Zonny_men",
+        "categories": [
+          "5",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Vastrado",
+        "img": "/assets/real/brands/brand_s3_6.webp",
+        "deeplink": "/collections/home_discover_brand_Vastrado_men",
+        "categories": [
+          "1",
+          "7",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Mark Leute",
+        "img": "/assets/real/brands/brand_s3_7.webp",
+        "deeplink": "/collections/home_discover_brand_Mark Leute_men",
+        "categories": [
+          "1",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "FEIER",
+        "img": "/assets/real/brands/brand_s3_8.webp",
+        "deeplink": "/collections/home_discover_brand_FEIER_men",
+        "categories": [
+          "6",
+          "18"
+        ],
+        "badge": null
+      },
+      {
+        "name": "KNIDE",
+        "img": "/assets/real/brands/brand_s3_9.webp",
+        "deeplink": "/collections/home_discover_brand_KNIDE_men",
+        "categories": [
+          "1",
+          "3",
+          "4"
+        ],
+        "badge": null
+      },
+      {
+        "name": "home latest drops macv",
+        "img": "/assets/real/brands/brand_s3_10.webp",
+        "deeplink": "/collections/home_latest_drops_macv_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Aldeno",
+        "img": "/assets/real/brands/brand_s3_11.webp",
+        "deeplink": "/collections/home_discover_brand_Aldeno_men",
+        "categories": [
+          "1",
+          "13"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "Bene Kleed",
+        "img": "/assets/real/brands/brand_s4_0.webp",
+        "deeplink": "/collections/home_discover_brand_Bene Kleed_men",
+        "categories": [
+          "1",
+          "3",
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "BLA BLI BLU",
+        "img": "/assets/real/brands/brand_s4_1.webp",
+        "deeplink": "/collections/home_discover_brand_BLA BLI BLU_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "BlueJam",
+        "img": "/assets/real/brands/brand_s4_2.webp",
+        "deeplink": "/collections/home_discover_brand_BlueJam_men",
+        "categories": [
+          "1",
+          "4",
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "BLUE TYGA",
+        "img": "/assets/real/brands/brand_s4_3.webp",
+        "deeplink": "/collections/home_discover_brand_BLUE TYGA_men",
+        "categories": [
+          "6",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Bonkers Corner",
+        "img": "/assets/real/brands/brand_s4_4.webp",
+        "deeplink": "/collections/home_discover_brand_Bonkers Corner_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "C3oh Perfumes",
+        "img": "/assets/real/brands/brand_s4_5.webp",
+        "deeplink": "/collections/home_discover_brand_C3oh Perfumes_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "CHKOKKO",
+        "img": "/assets/real/brands/brand_s4_6.webp",
+        "deeplink": "/collections/home_discover_brand_CHKOKKO_men",
+        "categories": [
+          "6"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Chopard",
+        "img": "/assets/real/brands/brand_s4_7.webp",
+        "deeplink": "/collections/home_discover_brand_Chopard_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Chumbak",
+        "img": "/assets/real/brands/brand_s4_8.webp",
+        "deeplink": "/collections/home_discover_brand_Chumbak_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "CHUPPS",
+        "img": "/assets/real/brands/brand_s4_9.webp",
+        "deeplink": "/collections/home_discover_brand_CHUPPS_men",
+        "categories": [
+          "8"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Color Capital",
+        "img": "/assets/real/brands/brand_s4_10.webp",
+        "deeplink": "/collections/home_discover_brand_Color Capital_men",
+        "categories": [
+          "1",
+          "6",
+          "7"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Cove & Lane",
+        "img": "/assets/real/brands/brand_s4_11.webp",
+        "deeplink": "/collections/home_discover_brand_Cove & Lane_men",
+        "categories": [
+          "1",
+          "7",
+          "13"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "Dalchinii",
+        "img": "/assets/real/brands/brand_s5_0.webp",
+        "deeplink": "/collections/home_discover_brand_Dalchinii_men",
+        "categories": [
+          "1",
+          "11",
+          "15"
+        ],
+        "badge": null
+      },
+      {
+        "name": "DIESEL",
+        "img": "/assets/real/brands/brand_s5_1.webp",
+        "deeplink": "/collections/home_discover_brand_DIESEL_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "DL Street",
+        "img": "/assets/real/brands/brand_s5_2.webp",
+        "deeplink": "/collections/home_discover_brand_DL Street_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "ECOTONIQUE",
+        "img": "/assets/real/brands/brand_s5_3.webp",
+        "deeplink": "/collections/home_discover_brand_ECOTONIQUE_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "English Navy",
+        "img": "/assets/real/brands/brand_s5_4.webp",
+        "deeplink": "/collections/home_discover_brand_English Navy_men",
+        "categories": [
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "FCUK",
+        "img": "/assets/real/brands/brand_s5_5.webp",
+        "deeplink": "/collections/home_discover_brand_FCUK_men",
+        "categories": [
+          "18"
+        ],
+        "badge": null
+      },
+      {
+        "name": "FOUL CHILD",
+        "img": "/assets/real/brands/brand_s5_6.webp",
+        "deeplink": "/collections/home_discover_brand_FOUL CHILD_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "GIVA",
+        "img": "/assets/real/brands/brand_s5_7.webp",
+        "deeplink": "/collections/home_discover_brand_GIVA_men",
+        "categories": [
+          "1",
+          "7",
+          "14"
+        ],
+        "badge": null
+      },
+      {
+        "name": "GUESS",
+        "img": "/assets/real/brands/brand_s5_8.webp",
+        "deeplink": "/collections/home_discover_brand_GUESS_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Hancock",
+        "img": "/assets/real/brands/brand_s5_9.webp",
+        "deeplink": "/collections/home_discover_brand_Hancock_men",
+        "categories": [
+          "1",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "HANGERLOOP",
+        "img": "/assets/real/brands/brand_s5_10.webp",
+        "deeplink": "/collections/home_discover_brand_HANGERLOOP_men",
+        "categories": [
+          "1",
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "HOPE",
+        "img": "/assets/real/brands/brand_s5_11.webp",
+        "deeplink": "/collections/home_discover_brand_HOPE_men",
+        "categories": [
+          "1",
+          "5"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "HORS",
+        "img": "/assets/real/brands/brand_s6_0.webp",
+        "deeplink": "/collections/home_discover_brand_HORS_men",
+        "categories": [
+          "1",
+          "3",
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "IZF",
+        "img": "/assets/real/brands/brand_s6_1.webp",
+        "deeplink": "/collections/home_discover_brand_IZF_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "JAGUAR",
+        "img": "/assets/real/brands/brand_s6_2.webp",
+        "deeplink": "/collections/home_discover_brand_JAGUAR_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Javinishka",
+        "img": "/assets/real/brands/brand_s6_3.webp",
+        "deeplink": "/collections/home_discover_brand_Javinishka_men",
+        "categories": [
+          "1",
+          "2",
+          "11"
+        ],
+        "badge": "ETHNIC"
+      },
+      {
+        "name": "Jockey",
+        "img": "/assets/real/brands/brand_s6_4.webp",
+        "deeplink": "/collections/home_discover_brand_Jockey_men",
+        "categories": [
+          "6",
+          "18"
+        ],
+        "badge": null
+      },
+      {
+        "name": "JOKER & WITCH",
+        "img": "/assets/real/brands/brand_s6_5.webp",
+        "deeplink": "/collections/home_discover_brand_JOKER & WITCH_men",
+        "categories": [
+          "1",
+          "9",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "JONESBURG",
+        "img": "/assets/real/brands/brand_s6_6.webp",
+        "deeplink": "/collections/home_discover_brand_JONESBURG_men",
+        "categories": [
+          "1",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "KALKI",
+        "img": "/assets/real/brands/brand_s6_7.webp",
+        "deeplink": "/collections/home_discover_brand_KALKI_men",
+        "categories": [
+          "2",
+          "11"
+        ],
+        "badge": "ETHNIC"
+      },
+      {
+        "name": "KIMTI",
+        "img": "/assets/real/brands/brand_s6_8.webp",
+        "deeplink": "/collections/home_discover_brand_KIMTI_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "La’ French",
+        "img": "/assets/real/brands/brand_s6_9.webp",
+        "deeplink": "/collections/home_discover_brand_La’ French_men",
+        "categories": [
+          "9",
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "LUDIC",
+        "img": "/assets/real/brands/brand_s6_10.webp",
+        "deeplink": "/collections/home_discover_brand_LUDIC_men",
+        "categories": [
+          "1",
+          "8"
+        ],
+        "badge": null
+      },
+      {
+        "name": "MacV",
+        "img": "/assets/real/brands/brand_s6_11.webp",
+        "deeplink": "/collections/home_discover_brand_MacV_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "Manyavar",
+        "img": "/assets/real/brands/brand_s7_0.webp",
+        "deeplink": "/collections/home_discover_brand_Manyavar_men",
+        "categories": [
+          "2"
+        ],
+        "badge": "ETHNIC"
+      },
+      {
+        "name": "McPherson & Valentine",
+        "img": "/assets/real/brands/brand_s7_1.webp",
+        "deeplink": "/collections/home_discover_brand_McPherson & Valentine_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Mercedes-Benz",
+        "img": "/assets/real/brands/brand_s7_2.webp",
+        "deeplink": "/collections/home_discover_brand_Mercedes-Benz_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "METRO",
+        "img": "/assets/real/brands/brand_s7_3.webp",
+        "deeplink": "/collections/home_discover_brand_METRO_men",
+        "categories": [
+          "7",
+          "8",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Mile Collective",
+        "img": "/assets/real/brands/brand_s7_4.webp",
+        "deeplink": "/collections/home_discover_brand_Mile Collective_men",
+        "categories": [
+          "6"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Mint & Oak",
+        "img": "/assets/real/brands/brand_s7_5.webp",
+        "deeplink": "/collections/home_discover_brand_Mint & Oak_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "MOCHI",
+        "img": "/assets/real/brands/brand_s7_6.webp",
+        "deeplink": "/collections/home_discover_brand_MOCHI_men",
+        "categories": [
+          "7",
+          "8",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Morse Code",
+        "img": "/assets/real/brands/brand_s7_7.webp",
+        "deeplink": "/collections/home_discover_brand_Morse Code_men",
+        "categories": [
+          "1",
+          "3",
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "MyDesignation",
+        "img": "/assets/real/brands/brand_s7_8.webp",
+        "deeplink": "/collections/home_discover_brand_MyDesignation_men",
+        "categories": [
+          "3",
+          "16"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Off Duty",
+        "img": "/assets/real/brands/brand_s7_9.webp",
+        "deeplink": "/collections/home_discover_brand_Off Duty_men",
+        "categories": [
+          "1",
+          "3",
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "OGCREW",
+        "img": "/assets/real/brands/brand_s7_10.webp",
+        "deeplink": "/collections/home_discover_brand_OGCREW_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "One Mile",
+        "img": "/assets/real/brands/brand_s7_11.webp",
+        "deeplink": "/collections/home_discover_brand_One Mile_men",
+        "categories": [
+          "1",
+          "5",
+          "13"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "PEACH",
+        "img": "/assets/real/brands/brand_s8_0.webp",
+        "deeplink": "/collections/home_discover_brand_PEACH_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "pH Projecct",
+        "img": "/assets/real/brands/brand_s8_1.webp",
+        "deeplink": "/collections/home_discover_brand_pH Projecct_men",
+        "categories": [
+          "1",
+          "3",
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "PUMA",
+        "img": "/assets/real/brands/brand_s8_2.webp",
+        "deeplink": "/collections/home_discover_brand_PUMA_men",
+        "categories": [
+          "18"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Salty Alpha",
+        "img": "/assets/real/brands/brand_s8_3.webp",
+        "deeplink": "/collections/home_discover_brand_Salty Alpha_men",
+        "categories": [
+          "14"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Sassafras",
+        "img": "/assets/real/brands/brand_s8_4.webp",
+        "deeplink": "/collections/home_discover_brand_Sassafras_men",
+        "categories": [
+          "4",
+          "7",
+          "15"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Shastra",
+        "img": "/assets/real/brands/brand_s8_5.webp",
+        "deeplink": "/collections/home_discover_brand_Shastra_men",
+        "categories": [
+          "14"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Shop Football",
+        "img": "/assets/real/brands/brand_s8_6.webp",
+        "deeplink": "/collections/home_discover_brand_Shop Football_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Siyu Shades",
+        "img": "/assets/real/brands/brand_s8_7.webp",
+        "deeplink": "/collections/home_discover_brand_Siyu Shades_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "SKECHERS",
+        "img": "/assets/real/brands/brand_s8_8.webp",
+        "deeplink": "/collections/home_discover_brand_SKECHERS_men",
+        "categories": [
+          "6"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Spankers",
+        "img": "/assets/real/brands/brand_s8_9.webp",
+        "deeplink": "/collections/home_discover_brand_Spankers_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "SPYKAR",
+        "img": "/assets/real/brands/brand_s8_10.webp",
+        "deeplink": "/collections/home_discover_brand_SPYKAR_men",
+        "categories": [
+          "4"
+        ],
+        "badge": null
+      },
+      {
+        "name": "STOSI",
+        "img": "/assets/real/brands/brand_s8_11.webp",
+        "deeplink": "/collections/home_discover_brand_STOSI_men",
+        "categories": [
+          "1",
+          "5",
+          "7"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "Stylera X Solera",
+        "img": "/assets/real/brands/brand_s9_0.webp",
+        "deeplink": "/collections/home_discover_brand_Stylera X Solera_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Subtract",
+        "img": "/assets/real/brands/brand_s9_1.webp",
+        "deeplink": "/collections/home_discover_brand_Subtract_men",
+        "categories": [
+          "1",
+          "5",
+          "17"
+        ],
+        "badge": null
+      },
+      {
+        "name": "SULLITT",
+        "img": "/assets/real/brands/brand_s9_2.webp",
+        "deeplink": "/collections/home_discover_brand_SULLITT_men",
+        "categories": [
+          "1",
+          "3",
+          "7"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Supersox",
+        "img": "/assets/real/brands/brand_s9_3.webp",
+        "deeplink": "/collections/home_discover_brand_Supersox_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "SUPERVEK",
+        "img": "/assets/real/brands/brand_s9_4.webp",
+        "deeplink": "/collections/home_discover_brand_SUPERVEK_men",
+        "categories": [
+          "1",
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Ten x You by Sachin Tendulkar",
+        "img": "/assets/real/brands/brand_s9_5.webp",
+        "deeplink": "/collections/home_discover_brand_Ten x You by Sachin Tendulkar_men",
+        "categories": [
+          "1",
+          "6",
+          "8"
+        ],
+        "badge": null
+      },
+      {
+        "name": "The Bear House",
+        "img": "/assets/real/brands/brand_s9_6.webp",
+        "deeplink": "/collections/home_discover_brand_The Bear House_men",
+        "categories": [
+          "1",
+          "7",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "The Gray Clothing",
+        "img": "/assets/real/brands/brand_s9_7.webp",
+        "deeplink": "/collections/home_discover_brand_The Gray Clothing_men",
+        "categories": [
+          "1",
+          "3",
+          "7"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Thela Gaadi",
+        "img": "/assets/real/brands/brand_s9_8.webp",
+        "deeplink": "/collections/home_discover_brand_Thela Gaadi_men",
+        "categories": [
+          "6"
+        ],
+        "badge": null
+      },
+      {
+        "name": "The Litt",
+        "img": "/assets/real/brands/brand_s9_9.webp",
+        "deeplink": "/collections/home_discover_brand_The Litt_men",
+        "categories": [
+          "1",
+          "3",
+          "5",
+          "10"
+        ],
+        "badge": null
+      },
+      {
+        "name": "The Shorts Project",
+        "img": "/assets/real/brands/brand_s9_10.webp",
+        "deeplink": "/collections/home_discover_brand_The Shorts Project_men",
+        "categories": [
+          "1",
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Thomas Scott",
+        "img": "/assets/real/brands/brand_s9_11.webp",
+        "deeplink": "/collections/home_discover_brand_Thomas Scott_men",
+        "categories": [
+          "1"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "TOMMY HILFIGER",
+        "img": "/assets/real/brands/brand_s10_0.webp",
+        "deeplink": "/collections/home_discover_brand_TOMMY HILFIGER_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "True Browns",
+        "img": "/assets/real/brands/brand_s10_1.webp",
+        "deeplink": "/collections/home_discover_brand_True Browns_men",
+        "categories": [
+          "2",
+          "11"
+        ],
+        "badge": "ETHNIC"
+      },
+      {
+        "name": "Underjeans by SPYKAR",
+        "img": "/assets/real/brands/brand_s10_2.webp",
+        "deeplink": "/collections/home_discover_brand_Underjeans by SPYKAR_men",
+        "categories": [
+          "18"
+        ],
+        "badge": null
+      },
+      {
+        "name": "YOUTHIX",
+        "img": "/assets/real/brands/brand_s10_3.webp",
+        "deeplink": "/collections/home_discover_brand_YOUTHIX_men",
+        "categories": [
+          "4"
+        ],
+        "badge": null
+      },
+      {
+        "name": "ZAMS",
+        "img": "/assets/real/brands/brand_s10_4.webp",
+        "deeplink": "/collections/home_discover_brand_ZAMS_men",
+        "categories": [
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Zaydn",
+        "img": "/assets/real/brands/brand_s10_5.webp",
+        "deeplink": "/collections/home_discover_brand_Zaydn_men",
+        "categories": [
+          "8"
+        ],
+        "badge": null
+      },
+      {
+        "name": "ZEEL",
+        "img": "/assets/real/brands/brand_s10_6.webp",
+        "deeplink": "/collections/home_discover_brand_ZEEL_men",
+        "categories": [
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "House of Evorah",
+        "img": "/assets/real/brands/brand_s10_7.webp",
+        "deeplink": "/collections/home_discover_brand_House of Evorah_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "AUTHENTICS",
+        "img": "/assets/real/brands/brand_s10_8.webp",
+        "deeplink": "/collections/home_discover_brand_AUTHENTICS_men",
+        "categories": [
+          "1",
+          "2",
+          "11"
+        ],
+        "badge": "ETHNIC"
+      },
+      {
+        "name": "Cava Athleisure",
+        "img": "/assets/real/brands/brand_s10_9.webp",
+        "deeplink": "/collections/home_discover_brand_Cava Athleisure_men",
+        "categories": [
+          "1",
+          "6"
+        ],
+        "badge": null
+      },
+      {
+        "name": "CONSIRT",
+        "img": "/assets/real/brands/brand_s10_10.webp",
+        "deeplink": "/collections/home_discover_brand_CONSIRT_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Divena",
+        "img": "/assets/real/brands/brand_s10_11.webp",
+        "deeplink": "/collections/home_discover_brand_Divena_men",
+        "categories": [
+          "2",
+          "11"
+        ],
+        "badge": "ETHNIC"
+      }
+    ],
+    [
+      {
+        "name": "ESPEE",
+        "img": "/assets/real/brands/brand_s11_0.webp",
+        "deeplink": "/collections/home_discover_brand_ESPEE_men",
+        "categories": [],
+        "badge": null
+      },
+      {
+        "name": "FIKN",
+        "img": "/assets/real/brands/brand_s11_1.webp",
+        "deeplink": "/collections/home_discover_brand_FIKN_men",
+        "categories": [
+          "9",
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Giordano",
+        "img": "/assets/real/brands/brand_s11_2.webp",
+        "deeplink": "/collections/home_discover_brand_Giordano_men",
+        "categories": [
+          "5",
+          "7",
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Haute Sauce",
+        "img": "/assets/real/brands/brand_s11_3.webp",
+        "deeplink": "/collections/home_discover_brand_Haute Sauce_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "IDEE",
+        "img": "/assets/real/brands/brand_s11_4.webp",
+        "deeplink": "/collections/home_discover_brand_IDEE_men",
+        "categories": [],
+        "badge": null
+      },
+      {
+        "name": "INKHUB",
+        "img": "/assets/real/brands/brand_s11_5.webp",
+        "deeplink": "/collections/home_discover_brand_INKHUB_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "IRUS",
+        "img": "/assets/real/brands/brand_s11_6.webp",
+        "deeplink": "/collections/home_discover_brand_IRUS_men",
+        "categories": [],
+        "badge": null
+      },
+      {
+        "name": "Jaypore",
+        "img": "/assets/real/brands/brand_s11_7.webp",
+        "deeplink": "/collections/home_discover_brand_Jaypore_men",
+        "categories": [
+          "2",
+          "11"
+        ],
+        "badge": "ETHNIC"
+      },
+      {
+        "name": "JOVAN",
+        "img": "/assets/real/brands/brand_s11_8.webp",
+        "deeplink": "/collections/home_discover_brand_JOVAN_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Leather Charms",
+        "img": "/assets/real/brands/brand_s11_9.webp",
+        "deeplink": "/collections/home_discover_brand_Leather Charms_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Lotto",
+        "img": "/assets/real/brands/brand_s11_10.webp",
+        "deeplink": "/collections/home_discover_brand_Lotto_men",
+        "categories": [
+          "8"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Manaca",
+        "img": "/assets/real/brands/brand_s11_11.webp",
+        "deeplink": "/collections/home_discover_brand_Manaca_men",
+        "categories": [
+          "3",
+          "4",
+          "9"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "MIDORii",
+        "img": "/assets/real/brands/brand_s12_0.webp",
+        "deeplink": "/collections/home_discover_brand_MIDORii_men",
+        "categories": [
+          "8"
+        ],
+        "badge": null
+      },
+      {
+        "name": "musclemind",
+        "img": "/assets/real/brands/brand_s12_1.webp",
+        "deeplink": "/collections/home_discover_brand_musclemind_men",
+        "categories": [
+          "6"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Pepe Jeans",
+        "img": "/assets/real/brands/brand_s12_2.webp",
+        "deeplink": "/collections/home_discover_brand_Pepe Jeans_men",
+        "categories": [
+          "1",
+          "4"
+        ],
+        "badge": null
+      },
+      {
+        "name": "POLICE",
+        "img": "/assets/real/brands/brand_s12_3.webp",
+        "deeplink": "/collections/home_discover_brand_POLICE_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "RAISED RIGHT BY YOUTHIAPA",
+        "img": "/assets/real/brands/brand_s12_4.webp",
+        "deeplink": "/collections/home_discover_brand_RAISED RIGHT BY YOUTHIAPA_men",
+        "categories": [
+          "1",
+          "3",
+          "4"
+        ],
+        "badge": null
+      },
+      {
+        "name": "SILISOUL",
+        "img": "/assets/real/brands/brand_s12_5.webp",
+        "deeplink": "/collections/home_discover_brand_SILISOUL_men",
+        "categories": [
+          "1",
+          "5"
+        ],
+        "badge": null
+      },
+      {
+        "name": "SSN Belts",
+        "img": "/assets/real/brands/brand_s12_6.webp",
+        "deeplink": "/collections/home_discover_brand_SSN Belts_men",
+        "categories": [
+          "1",
+          "5",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "TASVA",
+        "img": "/assets/real/brands/brand_s12_7.webp",
+        "deeplink": "/collections/home_discover_brand_TASVA_men",
+        "categories": [
+          "2",
+          "11"
+        ],
+        "badge": "ETHNIC"
+      },
+      {
+        "name": "Vasavi",
+        "img": "/assets/real/brands/brand_s12_8.webp",
+        "deeplink": "/collections/home_discover_brand_Vasavi_men",
+        "categories": [
+          "3",
+          "15"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Vezzo",
+        "img": "/assets/real/brands/brand_s12_9.webp",
+        "deeplink": "/collections/home_discover_brand_Vezzo_men",
+        "categories": [
+          "8"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Evensout",
+        "img": "/assets/real/brands/brand_s12_10.webp",
+        "deeplink": "/collections/home_discover_brand_Evensout_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "A Little Extra",
+        "img": "/assets/real/brands/brand_s12_11.webp",
+        "deeplink": "/collections/home_discover_brand_A Little Extra_men",
+        "categories": [
+          "9",
+          "14"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "Ashtag",
+        "img": "/assets/real/brands/brand_s13_0.webp",
+        "deeplink": "/collections/home_discover_brand_Ashtag_men",
+        "categories": [
+          "1",
+          "7"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Bad Teddy",
+        "img": "/assets/real/brands/brand_s13_1.webp",
+        "deeplink": "/collections/home_discover_brand_Bad Teddy_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Bodyssey",
+        "img": "/assets/real/brands/brand_s13_2.webp",
+        "deeplink": "/collections/home_discover_brand_Bodyssey_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Bummer",
+        "img": "/assets/real/brands/brand_s13_3.webp",
+        "deeplink": "/collections/home_discover_brand_Bummer_men",
+        "categories": [
+          "10",
+          "18"
+        ],
+        "badge": null
+      },
+      {
+        "name": "BURGER BAE",
+        "img": "/assets/real/brands/brand_s13_4.webp",
+        "deeplink": "/collections/home_discover_brand_BURGER BAE_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      },
+      {
+        "name": "davidbeckham",
+        "img": "/assets/real/brands/brand_s13_5.webp",
+        "deeplink": "/collections/home_discover_brand_davidbeckham_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Dynamocks",
+        "img": "/assets/real/brands/brand_s13_6.webp",
+        "deeplink": "/collections/home_discover_brand_Dynamocks_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "FERRAGAMO",
+        "img": "/assets/real/brands/brand_s13_7.webp",
+        "deeplink": "/collections/home_discover_brand_FERRAGAMO_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Frostbite",
+        "img": "/assets/real/brands/brand_s13_8.webp",
+        "deeplink": "/collections/home_discover_brand_Frostbite_men",
+        "categories": [
+          "9",
+          "14"
+        ],
+        "badge": null
+      },
+      {
+        "name": "GULLY LABS",
+        "img": "/assets/real/brands/brand_s13_9.webp",
+        "deeplink": "/collections/home_discover_brand_GULLY LABS_men",
+        "categories": [
+          "8"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Inkbolt",
+        "img": "/assets/real/brands/brand_s13_10.webp",
+        "deeplink": "/collections/home_discover_brand_Inkbolt_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Necesera",
+        "img": "/assets/real/brands/brand_s13_11.webp",
+        "deeplink": "/collections/home_discover_brand_Necesera_men",
+        "categories": [
+          "5",
+          "10"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "Ninety Minutes",
+        "img": "/assets/real/brands/brand_s14_0.webp",
+        "deeplink": "/collections/home_discover_brand_Ninety Minutes_men",
+        "categories": [
+          "1"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Palmonas",
+        "img": "/assets/real/brands/brand_s14_1.webp",
+        "deeplink": "/collections/home_discover_brand_Palmonas_men",
+        "categories": [
+          "14"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Pronk",
+        "img": "/assets/real/brands/brand_s14_2.webp",
+        "deeplink": "/collections/home_discover_brand_Pronk_men",
+        "categories": [
+          "1",
+          "3",
+          "7"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Rawbare",
+        "img": "/assets/real/brands/brand_s14_3.webp",
+        "deeplink": "/collections/home_discover_brand_Rawbare_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Reaction Kenneth Cole",
+        "img": "/assets/real/brands/brand_s14_4.webp",
+        "deeplink": "/collections/home_discover_brand_Reaction Kenneth Cole_men",
+        "categories": [
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Sniiff Culture",
+        "img": "/assets/real/brands/brand_s14_5.webp",
+        "deeplink": "/collections/home_discover_brand_Sniiff Culture_men",
+        "categories": [
+          "19"
+        ],
+        "badge": null
+      },
+      {
+        "name": "SocksXpress",
+        "img": "/assets/real/brands/brand_s14_6.webp",
+        "deeplink": "/collections/home_discover_brand_SocksXpress_men",
+        "categories": [
+          "8",
+          "9"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Sunstone",
+        "img": "/assets/real/brands/brand_s14_7.webp",
+        "deeplink": "/collections/home_discover_brand_Sunstone_men",
+        "categories": [
+          "1",
+          "6"
+        ],
+        "badge": null
+      },
+      {
+        "name": "THE CLOTHING FACTORY",
+        "img": "/assets/real/brands/brand_s14_8.webp",
+        "deeplink": "/collections/home_discover_brand_THE CLOTHING FACTORY_men",
+        "categories": [
+          "7",
+          "15"
+        ],
+        "badge": null
+      },
+      {
+        "name": "The Pant Project",
+        "img": "/assets/real/brands/brand_s14_9.webp",
+        "deeplink": "/collections/home_discover_brand_The Pant Project_men",
+        "categories": [
+          "1",
+          "5",
+          "13"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Upbeat Label",
+        "img": "/assets/real/brands/brand_s14_10.webp",
+        "deeplink": "/collections/home_discover_brand_Upbeat Label_men",
+        "categories": [
+          "1",
+          "7",
+          "15"
+        ],
+        "badge": null
+      },
+      {
+        "name": "Woioi",
+        "img": "/assets/real/brands/brand_s14_11.webp",
+        "deeplink": "/collections/home_discover_brand_Woioi_men",
+        "categories": [
+          "1",
+          "3"
+        ],
+        "badge": null
+      }
+    ],
+    [
+      {
+        "name": "ZACH",
+        "img": "/assets/real/brands/brand_s15_0.webp",
+        "deeplink": "/collections/home_discover_brand_ZACH_men",
+        "categories": [
+          "14"
+        ],
+        "badge": null
+      }
+    ]
+  ]
+}
