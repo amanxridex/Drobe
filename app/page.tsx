@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
@@ -23,6 +23,10 @@ export default function HomePage() {
 
   const [activeSlide, setActiveSlide] = useState(0);
   const [showGuaranteeBanner, setShowGuaranteeBanner] = useState(true);
+  const [categorySlideIndex, setCategorySlideIndex] = useState(0);
+  const [isReferralOpen, setIsReferralOpen] = useState(false);
+  const [copiedReferral, setCopiedReferral] = useState(false);
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
 
   // Exact authentic lookbook banners downloaded from Knot's ImageKit CDN
   const menLookbookCards = [
@@ -114,6 +118,10 @@ export default function HomePage() {
   // Reset slide index on gender switch
   useEffect(() => {
     setActiveSlide(0);
+    setCategorySlideIndex(0);
+    if (categoryScrollRef.current) {
+      categoryScrollRef.current.scrollLeft = 0;
+    }
   }, [gender]);
 
   // Auto-advance Lookbook carousel every 3.8s
@@ -146,13 +154,101 @@ export default function HomePage() {
 
   const heroCategories = gender === 'women' ? womenCategories : menCategories;
 
-  // Subcategories rail (Row 3)
-  const menSubCategories = (CATEGORIES_GRID_MANIFEST['2'] || []).slice(0, 8).map(c => ({
-    name: c.alt || 'Category',
-    img: c.img,
-    route: '/collection/top'
-  }));
-  const subCategories = gender === 'women' ? WOMEN_CATEGORIES_GRID : menSubCategories;
+  // Format category text cleanly (e.g. "cargos & parachutes" -> "Cargos & Parachutes")
+  const formatCategoryLabel = (name: string) => {
+    if (!name) return '';
+    return name
+      .split(' ')
+      .map((w) => {
+        if (!w) return '';
+        if (w.toLowerCase() === '&') return '&';
+        if (w.includes('-')) {
+          return w.split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join('-');
+        }
+        return w.charAt(0).toUpperCase() + w.slice(1);
+      })
+      .join(' ');
+  };
+
+  const getCategoryRoute = (alt: string) => {
+    const lower = (alt || '').toLowerCase();
+    if (lower.includes('kurta') || lower.includes('ethnic') || lower.includes('pyjama') || lower.includes('saree') || lower.includes('suit')) {
+      return '/collection/ethnic';
+    }
+    if (
+      lower.includes('ring') ||
+      lower.includes('necklace') ||
+      lower.includes('bracelet') ||
+      lower.includes('perfume') ||
+      lower.includes('jewel') ||
+      lower.includes('watch') ||
+      lower.includes('cap') ||
+      lower.includes('sunglass') ||
+      lower.includes('bag') ||
+      lower.includes('sock') ||
+      lower.includes('earring')
+    ) {
+      return '/collection/accessories';
+    }
+    if (
+      lower.includes('shoe') ||
+      lower.includes('slipper') ||
+      lower.includes('slide') ||
+      lower.includes('loafer') ||
+      lower.includes('flat')
+    ) {
+      return '/collection/footwear';
+    }
+    if (
+      lower.includes('cargo') ||
+      lower.includes('short') ||
+      lower.includes('jogger') ||
+      lower.includes('trackpant') ||
+      lower.includes('jean') ||
+      lower.includes('trouser') ||
+      lower.includes('pant') ||
+      lower.includes('chino')
+    ) {
+      return '/collection/bottom';
+    }
+    return '/collection/top';
+  };
+
+  // Authentic 5-slide category grids (40 categories, 4x2 per slide) from Knot
+  const menGridSlides = [
+    CATEGORIES_GRID_MANIFEST['2'] || [],
+    CATEGORIES_GRID_MANIFEST['4'] || [],
+    CATEGORIES_GRID_MANIFEST['5'] || [],
+    CATEGORIES_GRID_MANIFEST['6'] || [],
+    CATEGORIES_GRID_MANIFEST['7'] || []
+  ];
+
+  const womenGridSlides = [
+    WOMEN_CATEGORIES_GRID || []
+  ];
+
+  const categorySlides = gender === 'women' ? womenGridSlides : menGridSlides;
+
+  const handleCategoryScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const scrollLeft = e.currentTarget.scrollLeft;
+    const width = e.currentTarget.clientWidth;
+    if (width > 0) {
+      const newIndex = Math.round(scrollLeft / width);
+      if (newIndex !== categorySlideIndex) {
+        setCategorySlideIndex(newIndex);
+      }
+    }
+  };
+
+  const scrollToSlide = (idx: number) => {
+    if (categoryScrollRef.current) {
+      categoryScrollRef.current.scrollTo({
+        left: idx * categoryScrollRef.current.clientWidth,
+        behavior: 'smooth'
+      });
+      setCategorySlideIndex(idx);
+    }
+  };
 
   // Brand Partners Rail (Row 4)
   const menBrandPartners = (SECTIONS_MANIFEST['8'] || []).map(b => ({
@@ -455,69 +551,170 @@ export default function HomePage() {
         </section>
 
         {/* ========================================================
-            ROW 3: AUTHENTIC CATEGORY GRID / SUBCATEGORIES
+            AUTHENTIC REFERRAL / TOTE BAG BANNER
+            Exact purple banner: "Invite your friends / EARN ₹500 + TOTE BAG / ONE FOR YOU ONE FOR THEM ->"
             ======================================================== */}
-        <section style={{ padding: '4px 0 16px' }}>
+        <section style={{ padding: '0 12px 14px' }}>
           <div
+            onClick={() => setIsReferralOpen(true)}
             style={{
-              display: 'flex',
-              gap: 10,
-              overflowX: 'auto',
-              padding: '0 12px',
-              scrollSnapType: 'x mandatory',
-              scrollbarWidth: 'none'
+              width: '100%',
+              borderRadius: 14,
+              overflow: 'hidden',
+              cursor: 'pointer',
+              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.4)',
+              transition: 'transform 0.15s ease'
             }}
           >
-            {subCategories.map((cat, idx) => (
+            <img
+              src="/assets/real/referral_tote_banner.png"
+              alt="Invite your friends - Earn ₹500 + Tote Bag"
+              style={{
+                width: '100%',
+                height: 'auto',
+                display: 'block'
+              }}
+              onError={(e) => {
+                // Direct fallback to Knot CDN
+                (e.target as HTMLImageElement).src =
+                  'https://ik.imagekit.io/slickapp/droplet/tr:dpr-2,f-webp,w-375/app_images%2FFrame-r%26e-tote.png?ik-t=9999999999&ik-s=dc6526136e1da89e31f4bdb25d85bb5b3a910b2c';
+              }}
+            />
+          </div>
+        </section>
+
+        {/* ========================================================
+            AUTHENTIC CATEGORY GRID CAROUSEL (4x2 Grids, 5 Pages)
+            Slide 1: Kurtas, Kurta Sets, Ethnic Jackets, Pyjamas | Rings, Necklaces & Chains, Bracelets, Perfumes
+            ...through 5 slides (40 total categories) with 5 pagination dots
+            ======================================================== */}
+        <section style={{ padding: '0 0 16px', position: 'relative' }}>
+          <div
+            ref={categoryScrollRef}
+            onScroll={handleCategoryScroll}
+            style={{
+              display: 'flex',
+              overflowX: 'auto',
+              scrollSnapType: 'x mandatory',
+              scrollbarWidth: 'none',
+              width: '100%',
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
+            {categorySlides.map((slideItems, slideIdx) => (
               <div
-                key={idx}
-                onClick={() => router.push(cat.route)}
+                key={slideIdx}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 4,
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                  width: 72,
-                  scrollSnapAlign: 'start'
+                  flex: '0 0 100%',
+                  width: '100%',
+                  scrollSnapAlign: 'start',
+                  boxSizing: 'border-box',
+                  padding: '0 12px'
                 }}
               >
                 <div
                   style={{
-                    width: 66,
-                    height: 72,
-                    borderRadius: 14,
-                    overflow: 'hidden',
-                    background: '#1a1a22',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(4, 1fr)',
+                    rowGap: 16,
+                    columnGap: 8
                   }}
                 >
-                  <img
-                    src={cat.img}
-                    alt={cat.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
+                  {slideItems.map((cat: any, itemIdx: number) => {
+                    const rawName = cat.alt || cat.name || 'Category';
+                    const displayName = formatCategoryLabel(rawName);
+                    const targetRoute = getCategoryRoute(rawName);
+
+                    return (
+                      <div
+                        key={itemIdx}
+                        onClick={() => router.push(targetRoute)}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'flex-start',
+                          cursor: 'pointer',
+                          textAlign: 'center'
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 68,
+                            height: 68,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: 'transparent'
+                          }}
+                        >
+                          <img
+                            src={cat.img}
+                            alt={displayName}
+                            style={{
+                              maxWidth: '100%',
+                              maxHeight: '100%',
+                              objectFit: 'contain',
+                              filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35))'
+                            }}
+                          />
+                        </div>
+                        <span
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 600,
+                            color: '#ffffff',
+                            textAlign: 'center',
+                            marginTop: 6,
+                            lineHeight: 1.22,
+                            minHeight: 28,
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            justifyContent: 'center',
+                            wordBreak: 'break-word',
+                            maxWidth: 78
+                          }}
+                        >
+                          {displayName}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
-                <span
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    color: '#ffffff',
-                    textAlign: 'center',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    maxWidth: 70
-                  }}
-                >
-                  {cat.name}
-                </span>
               </div>
             ))}
           </div>
+
+          {/* Pagination Indicator Dots (Exact 5 dots matching Knot) */}
+          {categorySlides.length > 1 && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 5,
+                marginTop: 14
+              }}
+            >
+              {categorySlides.map((_, dotIdx) => {
+                const isActive = dotIdx === categorySlideIndex;
+                return (
+                  <div
+                    key={dotIdx}
+                    onClick={() => scrollToSlide(dotIdx)}
+                    style={{
+                      width: isActive ? 18 : 5,
+                      height: 5,
+                      borderRadius: isActive ? 3 : '50%',
+                      background: isActive ? '#ffffff' : '#44444a',
+                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      cursor: 'pointer'
+                    }}
+                  />
+                );
+              })}
+            </div>
+          )}
         </section>
 
         {/* ========================================================
@@ -1276,6 +1473,184 @@ export default function HomePage() {
             >
               <img src="/assets/icons/cross_close.svg" alt="Close" style={{ width: 14, height: 14 }} />
             </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ========================================================
+          AUTHENTIC REFERRAL BOTTOM SHEET (₹500 + TOTE BAG)
+          ======================================================== */}
+      <AnimatePresence>
+        {isReferralOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsReferralOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 110,
+              background: 'rgba(0, 0, 0, 0.75)',
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'center'
+            }}
+          >
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: '100%',
+                maxWidth: 430,
+                background: '#18191f',
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
+                borderTop: '1px solid #2e2f38',
+                padding: '24px 20px 32px',
+                color: '#ffffff',
+                boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.8)'
+              }}
+            >
+              {/* Header Bar */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <span
+                  style={{
+                    background: 'linear-gradient(90deg, #7c3aed, #ec4899)',
+                    padding: '4px 10px',
+                    borderRadius: 20,
+                    fontSize: 11,
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    letterSpacing: 0.5
+                  }}
+                >
+                  🎁 Invite & Earn
+                </span>
+                <button
+                  onClick={() => setIsReferralOpen(false)}
+                  style={{
+                    background: '#24252e',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 30,
+                    height: 30,
+                    color: '#a1a1aa',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: 16
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Title & description */}
+              <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 8, lineHeight: 1.25 }}>
+                Earn ₹500 + Free Tote Bag
+              </h2>
+              <p style={{ fontSize: 13, color: '#9ca3af', lineHeight: 1.5, marginBottom: 20 }}>
+                Give friends ₹500 off on their first order. You get ₹500 Knot wallet credit + an exclusive KNOT Tote Bag once their order delivers!
+              </p>
+
+              {/* Code Box */}
+              <div
+                style={{
+                  background: '#121216',
+                  border: '1px dashed #7c3aed',
+                  borderRadius: 14,
+                  padding: '14px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: 18
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 10, color: '#71717a', textTransform: 'uppercase', fontWeight: 700 }}>
+                    Your Referral Code
+                  </div>
+                  <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: 1.5, color: '#a78bfa' }}>
+                    KNOT-BAG500
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    navigator.clipboard?.writeText('KNOT-BAG500');
+                    setCopiedReferral(true);
+                    setTimeout(() => setCopiedReferral(false), 2000);
+                  }}
+                  style={{
+                    background: copiedReferral ? '#10b981' : '#7c3aed',
+                    border: 'none',
+                    color: '#ffffff',
+                    padding: '8px 14px',
+                    borderRadius: 8,
+                    fontWeight: 700,
+                    fontSize: 12,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {copiedReferral ? 'COPIED! ✓' : 'COPY'}
+                </button>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <a
+                  href="https://api.whatsapp.com/send?text=Hey!%20Get%20%E2%82%B9500%20OFF%20your%20first%20fashion%20delivery%20on%20KNOT%20with%20my%20code%20KNOT-BAG500!%20Check%20it%20out:%20https://knotnow.co"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    background: '#25D366',
+                    color: '#ffffff',
+                    borderRadius: 12,
+                    padding: '12px 16px',
+                    fontWeight: 800,
+                    fontSize: 14,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    textDecoration: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  💬 Share via WhatsApp
+                </a>
+
+                <button
+                  onClick={() => {
+                    navigator.clipboard?.writeText('https://knotnow.co/?ref=KNOT-BAG500');
+                    setCopiedReferral(true);
+                    setTimeout(() => setCopiedReferral(false), 2000);
+                  }}
+                  style={{
+                    background: '#24252e',
+                    border: '1px solid #383a45',
+                    color: '#ffffff',
+                    borderRadius: 12,
+                    padding: '12px 16px',
+                    fontWeight: 700,
+                    fontSize: 13,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    cursor: 'pointer'
+                  }}
+                >
+                  🔗 Copy Invite Link
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
