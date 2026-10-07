@@ -1,39 +1,59 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import LocationModal from './LocationModal';
 import AuthModal from './AuthModal';
 import CouponModal from './CouponModal';
 
 export default function DesktopWrapper({ children }: { children: React.ReactNode }) {
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
-    const updateViewportHeight = () => {
-      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      document.documentElement.style.setProperty('--app-height', `${vh}px`);
-      document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
+    const handleViewport = () => {
+      const mobile = window.innerWidth < 550;
+      setIsMobile(mobile);
+      if (mobile) {
+        const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        document.documentElement.style.setProperty('--app-height', `${vh}px`);
+        document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
+      }
     };
 
-    updateViewportHeight();
-    window.addEventListener('resize', updateViewportHeight);
-    window.addEventListener('orientationchange', updateViewportHeight);
+    handleViewport();
+    window.addEventListener('resize', handleViewport);
+    window.addEventListener('orientationchange', handleViewport);
 
     if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', updateViewportHeight);
-      window.visualViewport.addEventListener('scroll', updateViewportHeight);
+      window.visualViewport.addEventListener('resize', handleViewport);
+      window.visualViewport.addEventListener('scroll', handleViewport);
     }
 
     return () => {
-      window.removeEventListener('resize', updateViewportHeight);
-      window.removeEventListener('orientationchange', updateViewportHeight);
+      window.removeEventListener('resize', handleViewport);
+      window.removeEventListener('orientationchange', handleViewport);
       if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', updateViewportHeight);
-        window.visualViewport.removeEventListener('scroll', updateViewportHeight);
+        window.visualViewport.removeEventListener('resize', handleViewport);
+        window.visualViewport.removeEventListener('scroll', handleViewport);
       }
     };
   }, []);
 
   return (
-    <div id="app-desktop-wrapper">
+    <div
+      id="app-desktop-wrapper"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: isMobile ? 'var(--app-height, 100dvh)' : '100vh',
+        backgroundColor: '#242424',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden'
+      }}
+    >
       {/* Desktop Left QR Download Card (Exact 1:1 match to Knot desktop) */}
       <div id="qr-download-card">
         <img
@@ -47,7 +67,21 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
       </div>
 
       {/* Main Centered Mobile Application Frame */}
-      <div id="mobile-app-frame">
+      <div
+        id="mobile-app-frame"
+        style={{
+          width: '100%',
+          maxWidth: isMobile ? '100%' : '446px',
+          height: isMobile ? 'var(--app-height, 100dvh)' : '100vh',
+          backgroundColor: '#171717',
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          boxShadow: isMobile ? 'none' : '0 0 50px rgba(0,0,0,0.6)',
+          margin: '0 auto'
+        }}
+      >
         {children}
         <LocationModal />
         <AuthModal />

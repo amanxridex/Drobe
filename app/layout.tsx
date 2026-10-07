@@ -29,9 +29,11 @@ export default function RootLayout({
             __html: `
               (function() {
                 function updateAppHeight() {
-                  var vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-                  document.documentElement.style.setProperty('--app-height', vh + 'px');
-                  document.documentElement.style.setProperty('--vh', (vh * 0.01) + 'px');
+                  if (window.innerWidth < 550) {
+                    var vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+                    document.documentElement.style.setProperty('--app-height', vh + 'px');
+                    document.documentElement.style.setProperty('--vh', (vh * 0.01) + 'px');
+                  }
                 }
                 updateAppHeight();
                 window.addEventListener('resize', updateAppHeight);
