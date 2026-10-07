@@ -21,9 +21,9 @@ export default function ProductDetailPage() {
     .flatMap((s: any) => s.products)
     .find((p: any) => p.id === productId);
 
-  const product = curatedProduct || PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
+  const product: Product = (curatedProduct as unknown as Product) || PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
 
-  const thumbnails = product.images.length > 0 ? product.images : [product.thumbnail];
+  const thumbnails: string[] = (product.images && product.images.length > 0) ? product.images : [product.thumbnail];
   const [activeThumbIndex, setActiveThumbIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('S');
   const [activeTab, setActiveTab] = useState<'specification' | 'description'>('specification');
@@ -440,7 +440,7 @@ export default function ProductDetailPage() {
               scrollbarWidth: 'none'
             }}
           >
-            {thumbnails.map((thumb, idx) => {
+            {thumbnails.map((thumb: string, idx: number) => {
               const isSelected = activeThumbIndex === idx;
               return (
                 <div
