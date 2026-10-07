@@ -62,10 +62,13 @@ html, body {
   color: var(--text-primary);
   font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   height: 100%;
+  height: 100dvh;
+  height: var(--app-height, 100dvh);
   width: 100%;
   overflow: hidden;
   user-select: none;
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* Scrollbar customization */
@@ -86,8 +89,13 @@ html, body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  height: var(--app-height, 100dvh);
+  max-height: var(--app-height, 100dvh);
   background-color: #242424;
   display: flex;
   align-items: center;
@@ -98,6 +106,9 @@ html, body {
 #mobile-app-frame {
   width: 100%;
   height: 100%;
+  height: 100dvh;
+  height: var(--app-height, 100dvh);
+  max-height: var(--app-height, 100dvh);
   max-width: 100%;
   background-color: var(--bg-dark);
   position: relative;
@@ -112,16 +123,36 @@ html, body {
     max-width: 446px;
     border-radius: 0;
     box-shadow: none;
-    height: 100vh;
+    height: 100%;
+    height: 100dvh;
+    height: var(--app-height, 100dvh);
+    max-height: var(--app-height, 100dvh);
     margin: 0 auto;
   }
 }
 
 /* Mobile full-width constraint */
 @media (max-width: 549px), (max-aspect-ratio: 3/5) {
+  #app-desktop-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    height: var(--app-height, 100dvh);
+    max-height: var(--app-height, 100dvh);
+  }
+
   #mobile-app-frame {
+    width: 100%;
     max-width: 100%;
     height: 100%;
+    height: 100dvh;
+    height: var(--app-height, 100dvh);
+    max-height: var(--app-height, 100dvh);
     border-radius: 0;
     box-shadow: none;
   }

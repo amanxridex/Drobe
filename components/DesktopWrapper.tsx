@@ -1,11 +1,37 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import LocationModal from './LocationModal';
 import AuthModal from './AuthModal';
 import CouponModal from './CouponModal';
 
 export default function DesktopWrapper({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    const updateViewportHeight = () => {
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      document.documentElement.style.setProperty('--app-height', `${vh}px`);
+      document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
+    };
+
+    updateViewportHeight();
+    window.addEventListener('resize', updateViewportHeight);
+    window.addEventListener('orientationchange', updateViewportHeight);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateViewportHeight);
+      window.visualViewport.addEventListener('scroll', updateViewportHeight);
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateViewportHeight);
+      window.removeEventListener('orientationchange', updateViewportHeight);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', updateViewportHeight);
+        window.visualViewport.removeEventListener('scroll', updateViewportHeight);
+      }
+    };
+  }, []);
+
   return (
     <div id="app-desktop-wrapper">
       {/* Desktop Left QR Download Card (Exact 1:1 match to Knot desktop) */}

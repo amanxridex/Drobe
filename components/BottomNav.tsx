@@ -9,80 +9,7 @@ export default function BottomNav() {
   const pathname = usePathname();
   const { cart } = useApp();
 
-  const [isVisible, setIsVisible] = useState(true);
-  const [navHeight, setNavHeight] = useState(78);
-  const lastScrollTop = useRef(0);
   const navRef = useRef<HTMLElement>(null);
-
-  // Measure navbar height on mount & resize
-  useEffect(() => {
-    const updateHeight = () => {
-      if (navRef.current) {
-        setNavHeight(navRef.current.offsetHeight);
-      }
-    };
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
-  }, []);
-
-  // Reset navbar to visible when navigating to a new route
-  useEffect(() => {
-    setIsVisible(true);
-    lastScrollTop.current = 0;
-  }, [pathname]);
-
-  // Listen to scroll events across any scrollable element (using capture phase)
-  useEffect(() => {
-    const handleScroll = (e: Event) => {
-      const target = e.target;
-      if (!target) return;
-
-      const currentScrollTop =
-        target === document || target === window
-          ? window.scrollY || document.documentElement.scrollTop || 0
-          : target instanceof HTMLElement
-          ? target.scrollTop
-          : 0;
-
-      // Ignore horizontal scrolling where scrollTop hasn't changed
-      if (Math.abs(currentScrollTop - lastScrollTop.current) < 1) return;
-
-      // Always show when near the top of the container
-      if (currentScrollTop <= 15) {
-        setIsVisible(true);
-        lastScrollTop.current = Math.max(0, currentScrollTop);
-        return;
-      }
-
-      // Avoid triggering on iOS rubber-band overscroll at the bottom
-      if (target instanceof HTMLElement && target.scrollHeight > target.clientHeight) {
-        const isNearBottom = currentScrollTop >= target.scrollHeight - target.clientHeight - 8;
-        if (isNearBottom) {
-          lastScrollTop.current = currentScrollTop;
-          return;
-        }
-      }
-
-      const delta = currentScrollTop - lastScrollTop.current;
-
-      // User scrolls down (content moves up) -> navbar hides down
-      if (delta > 8) {
-        setIsVisible(false);
-      }
-      // User scrolls back towards the top -> navbar reappears
-      else if (delta < -8) {
-        setIsVisible(true);
-      }
-
-      lastScrollTop.current = Math.max(0, currentScrollTop);
-    };
-
-    window.addEventListener('scroll', handleScroll, { capture: true, passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll, { capture: true });
-    };
-  }, []);
 
   const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const displayCartCount = totalCartCount > 0 ? totalCartCount : 2;
@@ -241,8 +168,11 @@ export default function BottomNav() {
     <nav
       ref={navRef}
       style={{
+        flexShrink: 0,
         position: 'sticky',
         bottom: 0,
+        left: 0,
+        right: 0,
         zIndex: 50,
         background: '#171717',
         borderTop: '1px solid #242424',
@@ -250,13 +180,11 @@ export default function BottomNav() {
         alignItems: 'center',
         justifyContent: 'space-around',
         width: '100%',
-        padding: '14px 10px 24px',
-        boxSizing: 'border-box',
-        transform: isVisible ? 'translateY(0)' : 'translateY(100%)',
-        marginBottom: isVisible ? 0 : -navHeight,
-        transition: 'transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), margin-bottom 0.32s cubic-bezier(0.16, 1, 0.3, 1)',
-        pointerEvents: isVisible ? 'auto' : 'none',
-        willChange: 'transform, margin-bottom'
+        paddingTop: 10,
+        paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))',
+        paddingLeft: 10,
+        paddingRight: 10,
+        boxSizing: 'border-box'
       }}
     >
       {tabs.map((tab) => {

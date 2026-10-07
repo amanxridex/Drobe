@@ -31,11 +31,17 @@ export default function TryAndBuySlider({ onBuyNow, onAddToBag }: TryAndBuySlide
   return (
     <div
       style={{
+        flexShrink: 0,
         position: 'sticky',
-        bottom: 12,
-        padding: '0 12px',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: '100%',
+        padding: '6px 12px calc(10px + env(safe-area-inset-bottom, 0px))',
+        background: 'linear-gradient(to top, #0e0e11 85%, rgba(14, 14, 17, 0))',
         zIndex: 50,
-        userSelect: 'none'
+        userSelect: 'none',
+        boxSizing: 'border-box'
       }}
     >
       <div

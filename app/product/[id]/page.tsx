@@ -234,7 +234,7 @@ export default function ProductDetailPage() {
       {/* ========================================================
           SCROLLABLE PRODUCT DETAILS BODY
           ======================================================== */}
-      <main style={{ flex: 1, overflowY: 'auto', padding: '4px 12px 100px' }}>
+      <main style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '4px 12px 24px' }}>
         {/* ========================================================
             2. MAIN HERO IMAGE CARD (Exact 1:1 Knot Layout)
             - Rounded container
