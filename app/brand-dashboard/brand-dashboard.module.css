@@ -1013,172 +1013,1012 @@
 }
 
 /* ==========================================================
-   CLEAN & MINIMAL SOLID STYLES (NO GLASSMORPHISM, NO BOUNCE)
+   RONASIT / IMAGE 1 & 2 MOBILE DESIGN SYSTEM
    ========================================================== */
-.minimalHeader {
+.appTopHeader {
   flex-shrink: 0;
-  height: 52px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e5ea;
+  height: 48px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 18px;
-  position: relative;
-  z-index: 30;
+  align-items: center;
+  padding: 0 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.minimalLogo {
-  font-size: 13px;
+.appTopLogo {
+  font-size: 14px;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: #0f172a;
 }
 
-.minimalSubChip {
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 600;
-}
-
-.minimalLiveChip {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.appTopTag {
   font-size: 11px;
   font-weight: 700;
-  color: #059669;
-  background-color: #f0fdf4;
-  padding: 4px 10px;
-  border-radius: 6px;
-  border: 1px solid #bbf7d0;
-  cursor: pointer;
-  font-family: inherit;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-.cleanStartBody {
+/* --- SCREEN 1: START SCREEN (IMAGE 2 RONASIT) --- */
+.startScreenBody {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 28px 20px 32px 20px;
-  background-color: #ffffff;
+  padding: 16px 20px 24px 20px;
   overflow-y: auto;
+  background-color: #ffffff;
 }
 
-.cleanStartContent {
+.startHeroVisualCard {
+  position: relative;
+  width: 100%;
+  height: 205px;
+  background: linear-gradient(135deg, #a7f3d0 0%, #34d399 50%, #10b981 100%);
+  border-radius: 28px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  box-shadow: 0 14px 34px rgba(16, 185, 129, 0.22);
 }
 
-.cleanEyebrow {
+.floatingProductCard1 {
+  position: absolute;
+  top: 18px;
+  left: 14px;
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  z-index: 3;
+}
+
+.floatingProductCard2 {
+  position: absolute;
+  bottom: 18px;
+  right: 14px;
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  z-index: 3;
+}
+
+.floatingThumbBox {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.floatingBadgeTag {
+  font-size: 10px;
+  font-weight: 800;
+  background-color: #f1f5f9;
+  padding: 3px 6px;
+  border-radius: 8px;
+  color: #0f172a;
+}
+
+.startCenterEmblem {
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  background-color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.35);
+  z-index: 2;
+}
+
+.startTextSection {
+  margin-bottom: 20px;
+}
+
+.startPillEyebrow {
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #0284c7;
-  margin-bottom: 8px;
+  color: #059669;
+  margin-bottom: 6px;
 }
 
-.cleanTitle {
+.startBigHeading {
   font-size: 32px;
   font-weight: 800;
   letter-spacing: -0.035em;
   color: #0f172a;
-  line-height: 1.12;
+  line-height: 1.1;
   margin: 0 0 10px 0;
 }
 
-.cleanSubtitle {
-  font-size: 14px;
+.startLeadText {
+  font-size: 13px;
   line-height: 1.5;
   color: #64748b;
-  margin: 0 0 28px 0;
+  margin: 0 0 16px 0;
 }
 
-.cleanStepList {
+.startFeatureRow {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 20px 18px;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  margin-bottom: 24px;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
 }
 
-.cleanStepRow {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-}
-
-.cleanStepNum {
-  font-size: 11px;
-  font-weight: 800;
-  color: #0284c7;
-  background-color: #e0f2fe;
-  padding: 2px 7px;
-  border-radius: 4px;
-  margin-top: 2px;
-}
-
-.cleanStepHeading {
-  font-size: 13px;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 2px;
-}
-
-.cleanStepText {
-  font-size: 12px;
-  color: #64748b;
-  line-height: 1.4;
-}
-
-.cleanStatusBox {
+.startFeatureItem {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 5px 10px;
+  border-radius: 20px;
+}
+
+.activeBrandBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 10px 14px;
   background-color: #f0fdf4;
   border: 1px solid #bbf7d0;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
-.cleanBottomAction {
+.startActionSection {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: auto;
 }
 
-.cleanPrimaryBtn {
+.ronasBlackPillBtn {
   width: 100%;
-  height: 48px;
+  height: 52px;
   background-color: #0f172a;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 26px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.ronasBlackPillBtn:hover {
+  background-color: #1e293b;
+}
+
+.ronasOutlinePillBtn {
+  width: 100%;
+  height: 46px;
+  background-color: #ffffff;
+  color: #0f172a;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 23px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: inherit;
-  transition: background-color 0.15s ease;
 }
 
-.cleanPrimaryBtn:hover {
-  background-color: #1e293b;
+/* --- SCREEN 2: ONBOARDING STEP PILLS & FORMS --- */
+.onboardingPillsBar {
+  display: flex;
+  gap: 6px;
+  padding: 12px 18px;
+  overflow-x: auto;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.cleanFootnote {
+.stepPillItem {
+  flex: 1;
+  min-width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 6px 12px 6px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.stepPillItemActive {
+  background-color: #0f172a !important;
+  border-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+.stepPillItemDone {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.stepPillNum {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+
+.stepPillLabel {
   font-size: 11px;
-  color: #94a3b8;
-  text-align: center;
+  font-weight: 700;
+  white-space: nowrap;
 }
+
+.stepActiveDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  position: absolute;
+  bottom: 4px;
+}
+
+.onboardingScrollContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 18px 30px 18px;
+}
+
+.onboardingStepTitle {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+  margin: 2px 0 3px 0;
+}
+
+.onboardingStepSub {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.ronasFormContainer {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  padding: 20px 18px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  margin-top: 14px;
+}
+
+.ronasInputGroup {
+  margin-bottom: 14px;
+}
+
+.ronasInputGroup:last-child {
+  margin-bottom: 0;
+}
+
+.ronasInputLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.ronasInputField {
+  width: 100%;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-size: 13px;
+  color: #0f172a;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.ronasInputField:focus {
+  border-color: #0284c7;
+}
+
+.ronasRowTwo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ronasBannerPreviewBox {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.ronasBannerImg {
+  width: 100%;
+  height: 135px;
+  border-radius: 12px;
+  object-fit: cover;
+  display: block;
+}
+
+.ronasBannerEmpty {
+  width: 100%;
+  height: 110px;
+  border-radius: 12px;
+  background-color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.ronasMediaControlsRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.ronasUploadBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  height: 42px;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ronasPresetChipsRow {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+.ronasPresetChip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ronasEmblemPreviewBox {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.ronasEmblemThumb {
+  width: 62px;
+  height: 62px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid #cbd5e1;
+  flex-shrink: 0;
+}
+
+.ronasEmblemFallback {
+  width: 62px;
+  height: 62px;
+  border-radius: 16px;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ronasProductEditCard {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.ronasOfferingTag {
+  font-size: 10px;
+  font-weight: 800;
+  color: #0284c7;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ronasAddOfferingBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background-color: #0f172a;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+
+.ronasDossierCard {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.ronasDossierAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid #cbd5e1;
+}
+
+.ronasDossierAvatarFallback {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ronasReadyNotice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: #065f46;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 14px;
+}
+
+.ronasBottomActionBar {
+  flex-shrink: 0;
+  padding: 12px 18px;
+  background-color: #ffffff;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.ronasBackPillBtn {
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 24px;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ronasContinuePillBtn {
+  flex: 1;
+  height: 48px;
+  border-radius: 24px;
+  background-color: #0f172a;
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+}
+
+.ronasGoLivePillBtn {
+  flex: 1;
+  height: 48px;
+  border-radius: 24px;
+  background-color: #059669;
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3);
+  font-family: inherit;
+}
+
+.ronasBackTextBtn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.ronasSaveDraftBtn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0284c7;
+  cursor: pointer;
+}
+
+/* --- SCREEN 3: SANDRA DASHBOARD LAYOUT (IMAGE 1) --- */
+.ronasHeader {
+  height: 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 18px;
+  background-color: #ffffff;
+  flex-shrink: 0;
+}
+
+.ronasHeaderAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ronasHeaderAvatarFallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ronasHeaderGreeting {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.ronasHeaderDate {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.ronasCircleBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ronasScrollContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 18px 110px 18px;
+}
+
+.ronasHeroChallengeCard {
+  position: relative;
+  width: 100%;
+  background-color: #ede9fe;
+  border-radius: 26px;
+  padding: 20px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.08);
+}
+
+.ronasHeroCategoryTag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7c3aed;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.ronasHeroTitle {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+  line-height: 1.15;
+}
+
+.ronasHeroSub {
+  font-size: 12px;
+  color: #5b21b6;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ronasAvatarGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.ronasProductCountBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #0f172a;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.ronasHeroRightGraphic {
+  width: 90px;
+  height: 90px;
+  border-radius: 18px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ronasHeroCoverImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 18px;
+}
+
+.ronas3DShapeStack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #ddd6fe;
+}
+
+.ronasPillBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.ronasDayPill {
+  flex: 1;
+  min-width: 60px;
+  height: 72px;
+  border-radius: 24px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  position: relative;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.ronasDayPillActive {
+  background-color: #0f172a !important;
+  border-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+.pillLabelSmall {
+  font-size: 10px;
+  color: inherit;
+  opacity: 0.75;
+  font-weight: 600;
+}
+
+.pillValueBig {
+  font-size: 15px;
+  font-weight: 800;
+  color: inherit;
+}
+
+.pillActiveDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  position: absolute;
+  bottom: 6px;
+}
+
+.ronasPlanSection {
+  margin-bottom: 20px;
+}
+
+.ronasSectionHeading {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.ronasAddPillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  background-color: #0f172a;
+  color: #ffffff;
+  padding: 5px 12px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.ronasCardsGrid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 12px;
+}
+
+.ronasCardYellow {
+  background-color: #fed7aa;
+  border-radius: 24px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.1);
+}
+
+.ronasCardTagYellow {
+  font-size: 10px;
+  font-weight: 800;
+  background-color: rgba(255, 255, 255, 0.65);
+  padding: 3px 8px;
+  border-radius: 14px;
+  color: #9a3412;
+  align-self: flex-start;
+  margin-bottom: 8px;
+}
+
+.ronasCardBlue {
+  background-color: #bae6fd;
+  border-radius: 22px;
+  padding: 14px 14px;
+  box-shadow: 0 6px 18px rgba(14, 165, 233, 0.1);
+}
+
+.ronasCardTagBlue {
+  font-size: 10px;
+  font-weight: 800;
+  background-color: rgba(255, 255, 255, 0.65);
+  padding: 3px 8px;
+  border-radius: 14px;
+  color: #0369a1;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.ronasCardPink {
+  background-color: #fbcfe8;
+  border-radius: 22px;
+  padding: 12px 14px;
+  box-shadow: 0 6px 18px rgba(236, 72, 153, 0.1);
+}
+
+.ronasSocialRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.ronasSocialCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.ronasCardLavender {
+  background-color: #f3e8ff;
+  border-radius: 22px;
+  padding: 16px 16px;
+}
+
+.ronasCardTagLavender {
+  font-size: 10px;
+  font-weight: 800;
+  background-color: rgba(255, 255, 255, 0.65);
+  padding: 3px 8px;
+  border-radius: 14px;
+  color: #6b21a8;
+}
+
+.ronasCardTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+
+.ronasCardMeta {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.ronasCardDesc {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #334155;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ronasCardAuthorRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.ronasAuthorAvatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.ronasAuthorAvatarFallback {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #9a3412;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ronasQuoteCard {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 16px;
+  margin-top: 14px;
+}
+
+.ronasQuoteText {
+  font-size: 12px;
+  font-style: italic;
+  color: #334155;
+  line-height: 1.5;
+  margin: 0 0 6px 0;
+}
+
+.ronasFloatingBottomNav {
+  position: absolute;
+  bottom: 14px;
+  left: 20px;
+  right: 20px;
+  height: 60px;
+  background-color: #0f172a;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 10px;
+  z-index: 40;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.35);
+}
+
+.ronasNavTab {
+  background: none;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ronasNavTabActive {
+  background-color: #ffffff !important;
+}
+
 
 

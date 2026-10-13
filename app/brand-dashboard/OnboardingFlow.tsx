@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Plus, Trash2, Check, Upload } from 'lucide-react';
+import IPhoneStatusBar from './IPhoneStatusBar';
 import { BrandProfile } from './types';
 import styles from './brand-dashboard.module.css';
 
@@ -14,11 +16,10 @@ interface OnboardingFlowProps {
 }
 
 const STEPS = [
-  { id: 'identity', title: 'Brand basics', sub: 'name, category & atelier origin' },
-  { id: 'story', title: 'Story & founder', sub: 'your philosophy and vision' },
-  { id: 'imagery', title: 'Cover & logo', sub: 'editorial visuals for your page' },
-  { id: 'catalog', title: 'Your products', sub: 'signature offerings & touchpoints' },
-  { id: 'review', title: 'Ready to launch', sub: 'review & publish live' }
+  { id: 'basics', num: '01', title: 'Brand basics', sub: 'Name, category & atelier' },
+  { id: 'visuals', num: '02', title: 'Visual assets', sub: 'Cover banner & profile emblem' },
+  { id: 'offerings', num: '03', title: 'Offerings', sub: 'Products & official channels' },
+  { id: 'launch', num: '04', title: 'Ready to launch', sub: 'Review dossier & go live' }
 ];
 
 const PRESET_COVERS = [
@@ -85,263 +86,186 @@ export default function OnboardingFlow({
     }
   };
 
-  const progressPercent = Math.round(((currentStep + 1) / STEPS.length) * 100);
   const activeStepMeta = STEPS[currentStep];
   const validProductsCount = brand.products.filter(p => p.name.trim().length > 0).length;
 
   return (
-    <div className={styles.mobileContainer}>
-      {/* Top Header */}
+    <div className={styles.mobileContainer} style={{ backgroundColor: '#ffffff' }}>
+      {/* 1. iOS Status Bar with Dynamic Island */}
+      <IPhoneStatusBar />
 
-      {/* Cute Minimal Header */}
-      <header className={styles.mobileHeader}>
-        <div className={styles.mobileHeaderLeft}>
-          {currentStep > 0 ? (
-            <button
-              type="button"
-              onClick={() => setCurrentStep(currentStep - 1)}
-              className={styles.textBtn}
-            >
-              ← back
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={onExit}
-              className={styles.textBtn}
-            >
-              ✕ exit
-            </button>
-          )}
-        </div>
+      {/* 2. Top Header */}
+      <header className={styles.appTopHeader}>
+        <button
+          type="button"
+          onClick={currentStep > 0 ? () => setCurrentStep(currentStep - 1) : onExit}
+          className={styles.ronasBackTextBtn}
+        >
+          {currentStep > 0 ? '← Back' : '✕ Exit'}
+        </button>
 
-        <div className={styles.mobileHeaderTitle}>
-          0{currentStep + 1} / 0{STEPS.length}
-        </div>
+        <span className={styles.appTopTag}>Partner Studio</span>
 
-        <div className={styles.mobileHeaderRight}>
-          <button
-            type="button"
-            onClick={onSaveDraft}
-            className={`${styles.textBtn} ${styles.textBtnDark}`}
-          >
-            save draft
-          </button>
-        </div>
-
-        {/* Apple Progress Bar */}
-        <div className={styles.progressBarTrack}>
-          <div
-            className={styles.progressBarFill}
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
+        <button
+          type="button"
+          onClick={onSaveDraft}
+          className={styles.ronasSaveDraftBtn}
+        >
+          Save
+        </button>
       </header>
 
-      {/* Scrollable Content Layer */}
-      <div className={styles.mobileContent} style={{ padding: '16px 16px 40px 16px' }}>
-        {/* Step Intro Header */}
+      {/* 3. Horizontal Step Pills Bar (Image 1 Style) */}
+      <div className={styles.onboardingPillsBar}>
+        {STEPS.map((st, idx) => {
+          const isActive = idx === currentStep;
+          const isDone = idx < currentStep;
+
+          return (
+            <button
+              key={st.id}
+              type="button"
+              onClick={() => setCurrentStep(idx)}
+              className={`${styles.stepPillItem} ${isActive ? styles.stepPillItemActive : ''} ${isDone ? styles.stepPillItemDone : ''}`}
+            >
+              <span className={styles.stepPillNum}>{st.num}</span>
+              <span className={styles.stepPillLabel}>{st.title}</span>
+              {isActive && <span className={styles.stepActiveDot} />}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 4. Scrollable Form Content */}
+      <div className={styles.onboardingScrollContent}>
+        {/* Step Intro */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={`step-${activeStepMeta.id}`}
-            className={styles.screenIntroCard}
-            style={{ marginBottom: '14px', padding: '16px 18px', borderRadius: '16px' }}
+            key={activeStepMeta.id}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
+            style={{ marginBottom: '16px' }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-              <span className={styles.stepBadge}>
-                ✦ step 0{currentStep + 1}
-              </span>
-              <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>
-                {currentStep + 1} of {STEPS.length}
-              </span>
+            <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#0284c7' }}>
+              STEP {activeStepMeta.num} OF 04
             </div>
-            <h1 className={styles.screenTitle} style={{ fontSize: '20px', margin: '2px 0 2px 0' }}>
+            <h2 className={styles.onboardingStepTitle}>
               {activeStepMeta.title}
-            </h1>
-            <p className={styles.screenSubtitle} style={{ margin: 0, fontSize: '12px' }}>
+            </h2>
+            <p className={styles.onboardingStepSub}>
               {activeStepMeta.sub}
             </p>
           </motion.div>
         </AnimatePresence>
 
-        {/* STEP 1: Brand Identity */}
-        {activeStepMeta.id === 'identity' && (
-          <div className={styles.formCard}>
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Brand name</label>
-                <span className={styles.formHint}>Required</span>
-              </div>
+        {/* STEP 1: Brand Basics */}
+        {activeStepMeta.id === 'basics' && (
+          <div className={styles.ronasFormContainer}>
+            <div className={styles.ronasInputGroup}>
+              <label className={styles.ronasInputLabel}>Brand Name</label>
               <input
                 type="text"
                 value={brand.name}
                 onChange={(e) => updateField('name', e.target.value)}
                 placeholder="e.g. Jihi"
-                className={styles.inputField}
+                className={styles.ronasInputField}
               />
             </div>
 
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Tagline or essence</label>
-              </div>
+            <div className={styles.ronasInputGroup}>
+              <label className={styles.ronasInputLabel}>Tagline or Essence</label>
               <input
                 type="text"
                 value={brand.tagline}
                 onChange={(e) => updateField('tagline', e.target.value)}
-                placeholder="e.g. Botanical rituals crafted for mindful calm"
-                className={styles.inputField}
+                placeholder="e.g. Conscious luxury and botanical rituals"
+                className={styles.ronasInputField}
               />
             </div>
 
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Category</label>
-              </div>
+            <div className={styles.ronasInputGroup}>
+              <label className={styles.ronasInputLabel}>Luxury Category</label>
               <input
                 type="text"
                 value={brand.category}
                 onChange={(e) => updateField('category', e.target.value)}
-                placeholder="e.g. Mindful Skincare & Rituals"
-                className={styles.inputField}
+                placeholder="e.g. Mindful Skincare & Wellness"
+                className={styles.ronasInputField}
               />
             </div>
 
-            <div className={styles.formRowTwo}>
-              <div className={styles.formGroup}>
-                <div className={styles.formLabelRow}>
-                  <label className={styles.formLabel}>Atelier location</label>
-                </div>
+            <div className={styles.ronasRowTwo}>
+              <div className={styles.ronasInputGroup}>
+                <label className={styles.ronasInputLabel}>Atelier Location</label>
                 <input
                   type="text"
                   value={brand.basedOutOf}
                   onChange={(e) => updateField('basedOutOf', e.target.value)}
                   placeholder="e.g. Telluride, CO"
-                  className={styles.inputField}
+                  className={styles.ronasInputField}
                 />
               </div>
 
-              <div className={styles.formGroup}>
-                <div className={styles.formLabelRow}>
-                  <label className={styles.formLabel}>Established</label>
-                </div>
+              <div className={styles.ronasInputGroup}>
+                <label className={styles.ronasInputLabel}>Established Year</label>
                 <input
                   type="text"
                   value={brand.establishedYear}
                   onChange={(e) => updateField('establishedYear', e.target.value)}
                   placeholder="e.g. 2024"
-                  className={styles.inputField}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: Story & Founder */}
-        {activeStepMeta.id === 'story' && (
-          <div className={styles.formCard}>
-            <div className={styles.formRowTwo}>
-              <div className={styles.formGroup}>
-                <div className={styles.formLabelRow}>
-                  <label className={styles.formLabel}>Founder name</label>
-                </div>
-                <input
-                  type="text"
-                  value={brand.founderName}
-                  onChange={(e) => updateField('founderName', e.target.value)}
-                  placeholder="e.g. Jenn Bernstein"
-                  className={styles.inputField}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <div className={styles.formLabelRow}>
-                  <label className={styles.formLabel}>Role / title</label>
-                </div>
-                <input
-                  type="text"
-                  value={brand.founderRole}
-                  onChange={(e) => updateField('founderRole', e.target.value)}
-                  placeholder="e.g. Founder & Formulator"
-                  className={styles.inputField}
+                  className={styles.ronasInputField}
                 />
               </div>
             </div>
 
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Founder quote or mantra</label>
-              </div>
-              <textarea
-                value={brand.founderQuote}
-                onChange={(e) => updateField('founderQuote', e.target.value)}
-                placeholder="A short quote about your brand mission..."
-                className={styles.textAreaField}
-                style={{ minHeight: '65px' }}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>About your brand</label>
-              </div>
-              <textarea
-                value={brand.about}
-                onChange={(e) => updateField('about', e.target.value)}
-                placeholder="Briefly describe your formulations, ethos, and craftsmanship..."
-                className={styles.textAreaField}
-                style={{ minHeight: '85px' }}
+            <div className={styles.ronasInputGroup}>
+              <label className={styles.ronasInputLabel}>Founder Name</label>
+              <input
+                type="text"
+                value={brand.founderName}
+                onChange={(e) => updateField('founderName', e.target.value)}
+                placeholder="e.g. Jenn Bernstein"
+                className={styles.ronasInputField}
               />
             </div>
           </div>
         )}
 
-        {/* STEP 3: Visuals (Cover & Logo) */}
-        {activeStepMeta.id === 'imagery' && (
-          <div className={styles.formCard}>
+        {/* STEP 2: Visual Assets */}
+        {activeStepMeta.id === 'visuals' && (
+          <div className={styles.ronasFormContainer}>
             {/* Cover Banner */}
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Cover banner</label>
-                <span className={styles.formHint}>16:9 landscape</span>
+            <div className={styles.ronasInputGroup}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <label className={styles.ronasInputLabel}>Cover Panorama Banner</label>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>16:9 Landscape</span>
               </div>
 
-              <div className={styles.mobileMediaCard}>
+              <div className={styles.ronasBannerPreviewBox}>
                 {brand.coverImage ? (
                   <img
                     src={brand.coverImage}
                     alt="Cover preview"
-                    className={styles.coverMobilePreview}
+                    className={styles.ronasBannerImg}
                   />
                 ) : (
-                  <div
-                    className={styles.coverMobilePreview}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '12px',
-                      color: '#64748b'
-                    }}
-                  >
-                    no cover image selected
+                  <div className={styles.ronasBannerEmpty}>
+                    No cover banner selected
                   </div>
                 )}
 
-                <div className={styles.mediaActionBar}>
+                <div className={styles.ronasMediaControlsRow}>
                   <input
                     type="text"
                     value={brand.coverImage}
                     onChange={(e) => updateField('coverImage', e.target.value)}
-                    placeholder="Image URL or pick below"
-                    className={styles.inputField}
+                    placeholder="Image URL or choose preset"
+                    className={styles.ronasInputField}
                     style={{ flex: 1 }}
                   />
-                  <label className={styles.chipBtn} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <label className={styles.ronasUploadBtn}>
                     Upload
                     <input
                       type="file"
@@ -352,13 +276,13 @@ export default function OnboardingFlow({
                   </label>
                 </div>
 
-                <div className={styles.presetChips}>
+                <div className={styles.ronasPresetChipsRow}>
                   {PRESET_COVERS.map((preset, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => updateField('coverImage', preset.url)}
-                      className={styles.chipBtn}
+                      className={styles.ronasPresetChip}
                     >
                       {preset.label}
                     </button>
@@ -367,47 +291,38 @@ export default function OnboardingFlow({
               </div>
             </div>
 
-            {/* Profile Logo */}
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Profile emblem</label>
-                <span className={styles.formHint}>1:1 square</span>
+            {/* Profile Logo Emblem */}
+            <div className={styles.ronasInputGroup}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <label className={styles.ronasInputLabel}>Profile Emblem / Mark</label>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>1:1 Square</span>
               </div>
 
-              <div className={styles.mobileMediaCard}>
+              <div className={styles.ronasEmblemPreviewBox}>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                   {brand.profileImage ? (
                     <img
                       src={brand.profileImage}
                       alt="Logo preview"
-                      className={styles.avatarMobilePreview}
+                      className={styles.ronasEmblemThumb}
                     />
                   ) : (
-                    <div
-                      className={styles.avatarMobilePreview}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '12px',
-                        color: '#64748b'
-                      }}
-                    >
-                      no logo
+                    <div className={styles.ronasEmblemFallback}>
+                      Logo
                     </div>
                   )}
 
                   <div style={{ flex: 1 }}>
-                    <div className={styles.mediaActionBar} style={{ marginTop: 0 }}>
+                    <div style={{ display: 'flex', gap: '8px' }}>
                       <input
                         type="text"
                         value={brand.profileImage}
                         onChange={(e) => updateField('profileImage', e.target.value)}
-                        placeholder="Logo URL"
-                        className={styles.inputField}
+                        placeholder="Emblem URL"
+                        className={styles.ronasInputField}
                         style={{ flex: 1 }}
                       />
-                      <label className={styles.chipBtn} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <label className={styles.ronasUploadBtn}>
                         Upload
                         <input
                           type="file"
@@ -418,13 +333,13 @@ export default function OnboardingFlow({
                       </label>
                     </div>
 
-                    <div className={styles.presetChips}>
+                    <div className={styles.ronasPresetChipsRow}>
                       {PRESET_AVATARS.map((preset, idx) => (
                         <button
                           key={idx}
                           type="button"
                           onClick={() => updateField('profileImage', preset.url)}
-                          className={styles.chipBtn}
+                          className={styles.ronasPresetChip}
                         >
                           {preset.label}
                         </button>
@@ -437,159 +352,142 @@ export default function OnboardingFlow({
           </div>
         )}
 
-        {/* STEP 4: Products & Catalog */}
-        {activeStepMeta.id === 'catalog' && (
-          <div className={styles.formCard}>
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Signature offerings</label>
-                <span className={styles.formHint}>{validProductsCount} active</span>
-              </div>
+        {/* STEP 3: Offerings & Channels */}
+        {activeStepMeta.id === 'offerings' && (
+          <div className={styles.ronasFormContainer}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <label className={styles.ronasInputLabel}>Signature Formulations ({validProductsCount})</label>
+              <button
+                type="button"
+                onClick={handleAddProduct}
+                className={styles.ronasAddOfferingBtn}
+              >
+                <Plus size={12} />
+                Add Formulation
+              </button>
+            </div>
 
-              <div className={styles.mobileStackList}>
-                {brand.products.map((prod, idx) => (
-                  <div key={idx} className={styles.mobileStackItem}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <span className={styles.stackItemIndex}>Product 0{idx + 1}</span>
-                      {brand.products.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveProduct(idx)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#ef4444',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            cursor: 'pointer'
-                          }}
-                        >
-                          ✕ remove
-                        </button>
-                      )}
-                    </div>
+            {/* List of Products (Image 1 Style) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+              {brand.products.map((prod, idx) => (
+                <div key={idx} className={styles.ronasProductEditCard}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span className={styles.ronasOfferingTag}>Offering 0{idx + 1}</span>
+                    {brand.products.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveProduct(idx)}
+                        style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                      >
+                        <Trash2 size={12} /> Remove
+                      </button>
+                    )}
+                  </div>
 
-                    <div className={styles.formRowTwo} style={{ marginBottom: '8px' }}>
-                      <input
-                        type="text"
-                        value={prod.name}
-                        onChange={(e) => handleProductChange(idx, 'name', e.target.value)}
-                        placeholder="Product name (e.g. Petal Milk)"
-                        className={styles.inputField}
-                      />
-                      <input
-                        type="text"
-                        value={prod.tagline}
-                        onChange={(e) => handleProductChange(idx, 'tagline', e.target.value)}
-                        placeholder="Tagline (e.g. Face Serum)"
-                        className={styles.inputField}
-                      />
-                    </div>
-
-                    <textarea
-                      value={prod.description}
-                      onChange={(e) => handleProductChange(idx, 'description', e.target.value)}
-                      placeholder="Active ingredients & ritual benefits..."
-                      className={styles.textAreaField}
-                      style={{ minHeight: '50px', marginBottom: '8px' }}
+                  <div className={styles.ronasRowTwo} style={{ marginBottom: '8px' }}>
+                    <input
+                      type="text"
+                      value={prod.name}
+                      onChange={(e) => handleProductChange(idx, 'name', e.target.value)}
+                      placeholder="Product Name (e.g. Petal Milk)"
+                      className={styles.ronasInputField}
                     />
-
                     <input
                       type="text"
                       value={prod.volume || ''}
                       onChange={(e) => handleProductChange(idx, 'volume', e.target.value)}
-                      placeholder="Volume / Size (e.g. 30 ml)"
-                      className={styles.inputField}
+                      placeholder="Volume (e.g. 30 ml)"
+                      className={styles.ronasInputField}
                     />
                   </div>
-                ))}
-              </div>
 
-              {/* Add Product Button */}
-              <button
-                type="button"
-                onClick={handleAddProduct}
-                className={styles.chipBtn}
-                style={{
-                  width: '100%',
-                  marginTop: '10px',
-                  padding: '10px 14px',
-                  textAlign: 'center',
-                  fontWeight: 700,
-                  border: '1px dashed #cbd5e1',
-                  backgroundColor: '#f8fafc'
-                }}
-              >
-                + add another product
-              </button>
+                  <input
+                    type="text"
+                    value={prod.tagline}
+                    onChange={(e) => handleProductChange(idx, 'tagline', e.target.value)}
+                    placeholder="Tagline (e.g. Rejuvenating Face Serum)"
+                    className={styles.ronasInputField}
+                    style={{ marginBottom: '8px' }}
+                  />
+
+                  <textarea
+                    value={prod.description}
+                    onChange={(e) => handleProductChange(idx, 'description', e.target.value)}
+                    placeholder="Active botanical ingredients and benefits..."
+                    className={styles.ronasInputField}
+                    style={{ minHeight: '52px' }}
+                  />
+                </div>
+              ))}
             </div>
 
-            {/* Direct Touchpoints */}
-            <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Website & Instagram</label>
-              </div>
-
-              <div className={styles.formRowTwo}>
+            {/* Channels & Touchpoints */}
+            <div style={{ paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
+              <label className={styles.ronasInputLabel} style={{ marginBottom: '10px' }}>Direct Channels</label>
+              
+              <div style={{ marginBottom: '8px' }}>
                 <input
                   type="text"
                   value={brand.website}
                   onChange={(e) => updateField('website', e.target.value)}
-                  placeholder="https://brand.com"
-                  className={styles.inputField}
+                  placeholder="Website (e.g. https://jihi.com)"
+                  className={styles.ronasInputField}
                 />
+              </div>
+
+              <div className={styles.ronasRowTwo}>
                 <input
                   type="text"
                   value={brand.instagram}
                   onChange={(e) => updateField('instagram', e.target.value)}
-                  placeholder="@handle"
-                  className={styles.inputField}
+                  placeholder="Instagram (e.g. @jihi_rituals)"
+                  className={styles.ronasInputField}
+                />
+                <input
+                  type="text"
+                  value={brand.inquiriesEmail}
+                  onChange={(e) => updateField('inquiriesEmail', e.target.value)}
+                  placeholder="Concierge Email"
+                  className={styles.ronasInputField}
                 />
               </div>
             </div>
           </div>
         )}
 
-        {/* STEP 5: Review & Go Live */}
-        {activeStepMeta.id === 'review' && (
-          <div className={styles.formCard}>
-            <div
-              style={{
-                backgroundColor: '#f8fafc',
-                border: '1px solid #e2e8f0',
-                borderRadius: '14px',
-                padding: '16px',
-                marginBottom: '14px'
-              }}
-            >
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
+        {/* STEP 4: Review & Go Live */}
+        {activeStepMeta.id === 'launch' && (
+          <div className={styles.ronasFormContainer}>
+            {/* Dossier Preview Card */}
+            <div className={styles.ronasDossierCard}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '14px' }}>
                 {brand.profileImage ? (
                   <img
                     src={brand.profileImage}
                     alt={brand.name}
-                    style={{ width: '48px', height: '48px', borderRadius: '12px', objectFit: 'cover', border: '1px solid #cbd5e1' }}
+                    className={styles.ronasDossierAvatar}
                   />
                 ) : (
-                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+                  <div className={styles.ronasDossierAvatarFallback}>
                     {brand.name ? brand.name.slice(0, 1).toUpperCase() : 'B'}
                   </div>
                 )}
                 <div>
-                  <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0284c7', fontWeight: 700 }}>
+                  <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0284c7', fontWeight: 800 }}>
                     {brand.category || 'Luxury Brand'}
                   </div>
-                  <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
                     {brand.name || 'Untitled Brand'}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}>
-                    {brand.basedOutOf || 'Global'}
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                    {brand.basedOutOf || 'Global Atelier'}
                   </div>
                 </div>
               </div>
 
               {/* Cover Banner Thumbnail */}
               {brand.coverImage && (
-                <div style={{ marginBottom: '12px', borderRadius: '8px', overflow: 'hidden', height: '85px' }}>
+                <div style={{ borderRadius: '12px', overflow: 'hidden', height: '100px', marginBottom: '14px' }}>
                   <img
                     src={brand.coverImage}
                     alt="Cover"
@@ -598,41 +496,40 @@ export default function OnboardingFlow({
                 </div>
               )}
 
-              {/* 2 Mini Facts */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>Total listed products</span>
-                <span style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>
-                  {validProductsCount} {validProductsCount === 1 ? 'item' : 'items'}
-                </span>
+              {/* Stats Bar */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
+                <div>
+                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Total Offerings</div>
+                  <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>
+                    {validProductsCount} {validProductsCount === 1 ? 'Product' : 'Products'}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Status</div>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#059669' }}>
+                    ● Ready for Launch
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div
-              style={{
-                backgroundColor: '#ecfdf5',
-                border: '1px solid #a7f3d0',
-                borderRadius: '12px',
-                padding: '12px 14px',
-                textAlign: 'center'
-              }}
-            >
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#065f46' }}>
-                Ready to publish. Tap &ldquo;Go Live&rdquo; below.
-              </span>
+            <div className={styles.ronasReadyNotice}>
+              <Check size={16} color="#059669" />
+              <span>Everything is verified. Tap &ldquo;Go Live&rdquo; to launch your live brand dashboard.</span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Sticky Bottom Bar */}
-      <footer className={styles.mobileBottomBar}>
+      {/* 5. Sticky Bottom Action Bar */}
+      <footer className={styles.ronasBottomActionBar}>
         {currentStep > 0 && (
           <button
             type="button"
             onClick={() => setCurrentStep(currentStep - 1)}
-            className={`${styles.actionBtn} ${styles.actionBtnSecondary}`}
+            className={styles.ronasBackPillBtn}
           >
-            back
+            Back
           </button>
         )}
 
@@ -640,15 +537,16 @@ export default function OnboardingFlow({
           <button
             type="button"
             onClick={() => setCurrentStep(currentStep + 1)}
-            className={`${styles.actionBtn} ${styles.actionBtnAccent}`}
+            className={styles.ronasContinuePillBtn}
           >
-            continue →
+            Continue
+            <ArrowRight size={15} />
           </button>
         ) : (
           <button
             type="button"
             onClick={onGoLive}
-            className={`${styles.actionBtn} ${styles.actionBtnGoLive}`}
+            className={styles.ronasGoLivePillBtn}
           >
             Go Live →
           </button>
