@@ -16,7 +16,7 @@ export default function ProfilePage() {
     { label: 'AI Try-On Saved Fits', icon: '/assets/icons/create_tryon_dark.svg', href: '/try_on' },
     { label: 'Doorstep Refund Bank Account', icon: '/assets/icons/bank.svg', action: () => alert('Instant Refund: Bank account / UPI verified for 10-min doorstep refunds.') },
     { label: 'Notification Settings', icon: '/assets/icons/bell.svg', action: () => alert('WhatsApp & SMS order status notifications are active.') },
-    { label: '7-Days Return Policy', icon: '/assets/icons/7_days_return.svg', action: () => alert('Knot 7-Days Easy Return Policy: Return within 7 days for a 100% full refund.') },
+    { label: '7-Days Return Policy', icon: '/assets/icons/7_days_return.svg', action: () => alert('Drobe 7-Days Easy Return Policy: Return within 7 days for a 100% full refund.') },
     { label: 'WhatsApp Live Support', icon: '/assets/icons/icon_whatsapp_contact_us.svg', href: 'https://wa.me/919876543210' }
   ];
 
@@ -58,13 +58,13 @@ export default function ProfilePage() {
             >
               <img
                 src="/assets/images/welcome_image_dark.webp"
-                alt="Welcome to KNOT"
+                alt="Welcome to DROBE"
                 style={{ width: '100%', height: 'auto', display: 'block' }}
               />
               <div style={{ padding: '16px' }}>
-                <h2 style={{ fontSize: 16, fontWeight: 800, color: '#fff' }}>Welcome to KNOT</h2>
+                <h2 style={{ fontSize: 16, fontWeight: 800, color: '#fff' }}>Welcome to DROBE</h2>
                 <p style={{ fontSize: 12, color: '#888', marginTop: 4, lineHeight: '17px' }}>
-                  Sign in with your mobile number to view active 60-min orders, doorstep trial history, and redeem ₹250 Knot Cash!
+                  Sign in with your mobile number to view active 60-min orders, doorstep trial history, and redeem ₹250 Drobe Cash!
                 </p>
                 <button
                   onClick={() => setIsAuthOpen(true)}
@@ -115,7 +115,7 @@ export default function ProfilePage() {
                   color: '#fff'
                 }}
               >
-                {user.name?.[0] || 'K'}
+                {user.name?.[0] || 'D'}
               </div>
 
               <div style={{ flex: 1 }}>
@@ -144,7 +144,7 @@ export default function ProfilePage() {
               </button>
             </div>
 
-            {/* Knot Cash Card */}
+            {/* Drobe Cash Card */}
             <div
               style={{
                 background: 'linear-gradient(135deg, #18283a 0%, #151a24 100%)',
@@ -160,10 +160,10 @@ export default function ProfilePage() {
             >
               <div>
                 <div style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                  Knot Cash Wallet
+                  Drobe Cash Wallet
                 </div>
                 <div style={{ fontSize: 24, fontWeight: 900, color: '#fff', marginTop: 4 }}>
-                  ₹{user.knotCash}
+                  ₹{user.drobeCash || user.knotCash || 250}
                 </div>
                 <div style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>
                   Usable automatically on next checkout

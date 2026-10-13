@@ -140,7 +140,7 @@ function TryOnContent() {
                   }}
                 >
                   <img src="/assets/icons/camera.svg" alt="" style={{ width: 16, height: 16 }} />
-                  Knot Pose Model Ready
+                  Drobe Pose Model Ready
                 </div>
               </div>
             </div>

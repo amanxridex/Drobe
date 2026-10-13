@@ -17,7 +17,7 @@ export default function SearchPage() {
     setActiveGenderFilter(gender);
   }, [gender]);
 
-  // Authentic Knot popular search suggestions branch on Gender
+  // Authentic Drobe popular search suggestions branch on Gender
   const menPopularSearches = [
     'Relaxed Joggers',
     'Retro Varsity',
@@ -85,7 +85,7 @@ export default function SearchPage() {
       }}
     >
       {/* ========================================================
-          SEARCH HEADER (EXACT 1:1 MATCH TO KNOT)
+          SEARCH HEADER (EXACT 1:1 MATCH TO DROBE)
           Single pill container with inside back arrow,
           input field, and clear button
           ======================================================== */}
@@ -199,7 +199,7 @@ export default function SearchPage() {
       </header>
 
       {/* ========================================================
-          BODY: EXACT KNOT POPULAR SEARCHES vs SEARCH RESULTS
+          BODY: EXACT DROBE POPULAR SEARCHES vs SEARCH RESULTS
           ======================================================== */}
       <main
         style={{

@@ -1,32 +1,32 @@
 {
-  "name": "KNOT",
-  "short_name": "KNOT",
-  "start_url": ".",
+  "name": "DROBE",
+  "short_name": "DROBE",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#0175C2",
-  "theme_color": "#0175C2",
-  "description": "Get fashion in 60-mins. Try before you buy. No waits or regrets, just fire fits!",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "description": "Get fashion in 60-mins. Try before you buy with Drobe. No waits or regrets, just fire fits!",
   "orientation": "portrait-primary",
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "icons/Icon-192.webp",
+      "src": "/icons/Icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icons/Icon-512.webp",
+      "src": "/icons/Icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "icons/Icon-maskable-192.webp",
+      "src": "/icons/Icon-maskable-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "icons/Icon-maskable-512.webp",
+      "src": "/icons/Icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

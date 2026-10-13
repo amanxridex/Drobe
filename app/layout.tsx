@@ -4,11 +4,15 @@ import { AppProvider } from '@/context/AppContext';
 import DesktopWrapper from '@/components/DesktopWrapper';
 
 export const metadata: Metadata = {
-  title: 'KNOT | 60-Mins Fashion Delivery | Try Before You Buy',
-  description: 'Get fashion in 60-mins. Try before you buy. No waits or regrets, just fire fits!',
+  title: 'DROBE | 60-Mins Fashion Delivery | Try Before You Buy',
+  description: 'Get fashion in 60-mins. Try before you buy with Drobe. No waits or regrets, just fire fits!',
+  manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.ico',
-    apple: '/icons/Icon-192.webp'
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/drobe-emblem.png', type: 'image/png' }
+    ],
+    apple: '/icons/Icon-192.png'
   }
 };
 

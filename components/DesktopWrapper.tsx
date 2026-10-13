@@ -95,11 +95,11 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
         overflow: 'hidden'
       }}
     >
-      {/* Desktop Left QR Download Card (Exact 1:1 match to Knot desktop) */}
+      {/* Desktop Left QR Download Card */}
       <div id="qr-download-card">
         <img
           src="/assets/images/desktop_qr_exact.png"
-          alt="Download KNOT"
+          alt="Download DROBE"
           style={{
             width: '212px',
             display: 'block'
@@ -129,10 +129,10 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
         <CouponModal />
       </div>
 
-      {/* Desktop Right Social Link (Exact Instagram pill button) */}
+      {/* Desktop Right Social Link */}
       <div id="social-links-card">
         <a
-          href="https://www.instagram.com/knotnow.co"
+          href="https://www.instagram.com/drobe.luxury"
           target="_blank"
           rel="noopener noreferrer"
           style={{

@@ -76,7 +76,7 @@ export default function TopHeader() {
 
         {/* Right Actions: Try-On Badge, Wishlist, Profile */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {/* Try On! Badge (Official Knot image) */}
+          {/* Try On! Badge (Official Drobe image) */}
           <Link
             href="/try_on"
             style={{
@@ -133,7 +133,7 @@ export default function TopHeader() {
         </div>
       </div>
 
-      {/* Row 2: Gender Toggle Pill & Search Bar (Exact 1:1 match to Knot) */}
+      {/* Row 2: Gender Toggle Pill & Search Bar (Exact 1:1 match to Drobe) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {/* Gender Toggle Pill */}
         <div
@@ -175,7 +175,7 @@ export default function TopHeader() {
                 }}
               >
                 <img
-                  src="/assets/images/knot_avatar_men_clean.png"
+                  src="/assets/images/drobe_avatar_men_clean.png"
                   alt="Men"
                   style={{
                     width: 30,
@@ -270,7 +270,7 @@ export default function TopHeader() {
                   Women
                 </span>
                 <img
-                  src="/assets/images/knot_avatar_women_clean.png"
+                  src="/assets/images/drobe_avatar_women_clean.png"
                   alt="Women"
                   style={{
                     width: 30,

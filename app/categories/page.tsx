@@ -81,14 +81,16 @@ export default function CategoriesPage() {
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
           </button>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
             <img
-              src="/assets/images/knot-mono.png"
-              alt="KNOT"
-              style={{ height: 24, width: 'auto', objectFit: 'contain' }}
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/knot-logo.webp';
-              }}
+              src="/drobe-emblem-white.png"
+              alt="DROBE"
+              style={{ height: 22, width: 'auto', objectFit: 'contain' }}
+            />
+            <img
+              src="/drobe-wordmark-white.png"
+              alt="DROBE"
+              style={{ height: 16, width: 'auto', objectFit: 'contain' }}
             />
           </Link>
           <h1 style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0, marginLeft: 4, fontFamily: 'Satoshi, sans-serif' }}>Categories</h1>

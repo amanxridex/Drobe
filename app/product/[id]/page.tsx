@@ -136,7 +136,7 @@ export default function ProductDetailPage() {
           zIndex: 40
         }}
       >
-        {/* Left: Back Arrow + KNOT Stylized Monogram */}
+        {/* Left: Back Arrow + DROBE Stylized Monogram */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <button
             onClick={() => router.back()}
@@ -154,14 +154,16 @@ export default function ProductDetailPage() {
             </svg>
           </button>
 
-          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
             <img
-              src="/assets/images/knot-mono.png"
-              alt="KNOT"
-              style={{ height: 26, width: 'auto', objectFit: 'contain' }}
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/knot-logo.webp';
-              }}
+              src="/drobe-emblem-white.png"
+              alt="DROBE"
+              style={{ height: 22, width: 'auto', objectFit: 'contain' }}
+            />
+            <img
+              src="/drobe-wordmark-white.png"
+              alt="DROBE"
+              style={{ height: 16, width: 'auto', objectFit: 'contain' }}
             />
           </Link>
         </div>
@@ -236,7 +238,7 @@ export default function ProductDetailPage() {
           ======================================================== */}
       <main style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '4px 12px 24px' }}>
         {/* ========================================================
-            2. MAIN HERO IMAGE CARD (Exact 1:1 Knot Layout)
+            2. MAIN HERO IMAGE CARD (Exact 1:1 Drobe Layout)
             - Rounded container
             - Top-Left: TRY 'n BUY frosted pill
             - Top-Right: EXTRA ₹999 OFF magenta pill
@@ -417,7 +419,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* ========================================================
-            3. THUMBNAIL GALLERY RAIL (Exact Match to Knot Screenshot #2)
+            3. THUMBNAIL GALLERY RAIL (Exact Match to Drobe Screenshot #2)
             ======================================================== */}
         <div
           style={{

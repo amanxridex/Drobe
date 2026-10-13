@@ -53,7 +53,10 @@ export default function AuthModal() {
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <img src="/assets/images/knot-mono.png" alt="KNOT" style={{ height: 28, width: 'auto' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <img src="/drobe-emblem-white.png" alt="DROBE" style={{ height: 26, width: 'auto' }} />
+              <img src="/drobe-wordmark-white.png" alt="DROBE" style={{ height: 18, width: 'auto' }} />
+            </div>
             <div>
               <h3 style={{ fontSize: 17, fontWeight: 800, color: '#fff' }}>
                 {step === 'phone' ? 'Login or Sign Up' : 'Enter 4-Digit OTP'}

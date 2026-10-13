@@ -49,7 +49,7 @@ interface AppContextType {
   orders: Order[];
   createOrder: (paymentMethod: string) => Order;
   updateDoorstepStatus: (orderId: string, itemIdx: number, action: 'kept' | 'returned') => void;
-  user: { name: string; phone: string; knotCash: number } | null;
+  user: { name: string; phone: string; drobeCash: number; knotCash: number } | null;
   loginUser: (phone: string) => void;
   logoutUser: () => void;
 }
@@ -78,7 +78,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isCouponOpen, setIsCouponOpen] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState<string | null>('KNOTFESTIVE999');
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>('DROBEFESTIVE999');
   
   // Default cart preloaded with authentic item
   const [cart, setCart] = useState<CartItem[]>([
@@ -92,7 +92,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [wishlist, setWishlist] = useState<string[]>([PRODUCTS[1].id]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [user, setUser] = useState<{ name: string; phone: string; knotCash: number } | null>(null);
+  const [user, setUser] = useState<{ name: string; phone: string; drobeCash: number; knotCash: number } | null>(null);
 
   const addToCart = (product: Product, size: string, trialMode: 'tryAndBuy' | 'standard' = 'tryAndBuy') => {
     setCart((prev) => {
@@ -134,7 +134,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const applyCoupon = (code: string) => {
     const clean = code.toUpperCase();
-    if (clean === 'KNOTFESTIVE999' || clean === 'KNOT150' || clean === 'HEXAFUNXKNOT' || clean === 'KNOT250') {
+    if (
+      clean === 'DROBEFESTIVE999' ||
+      clean === 'DROBE150' ||
+      clean === 'HEXAFUNXDROBE' ||
+      clean === 'DROBE250' ||
+      clean === 'KNOTFESTIVE999' ||
+      clean === 'KNOT150' ||
+      clean === 'HEXAFUNXKNOT' ||
+      clean === 'KNOT250'
+    ) {
       setAppliedCoupon(clean);
       return true;
     }
@@ -146,12 +155,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const rawSubtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const discountAmount = appliedCoupon ? (appliedCoupon === 'KNOTFESTIVE999' ? 200 : appliedCoupon === 'KNOT150' ? 150 : 250) : 0;
+  const discountAmount = appliedCoupon
+    ? appliedCoupon.includes('999')
+      ? 200
+      : appliedCoupon.includes('150')
+      ? 150
+      : 250
+    : 0;
   const cartTotal = Math.max(0, rawSubtotal - discountAmount);
 
   const createOrder = (paymentMethod: string): Order => {
     const newOrder: Order = {
-      id: `KNOT-${Math.floor(100000 + Math.random() * 900000)}`,
+      id: `DROBE-${Math.floor(100000 + Math.random() * 900000)}`,
       items: cart.map((i) => ({ item: i, status: 'pending' })),
       totalAmount: cartTotal,
       deliveryMinutes: 60,
@@ -182,6 +197,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setUser({
       name: 'User ' + phone.slice(-4),
       phone,
+      drobeCash: 250,
       knotCash: 250
     });
     setIsAuthOpen(false);

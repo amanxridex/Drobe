@@ -207,7 +207,7 @@ export default function BottomNav() {
               cursor: 'pointer'
             }}
           >
-            {/* Authentic Knot Tab Icon */}
+            {/* Authentic Drobe Tab Icon */}
             <div
               style={{
                 position: 'relative',
@@ -220,7 +220,7 @@ export default function BottomNav() {
             >
               {isActive ? tab.activeIcon : tab.inactiveIcon}
 
-              {/* Knot Authentic Blue Notification Badge */}
+              {/* Drobe Authentic Blue Notification Badge */}
               {tab.badge !== undefined && tab.badge > 0 && (
                 <span
                   style={{
@@ -247,7 +247,7 @@ export default function BottomNav() {
               )}
             </div>
 
-            {/* Authentic Knot Label */}
+            {/* Authentic Drobe Label */}
             <span
               style={{
                 fontSize: 13,

@@ -32,7 +32,7 @@ export default function HomePage() {
   const [currentBrandSlide, setCurrentBrandSlide] = useState(0);
   const categoryScrollRef = useRef<HTMLDivElement>(null);
 
-  // Exact authentic lookbook banners downloaded from Knot's ImageKit CDN
+  // Exact authentic lookbook banners downloaded from Drobe's ImageKit CDN
   const menLookbookCards = [
     {
       id: 'banana-club',
@@ -218,7 +218,7 @@ export default function HomePage() {
     return '/collection/top';
   };
 
-  // Authentic 5-slide category grids (40 categories, 4x2 per slide) from Knot
+  // Authentic 5-slide category grids (40 categories, 4x2 per slide) from Drobe
   const menGridSlides = [
     CATEGORIES_GRID_MANIFEST['2'] || [],
     CATEGORIES_GRID_MANIFEST['4'] || [],
@@ -378,7 +378,7 @@ export default function HomePage() {
 
         {/* ========================================================
             SECTION 2: 5 CATEGORY CARDS RAIL (GREY BACKGROUND)
-            Clean dark grey background matching Knot's native design
+            Clean dark grey background matching Drobe's native design
             ======================================================== */}
         <section
           style={{
@@ -572,7 +572,7 @@ export default function HomePage() {
               </motion.div>
             </div>
 
-            {/* Authentic Home Page End Curve from Knot */}
+            {/* Authentic Home Page End Curve from Drobe */}
             <div
               style={{
                 width: '100%',
@@ -697,7 +697,7 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Pagination Indicator Dots (Exact 5 dots matching Knot) */}
+          {/* Pagination Indicator Dots (Exact 5 dots matching Drobe) */}
           {categorySlides.length > 1 && (
             <div
               style={{
@@ -1119,7 +1119,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Pagination Indicator Dots (16 dots matching Knot) */}
+              {/* Pagination Indicator Dots (16 dots matching Drobe) */}
               <div
                 style={{
                   display: 'flex',
@@ -1537,7 +1537,7 @@ export default function HomePage() {
 
             {/* ========================================================
                 ALL 27 AUTHENTIC CURATED ROWS WITH REAL DOWNLOADED BACKGROUNDS
-                Exact Section-by-Section 1:1 Mirroring of Knot Men's Feed
+                Exact Section-by-Section 1:1 Mirroring of Drobe Men's Feed
                 ======================================================== */}
             {(MEN_CURATED_SECTIONS as any[])
               .filter((section: any) => section.hasBg)
@@ -2008,7 +2008,7 @@ export default function HomePage() {
       {/* ========================================================
           EXACT FLOATING RIDER GUARANTEE PILL
           "We bet ₹250 this reaches you in time"
-          Directly from Knot's CDN
+          Directly from Drobe's CDN
           ======================================================== */}
       <AnimatePresence>
         {showGuaranteeBanner && (
@@ -2033,7 +2033,7 @@ export default function HomePage() {
               display: 'flex',
               alignItems: 'center'
             }}
-            onClick={() => alert('⚡ KNOT 60-Minute Guarantee: If your fashion fit takes longer than 60 mins to reach your door, ₹250 is instantly credited to your Knot Wallet!')}
+            onClick={() => alert('⚡ DROBE 60-Minute Guarantee: If your fashion fit takes longer than 60 mins to reach your door, ₹250 is instantly credited to your Drobe Wallet!')}
           >
             <img
               src="/assets/real/late_delivery_floater.webp"
@@ -2148,7 +2148,7 @@ export default function HomePage() {
                 Earn ₹500 + Free Tote Bag
               </h2>
               <p style={{ fontSize: 13, color: '#9ca3af', lineHeight: 1.5, marginBottom: 20 }}>
-                Give friends ₹500 off on their first order. You get ₹500 Knot wallet credit + an exclusive KNOT Tote Bag once their order delivers!
+                Give friends ₹500 off on their first order. You get ₹500 Drobe wallet credit + an exclusive DROBE Tote Bag once their order delivers!
               </p>
 
               {/* Code Box */}
@@ -2169,12 +2169,12 @@ export default function HomePage() {
                     Your Referral Code
                   </div>
                   <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: 1.5, color: '#a78bfa' }}>
-                    KNOT-BAG500
+                    DROBE-BAG500
                   </div>
                 </div>
                 <button
                   onClick={() => {
-                    navigator.clipboard?.writeText('KNOT-BAG500');
+                    navigator.clipboard?.writeText('DROBE-BAG500');
                     setCopiedReferral(true);
                     setTimeout(() => setCopiedReferral(false), 2000);
                   }}
@@ -2197,7 +2197,7 @@ export default function HomePage() {
               {/* Action Buttons */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <a
-                  href="https://api.whatsapp.com/send?text=Hey!%20Get%20%E2%82%B9500%20OFF%20your%20first%20fashion%20delivery%20on%20KNOT%20with%20my%20code%20KNOT-BAG500!%20Check%20it%20out:%20https://knotnow.co"
+                  href="https://api.whatsapp.com/send?text=Hey!%20Get%20%E2%82%B9500%20OFF%20your%20first%20fashion%20delivery%20on%20DROBE%20with%20my%20code%20DROBE-BAG500!%20Check%20it%20out:%20https://drobe.in"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -2220,7 +2220,7 @@ export default function HomePage() {
 
                 <button
                   onClick={() => {
-                    navigator.clipboard?.writeText('https://knotnow.co/?ref=KNOT-BAG500');
+                    navigator.clipboard?.writeText('https://drobe.in/?ref=DROBE-BAG500');
                     setCopiedReferral(true);
                     setTimeout(() => setCopiedReferral(false), 2000);
                   }}

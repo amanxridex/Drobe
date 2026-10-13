@@ -13,21 +13,21 @@ export default function CouponModal() {
 
   const coupons = [
     {
-      code: 'KNOTFESTIVE999',
+      code: 'DROBEFESTIVE999',
       discount: '₹200 OFF',
       minOrder: '₹500',
       description: 'Festive special discount on all apparel orders',
       tag: 'BEST VALUE'
     },
     {
-      code: 'KNOT150',
+      code: 'DROBE150',
       discount: '₹150 OFF',
       minOrder: '₹399',
       description: 'Instant discount on 60-min express deliveries',
       tag: 'POPULAR'
     },
     {
-      code: 'HEXAFUNXKNOT',
+      code: 'HEXAFUNXDROBE',
       discount: '₹250 OFF',
       minOrder: '₹999',
       description: 'Exclusive brand partner discount for door trial',
@@ -115,7 +115,7 @@ export default function CouponModal() {
         <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
           <input
             type="text"
-            placeholder="Enter coupon code (e.g. KNOTFESTIVE999)"
+            placeholder="Enter coupon code (e.g. DROBEFESTIVE999)"
             value={code}
             onChange={(e) => {
               setCode(e.target.value.toUpperCase());

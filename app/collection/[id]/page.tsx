@@ -42,8 +42,8 @@ export default function CollectionPage() {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', background: '#121214', overflow: 'hidden' }}>
       {/* ========================================================
-          1. AUTHENTIC KNOT PLP HEADER
-          Back Arrow + Knot Blue Logo | Title | Search + Heart + Bag
+          1. AUTHENTIC DROBE PLP HEADER
+          Back Arrow + Drobe Logo | Title | Search + Heart + Bag
           ======================================================== */}
       <header
         style={{
@@ -56,8 +56,8 @@ export default function CollectionPage() {
           zIndex: 40
         }}
       >
-        {/* Left: Back Arrow + Knot Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* Left: Back Arrow + Drobe Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button
             onClick={() => router.back()}
             style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', padding: 0 }}
@@ -67,14 +67,16 @@ export default function CollectionPage() {
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
           </button>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
             <img
-              src="/assets/images/knot-mono.png"
-              alt="KNOT"
-              style={{ height: 24, width: 'auto', objectFit: 'contain' }}
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/knot-logo.webp';
-              }}
+              src="/drobe-emblem-white.png"
+              alt="DROBE"
+              style={{ height: 22, width: 'auto', objectFit: 'contain' }}
+            />
+            <img
+              src="/drobe-wordmark-white.png"
+              alt="DROBE"
+              style={{ height: 16, width: 'auto', objectFit: 'contain' }}
             />
           </Link>
         </div>
@@ -205,7 +207,7 @@ export default function CollectionPage() {
         </span>
       </div>
 
-      {/* Product Grid - 2 Column Knot Layout */}
+      {/* Product Grid - 2 Column Drobe Layout */}
       <main style={{ flex: 1, overflowY: 'auto', padding: '14px 10px 85px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
           {products.map((product) => (

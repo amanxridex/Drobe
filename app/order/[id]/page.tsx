@@ -14,7 +14,7 @@ export default function OrderTrackingPage() {
 
   const orderId = params?.id as string;
   const currentOrder = orders.find((o) => o.id === orderId) || orders[0] || {
-    id: 'KNOT-482910',
+    id: 'DROBE-482910',
     totalAmount: PRODUCTS[0].price,
     deliveryMinutes: 60,
     status: 'arrived',
@@ -131,7 +131,7 @@ export default function OrderTrackingPage() {
               <img src="/assets/icons/lucide_bike.svg" alt="" style={{ width: 22, height: 22 }} />
             </div>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>Knot Delivery Partner</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>Drobe Delivery Partner</div>
               <div style={{ fontSize: 11, color: '#34d399', fontWeight: 600 }}>At your doorstep with Trial Bag</div>
             </div>
           </div>
