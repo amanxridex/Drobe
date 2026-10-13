@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Check, Upload, X, AlertCircle } from 'lucide-react';
+import { ArrowRight, Check, Upload, X, AlertCircle, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { BrandProfile } from './types';
 import styles from './brand-dashboard.module.css';
 
@@ -11,26 +11,18 @@ interface OnboardingFlowProps {
   onChange: (updated: BrandProfile) => void;
   onGoLive: () => void;
   onExit: () => void;
-  onSaveDraft: () => void;
+  onSaveDraft?: () => void;
 }
 
 const STEPS = [
-  { id: 'basics', num: '01', title: 'Brand basics', sub: 'Name, category & atelier location' },
-  { id: 'visuals', num: '02', title: 'Visual assets', sub: 'Logo emblem, cover banner & story' },
-  { id: 'channels', num: '03', title: 'Channels', sub: 'Website, Instagram & concierge email' },
-  { id: 'launch', num: '04', title: 'Review & launch', sub: 'Verify brand dossier & go live' }
+  { id: 'account', num: '01', title: 'Account', fullTitle: 'Account credentials', sub: 'Atelier email & secure password' },
+  { id: 'basics', num: '02', title: 'Brand basics', fullTitle: 'Brand basics', sub: 'Name, category & atelier location' },
+  { id: 'visuals', num: '03', title: 'Visual assets', fullTitle: 'Visual assets', sub: 'Logo emblem, cover banner & story' },
+  { id: 'channels', num: '04', title: 'Channels', fullTitle: 'Channels', sub: 'Website, Instagram & concierge email' },
+  { id: 'launch', num: '05', title: 'Review & launch', fullTitle: 'Review & launch', sub: 'Verify brand dossier & go live' }
 ];
 
-const LUXURY_CATEGORIES = [
-  'Mindful Skincare & Wellness',
-  'Luxury Ready-to-Wear',
-  'Artisanal Footwear',
-  'High Jewelry & Timepieces',
-  'Leather Goods & Accessories',
-  'Botanical Perfumery & Fragrance',
-  'Artisanal Home & Objects',
-  'Conscious Couture & Atelier'
-];
+const CATEGORY_OPTIONS: Array<'Male' | 'Both' | 'Female'> = ['Male', 'Both', 'Female'];
 
 export default function OnboardingFlow({
   brand,
@@ -41,6 +33,11 @@ export default function OnboardingFlow({
 }: OnboardingFlowProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const normalizedCategory: 'Male' | 'Both' | 'Female' = 
+    brand.category === 'Male' ? 'Male' : 
+    brand.category === 'Female' ? 'Female' : 'Both';
 
   const updateField = <K extends keyof BrandProfile>(key: K, value: BrandProfile[K]) => {
     setErrorNotice(null);
@@ -67,7 +64,19 @@ export default function OnboardingFlow({
   };
 
   const validateStep = (stepIdx: number): boolean => {
-    if (stepIdx === 0) {
+    const step = STEPS[stepIdx];
+    if (step.id === 'account') {
+      const emailTrimmed = brand.email?.trim() || '';
+      if (!emailTrimmed || !emailTrimmed.includes('@')) {
+        setErrorNotice('Please enter a valid atelier email address to continue.');
+        return false;
+      }
+      if (!brand.password || brand.password.length < 6) {
+        setErrorNotice('Password must be at least 6 characters.');
+        return false;
+      }
+    }
+    if (step.id === 'basics') {
       if (!brand.name?.trim()) {
         setErrorNotice('Please enter your Brand Name to continue.');
         return false;
@@ -94,24 +103,8 @@ export default function OnboardingFlow({
   return (
     <div className={styles.mobileContainer} style={{ backgroundColor: '#ffffff' }}>
       {/* 1. Sticky Apple Header */}
-      <header className={styles.appTopHeader}>
-        <button
-          type="button"
-          onClick={currentStep > 0 ? () => setCurrentStep(currentStep - 1) : onExit}
-          className={styles.ronasBackTextBtn}
-        >
-          {currentStep > 0 ? '← Back' : '✕ Exit'}
-        </button>
-
+      <header className={styles.appTopHeader} style={{ justifyContent: 'center' }}>
         <span className={styles.appTopTag}>Drobe Brand Studio</span>
-
-        <button
-          type="button"
-          onClick={onSaveDraft}
-          className={styles.ronasSaveDraftBtn}
-        >
-          Save Draft
-        </button>
       </header>
 
       {/* 2. Horizontal Step Indicator (4 clean steps, no products) */}
@@ -148,10 +141,10 @@ export default function OnboardingFlow({
             style={{ marginBottom: '14px' }}
           >
             <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0f172a' }}>
-              STEP {activeStepMeta.num} OF 04
+              STEP {activeStepMeta.num} OF 0{STEPS.length}
             </div>
             <h2 className={styles.onboardingStepTitle}>
-              {activeStepMeta.title}
+              {activeStepMeta.fullTitle || activeStepMeta.title}
             </h2>
             <p className={styles.onboardingStepSub}>
               {activeStepMeta.sub}
@@ -167,7 +160,68 @@ export default function OnboardingFlow({
           </div>
         )}
 
-        {/* STEP 1: Brand Basics */}
+        {/* STEP 1: Account Credentials */}
+        {activeStepMeta.id === 'account' && (
+          <div className={styles.ronasFormContainer}>
+            <div className={styles.ronasInputGroup}>
+              <label className={styles.ronasInputLabel}>Atelier Email *</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="email"
+                  value={brand.email || ''}
+                  onChange={(e) => updateField('email', e.target.value)}
+                  placeholder="founder@yourbrand.com"
+                  className={styles.ronasInputField}
+                  style={{ paddingLeft: '38px' }}
+                  autoFocus
+                />
+                <Mail size={16} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              </div>
+              <span style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', display: 'block' }}>
+                Used to log in, receive partner notices, and client inquiries.
+              </span>
+            </div>
+
+            <div className={styles.ronasInputGroup}>
+              <label className={styles.ronasInputLabel}>Password *</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={brand.password || ''}
+                  onChange={(e) => updateField('password', e.target.value)}
+                  placeholder="Create a password (min. 6 characters)"
+                  className={styles.ronasInputField}
+                  style={{ paddingLeft: '38px', paddingRight: '40px' }}
+                />
+                <Lock size={16} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: '#94a3b8',
+                    cursor: 'pointer',
+                    padding: '2px',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              <span style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', display: 'block' }}>
+                Must be at least 6 characters.
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 2: Brand Basics */}
         {activeStepMeta.id === 'basics' && (
           <div className={styles.ronasFormContainer}>
             <div className={styles.ronasInputGroup}>
@@ -193,21 +247,36 @@ export default function OnboardingFlow({
               />
             </div>
 
-            <div className={styles.ronasInputGroup}>
-              <label className={styles.ronasInputLabel}>Luxury Category</label>
-              <input
-                type="text"
-                list="category-suggestions"
-                value={brand.category}
-                onChange={(e) => updateField('category', e.target.value)}
-                placeholder="Select or enter category..."
-                className={styles.ronasInputField}
-              />
-              <datalist id="category-suggestions">
-                {LUXURY_CATEGORIES.map((cat, idx) => (
-                  <option key={idx} value={cat} />
-                ))}
-              </datalist>
+            <div className={styles.categoryToggleContainer}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Category</label>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>
+                  {normalizedCategory === 'Both' ? 'Both (Male & Female)' : normalizedCategory}
+                </span>
+              </div>
+              <div className={styles.categoryToggleTrack}>
+                <button
+                  type="button"
+                  onClick={() => updateField('category', 'Male')}
+                  className={`${styles.categoryToggleOption} ${normalizedCategory === 'Male' ? styles.categoryToggleOptionActive : ''}`}
+                >
+                  Male
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateField('category', 'Both')}
+                  className={`${styles.categoryToggleOption} ${normalizedCategory === 'Both' ? styles.categoryToggleOptionActive : ''}`}
+                >
+                  Both
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateField('category', 'Female')}
+                  className={`${styles.categoryToggleOption} ${normalizedCategory === 'Female' ? styles.categoryToggleOptionActive : ''}`}
+                >
+                  Female
+                </button>
+              </div>
             </div>
 
             <div className={styles.ronasRowTwo}>
@@ -394,16 +463,19 @@ export default function OnboardingFlow({
           </div>
         )}
 
-        {/* STEP 3: Direct Channels */}
+        {/* STEP 4: Direct Channels */}
         {activeStepMeta.id === 'channels' && (
           <div className={styles.ronasFormContainer}>
             <div className={styles.ronasInputGroup}>
-              <label className={styles.ronasInputLabel}>Official Website URL</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Official Website URL</label>
+                <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}>Optional</span>
+              </div>
               <input
                 type="text"
                 value={brand.website}
                 onChange={(e) => updateField('website', e.target.value)}
-                placeholder="https://yourbrand.com"
+                placeholder="https://yourbrand.com (optional)"
                 className={styles.ronasInputField}
               />
             </div>
@@ -423,16 +495,16 @@ export default function OnboardingFlow({
               <label className={styles.ronasInputLabel}>Concierge & Inquiries Email</label>
               <input
                 type="email"
-                value={brand.inquiriesEmail}
+                value={brand.inquiriesEmail || brand.email || ''}
                 onChange={(e) => updateField('inquiriesEmail', e.target.value)}
-                placeholder="concierge@yourbrand.com"
+                placeholder={brand.email || "concierge@yourbrand.com"}
                 className={styles.ronasInputField}
               />
             </div>
           </div>
         )}
 
-        {/* STEP 4: Review & Go Live */}
+        {/* STEP 5: Review & Go Live */}
         {activeStepMeta.id === 'launch' && (
           <div className={styles.ronasFormContainer}>
             <div className={styles.ronasDossierCard}>
@@ -450,7 +522,7 @@ export default function OnboardingFlow({
                 )}
                 <div>
                   <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0f172a', fontWeight: 700 }}>
-                    {brand.category || 'Luxury Partner'}
+                    {normalizedCategory === 'Both' ? 'Both (Male & Female)' : normalizedCategory}
                   </div>
                   <div style={{ fontSize: '18px', fontWeight: 600, color: '#0f172a', letterSpacing: '-0.02em' }}>
                     {brand.name || 'Untitled Atelier'}
@@ -497,7 +569,15 @@ export default function OnboardingFlow({
 
       {/* 4. Sticky Bottom Action Bar */}
       <footer className={styles.ronasBottomActionBar}>
-        {currentStep > 0 && (
+        {currentStep === 0 ? (
+          <button
+            type="button"
+            onClick={onExit}
+            className={styles.ronasBackPillBtn}
+          >
+            Exit
+          </button>
+        ) : (
           <button
             type="button"
             onClick={() => setCurrentStep(currentStep - 1)}

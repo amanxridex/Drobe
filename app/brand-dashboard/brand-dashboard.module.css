@@ -2407,7 +2407,152 @@
 .darkNavTabActive {
   background-color: #0f172a !important;
   color: #ffffff !important;
+  box-shadow: none !important;
 }
+
+/* Analytics & Dashboard Cards */
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.statCard {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statCardLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.statCardValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.statCardTrend {
+  font-size: 11px;
+  font-weight: 600;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.chartContainer {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.chartBarsRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 100px;
+  padding-top: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.chartBarCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.chartBarFill {
+  width: 18px;
+  background-color: #cbd5e1;
+  border-radius: 6px 6px 0 0;
+  transition: all 0.3s ease;
+}
+
+.chartBarFillActive {
+  background: linear-gradient(180deg, #84cc16 0%, #65a30d 100%);
+  box-shadow: 0 4px 12px rgba(132, 204, 22, 0.35);
+}
+
+.chartBarLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* 3-Position Category Toggle (Male / Both / Female) */
+.categoryToggleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.categoryToggleTrack {
+  display: flex;
+  position: relative;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 4px;
+  user-select: none;
+}
+
+.categoryToggleOption {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
+}
+
+.categoryToggleOption:hover {
+  color: #0f172a;
+}
+
+.categoryToggleOptionActive {
+  background-color: #0f172a;
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.categoryToggleSubtext {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
 
 
 

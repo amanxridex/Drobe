@@ -22,6 +22,8 @@ export const EMPTY_BRAND_PROFILE: BrandProfile = {
   website: '',
   instagram: '',
   inquiriesEmail: '',
+  email: '',
+  password: '',
   status: 'Draft',
   updatedAt: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 };

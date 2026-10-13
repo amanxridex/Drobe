@@ -9,11 +9,15 @@ import {
   Globe, 
   Mail, 
   Plus, 
-  Edit3,
-  Share2,
-  Trash2,
-  X,
-  Upload
+  Edit3, 
+  Share2, 
+  Trash2, 
+  X, 
+  Upload,
+  TrendingUp,
+  Sparkles,
+  Award,
+  ArrowUpRight
 } from 'lucide-react';
 import { BrandProfile, BrandProductHighlight } from './types';
 import styles from './brand-dashboard.module.css';
@@ -39,7 +43,7 @@ export default function BrandProfileView({
   onShareClick,
   onUpdateBrand
 }: BrandProfileViewProps) {
-  const [activeTab, setActiveTab] = useState<'catalog' | 'atelier' | 'channels'>('catalog');
+  const [activeTab, setActiveTab] = useState<'home' | 'catalog' | 'analytics' | 'profile'>('home');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newProduct, setNewProduct] = useState<BrandProductHighlight>({
     name: '',
@@ -52,6 +56,9 @@ export default function BrandProfileView({
 
   const activeProducts = brand.products.filter(p => p.name?.trim().length > 0);
   const totalProductsCount = activeProducts.length;
+  const normalizedCategory = 
+    brand.category === 'Male' ? 'MALE' : 
+    brand.category === 'Female' ? 'FEMALE' : 'MALE & FEMALE';
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -169,7 +176,7 @@ export default function BrandProfileView({
         <div className={styles.darkHeroCard}>
           <div style={{ flex: 1 }}>
             <span className={styles.darkHeroTag}>
-              {brand.category || 'BRAND ATELIER'}
+              {normalizedCategory}
             </span>
             <h2 className={styles.darkHeroTitle}>
               {brand.name || 'Untitled Brand'}
@@ -201,33 +208,162 @@ export default function BrandProfileView({
         {/* View Switcher Pills */}
         <div className={styles.darkPillsRow}>
           <div
+            className={`${styles.darkDayPill} ${activeTab === 'home' ? styles.darkDayPillActive : ''}`}
+            onClick={() => setActiveTab('home')}
+            style={{ flex: 1, padding: '10px 4px', textAlign: 'center' }}
+          >
+            <span style={{ fontSize: '11px' }}>Overview</span>
+            <span style={{ fontSize: '13px', fontWeight: 700 }}>Live</span>
+          </div>
+
+          <div
             className={`${styles.darkDayPill} ${activeTab === 'catalog' ? styles.darkDayPillActive : ''}`}
             onClick={() => setActiveTab('catalog')}
+            style={{ flex: 1, padding: '10px 4px', textAlign: 'center' }}
           >
-            <span>Offerings</span>
-            <span style={{ fontSize: '14px', fontWeight: 700 }}>{totalProductsCount}</span>
+            <span style={{ fontSize: '11px' }}>Collection</span>
+            <span style={{ fontSize: '13px', fontWeight: 700 }}>{totalProductsCount}</span>
           </div>
 
           <div
-            className={`${styles.darkDayPill} ${activeTab === 'atelier' ? styles.darkDayPillActive : ''}`}
-            onClick={() => setActiveTab('atelier')}
+            className={`${styles.darkDayPill} ${activeTab === 'analytics' ? styles.darkDayPillActive : ''}`}
+            onClick={() => setActiveTab('analytics')}
+            style={{ flex: 1, padding: '10px 4px', textAlign: 'center' }}
           >
-            <span>Atelier</span>
-            <span style={{ fontSize: '13px', fontWeight: 600 }}>
-              {brand.establishedYear || 'EST'}
-            </span>
+            <span style={{ fontSize: '11px' }}>Stats</span>
+            <span style={{ fontSize: '13px', fontWeight: 700 }}>1.4k</span>
           </div>
 
           <div
-            className={`${styles.darkDayPill} ${activeTab === 'channels' ? styles.darkDayPillActive : ''}`}
-            onClick={() => setActiveTab('channels')}
+            className={`${styles.darkDayPill} ${activeTab === 'profile' ? styles.darkDayPillActive : ''}`}
+            onClick={() => setActiveTab('profile')}
+            style={{ flex: 1, padding: '10px 4px', textAlign: 'center' }}
           >
-            <span>Channels</span>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#059669' }}>
-              LIVE
-            </span>
+            <span style={{ fontSize: '11px' }}>Dossier</span>
+            <span style={{ fontSize: '13px', fontWeight: 700 }}>Info</span>
           </div>
         </div>
+
+        {/* TAB 0: Home Overview */}
+        {activeTab === 'home' && (
+          <div>
+            <div className={styles.darkCardBox} style={{ marginBottom: '14px' }}>
+              <span className={styles.darkCardTag}>Live Atelier Summary</span>
+              <h4 className={styles.darkCardTitle}>Real-time Presence</h4>
+              <p className={styles.darkCardDesc} style={{ margin: '4px 0 12px 0' }}>
+                Your atelier is indexed and visible to discerning clients globally.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', paddingTop: '10px', borderTop: '1px solid #f1f5f9' }}>
+                <div style={{ background: '#f8fafc', padding: '10px 8px', borderRadius: '12px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '9px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Status</div>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#16a34a', marginTop: '2px' }}>Live</div>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: '10px 8px', borderRadius: '12px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '9px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Audience</div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
+                    {normalizedCategory === 'MALE & FEMALE' ? 'All' : normalizedCategory}
+                  </div>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: '10px 8px', borderRadius: '12px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '9px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Pieces</div>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>{totalProductsCount}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Signature Creation Spotlight */}
+            <div className={styles.darkCardBox} style={{ marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span className={styles.darkCardTag}>Signature Spotlight</span>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('catalog')}
+                  style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                >
+                  View All ({totalProductsCount}) <ArrowUpRight size={12} />
+                </button>
+              </div>
+
+              {activeProducts.length > 0 ? (
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: '#f8fafc', padding: '12px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+                  {activeProducts[0].image && (
+                    <img
+                      src={activeProducts[0].image}
+                      alt={activeProducts[0].name}
+                      style={{ width: '56px', height: '56px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0, border: '1px solid #cbd5e1' }}
+                    />
+                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h5 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {activeProducts[0].name}
+                    </h5>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#64748b' }}>
+                      {activeProducts[0].tagline || activeProducts[0].volume || 'Signature Creation'}
+                    </p>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0284c7', marginTop: '4px' }}>
+                      {activeProducts[0].price ? (activeProducts[0].price.startsWith('$') ? activeProducts[0].price : `$${activeProducts[0].price}`) : 'Price upon request'}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div 
+                  onClick={() => setShowAddModal(true)}
+                  style={{ cursor: 'pointer', textAlign: 'center', padding: '20px 14px', border: '1px dashed #cbd5e1', borderRadius: '14px', backgroundColor: '#f8fafc' }}
+                >
+                  <p style={{ margin: '0 0 8px 0', fontSize: '12px', color: '#64748b' }}>No pieces listed yet.</p>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: '#0f172a' }}>
+                    <Plus size={13} /> Add First Creation
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Navigation Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
+              <div 
+                onClick={() => setActiveTab('analytics')} 
+                style={{ cursor: 'pointer', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '4px' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <BarChart2 size={16} color="#0284c7" />
+                  <ArrowUpRight size={13} color="#94a3b8" />
+                </div>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginTop: '6px' }}>Store Insights</div>
+                <div style={{ fontSize: '11px', color: '#64748b' }}>1,420 weekly visits</div>
+              </div>
+
+              <div 
+                onClick={() => setActiveTab('profile')} 
+                style={{ cursor: 'pointer', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '4px' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <User size={16} color="#0284c7" />
+                  <ArrowUpRight size={13} color="#94a3b8" />
+                </div>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginTop: '6px' }}>Brand Dossier</div>
+                <div style={{ fontSize: '11px', color: '#64748b' }}>Touchpoints & story</div>
+              </div>
+            </div>
+
+            {/* Founder Quote */}
+            {brand.founderQuote && (
+              <div className={styles.darkEthosCard}>
+                <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0284c7', marginBottom: '6px' }}>
+                  FOUNDER STATEMENT
+                </div>
+                <p style={{ fontSize: '13px', fontStyle: 'italic', color: '#334155', lineHeight: 1.5, margin: '0 0 8px 0' }}>
+                  &ldquo;{brand.founderQuote}&rdquo;
+                </p>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: '#0f172a' }}>
+                  — {brand.founderName || 'Founder'}, {brand.founderRole || 'Creative Director'}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* TAB 1: Product Catalog */}
         {activeTab === 'catalog' && (
@@ -319,124 +455,288 @@ export default function BrandProfileView({
                 })}
               </div>
             )}
-          </div>
-        )}
 
-        {/* TAB 2: Atelier Story & Ethos */}
-        {activeTab === 'atelier' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div className={styles.darkCardBox}>
-              <span className={styles.darkCardTag}>Atelier Philosophy</span>
-              <h4 className={styles.darkCardTitle}>Heritage & Craftsmanship</h4>
-              <p className={styles.darkCardDesc} style={{ display: 'block', WebkitLineClamp: 'unset' }}>
-                {brand.about || 'Crafted with uncompromising dedication to intentional luxury, ethical sourcing, and timeless beauty.'}
-              </p>
-            </div>
-
-            {brand.founderQuote && (
-              <div className={styles.darkEthosCard}>
-                <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0284c7', marginBottom: '6px' }}>
-                  FOUNDER STATEMENT
-                </div>
-                <p style={{ fontSize: '13px', fontStyle: 'italic', color: '#334155', lineHeight: 1.5, margin: '0 0 8px 0' }}>
-                  &ldquo;{brand.founderQuote}&rdquo;
+            {/* Brand Story & Philosophy */}
+            {brand.about && (
+              <div className={styles.darkCardBox} style={{ marginTop: '16px' }}>
+                <span className={styles.darkCardTag}>Brand Story</span>
+                <h4 className={styles.darkCardTitle}>Philosophy & Craft</h4>
+                <p className={styles.darkCardDesc} style={{ display: 'block', WebkitLineClamp: 'unset' }}>
+                  {brand.about}
                 </p>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: '#0f172a' }}>
-                  — {brand.founderName || 'Founder'}, {brand.founderRole || 'Creative Director'}
-                </div>
+
+                {brand.founderQuote && (
+                  <div className={styles.darkEthosCard} style={{ marginTop: '12px' }}>
+                    <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0284c7', marginBottom: '6px' }}>
+                      FOUNDER STATEMENT
+                    </div>
+                    <p style={{ fontSize: '13px', fontStyle: 'italic', color: '#334155', lineHeight: 1.5, margin: '0 0 8px 0' }}>
+                      &ldquo;{brand.founderQuote}&rdquo;
+                    </p>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#0f172a' }}>
+                      — {brand.founderName || 'Founder'}, {brand.founderRole || 'Creative Director'}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
+          </div>
+        )}
 
-            <div className={styles.darkCardBox}>
-              <span className={styles.darkCardTag}>Origin</span>
-              <h4 className={styles.darkCardTitle}>{brand.basedOutOf || 'Global Atelier'}</h4>
-              <p className={styles.darkCardDesc}>
-                Established {brand.establishedYear || '2024'} · Verified Drobe Luxury Atelier
-              </p>
+        {/* TAB 2: Store Analytics & Reach */}
+        {activeTab === 'analytics' && (
+          <div>
+            <div className={styles.darkSectionHeaderRow}>
+              <h3 className={styles.darkSectionTitle}>Store Performance</h3>
+              <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '3px' }}>
+                <TrendingUp size={12} /> Active Telemetry
+              </span>
+            </div>
+
+            {/* 2x2 Stats Grid */}
+            <div className={styles.analyticsGrid}>
+              <div className={styles.statCard}>
+                <span className={styles.statCardLabel}>Profile Visits</span>
+                <span className={styles.statCardValue}>1,420</span>
+                <span className={styles.statCardTrend}><TrendingUp size={11} /> +18.4%</span>
+              </div>
+
+              <div className={styles.statCard}>
+                <span className={styles.statCardLabel}>Impressions</span>
+                <span className={styles.statCardValue}>3,890</span>
+                <span className={styles.statCardTrend}><TrendingUp size={11} /> +12.2%</span>
+              </div>
+
+              <div className={styles.statCard}>
+                <span className={styles.statCardLabel}>Inquiry Rate</span>
+                <span className={styles.statCardValue}>12.8%</span>
+                <span className={styles.statCardTrend}><TrendingUp size={11} /> +3.1%</span>
+              </div>
+
+              <div className={styles.statCard}>
+                <span className={styles.statCardLabel}>Client Leads</span>
+                <span className={styles.statCardValue}>24</span>
+                <span className={styles.statCardTrend} style={{ color: '#0284c7' }}>● Active</span>
+              </div>
+            </div>
+
+            {/* Weekly Traffic Bar Chart */}
+            <div className={styles.chartContainer}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a' }}>Weekly Traffic</span>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>Last 7 Days</span>
+              </div>
+
+              <div className={styles.chartBarsRow}>
+                {[
+                  { day: 'Mon', height: '42%' },
+                  { day: 'Tue', height: '58%' },
+                  { day: 'Wed', height: '72%' },
+                  { day: 'Thu', height: '50%' },
+                  { day: 'Fri', height: '86%' },
+                  { day: 'Sat', height: '100%', active: true },
+                  { day: 'Sun', height: '64%' }
+                ].map((bar, i) => (
+                  <div key={i} className={styles.chartBarCol}>
+                    <div 
+                      className={`${styles.chartBarFill} ${bar.active ? styles.chartBarFillActive : ''}`} 
+                      style={{ height: bar.height }} 
+                    />
+                    <span className={styles.chartBarLabel}>{bar.day}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Channels Breakdown */}
+            <div className={styles.darkCardBox} style={{ marginTop: '12px' }}>
+              <span className={styles.darkCardTag}>Traffic Sources</span>
+              <h4 className={styles.darkCardTitle}>Discovery Channels</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '3px' }}>
+                    <span style={{ color: '#0f172a', fontWeight: 500 }}>Instagram Referral</span>
+                    <span style={{ fontWeight: 600, color: '#0f172a' }}>48%</span>
+                  </div>
+                  <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{ width: '48%', height: '100%', backgroundColor: '#ec4899', borderRadius: '3px' }} />
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '3px' }}>
+                    <span style={{ color: '#0f172a', fontWeight: 500 }}>Direct Store Link</span>
+                    <span style={{ fontWeight: 600, color: '#0f172a' }}>32%</span>
+                  </div>
+                  <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{ width: '32%', height: '100%', backgroundColor: '#0284c7', borderRadius: '3px' }} />
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '3px' }}>
+                    <span style={{ color: '#0f172a', fontWeight: 500 }}>Drobe Search</span>
+                    <span style={{ fontWeight: 600, color: '#0f172a' }}>20%</span>
+                  </div>
+                  <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{ width: '20%', height: '100%', backgroundColor: '#84cc16', borderRadius: '3px' }} />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* TAB 3: Channels */}
-        {activeTab === 'channels' && (
-          <div className={styles.darkCardBox}>
-            <span className={styles.darkCardTag}>Verified Channels</span>
-            <h4 className={styles.darkCardTitle}>Official Touchpoints</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
-              {brand.website && (
-                <a
-                  href={brand.website.startsWith('http') ? brand.website : `https://${brand.website}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#0f172a', textDecoration: 'none', padding: '12px 14px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px' }}
-                >
-                  <Globe size={16} color="#0284c7" />
-                  <span style={{ fontSize: '12px', fontWeight: 500 }}>{brand.website}</span>
-                </a>
-              )}
+        {/* TAB 3: Brand Dossier & Founder Profile */}
+        {activeTab === 'profile' && (
+          <div>
+            <div className={styles.darkCardBox} style={{ marginBottom: '14px' }}>
+              <span className={styles.darkCardTag}>Verified Atelier</span>
+              <h4 className={styles.darkCardTitle}>Founder Dossier</h4>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '12px', marginBottom: '14px' }}>
+                {brand.profileImage ? (
+                  <img
+                    src={brand.profileImage}
+                    alt={brand.name}
+                    style={{ width: '56px', height: '56px', borderRadius: '14px', objectFit: 'cover', border: '1px solid #cbd5e1' }}
+                  />
+                ) : (
+                  <div style={{ width: '56px', height: '56px', borderRadius: '14px', backgroundColor: '#0f172a', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 700 }}>
+                    {brand.name ? brand.name.slice(0, 1).toUpperCase() : 'D'}
+                  </div>
+                )}
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>
+                    {brand.founderName || brand.name || 'Founder'}
+                  </h4>
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                    {brand.founderRole || 'Creative Director'}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#0284c7', fontWeight: 600, marginTop: '2px' }}>
+                    {brand.basedOutOf || 'Global'} · Est. {brand.establishedYear || '2024'}
+                  </div>
+                </div>
+              </div>
 
-              {brand.instagram && (
-                <a
-                  href={`https://instagram.com/${brand.instagram.replace('@', '')}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#0f172a', textDecoration: 'none', padding: '12px 14px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px' }}
-                >
-                  <InstagramIcon size={16} color="#ec4899" />
-                  <span style={{ fontSize: '12px', fontWeight: 500 }}>{brand.instagram}</span>
-                </a>
-              )}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '9px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Audience</div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
+                    {normalizedCategory === 'MALE & FEMALE' ? 'Male & Female' : normalizedCategory}
+                  </div>
+                </div>
 
-              {brand.inquiriesEmail && (
-                <a
-                  href={`mailto:${brand.inquiriesEmail}`}
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#0f172a', textDecoration: 'none', padding: '12px 14px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px' }}
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '9px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Atelier Status</div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#16a34a', marginTop: '2px' }}>
+                    Live on Drobe
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Official Touchpoints */}
+            <div className={styles.darkCardBox} style={{ marginBottom: '14px' }}>
+              <span className={styles.darkCardTag}>Verified Channels</span>
+              <h4 className={styles.darkCardTitle}>Official Touchpoints</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
+                {brand.website && (
+                  <a
+                    href={brand.website.startsWith('http') ? brand.website : `https://${brand.website}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#0f172a', textDecoration: 'none', padding: '10px 12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px' }}
+                  >
+                    <Globe size={15} color="#0284c7" />
+                    <span style={{ fontSize: '12px', fontWeight: 500 }}>{brand.website}</span>
+                  </a>
+                )}
+
+                {brand.instagram && (
+                  <a
+                    href={`https://instagram.com/${brand.instagram.replace('@', '')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#0f172a', textDecoration: 'none', padding: '10px 12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px' }}
+                  >
+                    <InstagramIcon size={15} color="#ec4899" />
+                    <span style={{ fontSize: '12px', fontWeight: 500 }}>{brand.instagram}</span>
+                  </a>
+                )}
+
+                {brand.inquiriesEmail && (
+                  <a
+                    href={`mailto:${brand.inquiriesEmail}`}
+                    style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#0f172a', textDecoration: 'none', padding: '10px 12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px' }}
+                  >
+                    <Mail size={15} color="#059669" />
+                    <span style={{ fontSize: '12px', fontWeight: 500 }}>{brand.inquiriesEmail}</span>
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Edit Brand Action */}
+            <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+              <button
+                type="button"
+                onClick={onEditClick}
+                style={{ flex: 1, padding: '12px', borderRadius: '14px', backgroundColor: '#0f172a', color: '#ffffff', border: 'none', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              >
+                <Edit3 size={14} /> Edit Brand Dossier
+              </button>
+
+              {onShareClick && (
+                <button
+                  type="button"
+                  onClick={onShareClick}
+                  style={{ padding: '12px 16px', borderRadius: '14px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', color: '#0f172a', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                 >
-                  <Mail size={16} color="#059669" />
-                  <span style={{ fontSize: '12px', fontWeight: 500 }}>{brand.inquiriesEmail}</span>
-                </a>
+                  <Share2 size={14} /> Share
+                </button>
               )}
             </div>
           </div>
         )}
       </div>
 
-      {/* 3. Floating Bottom Navigation Bar */}
+      {/* 3. Floating Bottom Navigation Bar (4 Interactive Buttons) */}
       <div className={styles.darkFloatingNav}>
+        <button
+          type="button"
+          onClick={() => setActiveTab('home')}
+          className={`${styles.darkNavTab} ${activeTab === 'home' ? styles.darkNavTabActive : ''}`}
+          title="Home"
+        >
+          <Home size={19} />
+        </button>
+
         <button
           type="button"
           onClick={() => setActiveTab('catalog')}
           className={`${styles.darkNavTab} ${activeTab === 'catalog' ? styles.darkNavTabActive : ''}`}
           title="Collection"
         >
-          <Home size={18} />
+          <LayoutGrid size={19} />
         </button>
 
         <button
           type="button"
-          onClick={() => setActiveTab('atelier')}
-          className={`${styles.darkNavTab} ${activeTab === 'atelier' ? styles.darkNavTabActive : ''}`}
-          title="Atelier Story"
+          onClick={() => setActiveTab('analytics')}
+          className={`${styles.darkNavTab} ${activeTab === 'analytics' ? styles.darkNavTabActive : ''}`}
+          title="Analytics"
         >
-          <LayoutGrid size={18} />
+          <BarChart2 size={19} />
         </button>
 
         <button
           type="button"
-          onClick={() => setActiveTab('channels')}
-          className={`${styles.darkNavTab} ${activeTab === 'channels' ? styles.darkNavTabActive : ''}`}
-          title="Channels"
+          onClick={() => setActiveTab('profile')}
+          className={`${styles.darkNavTab} ${activeTab === 'profile' ? styles.darkNavTabActive : ''}`}
+          title="Profile"
         >
-          <BarChart2 size={18} />
-        </button>
-
-        <button
-          type="button"
-          onClick={onEditClick}
-          className={styles.darkNavTab}
-          title="Edit Brand"
-        >
-          <User size={18} />
+          <User size={19} />
         </button>
       </div>
 

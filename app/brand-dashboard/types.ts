@@ -32,6 +32,8 @@ export interface BrandProfile {
   website: string;
   instagram: string;
   inquiriesEmail: string;
+  email?: string;
+  password?: string;
   status: 'Published' | 'Under Review' | 'Draft';
   updatedAt: string;
 }

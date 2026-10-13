@@ -100,6 +100,20 @@ export default function BrandDashboardPage() {
     }
   };
 
+  const handleLoginSuccess = (email: string) => {
+    if (brand.status === 'Published' && brand.name?.trim()) {
+      setActiveView('profile');
+      triggerToast(`Welcome back to ${brand.name}`);
+    } else {
+      handleBrandChange({
+        ...brand,
+        email: email
+      });
+      setActiveView('filing');
+      triggerToast(`Signed in as ${email}`);
+    }
+  };
+
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       {/* 1. START SCREEN: Clean Drobe Logo & Entry Actions */}
@@ -109,6 +123,7 @@ export default function BrandDashboardPage() {
           onStartOnboarding={() => setActiveView('filing')}
           onViewLiveDashboard={() => setActiveView('profile')}
           onResetBrand={handleResetBrand}
+          onLoginSuccess={handleLoginSuccess}
         />
       )}
 
