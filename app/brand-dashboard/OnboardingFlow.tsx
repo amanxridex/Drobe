@@ -8,10 +8,11 @@ import styles from './brand-dashboard.module.css';
 interface OnboardingFlowProps {
   brand: BrandProfile;
   onChange: (updated: BrandProfile) => void;
-  onPublish: () => void;
+  onGoLive: () => void;
   onResetJihi: () => void;
   onStartBlank: () => void;
   onViewProfileTab: () => void;
+  onBackToStart: () => void;
 }
 
 const STEPS = [
@@ -19,8 +20,8 @@ const STEPS = [
   { id: 'origins', title: 'Studio Origins', sub: 'Location & founder leadership' },
   { id: 'narrative', title: 'Story & Ethos', sub: 'Brand narrative & guiding tenets' },
   { id: 'imagery', title: 'Visual Presence', sub: 'Editorial banner & emblem' },
-  { id: 'reach', title: 'Touchpoints', sub: 'Channels & signature highlights' },
-  { id: 'review', title: 'Review & Publish', sub: 'Final dossier verification' }
+  { id: 'reach', title: 'Products & Offerings', sub: 'Catalog offerings & signature formulations' },
+  { id: 'review', title: 'Review & Go Live', sub: 'Final dossier verification before launch' }
 ];
 
 const PRESET_COVERS = [
@@ -38,10 +39,11 @@ const PRESET_AVATARS = [
 export default function OnboardingFlow({
   brand,
   onChange,
-  onPublish,
+  onGoLive,
   onResetJihi,
   onStartBlank,
-  onViewProfileTab
+  onViewProfileTab,
+  onBackToStart
 }: OnboardingFlowProps) {
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -70,6 +72,20 @@ export default function OnboardingFlow({
     updateField('products', nextProducts);
   };
 
+  const handleAddProduct = () => {
+    const nextProducts = [
+      ...brand.products,
+      { name: '', tagline: '', description: '', volume: '' }
+    ];
+    updateField('products', nextProducts);
+  };
+
+  const handleRemoveProduct = (index: number) => {
+    if (brand.products.length <= 1) return;
+    const nextProducts = brand.products.filter((_, i) => i !== index);
+    updateField('products', nextProducts);
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'coverImage' | 'profileImage') => {
     const file = e.target.files?.[0];
     if (file) {
@@ -85,6 +101,7 @@ export default function OnboardingFlow({
 
   const progressPercent = Math.round(((currentStep + 1) / STEPS.length) * 100);
   const activeStepMeta = STEPS[currentStep];
+  const validProductsCount = brand.products.filter(p => p.name.trim().length > 0).length;
 
   return (
     <div className={styles.mobileContainer}>
@@ -100,15 +117,15 @@ export default function OnboardingFlow({
               onClick={() => setCurrentStep(currentStep - 1)}
               className={styles.textBtn}
             >
-              Back
+              ← Back
             </button>
           ) : (
             <button
               type="button"
-              onClick={onResetJihi}
-              className={`${styles.textBtn} ${styles.textBtnDark}`}
+              onClick={onBackToStart}
+              className={styles.textBtn}
             >
-              Load Jihi
+              ← Start
             </button>
           )}
         </div>
@@ -123,7 +140,7 @@ export default function OnboardingFlow({
             onClick={onViewProfileTab}
             className={styles.textBtn}
           >
-            Live View
+            Dashboard
           </button>
         </div>
 
@@ -140,7 +157,12 @@ export default function OnboardingFlow({
       <div className={styles.mobileContent}>
         {/* Step Intro Card */}
         <div className={styles.screenIntroCard}>
-          <span className={styles.stepBadge}>Section 0{currentStep + 1}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+            <span className={styles.stepBadge}>Section 0{currentStep + 1}</span>
+            <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>
+              {currentStep + 1} of {STEPS.length}
+            </span>
+          </div>
           <h1 className={styles.screenTitle}>{activeStepMeta.title}</h1>
           <p className={styles.screenSubtitle}>{activeStepMeta.sub}</p>
         </div>
@@ -337,14 +359,14 @@ export default function OnboardingFlow({
           </div>
         )}
 
-        {/* STEP 4: Visual Presence */}
+        {/* STEP 4: Visual Presence (Cover Image & Profile Image) */}
         {activeStepMeta.id === 'imagery' && (
           <div className={styles.formCard}>
             {/* Cover Panorama */}
             <div className={styles.formGroup}>
               <div className={styles.formLabelRow}>
                 <label className={styles.formLabel}>Cover Panorama Banner</label>
-                <span className={styles.formHint}>16:9 Landscape</span>
+                <span className={styles.formHint}>16:9 Landscape Banner</span>
               </div>
 
               <div className={styles.mobileMediaCard}>
@@ -365,7 +387,7 @@ export default function OnboardingFlow({
                       color: '#64748b'
                     }}
                   >
-                    No cover image
+                    No cover image selected
                   </div>
                 )}
 
@@ -374,7 +396,7 @@ export default function OnboardingFlow({
                     type="text"
                     value={brand.coverImage}
                     onChange={(e) => updateField('coverImage', e.target.value)}
-                    placeholder="Image URL"
+                    placeholder="Enter Image URL or upload below"
                     className={styles.inputField}
                     style={{ flex: 1 }}
                   />
@@ -407,8 +429,8 @@ export default function OnboardingFlow({
             {/* Profile Mark */}
             <div className={styles.formGroup}>
               <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Profile Emblem / Portrait</label>
-                <span className={styles.formHint}>1:1 Square</span>
+                <label className={styles.formLabel}>Profile Emblem / Brand Logo</label>
+                <span className={styles.formHint}>1:1 Square Mark</span>
               </div>
 
               <div className={styles.mobileMediaCard}>
@@ -430,7 +452,7 @@ export default function OnboardingFlow({
                         color: '#64748b'
                       }}
                     >
-                      No icon
+                      No logo
                     </div>
                   )}
 
@@ -474,105 +496,140 @@ export default function OnboardingFlow({
           </div>
         )}
 
-        {/* STEP 5: Touchpoints & Signature Items */}
+        {/* STEP 5: Products & Formulations (Total Listed Products) */}
         {activeStepMeta.id === 'reach' && (
           <div className={styles.formCard}>
             <div className={styles.formGroup}>
               <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Official Website</label>
+                <label className={styles.formLabel}>Listed Products & Formulations</label>
+                <span className={styles.formHint}>{validProductsCount} Active</span>
               </div>
-              <input
-                type="text"
-                value={brand.website}
-                onChange={(e) => updateField('website', e.target.value)}
-                placeholder="https://jihi.com"
-                className={styles.inputField}
-              />
-            </div>
-
-            <div className={styles.formRowTwo}>
-              <div className={styles.formGroup}>
-                <div className={styles.formLabelRow}>
-                  <label className={styles.formLabel}>Instagram</label>
-                </div>
-                <input
-                  type="text"
-                  value={brand.instagram}
-                  onChange={(e) => updateField('instagram', e.target.value)}
-                  placeholder="@jihi_rituals"
-                  className={styles.inputField}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <div className={styles.formLabelRow}>
-                  <label className={styles.formLabel}>Inquiries Email</label>
-                </div>
-                <input
-                  type="text"
-                  value={brand.inquiriesEmail}
-                  onChange={(e) => updateField('inquiriesEmail', e.target.value)}
-                  placeholder="concierge@jihi.com"
-                  className={styles.inputField}
-                />
-              </div>
-            </div>
-
-            {/* Signature Products */}
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Signature Hero Highlights</label>
-              </div>
+              <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px' }}>
+                Add your signature botanical formulations and hero products to be displayed on your profile dashboard.
+              </p>
 
               <div className={styles.mobileStackList}>
                 {brand.products.map((prod, idx) => (
                   <div key={idx} className={styles.mobileStackItem}>
-                    <div className={styles.stackItemIndex}>Offering 0{idx + 1}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <div className={styles.stackItemIndex}>Product 0{idx + 1}</div>
+                      {brand.products.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveProduct(idx)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#ef4444',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          ✕ Remove
+                        </button>
+                      )}
+                    </div>
+
                     <div className={styles.formRowTwo} style={{ marginBottom: '8px' }}>
                       <input
                         type="text"
                         value={prod.name}
                         onChange={(e) => handleProductChange(idx, 'name', e.target.value)}
-                        placeholder="Product Name"
+                        placeholder="Product Name (e.g. Petal Milk)"
                         className={styles.inputField}
                       />
                       <input
                         type="text"
                         value={prod.tagline}
                         onChange={(e) => handleProductChange(idx, 'tagline', e.target.value)}
-                        placeholder="Tagline"
+                        placeholder="Tagline (e.g. Face Serum)"
                         className={styles.inputField}
                       />
                     </div>
+
                     <textarea
                       value={prod.description}
                       onChange={(e) => handleProductChange(idx, 'description', e.target.value)}
-                      placeholder="Botanical active formulation"
+                      placeholder="Active botanical ingredients & ritual benefits..."
                       className={styles.textAreaField}
                       style={{ minHeight: '55px', marginBottom: '8px' }}
                     />
+
                     <input
                       type="text"
                       value={prod.volume || ''}
                       onChange={(e) => handleProductChange(idx, 'volume', e.target.value)}
-                      placeholder="Volume (e.g. 30 ml)"
+                      placeholder="Volume (e.g. 30 ml / 1.0 fl oz)"
                       className={styles.inputField}
                     />
                   </div>
                 ))}
               </div>
+
+              {/* Add Product Button */}
+              <button
+                type="button"
+                onClick={handleAddProduct}
+                className={styles.chipBtn}
+                style={{
+                  width: '100%',
+                  marginTop: '12px',
+                  padding: '10px 14px',
+                  textAlign: 'center',
+                  fontWeight: 700,
+                  border: '1px dashed #cbd5e1',
+                  backgroundColor: '#f8fafc'
+                }}
+              >
+                + Add Another Product / Formulation
+              </button>
+            </div>
+
+            {/* Official Touchpoints */}
+            <div className={styles.formGroup} style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
+              <div className={styles.formLabelRow}>
+                <label className={styles.formLabel}>Official Touchpoints</label>
+              </div>
+
+              <div style={{ marginBottom: '10px' }}>
+                <input
+                  type="text"
+                  value={brand.website}
+                  onChange={(e) => updateField('website', e.target.value)}
+                  placeholder="Website (e.g. https://jihi.com)"
+                  className={styles.inputField}
+                />
+              </div>
+
+              <div className={styles.formRowTwo}>
+                <input
+                  type="text"
+                  value={brand.instagram}
+                  onChange={(e) => updateField('instagram', e.target.value)}
+                  placeholder="Instagram (e.g. @jihi_rituals)"
+                  className={styles.inputField}
+                />
+                <input
+                  type="text"
+                  value={brand.inquiriesEmail}
+                  onChange={(e) => updateField('inquiriesEmail', e.target.value)}
+                  placeholder="Email (e.g. concierge@jihi.com)"
+                  className={styles.inputField}
+                />
+              </div>
             </div>
           </div>
         )}
 
-        {/* STEP 6: Review & Finalize */}
+        {/* STEP 6: Review & Go Live */}
         {activeStepMeta.id === 'review' && (
           <div className={styles.formCard}>
             <div
               style={{
                 backgroundColor: '#f8fafc',
                 border: '1px solid #e2e8f0',
-                borderRadius: '8px',
+                borderRadius: '10px',
                 padding: '16px',
                 marginBottom: '16px'
               }}
@@ -582,64 +639,88 @@ export default function OnboardingFlow({
                   <img
                     src={brand.profileImage}
                     alt={brand.name}
-                    style={{ width: '48px', height: '48px', borderRadius: '6px', objectFit: 'cover' }}
+                    style={{ width: '52px', height: '52px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #cbd5e1' }}
                   />
                 ) : (
-                  <div style={{ width: '48px', height: '48px', borderRadius: '6px', backgroundColor: '#e2e8f0' }} />
+                  <div style={{ width: '52px', height: '52px', borderRadius: '8px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>
+                    {brand.name ? brand.name.slice(0, 1) : 'B'}
+                  </div>
                 )}
                 <div>
-                  <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0284c7' }}>
+                  <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0284c7', fontWeight: 700 }}>
                     {brand.category || 'Category Unset'}
                   </div>
-                  <div style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
                     {brand.name || 'Untitled Brand'}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                    {brand.tagline || 'Ready to go live'}
                   </div>
                 </div>
               </div>
 
+              {/* Cover Banner Thumbnail */}
+              {brand.coverImage && (
+                <div style={{ marginBottom: '12px', borderRadius: '6px', overflow: 'hidden', height: '90px' }}>
+                  <img
+                    src={brand.coverImage}
+                    alt="Cover"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
+              )}
+
+              {/* 4 Key Dossier Facts */}
               <div
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr 1fr',
-                  gap: '8px',
+                  gap: '10px',
                   paddingTop: '12px',
                   borderTop: '1px solid #e2e8f0'
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase' }}>Atelier</div>
+                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Atelier</div>
                   <div style={{ fontSize: '12px', fontWeight: 600 }}>{brand.basedOutOf || '—'}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase' }}>Founder</div>
+                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Founder</div>
                   <div style={{ fontSize: '12px', fontWeight: 600 }}>{brand.founderName || '—'}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase' }}>Established</div>
+                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Established</div>
                   <div style={{ fontSize: '12px', fontWeight: 600 }}>{brand.establishedYear || '—'}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase' }}>Offerings</div>
-                  <div style={{ fontSize: '12px', fontWeight: 600 }}>{brand.products.filter(p => p.name).length} Items</div>
+                  <div style={{ fontSize: '10px', color: '#0284c7', textTransform: 'uppercase', fontWeight: 700 }}>Total Listed Products</div>
+                  <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>
+                    {validProductsCount} {validProductsCount === 1 ? 'Product' : 'Products'}
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Publish Status</label>
+            {/* Go Live Confirmation Box */}
+            <div
+              style={{
+                backgroundColor: '#ecfdf5',
+                border: '1px solid #a7f3d0',
+                borderRadius: '8px',
+                padding: '14px',
+                marginBottom: '16px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#065f46', fontWeight: 700, fontSize: '13px', marginBottom: '4px' }}>
+                <span className={styles.livePulseDot} />
+                Ready to Go Live on Drobe
               </div>
-              <select
-                value={brand.status}
-                onChange={(e) => updateField('status', e.target.value as any)}
-                className={styles.selectField}
-              >
-                <option value="Published">Published (Active Partner)</option>
-                <option value="Draft">Draft (Internal Only)</option>
-              </select>
+              <p style={{ fontSize: '12px', color: '#047857', lineHeight: 1.45, margin: 0 }}>
+                Clicking <strong>&ldquo;Go Live&rdquo;</strong> will publish your profile dashboard immediately, displaying your cover image, profile logo, and {validProductsCount} listed products.
+              </p>
             </div>
 
-            <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+            <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 type="button"
                 onClick={onResetJihi}
@@ -679,15 +760,16 @@ export default function OnboardingFlow({
             onClick={() => setCurrentStep(currentStep + 1)}
             className={`${styles.actionBtn} ${styles.actionBtnAccent}`}
           >
-            Continue
+            Continue →
           </button>
         ) : (
           <button
             type="button"
-            onClick={onPublish}
-            className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
+            onClick={onGoLive}
+            className={`${styles.actionBtn} ${styles.actionBtnGoLive}`}
           >
-            Publish Brand Profile
+            <span className={styles.livePulseDot} style={{ marginRight: '8px' }} />
+            Go Live
           </button>
         )}
       </footer>

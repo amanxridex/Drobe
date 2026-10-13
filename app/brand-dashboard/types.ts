@@ -8,6 +8,8 @@ export interface BrandProductHighlight {
   tagline: string;
   description: string;
   volume?: string;
+  image?: string;
+  price?: string;
 }
 
 export interface BrandProfile {

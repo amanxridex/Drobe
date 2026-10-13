@@ -368,6 +368,7 @@
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
   margin-bottom: 14px;
+  position: relative;
 }
 
 .mobileProfileCover {
@@ -593,3 +594,421 @@
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.2);
   z-index: 50;
 }
+
+/* ==========================================================
+   START SCREEN ("LIST YOUR BRAND") STYLES
+   ========================================================== */
+.startHeroCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.startBadgeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.startCategoryBadge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #0284c7;
+}
+
+.startLiveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #065f46;
+  background-color: #ecfdf5;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #a7f3d0;
+}
+
+.livePulseDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10b981;
+  display: inline-block;
+  animation: pulseBeacon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulseBeacon {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+.startHeroTitle {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.startHeroSubtitle {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #475569;
+  margin-bottom: 16px;
+}
+
+.startBrandPreviewBox {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+
+.startBrandAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #cbd5e1;
+  flex-shrink: 0;
+}
+
+.startBrandAvatarFallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background-color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+.startPrimaryBtn {
+  width: 100%;
+  height: 48px;
+  background-color: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  font-family: inherit;
+}
+
+.startPrimaryBtn:hover {
+  background-color: #1e293b;
+}
+
+.startPrimaryBtn:active {
+  transform: scale(0.99);
+}
+
+.startPresetRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.startSecondaryBtn {
+  flex: 1;
+  padding: 8px 10px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.startSecondaryBtn:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.startJourneyCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.journeyHeader {
+  margin-bottom: 14px;
+}
+
+.journeyEyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #0284c7;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.journeyTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.journeyStepsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.journeyStepItem {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.journeyStepNumber {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background-color: #f1f5f9;
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+}
+
+.journeyStepContent {
+  flex: 1;
+}
+
+.journeyStepHeading {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.journeyStepDesc {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.startBenefitsCard {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+
+.startBenefitRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: baseline;
+}
+
+.startBenefitRow:last-child {
+  margin-bottom: 0;
+}
+
+.startBenefitDot {
+  color: #0284c7;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.startBenefitText {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #334155;
+}
+
+/* ==========================================================
+   GO LIVE ACTION & DASHBOARD METRICS STYLES
+   ========================================================== */
+.actionBtnGoLive {
+  background-color: #059669;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+  flex: 1;
+}
+
+.actionBtnGoLive:hover {
+  background-color: #047857;
+}
+
+.dashboardStatusBanner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+}
+
+.coverBadgeOverlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(15, 23, 42, 0.75);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.dashboardMetricsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.metricCardHighlight {
+  grid-column: 1 / -1;
+  background-color: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metricCardStandard {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metricCardLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.metricCardValueLarge {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0284c7;
+  line-height: 1.15;
+}
+
+.metricCardValueGreen {
+  font-size: 14px;
+  font-weight: 700;
+  color: #059669;
+}
+
+.metricCardValueText {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metricCardSub {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.mobileProductCatalogList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.catalogProductItem {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.catalogProductHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.catalogProductBadge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #0284c7;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.catalogLiveBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #059669;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.mobileProductVolumeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed #e2e8f0;
+  margin-top: 6px;
+}
+

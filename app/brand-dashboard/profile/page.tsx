@@ -29,6 +29,7 @@ export default function StandaloneProfilePage() {
         brand={brand}
         onEditClick={() => router.push('/brand-dashboard')}
         onResetJihi={() => setBrand(JIHI_BRAND_PROFILE)}
+        onStartNew={() => router.push('/brand-dashboard')}
       />
     </div>
   );

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrandProfile } from './types';
 import { JIHI_BRAND_PROFILE, BLANK_BRAND_PROFILE } from './jihiData';
+import BrandStartScreen from './BrandStartScreen';
 import OnboardingFlow from './OnboardingFlow';
 import BrandProfileView from './BrandProfileView';
 import styles from './brand-dashboard.module.css';
@@ -11,7 +12,7 @@ const STORAGE_KEY = 'drobe_brand_profile_v1';
 
 export default function BrandDashboardPage() {
   const [brand, setBrand] = useState<BrandProfile>(JIHI_BRAND_PROFILE);
-  const [activeView, setActiveView] = useState<'onboarding' | 'profile'>('onboarding');
+  const [activeView, setActiveView] = useState<'start' | 'filing' | 'profile'>('start');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function BrandDashboardPage() {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage(null);
-    }, 2400);
+    }, 2800);
   };
 
   const handleBrandChange = (updated: BrandProfile) => {
@@ -39,19 +40,33 @@ export default function BrandDashboardPage() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     } catch {
-      // Local storage full or unavailable
+      // Local storage unavailable
     }
   };
 
-  const handlePublish = () => {
-    const published = {
+  const handleGoLive = async () => {
+    const published: BrandProfile = {
       ...brand,
-      status: 'Published' as const,
+      status: 'Published',
       updatedAt: 'October 2026'
     };
     handleBrandChange(published);
+
+    // Fire celebratory confetti for the "Go Live" moment
+    try {
+      const confettiModule = (await import('canvas-confetti')).default;
+      confettiModule({
+        particleCount: 100,
+        spread: 80,
+        origin: { y: 0.55 },
+        colors: ['#0284c7', '#10b981', '#38bdf8', '#0f172a', '#f59e0b']
+      });
+    } catch {
+      // Confetti fallback
+    }
+
     setActiveView('profile');
-    triggerToast('Profile published successfully');
+    triggerToast('🚀 Congratulations! Your brand is now LIVE on Drobe.');
   };
 
   const handleResetJihi = () => {
@@ -61,29 +76,54 @@ export default function BrandDashboardPage() {
 
   const handleStartBlank = () => {
     handleBrandChange(BLANK_BRAND_PROFILE);
-    setActiveView('onboarding');
-    triggerToast('Started blank profile');
+    setActiveView('filing');
+    triggerToast('Started fresh blank brand profile');
   };
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      {activeView === 'onboarding' ? (
-        <OnboardingFlow
+      {/* 1. INITIAL START VIEW: "List Your Brand" with "Start" Button */}
+      {activeView === 'start' && (
+        <BrandStartScreen
           brand={brand}
-          onChange={handleBrandChange}
-          onPublish={handlePublish}
-          onResetJihi={handleResetJihi}
+          onStart={() => setActiveView('filing')}
+          onLoadJihi={() => {
+            handleBrandChange(JIHI_BRAND_PROFILE);
+            setActiveView('filing');
+            triggerToast('Loaded Jihi demo — start filing details');
+          }}
           onStartBlank={handleStartBlank}
-          onViewProfileTab={() => setActiveView('profile')}
-        />
-      ) : (
-        <BrandProfileView
-          brand={brand}
-          onEditClick={() => setActiveView('onboarding')}
-          onResetJihi={handleResetJihi}
+          onViewLiveProfile={() => setActiveView('profile')}
         />
       )}
 
+      {/* 2. FILING DETAILS VIEW: Progressive onboarding ending in "Go Live" */}
+      {activeView === 'filing' && (
+        <OnboardingFlow
+          brand={brand}
+          onChange={handleBrandChange}
+          onGoLive={handleGoLive}
+          onResetJihi={handleResetJihi}
+          onStartBlank={() => {
+            handleBrandChange(BLANK_BRAND_PROFILE);
+            triggerToast('Cleared fields for fresh brand');
+          }}
+          onViewProfileTab={() => setActiveView('profile')}
+          onBackToStart={() => setActiveView('start')}
+        />
+      )}
+
+      {/* 3. PROFILE DASHBOARD VIEW: Showing Cover Image, Profile Image, Total Listed Products */}
+      {activeView === 'profile' && (
+        <BrandProfileView
+          brand={brand}
+          onEditClick={() => setActiveView('filing')}
+          onResetJihi={handleResetJihi}
+          onStartNew={() => setActiveView('start')}
+        />
+      )}
+
+      {/* Sleek Apple-style Floating Toast */}
       {toastMessage && (
         <div className={styles.mobileToast}>
           {toastMessage}
