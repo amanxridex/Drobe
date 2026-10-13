@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { BrandProfile } from './types';
-import { BLANK_BRAND_PROFILE } from './jihiData';
+import { EMPTY_BRAND_PROFILE } from './jihiData';
 import BrandStartScreen from './BrandStartScreen';
 import OnboardingFlow from './OnboardingFlow';
 import BrandProfileView from './BrandProfileView';
@@ -11,7 +11,7 @@ import styles from './brand-dashboard.module.css';
 const STORAGE_KEY = 'drobe_brand_profile_v1';
 
 export default function BrandDashboardPage() {
-  const [brand, setBrand] = useState<BrandProfile>(BLANK_BRAND_PROFILE);
+  const [brand, setBrand] = useState<BrandProfile>(EMPTY_BRAND_PROFILE);
   const [activeView, setActiveView] = useState<'start' | 'filing' | 'profile'>('start');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -22,10 +22,10 @@ export default function BrandDashboardPage() {
         const parsed = JSON.parse(saved);
         setBrand(parsed);
       } else {
-        setBrand(BLANK_BRAND_PROFILE);
+        setBrand(EMPTY_BRAND_PROFILE);
       }
     } catch {
-      setBrand(BLANK_BRAND_PROFILE);
+      setBrand(EMPTY_BRAND_PROFILE);
     }
   }, []);
 
@@ -49,7 +49,7 @@ export default function BrandDashboardPage() {
     const published: BrandProfile = {
       ...brand,
       status: 'Published',
-      updatedAt: 'October 2026'
+      updatedAt: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     };
     handleBrandChange(published);
 
@@ -75,6 +75,16 @@ export default function BrandDashboardPage() {
     triggerToast('Draft saved successfully');
   };
 
+  const handleResetBrand = () => {
+    setBrand(EMPTY_BRAND_PROFILE);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
+    setActiveView('filing');
+  };
+
   const handleShareClick = () => {
     if (typeof window !== 'undefined') {
       const shareUrl = `${window.location.origin}/brand-dashboard/profile`;
@@ -92,16 +102,17 @@ export default function BrandDashboardPage() {
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      {/* 1. ANIMATED INTRO SCREEN: Cinematic reveal with "Start Onboarding" */}
+      {/* 1. START SCREEN: Clean Drobe Logo & Entry Actions */}
       {activeView === 'start' && (
         <BrandStartScreen
           brand={brand}
           onStartOnboarding={() => setActiveView('filing')}
           onViewLiveDashboard={() => setActiveView('profile')}
+          onResetBrand={handleResetBrand}
         />
       )}
 
-      {/* 2. PRODUCTION LISTING PROCESS: Clean step-by-step studio ending in "Go Live" */}
+      {/* 2. REAL ONBOARDING FLOW: Step-by-step Brand Studio to Go Live */}
       {activeView === 'filing' && (
         <OnboardingFlow
           brand={brand}
@@ -112,7 +123,7 @@ export default function BrandDashboardPage() {
         />
       )}
 
-      {/* 3. VERIFIED BRAND PROFILE DASHBOARD: Cover image, logo, total listed products */}
+      {/* 3. REAL LIVE BRAND PROFILE: Displays actual entered products, prices & channels */}
       {activeView === 'profile' && (
         <BrandProfileView
           brand={brand}

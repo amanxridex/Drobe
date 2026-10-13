@@ -3,25 +3,39 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { BrandProfile } from '../types';
-import { JIHI_BRAND_PROFILE } from '../jihiData';
+import { EMPTY_BRAND_PROFILE } from '../jihiData';
 import BrandProfileView from '../BrandProfileView';
 
 const STORAGE_KEY = 'drobe_brand_profile_v1';
 
 export default function StandaloneProfilePage() {
   const router = useRouter();
-  const [brand, setBrand] = useState<BrandProfile>(JIHI_BRAND_PROFILE);
+  const [brand, setBrand] = useState<BrandProfile | null>(null);
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        setBrand(JSON.parse(saved));
+        const parsed: BrandProfile = JSON.parse(saved);
+        if (parsed.name?.trim()) {
+          setBrand(parsed);
+          return;
+        }
       }
     } catch {
-      // Default to Jihi
+      // Local storage read error
     }
-  }, []);
+    // If no brand exists, send to brand onboarding
+    router.replace('/brand-dashboard');
+  }, [router]);
+
+  if (!brand) {
+    return (
+      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#09090b', color: '#71717a', fontSize: '13px' }}>
+        Loading Brand Atelier...
+      </div>
+    );
+  }
 
   return (
     <div style={{ width: '100%', height: '100%' }}>

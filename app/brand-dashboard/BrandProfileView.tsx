@@ -9,7 +9,8 @@ import {
   Globe, 
   Mail, 
   Plus, 
-  Edit3
+  Edit3,
+  Share2
 } from 'lucide-react';
 import { BrandProfile } from './types';
 import styles from './brand-dashboard.module.css';
@@ -33,13 +34,13 @@ export default function BrandProfileView({
   onEditClick,
   onShareClick
 }: BrandProfileViewProps) {
-  const [activeTab, setActiveTab] = useState<'catalog' | 'atelier' | 'founder' | 'channels'>('catalog');
-  const activeProducts = brand.products.filter(p => p.name.trim().length > 0);
+  const [activeTab, setActiveTab] = useState<'catalog' | 'atelier' | 'channels'>('catalog');
+  const activeProducts = brand.products.filter(p => p.name?.trim().length > 0);
   const totalProductsCount = activeProducts.length;
 
   return (
     <div className={styles.darkProfileContainer}>
-      {/* 1. Sleek Header (Founder Avatar + Greeting + Edit Button) */}
+      {/* 1. Header with Brand Emblem & Actions */}
       <header className={styles.darkProfileHeader}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {brand.profileImage ? (
@@ -58,35 +59,47 @@ export default function BrandProfileView({
               Hello, {brand.founderName ? brand.founderName.split(' ')[0] : (brand.name || 'Partner')}
             </div>
             <div className={styles.darkHeaderSub}>
-              Live on Drobe · {brand.basedOutOf || 'Studio Atelier'}
+              Live on Drobe · {brand.basedOutOf || 'Global Atelier'}
             </div>
           </div>
         </div>
 
-        {/* Circular Action Button */}
-        <button
-          type="button"
-          onClick={onEditClick}
-          className={styles.darkCircleBtn}
-          title="Edit Brand Dossier"
-        >
-          <Edit3 size={16} />
-        </button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {onShareClick && (
+            <button
+              type="button"
+              onClick={onShareClick}
+              className={styles.darkCircleBtn}
+              title="Share Live Store Link"
+            >
+              <Share2 size={15} />
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={onEditClick}
+            className={styles.darkCircleBtn}
+            title="Edit Brand Dossier"
+          >
+            <Edit3 size={15} />
+          </button>
+        </div>
       </header>
 
-      {/* 2. Scrollable Content Body */}
+      {/* 2. Scrollable Body Content */}
       <div className={styles.darkScrollContent}>
         {/* Hero Atelier Card */}
         <div className={styles.darkHeroCard}>
           <div style={{ flex: 1 }}>
             <span className={styles.darkHeroTag}>
-              BRAND ATELIER
+              {brand.category || 'BRAND ATELIER'}
             </span>
             <h2 className={styles.darkHeroTitle}>
               {brand.name || 'Untitled Brand'}
             </h2>
             <p className={styles.darkHeroSub}>
-              {brand.tagline || 'Conscious luxury and mindful botanical rituals.'}
+              {brand.tagline || 'Conscious luxury and artisanal craftsmanship.'}
             </p>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px' }}>
@@ -109,14 +122,14 @@ export default function BrandProfileView({
           )}
         </div>
 
-        {/* Quick Filter Pills Row (Apple Day Pills Style) */}
+        {/* View Switcher Pills */}
         <div className={styles.darkPillsRow}>
           <div
             className={`${styles.darkDayPill} ${activeTab === 'catalog' ? styles.darkDayPillActive : ''}`}
             onClick={() => setActiveTab('catalog')}
           >
             <span>Offerings</span>
-            <span style={{ fontSize: '14px', fontWeight: 900 }}>{totalProductsCount}</span>
+            <span style={{ fontSize: '14px', fontWeight: 700 }}>{totalProductsCount}</span>
           </div>
 
           <div
@@ -124,18 +137,8 @@ export default function BrandProfileView({
             onClick={() => setActiveTab('atelier')}
           >
             <span>Atelier</span>
-            <span style={{ fontSize: '13px', fontWeight: 800 }}>
-              {brand.basedOutOf ? brand.basedOutOf.split(',')[0].slice(0, 3).toUpperCase() : 'HQ'}
-            </span>
-          </div>
-
-          <div
-            className={`${styles.darkDayPill} ${activeTab === 'founder' ? styles.darkDayPillActive : ''}`}
-            onClick={() => setActiveTab('founder')}
-          >
-            <span>Founder</span>
-            <span style={{ fontSize: '13px', fontWeight: 800 }}>
-              {brand.founderName ? brand.founderName.split(' ')[0].slice(0, 3).toUpperCase() : 'YOU'}
+            <span style={{ fontSize: '13px', fontWeight: 600 }}>
+              {brand.establishedYear || 'EST'}
             </span>
           </div>
 
@@ -143,201 +146,182 @@ export default function BrandProfileView({
             className={`${styles.darkDayPill} ${activeTab === 'channels' ? styles.darkDayPillActive : ''}`}
             onClick={() => setActiveTab('channels')}
           >
-            <span>Status</span>
-            <span style={{ fontSize: '13px', fontWeight: 800, color: '#72ea24' }}>
+            <span>Channels</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#72ea24' }}>
               LIVE
             </span>
           </div>
         </div>
 
-        {/* "Your Collection" Section */}
-        <div className={styles.darkSectionHeaderRow}>
-          <h3 className={styles.darkSectionTitle}>
-            Your collection
-          </h3>
-          <button
-            type="button"
-            onClick={onEditClick}
-            className={styles.darkAddBtn}
-          >
-            <Plus size={13} />
-            <span>Add Product</span>
-          </button>
-        </div>
-
-        {/* 2-Column Product Grid */}
-        <div className={styles.darkCardsGrid}>
-          {/* Card 1: Primary Offering */}
-          {activeProducts[0] ? (
-            <div className={styles.darkCardBox}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span className={styles.darkCardTag}>
-                  {activeProducts[0].volume || 'Featured'}
-                </span>
-                <span className={styles.darkCardPrice}>
-                  $98
-                </span>
-              </div>
-              <h4 className={styles.darkCardTitle}>
-                {activeProducts[0].name}
-              </h4>
-              <div className={styles.darkCardSub}>
-                {activeProducts[0].tagline}
-              </div>
-              <p className={styles.darkCardDesc}>
-                {activeProducts[0].description}
-              </p>
-
-              {brand.founderName && (
-                <div className={styles.darkCardAuthor}>
-                  {brand.profileImage ? (
-                    <img
-                      src={brand.profileImage}
-                      alt=""
-                      style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }}
-                    />
-                  ) : null}
-                  <div style={{ fontSize: '10px', color: '#a1a1aa' }}>
-                    <span style={{ fontWeight: 700, color: '#ffffff' }}>{brand.founderName.split(' ')[0]}</span>
-                    {' · Formulator'}
-                  </div>
-                </div>
-              )}
+        {/* TAB 1: Real Product Catalog */}
+        {activeTab === 'catalog' && (
+          <div>
+            <div className={styles.darkSectionHeaderRow}>
+              <h3 className={styles.darkSectionTitle}>
+                Your Collection ({totalProductsCount})
+              </h3>
+              <button
+                type="button"
+                onClick={onEditClick}
+                className={styles.darkAddBtn}
+              >
+                <Plus size={13} />
+                <span>Add Product</span>
+              </button>
             </div>
-          ) : (
-            <div className={styles.darkCardBox} onClick={onEditClick} style={{ cursor: 'pointer' }}>
-              <span className={styles.darkCardTag}>Offering 01</span>
-              <h4 className={styles.darkCardTitle}>First Product</h4>
-              <p className={styles.darkCardDesc}>Tap to add your hero item formulation.</p>
-            </div>
-          )}
 
-          {/* Right Column: Card 2 (Top) + Card 3 (Bottom) */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {/* Card 2: Secondary Offering */}
-            {activeProducts[1] ? (
-              <div className={styles.darkCardBox}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                  <span className={styles.darkCardTag}>
-                    {activeProducts[1].volume || 'Active'}
-                  </span>
-                  <span className={styles.darkCardPrice}>
-                    $74
-                  </span>
-                </div>
-                <h4 className={styles.darkCardTitle}>
-                  {activeProducts[1].name}
-                </h4>
-                <div className={styles.darkCardSub}>
-                  {activeProducts[1].tagline}
-                </div>
-                <p className={styles.darkCardDesc}>
-                  {activeProducts[1].description}
-                </p>
+            {totalProductsCount === 0 ? (
+              <div className={styles.darkCardBox} onClick={onEditClick} style={{ cursor: 'pointer', textAlign: 'center', padding: '28px 16px' }}>
+                <span className={styles.darkCardTag}>Empty Catalog</span>
+                <h4 className={styles.darkCardTitle}>No products listed yet</h4>
+                <p className={styles.darkCardDesc}>Tap to add your first signature creation.</p>
               </div>
             ) : (
-              <div className={styles.darkCardBox} onClick={onEditClick} style={{ cursor: 'pointer' }}>
-                <span className={styles.darkCardTag}>Offering 02</span>
-                <h4 className={styles.darkCardTitle}>Second Product</h4>
-                <p className={styles.darkCardDesc}>Tap to add another item.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {activeProducts.map((prod, idx) => {
+                  const displayPrice = prod.price 
+                    ? (prod.price.trim().startsWith('$') ? prod.price.trim() : `$${prod.price.trim()}`)
+                    : 'Price upon request';
+
+                  return (
+                    <div key={idx} className={styles.darkCardBox}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <span className={styles.darkCardTag}>
+                          {prod.volume || `Offering 0${idx + 1}`}
+                        </span>
+                        <span className={styles.darkCardPrice}>
+                          {displayPrice}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '12px' }}>
+                        {prod.image && (
+                          <img
+                            src={prod.image}
+                            alt={prod.name}
+                            style={{ width: '64px', height: '64px', borderRadius: '12px', objectFit: 'cover', flexShrink: 0, border: '1px solid #27272a' }}
+                          />
+                        )}
+
+                        <div style={{ flex: 1 }}>
+                          <h4 className={styles.darkCardTitle}>
+                            {prod.name}
+                          </h4>
+                          {prod.tagline && (
+                            <div className={styles.darkCardSub}>
+                              {prod.tagline}
+                            </div>
+                          )}
+                          {prod.description && (
+                            <p className={styles.darkCardDesc}>
+                              {prod.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
-
-            {/* Card 3: Direct Channels */}
-            <div className={styles.darkCardBox}>
-              <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#72ea24' }}>
-                Direct Channels
-              </div>
-              <div className={styles.darkCardChannels}>
-                {brand.instagram && (
-                  <a
-                    href={`https://instagram.com/${brand.instagram.replace('@', '')}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={styles.darkChannelCircle}
-                    title="Instagram"
-                  >
-                    <InstagramIcon size={14} color="#ffffff" />
-                  </a>
-                )}
-                {brand.website && (
-                  <a
-                    href={brand.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={styles.darkChannelCircle}
-                    title="Website"
-                  >
-                    <Globe size={14} color="#ffffff" />
-                  </a>
-                )}
-                {brand.inquiriesEmail && (
-                  <a
-                    href={`mailto:${brand.inquiriesEmail}`}
-                    className={styles.darkChannelCircle}
-                    title="Email"
-                  >
-                    <Mail size={14} color="#ffffff" />
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 4: Third Offering (Full Width) */}
-        {activeProducts[2] && (
-          <div className={styles.darkCardBox} style={{ marginTop: '4px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-              <span className={styles.darkCardTag}>
-                Offering 03 · {activeProducts[2].volume}
-              </span>
-              <span className={styles.darkCardPrice}>
-                $86
-              </span>
-            </div>
-            <h4 className={styles.darkCardTitle}>
-              {activeProducts[2].name}
-            </h4>
-            <div className={styles.darkCardSub}>
-              {activeProducts[2].tagline}
-            </div>
-            <p className={styles.darkCardDesc}>
-              {activeProducts[2].description}
-            </p>
           </div>
         )}
 
-        {/* Founder Ethos Card */}
-        {brand.founderQuote && (
-          <div className={styles.darkEthosCard}>
-            <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#72ea24', marginBottom: '6px' }}>
-              FOUNDER ETHOS
+        {/* TAB 2: Atelier Story & Ethos */}
+        {activeTab === 'atelier' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className={styles.darkCardBox}>
+              <span className={styles.darkCardTag}>Atelier Philosophy</span>
+              <h4 className={styles.darkCardTitle}>Heritage & Craftsmanship</h4>
+              <p className={styles.darkCardDesc} style={{ display: 'block', WebkitLineClamp: 'unset' }}>
+                {brand.about || 'Crafted with uncompromising dedication to intentional luxury, ethical sourcing, and timeless beauty.'}
+              </p>
             </div>
-            <p style={{ fontSize: '12px', fontStyle: 'italic', color: '#d4d4d8', lineHeight: 1.5, margin: '0 0 6px 0' }}>
-              &ldquo;{brand.founderQuote}&rdquo;
-            </p>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: '#ffffff' }}>
-              — {brand.founderName || 'Founder'}, {brand.founderRole || 'Formulator'}
+
+            {brand.founderQuote && (
+              <div className={styles.darkEthosCard}>
+                <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#72ea24', marginBottom: '6px' }}>
+                  FOUNDER STATEMENT
+                </div>
+                <p style={{ fontSize: '13px', fontStyle: 'italic', color: '#e4e4e7', lineHeight: 1.5, margin: '0 0 8px 0' }}>
+                  &ldquo;{brand.founderQuote}&rdquo;
+                </p>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: '#ffffff' }}>
+                  — {brand.founderName || 'Founder'}, {brand.founderRole || 'Creative Director'}
+                </div>
+              </div>
+            )}
+
+            <div className={styles.darkCardBox}>
+              <span className={styles.darkCardTag}>Origin</span>
+              <h4 className={styles.darkCardTitle}>{brand.basedOutOf || 'Global Atelier'}</h4>
+              <p className={styles.darkCardDesc}>
+                Established {brand.establishedYear || '2024'} · Verified Drobe Luxury Atelier
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: Channels */}
+        {activeTab === 'channels' && (
+          <div className={styles.darkCardBox}>
+            <span className={styles.darkCardTag}>Verified Channels</span>
+            <h4 className={styles.darkCardTitle}>Official Touchpoints</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
+              {brand.website && (
+                <a
+                  href={brand.website.startsWith('http') ? brand.website : `https://${brand.website}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#ffffff', textDecoration: 'none', padding: '10px', backgroundColor: '#18181b', borderRadius: '12px' }}
+                >
+                  <Globe size={16} color="#0284c7" />
+                  <span style={{ fontSize: '12px' }}>{brand.website}</span>
+                </a>
+              )}
+
+              {brand.instagram && (
+                <a
+                  href={`https://instagram.com/${brand.instagram.replace('@', '')}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#ffffff', textDecoration: 'none', padding: '10px', backgroundColor: '#18181b', borderRadius: '12px' }}
+                >
+                  <InstagramIcon size={16} color="#ec4899" />
+                  <span style={{ fontSize: '12px' }}>{brand.instagram}</span>
+                </a>
+              )}
+
+              {brand.inquiriesEmail && (
+                <a
+                  href={`mailto:${brand.inquiriesEmail}`}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#ffffff', textDecoration: 'none', padding: '10px', backgroundColor: '#18181b', borderRadius: '12px' }}
+                >
+                  <Mail size={16} color="#10b981" />
+                  <span style={{ fontSize: '12px' }}>{brand.inquiriesEmail}</span>
+                </a>
+              )}
             </div>
           </div>
         )}
       </div>
 
-      {/* 3. Floating Sleek Bottom Navigation Pill */}
+      {/* 3. Floating Bottom Navigation Bar */}
       <div className={styles.darkFloatingNav}>
         <button
           type="button"
           onClick={() => setActiveTab('catalog')}
-          className={`${styles.darkNavTab} ${styles.darkNavTabActive}`}
+          className={`${styles.darkNavTab} ${activeTab === 'catalog' ? styles.darkNavTabActive : ''}`}
+          title="Collection"
         >
           <Home size={18} />
         </button>
 
         <button
           type="button"
-          onClick={onEditClick}
-          className={styles.darkNavTab}
+          onClick={() => setActiveTab('atelier')}
+          className={`${styles.darkNavTab} ${activeTab === 'atelier' ? styles.darkNavTabActive : ''}`}
+          title="Atelier Story"
         >
           <LayoutGrid size={18} />
         </button>
@@ -345,7 +329,8 @@ export default function BrandProfileView({
         <button
           type="button"
           onClick={() => setActiveTab('channels')}
-          className={styles.darkNavTab}
+          className={`${styles.darkNavTab} ${activeTab === 'channels' ? styles.darkNavTabActive : ''}`}
+          title="Channels"
         >
           <BarChart2 size={18} />
         </button>
@@ -354,6 +339,7 @@ export default function BrandProfileView({
           type="button"
           onClick={onEditClick}
           className={styles.darkNavTab}
+          title="Edit Brand"
         >
           <User size={18} />
         </button>

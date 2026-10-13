@@ -63,7 +63,7 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
             width: '100%',
             maxWidth: isMobile ? '100%' : '440px',
             height: isMobile ? 'var(--app-height, 100dvh)' : '100vh',
-            backgroundColor: '#000000',
+            backgroundColor: '#ffffff',
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
