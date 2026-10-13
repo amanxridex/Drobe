@@ -15,12 +15,11 @@ interface OnboardingFlowProps {
 }
 
 const STEPS = [
-  { id: 'identity', title: 'Brand Identity', sub: 'Foundational name, category & year' },
-  { id: 'origins', title: 'Studio Origins', sub: 'Location & founder leadership' },
-  { id: 'narrative', title: 'Story & Ethos', sub: 'Brand narrative & guiding tenets' },
-  { id: 'imagery', title: 'Visual Presence', sub: 'Editorial banner & emblem' },
-  { id: 'reach', title: 'Products & Offerings', sub: 'Catalog offerings & signature formulations' },
-  { id: 'review', title: 'Review & Go Live', sub: 'Final verification before going live' }
+  { id: 'identity', title: 'Brand basics', sub: 'name, category & atelier origin' },
+  { id: 'story', title: 'Story & founder', sub: 'your philosophy and vision' },
+  { id: 'imagery', title: 'Cover & logo', sub: 'editorial visuals for your page' },
+  { id: 'catalog', title: 'Your products', sub: 'signature offerings & touchpoints' },
+  { id: 'review', title: 'Ready to launch', sub: 'review & publish live' }
 ];
 
 const PRESET_COVERS = [
@@ -49,15 +48,6 @@ export default function OnboardingFlow({
       ...brand,
       [key]: value
     });
-  };
-
-  const handleValueChange = (index: number, field: 'title' | 'description', val: string) => {
-    const nextValues = [...brand.values];
-    if (!nextValues[index]) {
-      nextValues[index] = { title: '', description: '' };
-    }
-    nextValues[index][field] = val;
-    updateField('values', nextValues);
   };
 
   const handleProductChange = (index: number, field: keyof BrandProfile['products'][0], val: string) => {
@@ -102,10 +92,10 @@ export default function OnboardingFlow({
 
   return (
     <div className={styles.mobileContainer}>
-      {/* Code-driven Geometric Apple Wallpaper Background */}
+      {/* Code-driven Geometric Apple Background */}
       <AppleGeometricBg />
 
-      {/* Production Sticky Top Navigation */}
+      {/* Cute Minimal Header */}
       <header className={styles.mobileHeader}>
         <div className={styles.mobileHeaderLeft}>
           {currentStep > 0 ? (
@@ -114,7 +104,7 @@ export default function OnboardingFlow({
               onClick={() => setCurrentStep(currentStep - 1)}
               className={styles.textBtn}
             >
-              ← Back
+              ← back
             </button>
           ) : (
             <button
@@ -122,13 +112,13 @@ export default function OnboardingFlow({
               onClick={onExit}
               className={styles.textBtn}
             >
-              ✕ Exit
+              ✕ exit
             </button>
           )}
         </div>
 
         <div className={styles.mobileHeaderTitle}>
-          Step 0{currentStep + 1} / 0{STEPS.length}
+          0{currentStep + 1} / 0{STEPS.length}
         </div>
 
         <div className={styles.mobileHeaderRight}>
@@ -137,11 +127,11 @@ export default function OnboardingFlow({
             onClick={onSaveDraft}
             className={`${styles.textBtn} ${styles.textBtnDark}`}
           >
-            Save Draft
+            save draft
           </button>
         </div>
 
-        {/* Apple Progress Indicator */}
+        {/* Apple Progress Bar */}
         <div className={styles.progressBarTrack}>
           <div
             className={styles.progressBarFill}
@@ -151,109 +141,74 @@ export default function OnboardingFlow({
       </header>
 
       {/* Scrollable Content Layer */}
-      <div className={styles.mobileContent}>
-        {/* Step Intro Card */}
+      <div className={styles.mobileContent} style={{ padding: '16px 16px 40px 16px' }}>
+        {/* Step Intro Header */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={`intro-${activeStepMeta.id}`}
+            key={`step-${activeStepMeta.id}`}
             className={styles.screenIntroCard}
-            initial={{ opacity: 0, y: 12 }}
+            style={{ marginBottom: '14px', padding: '16px 18px', borderRadius: '16px' }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <span className={styles.stepBadge}>Section 0{currentStep + 1}</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+              <span className={styles.stepBadge}>
+                ✦ step 0{currentStep + 1}
+              </span>
               <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>
                 {currentStep + 1} of {STEPS.length}
               </span>
             </div>
-            <h1 className={styles.screenTitle}>{activeStepMeta.title}</h1>
-            <p className={styles.screenSubtitle}>{activeStepMeta.sub}</p>
+            <h1 className={styles.screenTitle} style={{ fontSize: '20px', margin: '2px 0 2px 0' }}>
+              {activeStepMeta.title}
+            </h1>
+            <p className={styles.screenSubtitle} style={{ margin: 0, fontSize: '12px' }}>
+              {activeStepMeta.sub}
+            </p>
           </motion.div>
         </AnimatePresence>
 
         {/* STEP 1: Brand Identity */}
         {activeStepMeta.id === 'identity' && (
-          <motion.div
-            className={styles.formCard}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
+          <div className={styles.formCard}>
             <div className={styles.formGroup}>
               <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Brand Name</label>
+                <label className={styles.formLabel}>Brand name</label>
                 <span className={styles.formHint}>Required</span>
               </div>
               <input
                 type="text"
                 value={brand.name}
                 onChange={(e) => updateField('name', e.target.value)}
-                placeholder="e.g. Maison Botanique"
+                placeholder="e.g. Jihi"
                 className={styles.inputField}
               />
             </div>
 
             <div className={styles.formGroup}>
               <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Tagline or Defining Essence</label>
+                <label className={styles.formLabel}>Tagline or essence</label>
               </div>
               <input
                 type="text"
                 value={brand.tagline}
                 onChange={(e) => updateField('tagline', e.target.value)}
-                placeholder="e.g. Conscious luxury formulations crafted to nourish body and mind."
+                placeholder="e.g. Botanical rituals crafted for mindful calm"
                 className={styles.inputField}
               />
             </div>
 
             <div className={styles.formGroup}>
               <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Industry & Luxury Category</label>
+                <label className={styles.formLabel}>Category</label>
               </div>
               <input
                 type="text"
                 value={brand.category}
                 onChange={(e) => updateField('category', e.target.value)}
-                placeholder="e.g. Mindful Skincare & Botanical Fragrance"
-                className={styles.inputField}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Established Year</label>
-              </div>
-              <input
-                type="text"
-                value={brand.establishedYear}
-                onChange={(e) => updateField('establishedYear', e.target.value)}
-                placeholder="e.g. 2024"
-                className={styles.inputField}
-              />
-            </div>
-          </motion.div>
-        )}
-
-        {/* STEP 2: Studio Origins & Leadership */}
-        {activeStepMeta.id === 'origins' && (
-          <motion.div
-            className={styles.formCard}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Atelier Location</label>
-                <span className={styles.formHint}>Studio Origin</span>
-              </div>
-              <input
-                type="text"
-                value={brand.basedOutOf}
-                onChange={(e) => updateField('basedOutOf', e.target.value)}
-                placeholder="e.g. Aspen, Colorado & Paris, France"
+                placeholder="e.g. Mindful Skincare & Rituals"
                 className={styles.inputField}
               />
             </div>
@@ -261,26 +216,59 @@ export default function OnboardingFlow({
             <div className={styles.formRowTwo}>
               <div className={styles.formGroup}>
                 <div className={styles.formLabelRow}>
-                  <label className={styles.formLabel}>Founder Name</label>
+                  <label className={styles.formLabel}>Atelier location</label>
                 </div>
                 <input
                   type="text"
-                  value={brand.founderName}
-                  onChange={(e) => updateField('founderName', e.target.value)}
-                  placeholder="e.g. Elena Moreau"
+                  value={brand.basedOutOf}
+                  onChange={(e) => updateField('basedOutOf', e.target.value)}
+                  placeholder="e.g. Telluride, CO"
                   className={styles.inputField}
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <div className={styles.formLabelRow}>
-                  <label className={styles.formLabel}>Title / Role</label>
+                  <label className={styles.formLabel}>Established</label>
+                </div>
+                <input
+                  type="text"
+                  value={brand.establishedYear}
+                  onChange={(e) => updateField('establishedYear', e.target.value)}
+                  placeholder="e.g. 2024"
+                  className={styles.inputField}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 2: Story & Founder */}
+        {activeStepMeta.id === 'story' && (
+          <div className={styles.formCard}>
+            <div className={styles.formRowTwo}>
+              <div className={styles.formGroup}>
+                <div className={styles.formLabelRow}>
+                  <label className={styles.formLabel}>Founder name</label>
+                </div>
+                <input
+                  type="text"
+                  value={brand.founderName}
+                  onChange={(e) => updateField('founderName', e.target.value)}
+                  placeholder="e.g. Jenn Bernstein"
+                  className={styles.inputField}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <div className={styles.formLabelRow}>
+                  <label className={styles.formLabel}>Role / title</label>
                 </div>
                 <input
                   type="text"
                   value={brand.founderRole}
                   onChange={(e) => updateField('founderRole', e.target.value)}
-                  placeholder="e.g. Founder & Master Formulator"
+                  placeholder="e.g. Founder & Formulator"
                   className={styles.inputField}
                 />
               </div>
@@ -288,111 +276,40 @@ export default function OnboardingFlow({
 
             <div className={styles.formGroup}>
               <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Founder Quote</label>
+                <label className={styles.formLabel}>Founder quote or mantra</label>
               </div>
               <textarea
                 value={brand.founderQuote}
                 onChange={(e) => updateField('founderQuote', e.target.value)}
-                placeholder="A defining statement that captures your craft and vision..."
+                placeholder="A short quote about your brand mission..."
                 className={styles.textAreaField}
-                style={{ minHeight: '75px' }}
+                style={{ minHeight: '65px' }}
               />
             </div>
 
             <div className={styles.formGroup}>
               <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Founder Narrative / Bio</label>
-              </div>
-              <textarea
-                value={brand.founderBio}
-                onChange={(e) => updateField('founderBio', e.target.value)}
-                placeholder="The journey, inspiration, and personal discipline behind founding the brand."
-                className={styles.textAreaField}
-                style={{ minHeight: '85px' }}
-              />
-            </div>
-          </motion.div>
-        )}
-
-        {/* STEP 3: Story & Pillars */}
-        {activeStepMeta.id === 'narrative' && (
-          <motion.div
-            className={styles.formCard}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>About the Brand</label>
-                <span className={styles.formHint}>Comprehensive Story</span>
+                <label className={styles.formLabel}>About your brand</label>
               </div>
               <textarea
                 value={brand.about}
                 onChange={(e) => updateField('about', e.target.value)}
-                placeholder="Formulation philosophy, ingredients, standards, and production ethos."
+                placeholder="Briefly describe your formulations, ethos, and craftsmanship..."
                 className={styles.textAreaField}
-                style={{ minHeight: '100px' }}
+                style={{ minHeight: '85px' }}
               />
             </div>
-
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Brand Manifesto</label>
-              </div>
-              <input
-                type="text"
-                value={brand.mission}
-                onChange={(e) => updateField('mission', e.target.value)}
-                placeholder="One sentence defining standard"
-                className={styles.inputField}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Three Brand Pillars</label>
-              </div>
-
-              <div className={styles.mobileStackList}>
-                {brand.values.map((val, i) => (
-                  <div key={i} className={styles.mobileStackItem}>
-                    <div className={styles.stackItemIndex}>Pillar 0{i + 1}</div>
-                    <input
-                      type="text"
-                      value={val.title}
-                      onChange={(e) => handleValueChange(i, 'title', e.target.value)}
-                      placeholder={`Pillar 0${i + 1} Title (e.g. Botanical Integrity)`}
-                      className={styles.inputField}
-                      style={{ marginBottom: '8px' }}
-                    />
-                    <textarea
-                      value={val.description}
-                      onChange={(e) => handleValueChange(i, 'description', e.target.value)}
-                      placeholder="Commitment and standard description..."
-                      className={styles.textAreaField}
-                      style={{ minHeight: '60px' }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+          </div>
         )}
 
-        {/* STEP 4: Visual Presence */}
+        {/* STEP 3: Visuals (Cover & Logo) */}
         {activeStepMeta.id === 'imagery' && (
-          <motion.div
-            className={styles.formCard}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Cover Panorama */}
+          <div className={styles.formCard}>
+            {/* Cover Banner */}
             <div className={styles.formGroup}>
               <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Cover Panorama Banner</label>
-                <span className={styles.formHint}>16:9 Editorial Aspect</span>
+                <label className={styles.formLabel}>Cover banner</label>
+                <span className={styles.formHint}>16:9 landscape</span>
               </div>
 
               <div className={styles.mobileMediaCard}>
@@ -413,7 +330,7 @@ export default function OnboardingFlow({
                       color: '#64748b'
                     }}
                   >
-                    No banner selected
+                    no cover image selected
                   </div>
                 )}
 
@@ -422,7 +339,7 @@ export default function OnboardingFlow({
                     type="text"
                     value={brand.coverImage}
                     onChange={(e) => updateField('coverImage', e.target.value)}
-                    placeholder="Enter Image URL or upload below"
+                    placeholder="Image URL or pick below"
                     className={styles.inputField}
                     style={{ flex: 1 }}
                   />
@@ -452,11 +369,11 @@ export default function OnboardingFlow({
               </div>
             </div>
 
-            {/* Profile Mark */}
+            {/* Profile Logo */}
             <div className={styles.formGroup}>
               <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Profile Emblem / Brand Logo</label>
-                <span className={styles.formHint}>1:1 Square Mark</span>
+                <label className={styles.formLabel}>Profile emblem</label>
+                <span className={styles.formHint}>1:1 square</span>
               </div>
 
               <div className={styles.mobileMediaCard}>
@@ -464,7 +381,7 @@ export default function OnboardingFlow({
                   {brand.profileImage ? (
                     <img
                       src={brand.profileImage}
-                      alt="Avatar preview"
+                      alt="Logo preview"
                       className={styles.avatarMobilePreview}
                     />
                   ) : (
@@ -478,7 +395,7 @@ export default function OnboardingFlow({
                         color: '#64748b'
                       }}
                     >
-                      No logo
+                      no logo
                     </div>
                   )}
 
@@ -488,7 +405,7 @@ export default function OnboardingFlow({
                         type="text"
                         value={brand.profileImage}
                         onChange={(e) => updateField('profileImage', e.target.value)}
-                        placeholder="Image URL"
+                        placeholder="Logo URL"
                         className={styles.inputField}
                         style={{ flex: 1 }}
                       />
@@ -519,31 +436,23 @@ export default function OnboardingFlow({
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
 
-        {/* STEP 5: Products & Formulations */}
-        {activeStepMeta.id === 'reach' && (
-          <motion.div
-            className={styles.formCard}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
+        {/* STEP 4: Products & Catalog */}
+        {activeStepMeta.id === 'catalog' && (
+          <div className={styles.formCard}>
             <div className={styles.formGroup}>
               <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Listed Products & Formulations</label>
-                <span className={styles.formHint}>{validProductsCount} Active</span>
+                <label className={styles.formLabel}>Signature offerings</label>
+                <span className={styles.formHint}>{validProductsCount} active</span>
               </div>
-              <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px' }}>
-                Add your signature botanical formulations and offerings to display on your live profile dashboard.
-              </p>
 
               <div className={styles.mobileStackList}>
                 {brand.products.map((prod, idx) => (
                   <div key={idx} className={styles.mobileStackItem}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <div className={styles.stackItemIndex}>Product 0{idx + 1}</div>
+                      <span className={styles.stackItemIndex}>Product 0{idx + 1}</span>
                       {brand.products.length > 1 && (
                         <button
                           type="button"
@@ -557,7 +466,7 @@ export default function OnboardingFlow({
                             cursor: 'pointer'
                           }}
                         >
-                          ✕ Remove
+                          ✕ remove
                         </button>
                       )}
                     </div>
@@ -567,14 +476,14 @@ export default function OnboardingFlow({
                         type="text"
                         value={prod.name}
                         onChange={(e) => handleProductChange(idx, 'name', e.target.value)}
-                        placeholder="Product Name (e.g. Celestial Elixir)"
+                        placeholder="Product name (e.g. Petal Milk)"
                         className={styles.inputField}
                       />
                       <input
                         type="text"
                         value={prod.tagline}
                         onChange={(e) => handleProductChange(idx, 'tagline', e.target.value)}
-                        placeholder="Tagline (e.g. Active Serum)"
+                        placeholder="Tagline (e.g. Face Serum)"
                         className={styles.inputField}
                       />
                     </div>
@@ -582,16 +491,16 @@ export default function OnboardingFlow({
                     <textarea
                       value={prod.description}
                       onChange={(e) => handleProductChange(idx, 'description', e.target.value)}
-                      placeholder="Active botanical ingredients and benefits..."
+                      placeholder="Active ingredients & ritual benefits..."
                       className={styles.textAreaField}
-                      style={{ minHeight: '55px', marginBottom: '8px' }}
+                      style={{ minHeight: '50px', marginBottom: '8px' }}
                     />
 
                     <input
                       type="text"
                       value={prod.volume || ''}
                       onChange={(e) => handleProductChange(idx, 'volume', e.target.value)}
-                      placeholder="Volume (e.g. 50 ml / 1.7 fl oz)"
+                      placeholder="Volume / Size (e.g. 30 ml)"
                       className={styles.inputField}
                     />
                   </div>
@@ -605,7 +514,7 @@ export default function OnboardingFlow({
                 className={styles.chipBtn}
                 style={{
                   width: '100%',
-                  marginTop: '12px',
+                  marginTop: '10px',
                   padding: '10px 14px',
                   textAlign: 'center',
                   fontWeight: 700,
@@ -613,91 +522,76 @@ export default function OnboardingFlow({
                   backgroundColor: '#f8fafc'
                 }}
               >
-                + Add Another Product / Formulation
+                + add another product
               </button>
             </div>
 
-            {/* Official Touchpoints */}
-            <div className={styles.formGroup} style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
+            {/* Direct Touchpoints */}
+            <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
               <div className={styles.formLabelRow}>
-                <label className={styles.formLabel}>Official Touchpoints</label>
-              </div>
-
-              <div style={{ marginBottom: '10px' }}>
-                <input
-                  type="text"
-                  value={brand.website}
-                  onChange={(e) => updateField('website', e.target.value)}
-                  placeholder="Official Website (e.g. https://yourbrand.com)"
-                  className={styles.inputField}
-                />
+                <label className={styles.formLabel}>Website & Instagram</label>
               </div>
 
               <div className={styles.formRowTwo}>
                 <input
                   type="text"
-                  value={brand.instagram}
-                  onChange={(e) => updateField('instagram', e.target.value)}
-                  placeholder="Instagram Handle (e.g. @yourbrand)"
+                  value={brand.website}
+                  onChange={(e) => updateField('website', e.target.value)}
+                  placeholder="https://brand.com"
                   className={styles.inputField}
                 />
                 <input
                   type="text"
-                  value={brand.inquiriesEmail}
-                  onChange={(e) => updateField('inquiriesEmail', e.target.value)}
-                  placeholder="Concierge Email (e.g. concierge@yourbrand.com)"
+                  value={brand.instagram}
+                  onChange={(e) => updateField('instagram', e.target.value)}
+                  placeholder="@handle"
                   className={styles.inputField}
                 />
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
 
-        {/* STEP 6: Review & Go Live */}
+        {/* STEP 5: Review & Go Live */}
         {activeStepMeta.id === 'review' && (
-          <motion.div
-            className={styles.formCard}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
+          <div className={styles.formCard}>
             <div
               style={{
                 backgroundColor: '#f8fafc',
                 border: '1px solid #e2e8f0',
-                borderRadius: '10px',
+                borderRadius: '14px',
                 padding: '16px',
-                marginBottom: '16px'
+                marginBottom: '14px'
               }}
             >
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
                 {brand.profileImage ? (
                   <img
                     src={brand.profileImage}
                     alt={brand.name}
-                    style={{ width: '52px', height: '52px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #cbd5e1' }}
+                    style={{ width: '48px', height: '48px', borderRadius: '12px', objectFit: 'cover', border: '1px solid #cbd5e1' }}
                   />
                 ) : (
-                  <div style={{ width: '52px', height: '52px', borderRadius: '8px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
                     {brand.name ? brand.name.slice(0, 1).toUpperCase() : 'B'}
                   </div>
                 )}
                 <div>
-                  <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0284c7', fontWeight: 700 }}>
+                  <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0284c7', fontWeight: 700 }}>
                     {brand.category || 'Luxury Brand'}
                   </div>
-                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+                  <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a' }}>
                     {brand.name || 'Untitled Brand'}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#64748b' }}>
-                    {brand.tagline || 'Ready to launch on Drobe'}
+                  <div style={{ fontSize: '11px', color: '#64748b' }}>
+                    {brand.basedOutOf || 'Global'}
                   </div>
                 </div>
               </div>
 
               {/* Cover Banner Thumbnail */}
               {brand.coverImage && (
-                <div style={{ marginBottom: '12px', borderRadius: '6px', overflow: 'hidden', height: '90px' }}>
+                <div style={{ marginBottom: '12px', borderRadius: '8px', overflow: 'hidden', height: '85px' }}>
                   <img
                     src={brand.coverImage}
                     alt="Cover"
@@ -706,60 +600,33 @@ export default function OnboardingFlow({
                 </div>
               )}
 
-              {/* 4 Key Facts */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '10px',
-                  paddingTop: '12px',
-                  borderTop: '1px solid #e2e8f0'
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Atelier</div>
-                  <div style={{ fontSize: '12px', fontWeight: 600 }}>{brand.basedOutOf || '—'}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Founder</div>
-                  <div style={{ fontSize: '12px', fontWeight: 600 }}>{brand.founderName || '—'}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Established</div>
-                  <div style={{ fontSize: '12px', fontWeight: 600 }}>{brand.establishedYear || '—'}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#0284c7', textTransform: 'uppercase', fontWeight: 700 }}>Total Listed Products</div>
-                  <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>
-                    {validProductsCount} {validProductsCount === 1 ? 'Product' : 'Products'}
-                  </div>
-                </div>
+              {/* 2 Mini Facts */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>Total listed products</span>
+                <span style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>
+                  {validProductsCount} {validProductsCount === 1 ? 'item' : 'items'}
+                </span>
               </div>
             </div>
 
-            {/* Go Live Confirmation Box */}
             <div
               style={{
                 backgroundColor: '#ecfdf5',
                 border: '1px solid #a7f3d0',
-                borderRadius: '8px',
-                padding: '14px',
-                marginBottom: '8px'
+                borderRadius: '12px',
+                padding: '12px 14px',
+                textAlign: 'center'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#065f46', fontWeight: 700, fontSize: '13px', marginBottom: '4px' }}>
-                <span className={styles.livePulseDot} />
-                Ready to Go Live on Drobe
-              </div>
-              <p style={{ fontSize: '12px', color: '#047857', lineHeight: 1.45, margin: 0 }}>
-                Clicking <strong>&ldquo;Go Live&rdquo;</strong> will publish your verified brand dashboard immediately with your cover banner, brand emblem, and {validProductsCount} listed products.
-              </p>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: '#065f46' }}>
+                ✨ Ready to launch! Tap &ldquo;Go Live&rdquo; below.
+              </span>
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
 
-      {/* Sticky Mobile Bottom Navigation Bar */}
+      {/* Sticky Bottom Bar */}
       <footer className={styles.mobileBottomBar}>
         {currentStep > 0 && (
           <button
@@ -767,7 +634,7 @@ export default function OnboardingFlow({
             onClick={() => setCurrentStep(currentStep - 1)}
             className={`${styles.actionBtn} ${styles.actionBtnSecondary}`}
           >
-            Back
+            back
           </button>
         )}
 
@@ -777,7 +644,7 @@ export default function OnboardingFlow({
             onClick={() => setCurrentStep(currentStep + 1)}
             className={`${styles.actionBtn} ${styles.actionBtnAccent}`}
           >
-            Continue →
+            continue →
           </button>
         ) : (
           <button
@@ -785,8 +652,7 @@ export default function OnboardingFlow({
             onClick={onGoLive}
             className={`${styles.actionBtn} ${styles.actionBtnGoLive}`}
           >
-            <span className={styles.livePulseDot} style={{ marginRight: '8px' }} />
-            Go Live
+            ✨ Go Live
           </button>
         )}
       </footer>
