@@ -28,8 +28,11 @@ export default function StandaloneProfilePage() {
       <BrandProfileView
         brand={brand}
         onEditClick={() => router.push('/brand-dashboard')}
-        onResetJihi={() => setBrand(JIHI_BRAND_PROFILE)}
-        onStartNew={() => router.push('/brand-dashboard')}
+        onShareClick={() => {
+          if (typeof window !== 'undefined' && navigator.clipboard) {
+            navigator.clipboard.writeText(window.location.href);
+          }
+        }}
       />
     </div>
   );

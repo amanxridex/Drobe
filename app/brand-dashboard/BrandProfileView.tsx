@@ -8,15 +8,13 @@ import styles from './brand-dashboard.module.css';
 interface BrandProfileViewProps {
   brand: BrandProfile;
   onEditClick: () => void;
-  onResetJihi?: () => void;
-  onStartNew?: () => void;
+  onShareClick?: () => void;
 }
 
 export default function BrandProfileView({
   brand,
   onEditClick,
-  onResetJihi,
-  onStartNew
+  onShareClick
 }: BrandProfileViewProps) {
   const activeProducts = brand.products.filter(p => p.name.trim().length > 0);
   const totalProductsCount = activeProducts.length;
@@ -26,16 +24,12 @@ export default function BrandProfileView({
       {/* Code-driven Geometric Apple Background */}
       <AppleGeometricBg />
 
-      {/* iOS-Style Sticky Mobile Top Header */}
+      {/* Production Sticky Mobile Top Header */}
       <header className={styles.mobileHeader}>
         <div className={styles.mobileHeaderLeft}>
-          <button
-            type="button"
-            onClick={onEditClick}
-            className={styles.textBtn}
-          >
-            ← Studio
-          </button>
+          <span style={{ fontSize: '13px', fontWeight: 800, letterSpacing: '0.08em', color: '#0f172a' }}>
+            DROBE
+          </span>
         </div>
 
         <div className={styles.mobileHeaderTitle}>
@@ -68,7 +62,7 @@ export default function BrandProfileView({
               </span>
             </div>
             <span style={{ fontSize: '11px', color: '#047857', fontWeight: 600 }}>
-              Verified Partner Dashboard
+              Verified Brand Dashboard
             </span>
           </div>
 
@@ -126,7 +120,7 @@ export default function BrandProfileView({
 
               <div style={{ flex: 1 }}>
                 <div className={styles.mobileProfileCategory}>
-                  {brand.category || 'Independent Brand'}
+                  {brand.category || 'Independent Luxury Brand'}
                 </div>
                 <h1 className={styles.mobileProfileName}>
                   {brand.name || 'Untitled Brand'}
@@ -152,7 +146,7 @@ export default function BrandProfileView({
                   {totalProductsCount}
                 </span>
                 <span className={styles.metricCardSub}>
-                  {totalProductsCount === 1 ? 'Product active' : 'Products active in catalog'}
+                  {totalProductsCount === 1 ? 'Product active in store' : 'Products active in catalog'}
                 </span>
               </div>
 
@@ -199,7 +193,7 @@ export default function BrandProfileView({
                 className={styles.chipBtn}
                 style={{ fontSize: '11px', padding: '4px 10px' }}
               >
-                + Add Product
+                + Add Formulation
               </button>
             </div>
 
@@ -230,7 +224,7 @@ export default function BrandProfileView({
               </div>
             ) : (
               <div style={{ padding: '24px 16px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
-                No active products listed yet. Click &ldquo;Add Product&rdquo; to showcase your formulations.
+                No active products listed yet. Click &ldquo;Add Formulation&rdquo; to showcase your products.
               </div>
             )}
           </section>
@@ -329,14 +323,14 @@ export default function BrandProfileView({
 
       {/* Sticky Mobile Bottom Bar */}
       <footer className={styles.mobileBottomBar}>
-        {onStartNew && (
+        {onShareClick && (
           <button
             type="button"
-            onClick={onStartNew}
+            onClick={onShareClick}
             className={`${styles.actionBtn} ${styles.actionBtnSecondary}`}
             style={{ flex: 1 }}
           >
-            Start Screen
+            Share Link
           </button>
         )}
         <button
@@ -345,7 +339,7 @@ export default function BrandProfileView({
           className={`${styles.actionBtn} ${styles.actionBtnAccent}`}
           style={{ flex: 1 }}
         >
-          Edit Brand Details
+          Edit Brand Profile
         </button>
       </footer>
     </div>
