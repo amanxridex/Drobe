@@ -143,7 +143,7 @@ export default function BrandStartScreen({
         )}
 
         <div className={styles.screen1Footnote}>
-          Drobe Partner Portal · Verified Luxury Ateliers
+          Drobe Partner Portal
         </div>
       </div>
 
