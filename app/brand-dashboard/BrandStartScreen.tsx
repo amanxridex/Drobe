@@ -52,7 +52,7 @@ export default function BrandStartScreen({
               onClick={onViewLiveDashboard}
               className={styles.screen1BtnPrimary}
             >
-              Open Brand Dashboard ({validProductsCount} {validProductsCount === 1 ? 'Product' : 'Products'})
+              Open Brand Dashboard
             </button>
 
             <button

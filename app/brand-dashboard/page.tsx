@@ -129,6 +129,7 @@ export default function BrandDashboardPage() {
           brand={brand}
           onEditClick={() => setActiveView('filing')}
           onShareClick={handleShareClick}
+          onUpdateBrand={handleBrandChange}
         />
       )}
 

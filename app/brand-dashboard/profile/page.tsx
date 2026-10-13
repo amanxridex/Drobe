@@ -31,7 +31,7 @@ export default function StandaloneProfilePage() {
 
   if (!brand) {
     return (
-      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#09090b', color: '#71717a', fontSize: '13px' }}>
+      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#ffffff', color: '#64748b', fontSize: '13px' }}>
         Loading Brand Atelier...
       </div>
     );

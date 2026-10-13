@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Plus, Trash2, Check, Upload, X, AlertCircle } from 'lucide-react';
-import { BrandProfile, BrandProductHighlight } from './types';
+import { ArrowRight, Check, Upload, X, AlertCircle } from 'lucide-react';
+import { BrandProfile } from './types';
 import styles from './brand-dashboard.module.css';
 
 interface OnboardingFlowProps {
@@ -17,9 +17,8 @@ interface OnboardingFlowProps {
 const STEPS = [
   { id: 'basics', num: '01', title: 'Brand basics', sub: 'Name, category & atelier location' },
   { id: 'visuals', num: '02', title: 'Visual assets', sub: 'Logo emblem, cover banner & story' },
-  { id: 'offerings', num: '03', title: 'Offerings', sub: 'Signature products & pricing' },
-  { id: 'channels', num: '04', title: 'Channels', sub: 'Website, Instagram & concierge email' },
-  { id: 'launch', num: '05', title: 'Review & launch', sub: 'Verify brand dossier & go live' }
+  { id: 'channels', num: '03', title: 'Channels', sub: 'Website, Instagram & concierge email' },
+  { id: 'launch', num: '04', title: 'Review & launch', sub: 'Verify brand dossier & go live' }
 ];
 
 const LUXURY_CATEGORIES = [
@@ -51,35 +50,6 @@ export default function OnboardingFlow({
     });
   };
 
-  const handleProductChange = (index: number, field: keyof BrandProductHighlight, val: string) => {
-    const nextProducts = [...brand.products];
-    if (!nextProducts[index]) {
-      nextProducts[index] = { name: '', tagline: '', description: '', volume: '', price: '', image: '' };
-    }
-    nextProducts[index] = {
-      ...nextProducts[index],
-      [field]: val
-    };
-    updateField('products', nextProducts);
-  };
-
-  const handleAddProduct = () => {
-    const nextProducts = [
-      ...brand.products,
-      { name: '', tagline: '', description: '', volume: '', price: '', image: '' }
-    ];
-    updateField('products', nextProducts);
-  };
-
-  const handleRemoveProduct = (index: number) => {
-    if (brand.products.length <= 1) {
-      updateField('products', [{ name: '', tagline: '', description: '', volume: '', price: '', image: '' }]);
-      return;
-    }
-    const nextProducts = brand.products.filter((_, i) => i !== index);
-    updateField('products', nextProducts);
-  };
-
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     onComplete: (dataUrl: string) => void
@@ -103,13 +73,6 @@ export default function OnboardingFlow({
         return false;
       }
     }
-    if (stepIdx === 2) {
-      const hasValidProduct = brand.products.some(p => p.name?.trim().length > 0);
-      if (!hasValidProduct) {
-        setErrorNotice('Please add at least one product name to continue.');
-        return false;
-      }
-    }
     setErrorNotice(null);
     return true;
   };
@@ -127,8 +90,6 @@ export default function OnboardingFlow({
   };
 
   const activeStepMeta = STEPS[currentStep];
-  const validProducts = brand.products.filter(p => p.name?.trim().length > 0);
-  const validProductsCount = validProducts.length;
 
   return (
     <div className={styles.mobileContainer} style={{ backgroundColor: '#ffffff' }}>
@@ -153,7 +114,7 @@ export default function OnboardingFlow({
         </button>
       </header>
 
-      {/* 2. Horizontal Step Indicator */}
+      {/* 2. Horizontal Step Indicator (4 clean steps, no products) */}
       <div className={styles.onboardingPillsBar}>
         {STEPS.map((st, idx) => {
           const isActive = idx === currentStep;
@@ -187,7 +148,7 @@ export default function OnboardingFlow({
             style={{ marginBottom: '14px' }}
           >
             <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0f172a' }}>
-              STEP {activeStepMeta.num} OF 05
+              STEP {activeStepMeta.num} OF 04
             </div>
             <h2 className={styles.onboardingStepTitle}>
               {activeStepMeta.title}
@@ -433,137 +394,7 @@ export default function OnboardingFlow({
           </div>
         )}
 
-        {/* STEP 3: Curated Offerings */}
-        {activeStepMeta.id === 'offerings' && (
-          <div className={styles.ronasFormContainer}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <div>
-                <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>
-                  Signature Offerings ({validProductsCount})
-                </label>
-                <div style={{ fontSize: '11px', color: '#64748b' }}>
-                  List the products you want featured on your Drobe profile
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={handleAddProduct}
-                className={styles.ronasAddOfferingBtn}
-              >
-                <Plus size={13} />
-                Add Product
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {brand.products.map((prod, idx) => (
-                <div key={idx} className={styles.ronasProductEditCard}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                    <span className={styles.ronasOfferingTag}>
-                      Product 0{idx + 1}
-                    </span>
-                    {brand.products.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveProduct(idx)}
-                        style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
-                      >
-                        <Trash2 size={12} /> Remove
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Product Title & Price */}
-                  <div className={styles.ronasRowTwo} style={{ marginBottom: '8px' }}>
-                    <input
-                      type="text"
-                      value={prod.name}
-                      onChange={(e) => handleProductChange(idx, 'name', e.target.value)}
-                      placeholder="Product Name (e.g. Cashmere Knit)"
-                      className={styles.ronasInputField}
-                    />
-                    <input
-                      type="text"
-                      value={prod.price || ''}
-                      onChange={(e) => handleProductChange(idx, 'price', e.target.value)}
-                      placeholder="Price (e.g. $180)"
-                      className={styles.ronasInputField}
-                    />
-                  </div>
-
-                  {/* Volume / Sizing & Tagline */}
-                  <div className={styles.ronasRowTwo} style={{ marginBottom: '8px' }}>
-                    <input
-                      type="text"
-                      value={prod.volume || ''}
-                      onChange={(e) => handleProductChange(idx, 'volume', e.target.value)}
-                      placeholder="Size / Volume (e.g. 50 ml, S/M/L)"
-                      className={styles.ronasInputField}
-                    />
-                    <input
-                      type="text"
-                      value={prod.tagline}
-                      onChange={(e) => handleProductChange(idx, 'tagline', e.target.value)}
-                      placeholder="Tagline / Short Note"
-                      className={styles.ronasInputField}
-                    />
-                  </div>
-
-                  {/* Description */}
-                  <textarea
-                    value={prod.description}
-                    onChange={(e) => handleProductChange(idx, 'description', e.target.value)}
-                    placeholder="Materials, craftsmanship, benefits & notes..."
-                    className={styles.ronasInputField}
-                    style={{ minHeight: '52px', marginBottom: '8px' }}
-                  />
-
-                  {/* Product Image Upload */}
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    {prod.image ? (
-                      <div style={{ position: 'relative' }}>
-                        <img
-                          src={prod.image}
-                          alt="Product preview"
-                          style={{ width: '44px', height: '44px', borderRadius: '10px', objectFit: 'cover', border: '1px solid #cbd5e1' }}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleProductChange(idx, 'image', '')}
-                          style={{ position: 'absolute', top: '-4px', right: '-4px', width: '16px', height: '16px', borderRadius: '50%', backgroundColor: '#ef4444', color: '#ffffff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                        >
-                          <X size={10} />
-                        </button>
-                      </div>
-                    ) : null}
-
-                    <label className={styles.ronasUploadBtn} style={{ height: '36px', fontSize: '11px', cursor: 'pointer', padding: '0 10px' }}>
-                      <Upload size={12} style={{ marginRight: '4px' }} />
-                      {prod.image ? 'Change Photo' : 'Upload Photo'}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileUpload(e, (data) => handleProductChange(idx, 'image', data))}
-                        style={{ display: 'none' }}
-                      />
-                    </label>
-
-                    <input
-                      type="text"
-                      value={prod.image && !prod.image.startsWith('data:') ? prod.image : ''}
-                      onChange={(e) => handleProductChange(idx, 'image', e.target.value)}
-                      placeholder="Or photo URL"
-                      className={styles.ronasInputField}
-                      style={{ flex: 1, padding: '8px 10px', fontSize: '11px' }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* STEP 4: Direct Channels */}
+        {/* STEP 3: Direct Channels */}
         {activeStepMeta.id === 'channels' && (
           <div className={styles.ronasFormContainer}>
             <div className={styles.ronasInputGroup}>
@@ -601,7 +432,7 @@ export default function OnboardingFlow({
           </div>
         )}
 
-        {/* STEP 5: Review & Go Live */}
+        {/* STEP 4: Review & Go Live */}
         {activeStepMeta.id === 'launch' && (
           <div className={styles.ronasFormContainer}>
             <div className={styles.ronasDossierCard}>
@@ -642,9 +473,9 @@ export default function OnboardingFlow({
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
                 <div>
-                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>Total Offerings</div>
-                  <div style={{ fontSize: '15px', fontWeight: 600, color: '#0f172a' }}>
-                    {validProductsCount} {validProductsCount === 1 ? 'Product' : 'Products'} Listed
+                  <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>Atelier Dossier</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>
+                    Profile Verified
                   </div>
                 </div>
                 <div>
@@ -658,7 +489,7 @@ export default function OnboardingFlow({
 
             <div className={styles.ronasReadyNotice}>
               <Check size={16} color="#059669" />
-              <span>Everything is verified. Tap &ldquo;Go Live on Drobe&rdquo; to launch your live store.</span>
+              <span>Everything is verified. Tap &ldquo;Go Live on Drobe&rdquo; to launch your store. You can curate products from your dashboard anytime.</span>
             </div>
           </div>
         )}
