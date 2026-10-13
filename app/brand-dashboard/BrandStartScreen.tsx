@@ -2,8 +2,6 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
-import IPhoneStatusBar from './IPhoneStatusBar';
 import { BrandProfile } from './types';
 import styles from './brand-dashboard.module.css';
 
@@ -22,133 +20,151 @@ export default function BrandStartScreen({
   const validProductsCount = brand.products.filter(p => p.name.trim().length > 0).length;
 
   return (
-    <div className={styles.mobileContainer} style={{ backgroundColor: '#ffffff' }}>
-      {/* 1. iOS Status Bar with Dynamic Island */}
-      <IPhoneStatusBar />
-
-      {/* 2. Top Brand Header */}
-      <header className={styles.appTopHeader}>
-        <span className={styles.appTopLogo}>DROBE</span>
-        <span className={styles.appTopTag}>Brand Studio</span>
+    <div className={styles.screen1Container}>
+      {/* 1. Minimal Top Header */}
+      <header className={styles.screen1TopHeader}>
+        <span className={styles.screen1LogoText}>drobe</span>
       </header>
 
-      {/* 3. Screen Body (Image 2 RonasIT Aesthetic) */}
-      <div className={styles.startScreenBody}>
-        {/* Top Visual Showcase Card */}
-        <div className={styles.startHeroVisualCard}>
-          {/* Overlapping Product Pill 1 */}
-          <motion.div
-            className={styles.floatingProductCard1}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className={styles.floatingThumbBox}>
-              <img
-                src="/brands/jihi/profile.jpg"
-                alt="Product thumb"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-            <div>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a' }}>Petal Milk Serum</div>
-              <div style={{ fontSize: '9px', color: '#64748b' }}>Formulation · 30 ml</div>
-            </div>
-            <span className={styles.floatingBadgeTag}>$98</span>
-          </motion.div>
-
-          {/* Overlapping Product Pill 2 */}
-          <motion.div
-            className={styles.floatingProductCard2}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <div className={styles.floatingThumbBox} style={{ backgroundColor: '#fed7aa' }}>
-              <span style={{ fontSize: '12px' }}>✦</span>
-            </div>
-            <div>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a' }}>Merra Eye Cream</div>
-              <div style={{ fontSize: '9px', color: '#64748b' }}>Botanical · 15 ml</div>
-            </div>
-            <span className={styles.floatingBadgeTag}>$74</span>
-          </motion.div>
-
-          {/* Center Brand Monogram Badge */}
-          <div className={styles.startCenterEmblem}>
-            <span style={{ fontSize: '20px', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.02em' }}>
-              D
-            </span>
+      {/* 2. Top Visual: Avatars + Floating Gradient Product Pills */}
+      <div className={styles.screen1VisualArea}>
+        {/* Row of 3 Founder/Creative Avatars */}
+        <div className={styles.screen1AvatarRow}>
+          <div className={styles.screen1AvatarCircle}>
+            <img
+              src="/brands/jihi/profile.jpg"
+              alt="Jenn Bernstein"
+              className={styles.screen1AvatarImg}
+            />
+          </div>
+          <div className={styles.screen1AvatarCircle} style={{ transform: 'scale(1.08)', zIndex: 2 }}>
+            <img
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80"
+              alt="Creative Lead"
+              className={styles.screen1AvatarImg}
+            />
+          </div>
+          <div className={styles.screen1AvatarCircle}>
+            <img
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80"
+              alt="Partner Formulator"
+              className={styles.screen1AvatarImg}
+            />
           </div>
         </div>
 
-        {/* Headline & Pitch Section */}
-        <div className={styles.startTextSection}>
-          <div className={styles.startPillEyebrow}>
-            PARTNER PROGRAM
-          </div>
-
-          <h1 className={styles.startBigHeading}>
-            Start your new<br />Brand Journey
-          </h1>
-
-          <p className={styles.startLeadText}>
-            Showcase your conscious luxury formulas and atelier story directly to discerning clients.
-          </p>
-
-          {/* 3 Value Points */}
-          <div className={styles.startFeatureRow}>
-            <div className={styles.startFeatureItem}>
-              <CheckCircle2 size={13} color="#059669" />
-              <span>Instant Live</span>
-            </div>
-            <div className={styles.startFeatureItem}>
-              <CheckCircle2 size={13} color="#059669" />
-              <span>Cover Banner</span>
-            </div>
-            <div className={styles.startFeatureItem}>
-              <CheckCircle2 size={13} color="#059669" />
-              <span>Direct Inquiries</span>
-            </div>
-          </div>
-
-          {/* If already active */}
-          {isAlreadyLive && (
-            <div className={styles.activeBrandBar} onClick={onViewLiveDashboard}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span className={styles.livePulseDot} />
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>{brand.name}</span>
-                <span style={{ fontSize: '11px', color: '#64748b' }}>({validProductsCount} products)</span>
+        {/* Floating Stacked Product Pills (Exact match to Satya / Jay / Rico in Image) */}
+        <div className={styles.screen1PillsStack}>
+          {/* Pill 1: Orange/Amber Gradient */}
+          <motion.div
+            className={styles.screen1PillOrange}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className={styles.screen1PillLeft}>
+              <div className={styles.screen1PillAvatar}>
+                <img src="/brands/jihi/profile.jpg" alt="" />
               </div>
-              <span style={{ fontSize: '11px', fontWeight: 700, color: '#0284c7' }}>View Live →</span>
+              <div className={styles.screen1PillInfo}>
+                <span className={styles.screen1PillName}>Petal Milk</span>
+                <span className={styles.screen1PillPrice}>$98.00</span>
+              </div>
             </div>
-          )}
+            <span className={styles.screen1PillActionOrange}>Live</span>
+          </motion.div>
+
+          {/* Pill 2: Silver/Platinum Gradient */}
+          <motion.div
+            className={styles.screen1PillSilver}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.08 }}
+          >
+            <div className={styles.screen1PillLeft}>
+              <div className={styles.screen1PillAvatar}>
+                <span style={{ fontSize: '11px', fontWeight: 800 }}>M</span>
+              </div>
+              <div className={styles.screen1PillInfo}>
+                <span className={styles.screen1PillName}>Merra Cream</span>
+                <span className={styles.screen1PillPrice}>$74.00</span>
+              </div>
+            </div>
+            <span className={styles.screen1PillActionSilver}>Live</span>
+          </motion.div>
+
+          {/* Pill 3: Electric Cyan Gradient */}
+          <motion.div
+            className={styles.screen1PillCyan}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.16 }}
+          >
+            <div className={styles.screen1PillLeft}>
+              <div className={styles.screen1PillAvatar}>
+                <span style={{ fontSize: '11px', fontWeight: 800 }}>R</span>
+              </div>
+              <div className={styles.screen1PillInfo}>
+                <span className={styles.screen1PillName}>Reverie Balm</span>
+                <span className={styles.screen1PillPrice}>$86.00</span>
+              </div>
+            </div>
+            <span className={styles.screen1PillActionCyan}>Live</span>
+          </motion.div>
         </div>
 
-        {/* Action Button Section */}
-        <div className={styles.startActionSection}>
+        {/* Center Star Emblem Badge (Exact 1:1 match to center badge in Image) */}
+        <div className={styles.screen1CenterBadge}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 2L13.8 9.2L21 11L13.8 12.8L12 20L10.2 12.8L3 11L10.2 9.2L12 2Z"
+              fill="#ffffff"
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* 3. Middle Content: Apple SF Typography */}
+      <div className={styles.screen1TextSection}>
+        <h1 className={styles.screen1Title}>
+          Start your new<br />Brand Jrny
+        </h1>
+
+        <p className={styles.screen1Subtext}>
+          Post, showcase, and connect your conscious luxury atelier with discerning clients that bring good vibes only.
+        </p>
+      </div>
+
+      {/* 4. Bottom Action Buttons */}
+      <div className={styles.screen1BottomSection}>
+        <button
+          type="button"
+          onClick={onStartOnboarding}
+          className={styles.screen1BtnPrimary}
+        >
+          {isAlreadyLive ? 'Edit Brand Details' : 'Get Started'}
+        </button>
+
+        {isAlreadyLive ? (
           <button
             type="button"
-            onClick={onStartOnboarding}
-            className={styles.ronasBlackPillBtn}
+            onClick={onViewLiveDashboard}
+            className={styles.screen1BtnSecondary}
           >
-            {isAlreadyLive ? 'Edit Brand Details' : 'Get Started'}
-            <ArrowRight size={16} />
+            Open Live Dashboard ({validProductsCount} Products)
           </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onViewLiveDashboard}
+            className={styles.screen1BtnSecondary}
+          >
+            Preview Sample Atelier
+          </button>
+        )}
 
-          {isAlreadyLive && (
-            <button
-              type="button"
-              onClick={onViewLiveDashboard}
-              className={styles.ronasOutlinePillBtn}
-            >
-              Open Live Dashboard
-            </button>
-          )}
-
-          <div style={{ fontSize: '11px', color: '#94a3b8', textAlign: 'center', marginTop: '10px' }}>
-            Curated brand placement · Zero listing fees
-          </div>
+        <div className={styles.screen1Footnote}>
+          Already listed with Drobe? <span onClick={onViewLiveDashboard} style={{ textDecoration: 'underline', cursor: 'pointer', fontWeight: 700 }}>View Live Profile</span>
         </div>
       </div>
     </div>

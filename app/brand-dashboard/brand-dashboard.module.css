@@ -1903,39 +1903,542 @@
   text-decoration: none;
 }
 
-.ronasCardLavender {
-  background-color: #f3e8ff;
-  border-radius: 22px;
-  padding: 16px 16px;
+/* ==========================================================
+   SCREEN 1: RONAS IT ELECTRIC LIME ONBOARDING (Exact 1:1)
+   ========================================================== */
+
+.screen1Container {
+  background-color: #72ea24;
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px 22px 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif !important;
+  box-sizing: border-box;
+  overflow-y: auto;
+  position: relative;
 }
 
-.ronasCardTagLavender {
-  font-size: 10px;
+.screen1TopHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.screen1LogoText {
+  font-size: 15px;
   font-weight: 800;
-  background-color: rgba(255, 255, 255, 0.65);
-  padding: 3px 8px;
-  border-radius: 14px;
-  color: #6b21a8;
+  letter-spacing: -0.03em;
+  color: #000000;
 }
 
-.ronasCardTitle {
+.screen1VisualArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.screen1AvatarRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.screen1AvatarCircle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #72ea24;
+  margin-left: -12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+}
+
+.screen1AvatarCircle:first-child {
+  margin-left: 0;
+}
+
+.screen1AvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.screen1PillsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  max-width: 270px;
+  margin-bottom: 12px;
+}
+
+.screen1PillOrange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  border-radius: 24px;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
+
+.screen1PillSilver {
+  background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+  border-radius: 24px;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.screen1PillCyan {
+  background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
+  border-radius: 24px;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+.screen1PillLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.screen1PillAvatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+.screen1PillAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.screen1PillInfo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.screen1PillName {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.screen1PillSilver .screen1PillName {
+  color: #0f172a;
+}
+
+.screen1PillPrice {
+  font-size: 9px;
+  font-weight: 600;
+  opacity: 0.9;
+  color: #ffffff;
+}
+
+.screen1PillSilver .screen1PillPrice {
+  color: #334155;
+}
+
+.screen1PillActionOrange {
+  font-size: 9px;
+  font-weight: 800;
+  background-color: #ffffff;
+  color: #ea580c;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.screen1PillActionSilver {
+  font-size: 9px;
+  font-weight: 800;
+  background-color: #0f172a;
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.screen1PillActionCyan {
+  font-size: 9px;
+  font-weight: 800;
+  background-color: #ffffff;
+  color: #0284c7;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.screen1CenterBadge {
+  width: 48px;
+  height: 48px;
+  background-color: #000000;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  margin-top: -6px;
+}
+
+.screen1TextSection {
+  margin-top: 6px;
+  margin-bottom: 20px;
+}
+
+.screen1Title {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: #000000;
+  margin: 0 0 10px 0;
+}
+
+.screen1Subtext {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.8);
+  margin: 0;
+}
+
+.screen1BottomSection {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.screen1BtnPrimary {
+  width: 100%;
+  height: 54px;
+  border-radius: 9999px;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.screen1BtnSecondary {
+  width: 100%;
+  height: 48px;
+  border-radius: 9999px;
+  background-color: transparent;
+  border: 1.5px solid rgba(0, 0, 0, 0.25);
+  color: #000000;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.01em;
+}
+
+.screen1Footnote {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.65);
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* ==========================================================
+   SLEEK DARK PROFILE DASHBOARD (High Contrast RonasIT)
+   ========================================================== */
+
+.darkProfileContainer {
+  background-color: #09090b;
+  min-height: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif !important;
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.darkProfileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 18px 12px 18px;
+  flex-shrink: 0;
+  background-color: #09090b;
+}
+
+.darkHeaderAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #27272a;
+}
+
+.darkHeaderAvatarFallback {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #18181b;
+  border: 1.5px solid #27272a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 16px;
   font-weight: 800;
-  color: #0f172a;
-  margin: 0 0 2px 0;
+  color: #72ea24;
 }
 
-.ronasCardMeta {
-  font-size: 11px;
-  color: #64748b;
+.darkHeaderGreeting {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.darkHeaderSub {
+  font-size: 12px;
+  color: #71717a;
+  font-weight: 500;
+}
+
+.darkCircleBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #18181b;
+  border: 1px solid #27272a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  transition: background-color 0.15s ease;
+}
+
+.darkCircleBtn:hover {
+  background-color: #27272a;
+}
+
+.darkScrollContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 18px 100px 18px;
+}
+
+.darkHeroCard {
+  background-color: #141417;
+  border: 1px solid #27272a;
+  border-radius: 24px;
+  padding: 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.darkHeroTag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #72ea24;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.darkHeroTitle {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+  line-height: 1.15;
+}
+
+.darkHeroSub {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #a1a1aa;
+  margin: 0;
+}
+
+.darkLiveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: rgba(114, 234, 36, 0.12);
+  border: 1px solid rgba(114, 234, 36, 0.25);
+  color: #72ea24;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.darkProductCountBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #27272a;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.darkHeroThumb {
+  width: 82px;
+  height: 82px;
+  border-radius: 16px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #27272a;
+}
+
+.darkPillsRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 18px;
+  padding-bottom: 2px;
+}
+
+.darkDayPill {
+  background-color: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 18px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 68px;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #a1a1aa;
   font-weight: 600;
+  cursor: pointer;
+}
+
+.darkDayPillActive {
+  background-color: #72ea24 !important;
+  border-color: #72ea24 !important;
+  color: #000000 !important;
+  font-weight: 800;
+}
+
+.darkSectionHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.darkSectionTitle {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.darkAddBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  background-color: #72ea24;
+  color: #000000;
+  padding: 5px 12px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.darkCardsGrid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.darkCardBox {
+  background-color: #141417;
+  border: 1px solid #27272a;
+  border-radius: 22px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.darkCardTag {
+  font-size: 10px;
+  font-weight: 700;
+  background-color: #27272a;
+  color: #a1a1aa;
+  padding: 3px 8px;
+  border-radius: 12px;
+  align-self: flex-start;
   margin-bottom: 6px;
 }
 
-.ronasCardDesc {
+.darkCardPrice {
+  font-size: 16px;
+  font-weight: 800;
+  color: #72ea24;
+  letter-spacing: -0.02em;
+}
+
+.darkCardTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 2px 0;
+  letter-spacing: -0.02em;
+}
+
+.darkCardSub {
+  font-size: 11px;
+  color: #71717a;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.darkCardDesc {
   font-size: 11px;
   line-height: 1.4;
-  color: #334155;
+  color: #a1a1aa;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -1944,80 +2447,79 @@
   text-overflow: ellipsis;
 }
 
-.ronasCardAuthorRow {
+.darkCardAuthor {
   display: flex;
   align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.darkCardChannels {
+  display: flex;
   gap: 8px;
-  margin-top: 14px;
+  align-items: center;
+  margin-top: 8px;
 }
 
-.ronasAuthorAvatar {
-  width: 26px;
-  height: 26px;
+.darkChannelCircle {
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  object-fit: cover;
-}
-
-.ronasAuthorAvatarFallback {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background-color: #9a3412;
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: 800;
+  background-color: #27272a;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #ffffff;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
 }
 
-.ronasQuoteCard {
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
+.darkChannelCircle:hover {
+  background-color: #3f3f46;
+}
+
+.darkEthosCard {
+  background-color: #141417;
+  border: 1px solid #27272a;
   border-radius: 20px;
   padding: 16px;
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
-.ronasQuoteText {
-  font-size: 12px;
-  font-style: italic;
-  color: #334155;
-  line-height: 1.5;
-  margin: 0 0 6px 0;
-}
-
-.ronasFloatingBottomNav {
+.darkFloatingNav {
   position: absolute;
-  bottom: 14px;
+  bottom: 16px;
   left: 20px;
   right: 20px;
-  height: 60px;
-  background-color: #0f172a;
+  height: 58px;
+  background-color: #141417;
+  border: 1px solid #27272a;
   border-radius: 30px;
   display: flex;
   align-items: center;
   justify-content: space-around;
   padding: 0 10px;
   z-index: 40;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.35);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
 }
 
-.ronasNavTab {
+.darkNavTab {
   background: none;
   border: none;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  color: #71717a;
   transition: all 0.15s ease;
 }
 
-.ronasNavTabActive {
-  background-color: #ffffff !important;
+.darkNavTabActive {
+  background-color: #72ea24 !important;
+  color: #000000 !important;
 }
 
 

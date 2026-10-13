@@ -50,30 +50,25 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
           left: 0,
           width: '100vw',
           height: isMobile ? 'var(--app-height, 100dvh)' : '100vh',
-          backgroundColor: '#e6e0f8',
+          backgroundColor: '#0a0a0c',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden'
         }}
       >
-        {/* Centered Mobile App Screen View with authentic iPhone frame */}
         <div
           id="mobile-app-frame"
           style={{
             width: '100%',
-            maxWidth: isMobile ? '100%' : '430px',
-            height: isMobile ? 'var(--app-height, 100dvh)' : '92vh',
-            maxHeight: '890px',
-            backgroundColor: '#ffffff',
+            maxWidth: isMobile ? '100%' : '440px',
+            height: isMobile ? 'var(--app-height, 100dvh)' : '100vh',
+            backgroundColor: '#000000',
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            boxShadow: isMobile ? 'none' : '0 30px 80px rgba(76, 29, 149, 0.2), 0 8px 24px rgba(0,0,0,0.12)',
-            margin: '0 auto',
-            borderRadius: isMobile ? '0' : '46px',
-            border: isMobile ? 'none' : '8px solid #1a1a1a'
+            margin: '0 auto'
           }}
         >
           {children}

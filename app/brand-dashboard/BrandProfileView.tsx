@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { 
-  Search, 
   Home, 
   LayoutGrid, 
   BarChart2, 
@@ -10,14 +9,12 @@ import {
   Globe, 
   Mail, 
   Plus, 
-  Edit3, 
-  ExternalLink
+  Edit3
 } from 'lucide-react';
-import IPhoneStatusBar from './IPhoneStatusBar';
 import { BrandProfile } from './types';
 import styles from './brand-dashboard.module.css';
 
-const InstagramIcon = ({ size = 14, color = "#9d174d" }: { size?: number; color?: string }) => (
+const InstagramIcon = ({ size = 14, color = "#ffffff" }: { size?: number; color?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
@@ -41,30 +38,27 @@ export default function BrandProfileView({
   const totalProductsCount = activeProducts.length;
 
   return (
-    <div className={styles.mobileContainer} style={{ backgroundColor: '#ffffff', position: 'relative' }}>
-      {/* 1. iOS Status Bar with Dynamic Island */}
-      <IPhoneStatusBar />
-
-      {/* 2. Top Header (Image 1 Sandra Style) */}
-      <header className={styles.ronasHeader}>
+    <div className={styles.darkProfileContainer}>
+      {/* 1. Sleek Header (Founder Avatar + Greeting + Edit Button) */}
+      <header className={styles.darkProfileHeader}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {brand.profileImage ? (
             <img
               src={brand.profileImage}
               alt={brand.name}
-              className={styles.ronasHeaderAvatar}
+              className={styles.darkHeaderAvatar}
             />
           ) : (
-            <div className={styles.ronasHeaderAvatarFallback}>
-              {brand.name ? brand.name.slice(0, 1).toUpperCase() : 'B'}
+            <div className={styles.darkHeaderAvatarFallback}>
+              {brand.name ? brand.name.slice(0, 1).toUpperCase() : 'D'}
             </div>
           )}
           <div>
-            <div className={styles.ronasHeaderGreeting}>
+            <div className={styles.darkHeaderGreeting}>
               Hello, {brand.founderName ? brand.founderName.split(' ')[0] : (brand.name || 'Partner')}
             </div>
-            <div className={styles.ronasHeaderDate}>
-              Live on Drobe · {brand.basedOutOf || 'Studio'}
+            <div className={styles.darkHeaderSub}>
+              Live on Drobe · {brand.basedOutOf || 'Studio Atelier'}
             </div>
           </div>
         </div>
@@ -73,292 +67,295 @@ export default function BrandProfileView({
         <button
           type="button"
           onClick={onEditClick}
-          className={styles.ronasCircleBtn}
-          title="Edit Profile"
+          className={styles.darkCircleBtn}
+          title="Edit Brand Dossier"
         >
-          <Edit3 size={17} color="#0f172a" />
+          <Edit3 size={16} />
         </button>
       </header>
 
-      {/* 3. Scrollable Screen Body */}
-      <div className={styles.ronasScrollContent}>
-        {/* Hero Banner Card (Image 1 "Daily challenge" Style) */}
-        <div className={styles.ronasHeroChallengeCard}>
-          <div style={{ flex: 1, zIndex: 2 }}>
-            <span className={styles.ronasHeroCategoryTag}>
+      {/* 2. Scrollable Content Body */}
+      <div className={styles.darkScrollContent}>
+        {/* Hero Atelier Card */}
+        <div className={styles.darkHeroCard}>
+          <div style={{ flex: 1 }}>
+            <span className={styles.darkHeroTag}>
               BRAND ATELIER
             </span>
-            <h2 className={styles.ronasHeroTitle}>
+            <h2 className={styles.darkHeroTitle}>
               {brand.name || 'Untitled Brand'}
             </h2>
-            <p className={styles.ronasHeroSub}>
-              {brand.tagline || 'Conscious luxury & mindful botanical rituals'}
+            <p className={styles.darkHeroSub}>
+              {brand.tagline || 'Conscious luxury and mindful botanical rituals.'}
             </p>
 
-            {/* Avatar Group + Total Count */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px' }}>
-              <div className={styles.ronasAvatarGroup}>
-                <span className={styles.livePulseDot} />
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#065f46' }}>
-                  Live in Store
-                </span>
+              <div className={styles.darkLiveBadge}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#72ea24' }} />
+                <span>Live in Store</span>
               </div>
-              <span className={styles.ronasProductCountBadge}>
+              <span className={styles.darkProductCountBadge}>
                 {totalProductsCount} {totalProductsCount === 1 ? 'Product' : 'Products'}
               </span>
             </div>
           </div>
 
-          {/* 3D Visual Preview (Cover Banner Miniature / Graphic) */}
-          <div className={styles.ronasHeroRightGraphic}>
-            {brand.coverImage ? (
-              <img
-                src={brand.coverImage}
-                alt="Banner thumb"
-                className={styles.ronasHeroCoverImg}
-              />
-            ) : (
-              <div className={styles.ronas3DShapeStack}>
-                <div className={styles.shapeRing} />
-                <div className={styles.shapeCube} />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Horizontal Calendar-style Pill Bar (Image 1 Days Pill Bar) */}
-        <div className={styles.ronasPillBar}>
-          <button
-            type="button"
-            onClick={() => setActiveTab('catalog')}
-            className={`${styles.ronasDayPill} ${activeTab === 'catalog' ? styles.ronasDayPillActive : ''}`}
-          >
-            <span className={styles.pillLabelSmall}>Offerings</span>
-            <span className={styles.pillValueBig}>{totalProductsCount}</span>
-            {activeTab === 'catalog' && <span className={styles.pillActiveDot} />}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('atelier')}
-            className={`${styles.ronasDayPill} ${activeTab === 'atelier' ? styles.ronasDayPillActive : ''}`}
-          >
-            <span className={styles.pillLabelSmall}>Atelier</span>
-            <span className={styles.pillValueBig}>{brand.basedOutOf ? brand.basedOutOf.slice(0, 3).toUpperCase() : 'HQ'}</span>
-            {activeTab === 'atelier' && <span className={styles.pillActiveDot} />}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('founder')}
-            className={`${styles.ronasDayPill} ${activeTab === 'founder' ? styles.ronasDayPillActive : ''}`}
-          >
-            <span className={styles.pillLabelSmall}>Founder</span>
-            <span className={styles.pillValueBig}>{brand.founderName ? brand.founderName.slice(0, 3).toUpperCase() : 'DIR'}</span>
-            {activeTab === 'founder' && <span className={styles.pillActiveDot} />}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('channels')}
-            className={`${styles.ronasDayPill} ${activeTab === 'channels' ? styles.ronasDayPillActive : ''}`}
-          >
-            <span className={styles.pillLabelSmall}>Status</span>
-            <span className={styles.pillValueBig}>LIVE</span>
-            {activeTab === 'channels' && <span className={styles.pillActiveDot} />}
-          </button>
-        </div>
-
-        {/* Section: "Your plan" / "Your Collection" (Image 1 Style) */}
-        <div className={styles.ronasPlanSection}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <h3 className={styles.ronasSectionHeading}>Your collection</h3>
-            <button
-              type="button"
-              onClick={onEditClick}
-              className={styles.ronasAddPillBtn}
-            >
-              <Plus size={13} />
-              Add Product
-            </button>
-          </div>
-
-          {/* Grid of Pastel Cards (Image 1 Yoga / Balance style!) */}
-          <div className={styles.ronasCardsGrid}>
-            {/* Card 1: Warm Amber / Yellow Card */}
-            {activeProducts[0] ? (
-              <div className={styles.ronasCardYellow}>
-                <span className={styles.ronasCardTagYellow}>
-                  {activeProducts[0].volume || 'Hero'}
-                </span>
-                <h4 className={styles.ronasCardTitle}>
-                  {activeProducts[0].name}
-                </h4>
-                <div className={styles.ronasCardMeta}>
-                  {activeProducts[0].tagline || 'Botanical formulation'}
-                </div>
-                <p className={styles.ronasCardDesc}>
-                  {activeProducts[0].description}
-                </p>
-
-                {brand.founderName && (
-                  <div className={styles.ronasCardAuthorRow}>
-                    {brand.profileImage ? (
-                      <img src={brand.profileImage} alt="Author" className={styles.ronasAuthorAvatar} />
-                    ) : (
-                      <div className={styles.ronasAuthorAvatarFallback}>F</div>
-                    )}
-                    <div>
-                      <div style={{ fontSize: '9px', color: '#78350f', textTransform: 'uppercase', fontWeight: 700 }}>Formulator</div>
-                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#451a03' }}>{brand.founderName}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className={styles.ronasCardYellow} onClick={onEditClick}>
-                <span className={styles.ronasCardTagYellow}>Catalog</span>
-                <h4 className={styles.ronasCardTitle}>Add First Product</h4>
-                <p className={styles.ronasCardDesc}>List your signature formulation here.</p>
-              </div>
-            )}
-
-            {/* Right Column Stack */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {/* Card 2: Soft Sky Blue Card */}
-              {activeProducts[1] ? (
-                <div className={styles.ronasCardBlue}>
-                  <span className={styles.ronasCardTagBlue}>
-                    {activeProducts[1].volume || 'Active'}
-                  </span>
-                  <h4 className={styles.ronasCardTitle}>
-                    {activeProducts[1].name}
-                  </h4>
-                  <div className={styles.ronasCardMeta}>
-                    {activeProducts[1].tagline}
-                  </div>
-                  <p className={styles.ronasCardDesc}>
-                    {activeProducts[1].description}
-                  </p>
-                </div>
-              ) : (
-                <div className={styles.ronasCardBlue} onClick={onEditClick}>
-                  <span className={styles.ronasCardTagBlue}>Offering 02</span>
-                  <h4 className={styles.ronasCardTitle}>Second Product</h4>
-                  <p className={styles.ronasCardDesc}>Tap to add another item.</p>
-                </div>
-              )}
-
-              {/* Card 3: Soft Pink Social Touchpoints Card (Exact match to Image 1's pink social card!) */}
-              <div className={styles.ronasCardPink}>
-                <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9d174d', marginBottom: '6px' }}>
-                  Direct Channels
-                </div>
-                <div className={styles.ronasSocialRow}>
-                  {brand.instagram && (
-                    <a
-                      href={`https://instagram.com/${brand.instagram.replace('@', '')}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={styles.ronasSocialCircle}
-                      title="Instagram"
-                    >
-                      <InstagramIcon size={14} color="#9d174d" />
-                    </a>
-                  )}
-                  {brand.website && (
-                    <a
-                      href={brand.website}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={styles.ronasSocialCircle}
-                      title="Website"
-                    >
-                      <Globe size={14} color="#9d174d" />
-                    </a>
-                  )}
-                  {brand.inquiriesEmail && (
-                    <a
-                      href={`mailto:${brand.inquiriesEmail}`}
-                      className={styles.ronasSocialCircle}
-                      title="Email Concierge"
-                    >
-                      <Mail size={14} color="#9d174d" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Third Product Card (If exists, soft lavender) */}
-          {activeProducts[2] && (
-            <div className={styles.ronasCardLavender} style={{ marginTop: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                <span className={styles.ronasCardTagLavender}>Offering 03 · {activeProducts[2].volume}</span>
-                <span style={{ fontSize: '10px', fontWeight: 700, color: '#6b21a8' }}>Live</span>
-              </div>
-              <h4 className={styles.ronasCardTitle} style={{ color: '#3b0764' }}>
-                {activeProducts[2].name}
-              </h4>
-              <div style={{ fontSize: '12px', fontWeight: 600, color: '#7e22ce', marginBottom: '4px' }}>
-                {activeProducts[2].tagline}
-              </div>
-              <p className={styles.ronasCardDesc} style={{ color: '#581c87', margin: 0 }}>
-                {activeProducts[2].description}
-              </p>
-            </div>
+          {brand.coverImage && (
+            <img
+              src={brand.coverImage}
+              alt={brand.name}
+              className={styles.darkHeroThumb}
+            />
           )}
         </div>
 
-        {/* Founder Quote Card */}
+        {/* Quick Filter Pills Row (Apple Day Pills Style) */}
+        <div className={styles.darkPillsRow}>
+          <div
+            className={`${styles.darkDayPill} ${activeTab === 'catalog' ? styles.darkDayPillActive : ''}`}
+            onClick={() => setActiveTab('catalog')}
+          >
+            <span>Offerings</span>
+            <span style={{ fontSize: '14px', fontWeight: 900 }}>{totalProductsCount}</span>
+          </div>
+
+          <div
+            className={`${styles.darkDayPill} ${activeTab === 'atelier' ? styles.darkDayPillActive : ''}`}
+            onClick={() => setActiveTab('atelier')}
+          >
+            <span>Atelier</span>
+            <span style={{ fontSize: '13px', fontWeight: 800 }}>
+              {brand.basedOutOf ? brand.basedOutOf.split(',')[0].slice(0, 3).toUpperCase() : 'HQ'}
+            </span>
+          </div>
+
+          <div
+            className={`${styles.darkDayPill} ${activeTab === 'founder' ? styles.darkDayPillActive : ''}`}
+            onClick={() => setActiveTab('founder')}
+          >
+            <span>Founder</span>
+            <span style={{ fontSize: '13px', fontWeight: 800 }}>
+              {brand.founderName ? brand.founderName.split(' ')[0].slice(0, 3).toUpperCase() : 'YOU'}
+            </span>
+          </div>
+
+          <div
+            className={`${styles.darkDayPill} ${activeTab === 'channels' ? styles.darkDayPillActive : ''}`}
+            onClick={() => setActiveTab('channels')}
+          >
+            <span>Status</span>
+            <span style={{ fontSize: '13px', fontWeight: 800, color: '#72ea24' }}>
+              LIVE
+            </span>
+          </div>
+        </div>
+
+        {/* "Your Collection" Section */}
+        <div className={styles.darkSectionHeaderRow}>
+          <h3 className={styles.darkSectionTitle}>
+            Your collection
+          </h3>
+          <button
+            type="button"
+            onClick={onEditClick}
+            className={styles.darkAddBtn}
+          >
+            <Plus size={13} />
+            <span>Add Product</span>
+          </button>
+        </div>
+
+        {/* 2-Column Product Grid */}
+        <div className={styles.darkCardsGrid}>
+          {/* Card 1: Primary Offering */}
+          {activeProducts[0] ? (
+            <div className={styles.darkCardBox}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span className={styles.darkCardTag}>
+                  {activeProducts[0].volume || 'Featured'}
+                </span>
+                <span className={styles.darkCardPrice}>
+                  $98
+                </span>
+              </div>
+              <h4 className={styles.darkCardTitle}>
+                {activeProducts[0].name}
+              </h4>
+              <div className={styles.darkCardSub}>
+                {activeProducts[0].tagline}
+              </div>
+              <p className={styles.darkCardDesc}>
+                {activeProducts[0].description}
+              </p>
+
+              {brand.founderName && (
+                <div className={styles.darkCardAuthor}>
+                  {brand.profileImage ? (
+                    <img
+                      src={brand.profileImage}
+                      alt=""
+                      style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }}
+                    />
+                  ) : null}
+                  <div style={{ fontSize: '10px', color: '#a1a1aa' }}>
+                    <span style={{ fontWeight: 700, color: '#ffffff' }}>{brand.founderName.split(' ')[0]}</span>
+                    {' · Formulator'}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className={styles.darkCardBox} onClick={onEditClick} style={{ cursor: 'pointer' }}>
+              <span className={styles.darkCardTag}>Offering 01</span>
+              <h4 className={styles.darkCardTitle}>First Product</h4>
+              <p className={styles.darkCardDesc}>Tap to add your hero item formulation.</p>
+            </div>
+          )}
+
+          {/* Right Column: Card 2 (Top) + Card 3 (Bottom) */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* Card 2: Secondary Offering */}
+            {activeProducts[1] ? (
+              <div className={styles.darkCardBox}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  <span className={styles.darkCardTag}>
+                    {activeProducts[1].volume || 'Active'}
+                  </span>
+                  <span className={styles.darkCardPrice}>
+                    $74
+                  </span>
+                </div>
+                <h4 className={styles.darkCardTitle}>
+                  {activeProducts[1].name}
+                </h4>
+                <div className={styles.darkCardSub}>
+                  {activeProducts[1].tagline}
+                </div>
+                <p className={styles.darkCardDesc}>
+                  {activeProducts[1].description}
+                </p>
+              </div>
+            ) : (
+              <div className={styles.darkCardBox} onClick={onEditClick} style={{ cursor: 'pointer' }}>
+                <span className={styles.darkCardTag}>Offering 02</span>
+                <h4 className={styles.darkCardTitle}>Second Product</h4>
+                <p className={styles.darkCardDesc}>Tap to add another item.</p>
+              </div>
+            )}
+
+            {/* Card 3: Direct Channels */}
+            <div className={styles.darkCardBox}>
+              <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#72ea24' }}>
+                Direct Channels
+              </div>
+              <div className={styles.darkCardChannels}>
+                {brand.instagram && (
+                  <a
+                    href={`https://instagram.com/${brand.instagram.replace('@', '')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.darkChannelCircle}
+                    title="Instagram"
+                  >
+                    <InstagramIcon size={14} color="#ffffff" />
+                  </a>
+                )}
+                {brand.website && (
+                  <a
+                    href={brand.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.darkChannelCircle}
+                    title="Website"
+                  >
+                    <Globe size={14} color="#ffffff" />
+                  </a>
+                )}
+                {brand.inquiriesEmail && (
+                  <a
+                    href={`mailto:${brand.inquiriesEmail}`}
+                    className={styles.darkChannelCircle}
+                    title="Email"
+                  >
+                    <Mail size={14} color="#ffffff" />
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 4: Third Offering (Full Width) */}
+        {activeProducts[2] && (
+          <div className={styles.darkCardBox} style={{ marginTop: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span className={styles.darkCardTag}>
+                Offering 03 · {activeProducts[2].volume}
+              </span>
+              <span className={styles.darkCardPrice}>
+                $86
+              </span>
+            </div>
+            <h4 className={styles.darkCardTitle}>
+              {activeProducts[2].name}
+            </h4>
+            <div className={styles.darkCardSub}>
+              {activeProducts[2].tagline}
+            </div>
+            <p className={styles.darkCardDesc}>
+              {activeProducts[2].description}
+            </p>
+          </div>
+        )}
+
+        {/* Founder Ethos Card */}
         {brand.founderQuote && (
-          <div className={styles.ronasQuoteCard}>
-            <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0284c7', marginBottom: '4px' }}>
+          <div className={styles.darkEthosCard}>
+            <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#72ea24', marginBottom: '6px' }}>
               FOUNDER ETHOS
             </div>
-            <p className={styles.ronasQuoteText}>
+            <p style={{ fontSize: '12px', fontStyle: 'italic', color: '#d4d4d8', lineHeight: 1.5, margin: '0 0 6px 0' }}>
               &ldquo;{brand.founderQuote}&rdquo;
             </p>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: '#ffffff' }}>
               — {brand.founderName || 'Founder'}, {brand.founderRole || 'Formulator'}
             </div>
           </div>
         )}
       </div>
 
-      {/* 4. Floating Dark Bottom Navigation Bar (Image 1 Style) */}
-      <div className={styles.ronasFloatingBottomNav}>
+      {/* 3. Floating Sleek Bottom Navigation Pill */}
+      <div className={styles.darkFloatingNav}>
         <button
           type="button"
           onClick={() => setActiveTab('catalog')}
-          className={`${styles.ronasNavTab} ${styles.ronasNavTabActive}`}
+          className={`${styles.darkNavTab} ${styles.darkNavTabActive}`}
         >
-          <Home size={18} color="#0f172a" />
+          <Home size={18} />
         </button>
 
         <button
           type="button"
           onClick={onEditClick}
-          className={styles.ronasNavTab}
+          className={styles.darkNavTab}
         >
-          <LayoutGrid size={18} color="#94a3b8" />
+          <LayoutGrid size={18} />
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('channels')}
-          className={styles.ronasNavTab}
+          className={styles.darkNavTab}
         >
-          <BarChart2 size={18} color="#94a3b8" />
+          <BarChart2 size={18} />
         </button>
 
         <button
           type="button"
           onClick={onEditClick}
-          className={styles.ronasNavTab}
+          className={styles.darkNavTab}
         >
-          <User size={18} color="#94a3b8" />
+          <User size={18} />
         </button>
       </div>
     </div>

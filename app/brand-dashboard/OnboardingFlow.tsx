@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Plus, Trash2, Check, Upload } from 'lucide-react';
-import IPhoneStatusBar from './IPhoneStatusBar';
 import { BrandProfile } from './types';
 import styles from './brand-dashboard.module.css';
 
@@ -91,8 +90,6 @@ export default function OnboardingFlow({
 
   return (
     <div className={styles.mobileContainer} style={{ backgroundColor: '#ffffff' }}>
-      {/* 1. iOS Status Bar with Dynamic Island */}
-      <IPhoneStatusBar />
 
       {/* 2. Top Header */}
       <header className={styles.appTopHeader}>
