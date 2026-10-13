@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BrandProfile } from './types';
-import AppleGeometricBg from './AppleGeometricBg';
 import styles from './brand-dashboard.module.css';
 
 interface OnboardingFlowProps {
@@ -92,8 +91,7 @@ export default function OnboardingFlow({
 
   return (
     <div className={styles.mobileContainer}>
-      {/* Code-driven Geometric Apple Background */}
-      <AppleGeometricBg />
+      {/* Top Header */}
 
       {/* Cute Minimal Header */}
       <header className={styles.mobileHeader}>
@@ -619,7 +617,7 @@ export default function OnboardingFlow({
               }}
             >
               <span style={{ fontSize: '12px', fontWeight: 700, color: '#065f46' }}>
-                ✨ Ready to launch! Tap &ldquo;Go Live&rdquo; below.
+                Ready to publish. Tap &ldquo;Go Live&rdquo; below.
               </span>
             </div>
           </div>
@@ -652,7 +650,7 @@ export default function OnboardingFlow({
             onClick={onGoLive}
             className={`${styles.actionBtn} ${styles.actionBtnGoLive}`}
           >
-            ✨ Go Live
+            Go Live →
           </button>
         )}
       </footer>

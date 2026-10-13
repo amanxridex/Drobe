@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { BrandProfile } from './types';
-import AppleGeometricBg from './AppleGeometricBg';
 import styles from './brand-dashboard.module.css';
 
 interface BrandProfileViewProps {
@@ -21,8 +20,7 @@ export default function BrandProfileView({
 
   return (
     <div className={styles.mobileContainer}>
-      {/* Code-driven Geometric Apple Background */}
-      <AppleGeometricBg />
+      {/* Top Header */}
 
       {/* Production Sticky Mobile Top Header */}
       <header className={styles.mobileHeader}>

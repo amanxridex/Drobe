@@ -7,7 +7,7 @@
   max-height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: transparent;
+  background-color: #ffffff;
   color: #0f172a;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -1013,14 +1013,13 @@
 }
 
 /* ==========================================================
-   CUTE & MINIMAL HERO STYLES
+   CLEAN & MINIMAL SOLID STYLES (NO GLASSMORPHISM, NO BOUNCE)
    ========================================================== */
 .minimalHeader {
   flex-shrink: 0;
   height: 52px;
-  background-color: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e5ea;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1040,7 +1039,6 @@
   font-size: 11px;
   color: #64748b;
   font-weight: 600;
-  text-transform: lowercase;
 }
 
 .minimalLiveChip {
@@ -1050,149 +1048,137 @@
   font-size: 11px;
   font-weight: 700;
   color: #059669;
-  background-color: #ecfdf5;
+  background-color: #f0fdf4;
   padding: 4px 10px;
-  border-radius: 20px;
-  border: 1px solid #a7f3d0;
+  border-radius: 6px;
+  border: 1px solid #bbf7d0;
   cursor: pointer;
   font-family: inherit;
-  transition: transform 0.1s ease;
 }
 
-.minimalLiveChip:hover {
-  transform: scale(1.02);
-}
-
-.cuteCenterContainer {
+.cleanStartBody {
   flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 16px;
-  position: relative;
-  z-index: 10;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px 20px 32px 20px;
+  background-color: #ffffff;
+  overflow-y: auto;
 }
 
-.cuteCard {
-  width: 100%;
-  max-width: 380px;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 24px;
-  padding: 36px 24px 28px 24px;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.07);
-  text-align: center;
+.cleanStartContent {
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
-.cuteIconWrapper {
-  margin-bottom: 14px;
-}
-
-.cuteIconBox {
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 26px;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
-}
-
-.cuteTag {
+.cleanEyebrow {
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #0284c7;
   margin-bottom: 8px;
-  display: inline-block;
 }
 
-.cuteTitle {
-  font-size: 28px;
+.cleanTitle {
+  font-size: 32px;
   font-weight: 800;
   letter-spacing: -0.035em;
   color: #0f172a;
-  line-height: 1.15;
+  line-height: 1.12;
   margin: 0 0 10px 0;
 }
 
-.cuteSubtitle {
-  font-size: 13px;
+.cleanSubtitle {
+  font-size: 14px;
   line-height: 1.5;
   color: #64748b;
-  margin: 0 0 20px 0;
-  max-width: 290px;
+  margin: 0 0 28px 0;
 }
 
-.cutePillRow {
+.cleanStepList {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 18px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   margin-bottom: 24px;
 }
 
-.cutePill {
-  font-size: 11px;
-  font-weight: 600;
-  color: #334155;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 5px 11px;
-  border-radius: 20px;
-  white-space: nowrap;
+.cleanStepRow {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
 }
 
-.cutePreviewPill {
+.cleanStepNum {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0284c7;
+  background-color: #e0f2fe;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-top: 2px;
+}
+
+.cleanStepHeading {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.cleanStepText {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.cleanStatusBox {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  background-color: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  padding: 6px 14px;
-  border-radius: 20px;
-  margin-bottom: 18px;
+  gap: 8px;
+  padding: 10px 14px;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
-.cutePrimaryBtn {
+.cleanBottomAction {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.cleanPrimaryBtn {
   width: 100%;
-  height: 50px;
+  height: 48px;
   background-color: #0f172a;
   color: #ffffff;
   border: none;
-  border-radius: 25px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.16);
   font-family: inherit;
-  transition: background-color 0.15s ease, transform 0.1s ease;
+  transition: background-color 0.15s ease;
 }
 
-.cutePrimaryBtn:hover {
+.cleanPrimaryBtn:hover {
   background-color: #1e293b;
 }
 
-.cutePrimaryBtn:active {
-  transform: scale(0.98);
-}
-
-.cuteFooterNote {
+.cleanFootnote {
   font-size: 11px;
   color: #94a3b8;
-  margin: 16px 0 0 0;
-  font-weight: 500;
+  text-align: center;
 }
 
 

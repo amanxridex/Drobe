@@ -1,9 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { BrandProfile } from './types';
-import AppleGeometricBg from './AppleGeometricBg';
 import styles from './brand-dashboard.module.css';
 
 interface BrandStartScreenProps {
@@ -21,10 +19,7 @@ export default function BrandStartScreen({
 
   return (
     <div className={styles.mobileContainer}>
-      {/* Code-driven Geometric Apple Background */}
-      <AppleGeometricBg />
-
-      {/* Minimal Top Header */}
+      {/* Clean Solid Top Header */}
       <header className={styles.minimalHeader}>
         <span className={styles.minimalLogo}>DROBE</span>
         {isAlreadyLive ? (
@@ -33,76 +28,82 @@ export default function BrandStartScreen({
             onClick={onViewLiveDashboard}
             className={styles.minimalLiveChip}
           >
-            <span className={styles.livePulseDot} />
-            live dashboard
+            Live profile →
           </button>
         ) : (
-          <span className={styles.minimalSubChip}>brand studio</span>
+          <span className={styles.minimalSubChip}>Brand Studio</span>
         )}
       </header>
 
-      {/* Cute & Minimal Centered Hero */}
-      <div className={styles.cuteCenterContainer}>
-        <motion.div
-          className={styles.cuteCard}
-          initial={{ opacity: 0, scale: 0.94, y: 16 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {/* Cute Floating Brand Icon */}
-          <motion.div
-            className={styles.cuteIconWrapper}
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <div className={styles.cuteIconBox}>
-              ✨
-            </div>
-          </motion.div>
-
-          <span className={styles.cuteTag}>
-            PARTNER ONBOARDING
+      {/* Clean Minimal Body */}
+      <div className={styles.cleanStartBody}>
+        <div className={styles.cleanStartContent}>
+          <span className={styles.cleanEyebrow}>
+            PARTNER DIRECTORY
           </span>
 
-          <h1 className={styles.cuteTitle}>
-            List your brand.
+          <h1 className={styles.cleanTitle}>
+            List your brand
           </h1>
 
-          <p className={styles.cuteSubtitle}>
-            Create your aesthetic profile, add your signature formulations, and go live on Drobe.
+          <p className={styles.cleanSubtitle}>
+            Create your brand profile, list your signature formulations, and publish directly to discerning clients.
           </p>
 
-          {/* 3 Cute Mini Badges */}
-          <div className={styles.cutePillRow}>
-            <span className={styles.cutePill}>⚡ 2 min setup</span>
-            <span className={styles.cutePill}>🖼️ cover banner</span>
-            <span className={styles.cutePill}>✨ instant live</span>
+          {/* Clean 3-Step Simple Guide */}
+          <div className={styles.cleanStepList}>
+            <div className={styles.cleanStepRow}>
+              <span className={styles.cleanStepNum}>01</span>
+              <div>
+                <div className={styles.cleanStepHeading}>Brand details</div>
+                <div className={styles.cleanStepText}>Name, category, and atelier location</div>
+              </div>
+            </div>
+
+            <div className={styles.cleanStepRow}>
+              <span className={styles.cleanStepNum}>02</span>
+              <div>
+                <div className={styles.cleanStepHeading}>Visual assets</div>
+                <div className={styles.cleanStepText}>Cover banner and profile emblem</div>
+              </div>
+            </div>
+
+            <div className={styles.cleanStepRow}>
+              <span className={styles.cleanStepNum}>03</span>
+              <div>
+                <div className={styles.cleanStepHeading}>Products & go live</div>
+                <div className={styles.cleanStepText}>Offerings catalog and instant launch</div>
+              </div>
+            </div>
           </div>
 
-          {/* If already live: show cute mini preview */}
+          {/* Active Profile Status if Live */}
           {isAlreadyLive && (
-            <div className={styles.cutePreviewPill}>
+            <div className={styles.cleanStatusBox}>
               <span className={styles.livePulseDot} />
-              <span style={{ fontWeight: 600, color: '#0f172a' }}>{brand.name}</span>
-              <span style={{ color: '#64748b' }}>is currently live</span>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>
+                {brand.name}
+              </span>
+              <span style={{ fontSize: '12px', color: '#64748b' }}>
+                is currently active
+              </span>
             </div>
           )}
+        </div>
 
-          {/* Big Cute CTA Button */}
-          <motion.button
+        {/* Clean Static Bottom Action */}
+        <div className={styles.cleanBottomAction}>
+          <button
             type="button"
             onClick={onStartOnboarding}
-            className={styles.cutePrimaryBtn}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
+            className={styles.cleanPrimaryBtn}
           >
-            {isAlreadyLive ? 'Edit your profile →' : 'Start onboarding ✨'}
-          </motion.button>
-
-          <p className={styles.cuteFooterNote}>
-            join 100+ curated luxury brands on Drobe
-          </p>
-        </motion.div>
+            {isAlreadyLive ? 'Edit brand profile →' : 'Start onboarding →'}
+          </button>
+          <div className={styles.cleanFootnote}>
+            Direct customer inquiries · Verified partner placement
+          </div>
+        </div>
       </div>
     </div>
   );
