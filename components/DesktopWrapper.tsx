@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import LocationModal from './LocationModal';
 import AuthModal from './AuthModal';
 import CouponModal from './CouponModal';
 
 export default function DesktopWrapper({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -37,6 +39,46 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
       }
     };
   }, []);
+
+  if (pathname?.startsWith('/brand-dashboard')) {
+    return (
+      <div
+        id="app-desktop-wrapper"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: isMobile ? 'var(--app-height, 100dvh)' : '100vh',
+          backgroundColor: '#e5e5ea',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Centered Mobile App Screen View */}
+        <div
+          id="mobile-app-frame"
+          style={{
+            width: '100%',
+            maxWidth: isMobile ? '100%' : '446px',
+            height: isMobile ? 'var(--app-height, 100dvh)' : '100vh',
+            backgroundColor: '#fbfbfd',
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            boxShadow: isMobile ? 'none' : '0 12px 48px rgba(0,0,0,0.12)',
+            margin: '0 auto',
+            border: isMobile ? 'none' : '1px solid #d2d2d7'
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
