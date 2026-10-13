@@ -1272,15 +1272,15 @@
 
 .stepPillNum {
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   margin-bottom: 2px;
 }
 
 .stepPillLabel {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 400;
   white-space: nowrap;
 }
 
@@ -1300,15 +1300,16 @@
 }
 
 .onboardingStepTitle {
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-size: 26px;
+  font-weight: 300; /* Apple thin step title */
+  letter-spacing: -0.02em;
   color: #0f172a;
-  margin: 2px 0 3px 0;
+  margin: 2px 0 4px 0;
 }
 
 .onboardingStepSub {
   font-size: 13px;
+  font-weight: 300;
   color: #64748b;
   margin: 0;
 }
@@ -1331,9 +1332,11 @@
 }
 
 .ronasInputLabel {
-  font-size: 12px;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #475569;
   margin-bottom: 6px;
   display: block;
 }
@@ -1343,8 +1346,9 @@
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 11px 14px;
+  padding: 12px 14px;
   font-size: 13px;
+  font-weight: 300;
   color: #0f172a;
   outline: none;
   font-family: inherit;
@@ -1930,8 +1934,8 @@
 
 .screen1LogoText {
   font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-weight: 500;
+  letter-spacing: -0.015em;
   color: #000000;
 }
 
@@ -1958,7 +1962,7 @@
   overflow: hidden;
   border: 3px solid #72ea24;
   margin-left: -12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
   background-color: #ffffff;
 }
 
@@ -1984,31 +1988,31 @@
 .screen1PillOrange {
   background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
   border-radius: 24px;
-  padding: 5px 8px;
+  padding: 6px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
 }
 
 .screen1PillSilver {
   background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
   border-radius: 24px;
-  padding: 5px 8px;
+  padding: 6px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .screen1PillCyan {
   background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
   border-radius: 24px;
-  padding: 5px 8px;
+  padding: 6px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
 }
 
 .screen1PillLeft {
@@ -2039,12 +2043,13 @@
 .screen1PillInfo {
   display: flex;
   flex-direction: column;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .screen1PillName {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: #ffffff;
 }
 
@@ -2054,18 +2059,18 @@
 
 .screen1PillPrice {
   font-size: 9px;
-  font-weight: 600;
-  opacity: 0.9;
+  font-weight: 400;
+  opacity: 0.85;
   color: #ffffff;
 }
 
 .screen1PillSilver .screen1PillPrice {
-  color: #334155;
+  color: #475569;
 }
 
 .screen1PillActionOrange {
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 600;
   background-color: #ffffff;
   color: #ea580c;
   padding: 3px 8px;
@@ -2074,7 +2079,7 @@
 
 .screen1PillActionSilver {
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 600;
   background-color: #0f172a;
   color: #ffffff;
   padding: 3px 8px;
@@ -2083,7 +2088,7 @@
 
 .screen1PillActionCyan {
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 600;
   background-color: #ffffff;
   color: #0284c7;
   padding: 3px 8px;
@@ -2103,25 +2108,25 @@
 }
 
 .screen1TextSection {
-  margin-top: 6px;
-  margin-bottom: 20px;
+  margin-top: 8px;
+  margin-bottom: 22px;
 }
 
 .screen1Title {
-  font-size: 32px;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
+  font-size: 38px;
+  font-weight: 300; /* Apple signature thin headline */
+  letter-spacing: -0.025em;
+  line-height: 1.08;
   color: #000000;
   margin: 0 0 10px 0;
 }
 
 .screen1Subtext {
   font-size: 13px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  line-height: 1.4;
-  color: rgba(0, 0, 0, 0.8);
+  font-weight: 300;
+  letter-spacing: -0.005em;
+  line-height: 1.45;
+  color: rgba(0, 0, 0, 0.7);
   margin: 0;
 }
 
@@ -2134,12 +2139,12 @@
 
 .screen1BtnPrimary {
   width: 100%;
-  height: 54px;
+  height: 52px;
   border-radius: 9999px;
   background-color: #000000;
   color: #ffffff;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   border: none;
   cursor: pointer;
   display: flex;
@@ -2147,6 +2152,11 @@
   justify-content: center;
   letter-spacing: -0.01em;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.15s ease;
+}
+
+.screen1BtnPrimary:hover {
+  opacity: 0.9;
 }
 
 .screen1BtnSecondary {
@@ -2154,10 +2164,10 @@
   height: 48px;
   border-radius: 9999px;
   background-color: transparent;
-  border: 1.5px solid rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.25);
   color: #000000;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -2167,13 +2177,14 @@
 
 .screen1Footnote {
   font-size: 11px;
-  color: rgba(0, 0, 0, 0.65);
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.6);
   text-align: center;
   margin-top: 2px;
 }
 
 /* ==========================================================
-   SLEEK DARK PROFILE DASHBOARD (High Contrast RonasIT)
+   SLEEK DARK PROFILE DASHBOARD (Apple SF Thin & Minimal)
    ========================================================== */
 
 .darkProfileContainer {
@@ -2202,7 +2213,7 @@
   height: 44px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1.5px solid #27272a;
+  border: 1px solid #27272a;
 }
 
 .darkHeaderAvatarFallback {
@@ -2210,19 +2221,19 @@
   height: 44px;
   border-radius: 50%;
   background-color: #18181b;
-  border: 1.5px solid #27272a;
+  border: 1px solid #27272a;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 500;
   color: #72ea24;
 }
 
 .darkHeaderGreeting {
   font-size: 17px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-weight: 400; /* Apple light greeting */
+  letter-spacing: -0.015em;
   color: #ffffff;
   line-height: 1.2;
 }
@@ -2230,7 +2241,7 @@
 .darkHeaderSub {
   font-size: 12px;
   color: #71717a;
-  font-weight: 500;
+  font-weight: 300;
 }
 
 .darkCircleBtn {
@@ -2271,8 +2282,8 @@
 
 .darkHeroTag {
   font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #72ea24;
   display: block;
@@ -2280,9 +2291,9 @@
 }
 
 .darkHeroTitle {
-  font-size: 24px;
-  font-weight: 900;
-  letter-spacing: -0.03em;
+  font-size: 26px;
+  font-weight: 300; /* Apple thin headline */
+  letter-spacing: -0.02em;
   color: #ffffff;
   margin: 0 0 4px 0;
   line-height: 1.15;
@@ -2292,6 +2303,7 @@
   font-size: 12px;
   line-height: 1.45;
   color: #a1a1aa;
+  font-weight: 300;
   margin: 0;
 }
 
@@ -2299,18 +2311,18 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background-color: rgba(114, 234, 36, 0.12);
-  border: 1px solid rgba(114, 234, 36, 0.25);
+  background-color: rgba(114, 234, 36, 0.1);
+  border: 1px solid rgba(114, 234, 36, 0.2);
   color: #72ea24;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
   padding: 3px 8px;
   border-radius: 12px;
 }
 
 .darkProductCountBadge {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 400;
   color: #ffffff;
   background-color: #27272a;
   padding: 3px 8px;
@@ -2346,7 +2358,7 @@
   flex-shrink: 0;
   font-size: 10px;
   color: #a1a1aa;
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
 }
 
@@ -2354,7 +2366,7 @@
   background-color: #72ea24 !important;
   border-color: #72ea24 !important;
   color: #000000 !important;
-  font-weight: 800;
+  font-weight: 500 !important;
 }
 
 .darkSectionHeaderRow {
@@ -2366,8 +2378,8 @@
 
 .darkSectionTitle {
   font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-weight: 400; /* Apple light title */
+  letter-spacing: -0.015em;
   color: #ffffff;
   margin: 0;
 }
@@ -2377,7 +2389,7 @@
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   background-color: #72ea24;
   color: #000000;
   padding: 5px 12px;
@@ -2404,7 +2416,7 @@
 
 .darkCardTag {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 400;
   background-color: #27272a;
   color: #a1a1aa;
   padding: 3px 8px;
@@ -2415,30 +2427,31 @@
 
 .darkCardPrice {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 400;
   color: #72ea24;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .darkCardTitle {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 400;
   color: #ffffff;
   margin: 2px 0;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .darkCardSub {
   font-size: 11px;
   color: #71717a;
   margin-bottom: 6px;
-  font-weight: 500;
+  font-weight: 300;
 }
 
 .darkCardDesc {
   font-size: 11px;
-  line-height: 1.4;
+  line-height: 1.45;
   color: #a1a1aa;
+  font-weight: 300;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
