@@ -44,7 +44,8 @@ import {
   Barcode,
   ExternalLink,
   Image as ImageIcon,
-  Lock
+  Lock,
+  Loader2
 } from 'lucide-react';
 import { BrandProfile, BrandProductHighlight, BrandBankAccount } from './types';
 import { 
@@ -57,7 +58,7 @@ import {
   TrialOrder,
   syncDarkstoreWithSupabase
 } from '../lib/darkstoreData';
-import { subscribeToRealtimeOrders } from '../lib/supabaseClient';
+import { subscribeToRealtimeOrders, supabaseUploadMedia } from '../lib/supabaseClient';
 import EditBrandProfileSheet from './EditBrandProfileSheet';
 import AddBankAccountModal from './AddBankAccountModal';
 import styles from './brand-dashboard.module.css';
@@ -281,31 +282,63 @@ export default function BrandProfileView({
     brand.category === 'Male' ? 'MALE' : 
     brand.category === 'Female' ? 'FEMALE' : 'MALE & FEMALE';
 
-  const handleMultipleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploadingProductImages, setIsUploadingProductImages] = useState(false);
+
+  const handleMultipleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     const fileList = Array.from(files);
-    fileList.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          const dataUrl = reader.result as string;
-          setNewProduct(prev => {
-            const currentList = prev.images && prev.images.length > 0 
-              ? prev.images 
-              : (prev.image ? [prev.image] : []);
-            const updated = [...currentList, dataUrl];
-            return {
-              ...prev,
-              image: updated[0] || '',
-              images: updated
+    setIsUploadingProductImages(true);
+    try {
+      const brandSlug = (brand.name || 'brand').toLowerCase().replace(/[^a-z0-9]/g, '-');
+      for (const file of fileList) {
+        try {
+          const uploadRes = await supabaseUploadMedia(
+            file, 
+            'products', 
+            `${brandSlug}_prod_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`
+          );
+          if (uploadRes && uploadRes.url) {
+            setNewProduct(prev => {
+              const currentList = prev.images && prev.images.length > 0 
+                ? prev.images 
+                : (prev.image ? [prev.image] : []);
+              const updated = [...currentList, uploadRes.url];
+              return {
+                ...prev,
+                image: updated[0] || '',
+                images: updated
+              };
+            });
+          } else {
+            // Offline/Fallback to data URL only if storage is unreachable
+            const reader = new FileReader();
+            reader.onload = () => {
+              if (typeof reader.result === 'string') {
+                const dataUrl = reader.result as string;
+                setNewProduct(prev => {
+                  const currentList = prev.images && prev.images.length > 0 
+                    ? prev.images 
+                    : (prev.image ? [prev.image] : []);
+                  const updated = [...currentList, dataUrl];
+                  return {
+                    ...prev,
+                    image: updated[0] || '',
+                    images: updated
+                  };
+                });
+              }
             };
-          });
+            reader.readAsDataURL(file);
+          }
+        } catch (uploadErr) {
+          console.warn('Storage upload error for product file:', uploadErr);
         }
-      };
-      reader.readAsDataURL(file);
-    });
+      }
+    } finally {
+      setIsUploadingProductImages(false);
+    }
   };
 
   const handleRemoveImage = (indexToRemove: number) => {
@@ -1761,6 +1794,11 @@ export default function BrandProfileView({
                 <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '5px' }}>
                   Select one or multiple photos at once. The first photo serves as the primary catalog cover.
                 </div>
+                {isUploadingProductImages && (
+                  <div style={{ fontSize: '11px', color: '#6366f1', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', fontWeight: 500 }}>
+                    <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Uploading directly to Supabase drobe-media bucket (0 Vercel bytes)...
+                  </div>
+                )}
               </div>
 
               <div style={{ display: 'flex', gap: '10px' }}>

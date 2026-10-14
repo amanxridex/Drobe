@@ -26,6 +26,109 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured()
   : null;
 
 // ==============================================================================
+// SUPABASE STORAGE (drobe-media Bucket · Direct Object Storage · 0 Vercel Bytes)
+// ==============================================================================
+
+export const DROBE_MEDIA_BUCKET = 'drobe-media';
+
+// Direct browser-to-Supabase Storage upload via Signed URLs: Vercel serves 0 bytes!
+export async function supabaseUploadMedia(
+  file: File | Blob, 
+  folder: 'brands/logos' | 'brands/banners' | 'products' | 'returns' | string,
+  fileName?: string
+): Promise<{ url: string; path: string } | null> {
+  if (!supabase) return null;
+  try {
+    const ext = file.type ? file.type.split('/')[1] || 'jpg' : 'jpg';
+    const cleanName = (fileName || `media_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`).replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+    const path = `${folder}/${cleanName}${cleanName.includes('.') ? '' : `.${ext}`}`;
+
+    // 1. Primary path: Direct upload via signed upload URL directly to Supabase S3 object storage
+    try {
+      const signedRes = await supabase.storage.from(DROBE_MEDIA_BUCKET).createSignedUploadUrl(path);
+      if (signedRes.data && signedRes.data.token) {
+        const uploadRes = await supabase.storage.from(DROBE_MEDIA_BUCKET).uploadToSignedUrl(
+          signedRes.data.path,
+          signedRes.data.token,
+          file,
+          {
+            contentType: file.type || 'image/jpeg',
+            upsert: true
+          }
+        );
+        if (!uploadRes.error && uploadRes.data) {
+          const { data: pubData } = supabase.storage
+            .from(DROBE_MEDIA_BUCKET)
+            .getPublicUrl(uploadRes.data.path);
+          return {
+            url: pubData.publicUrl,
+            path: uploadRes.data.path
+          };
+        }
+      }
+    } catch (signedErr) {
+      console.warn('Signed URL upload attempt error, falling back to direct upload:', signedErr);
+    }
+
+    // 2. Direct upload fallback directly to bucket (also 0 Vercel bytes, browser direct to CDN)
+    const { data, error } = await supabase.storage
+      .from(DROBE_MEDIA_BUCKET)
+      .upload(path, file, {
+        cacheControl: '31536000',
+        upsert: true,
+        contentType: file.type || 'image/jpeg'
+      });
+
+    if (error) {
+      console.warn('Supabase storage upload error:', error.message);
+      return null;
+    }
+
+    const { data: pubData } = supabase.storage
+      .from(DROBE_MEDIA_BUCKET)
+      .getPublicUrl(data.path);
+
+    return {
+      url: pubData.publicUrl,
+      path: data.path
+    };
+  } catch (err) {
+    console.warn('supabaseUploadMedia exception:', err);
+    return null;
+  }
+}
+
+// Generate Signed Upload URL for direct S3-compatible client upload
+export async function supabaseGetSignedUploadUrl(
+  path: string
+): Promise<{ signedUrl: string; path: string; token: string } | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase.storage
+      .from(DROBE_MEDIA_BUCKET)
+      .createSignedUploadUrl(path);
+
+    if (error || !data) return null;
+    return {
+      signedUrl: data.signedUrl,
+      path: data.path,
+      token: data.token
+    };
+  } catch {
+    return null;
+  }
+}
+
+// Generate direct CDN URL from stored path
+export function supabaseGetPublicMediaUrl(path: string): string {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  if (!supabase) return path;
+  const { data } = supabase.storage.from(DROBE_MEDIA_BUCKET).getPublicUrl(path);
+  return data.publicUrl;
+}
+
+// ==============================================================================
 // SUPABASE ASYNC ADAPTERS (Used when credentials are added at night)
 // ==============================================================================
 

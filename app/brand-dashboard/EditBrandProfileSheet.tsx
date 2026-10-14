@@ -17,10 +17,12 @@ import {
   Camera,
   User,
   Compass,
-  FileText
+  FileText,
+  Loader2
 } from 'lucide-react';
 import { BrandProfile } from './types';
 import styles from './brand-dashboard.module.css';
+import { supabaseUploadMedia } from '../lib/supabaseClient';
 
 const InstagramIcon = ({ size = 15, color = "currentColor" }: { size?: number; color?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -47,6 +49,7 @@ export default function EditBrandProfileSheet({
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -69,20 +72,43 @@ export default function EditBrandProfileSheet({
     if (errorMsg) setErrorMsg(null);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'profileImage' | 'coverImage') => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'profileImage' | 'coverImage') => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 8 * 1024 * 1024) {
-        setErrorMsg('Image size exceeds 8MB limit. Please upload a smaller image.');
+      if (file.size > 10 * 1024 * 1024) {
+        setErrorMsg('Image size exceeds 10MB limit. Please upload a smaller image.');
         return;
       }
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          updateField(field, reader.result);
+      setIsUploadingMedia(true);
+      setErrorMsg(null);
+      try {
+        const folder = field === 'profileImage' ? 'brands/logos' : 'brands/banners';
+        const brandSlug = (formData.name || 'brand').toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const uploadRes = await supabaseUploadMedia(file, folder, `${brandSlug}_${field}_${Date.now()}`);
+        if (uploadRes && uploadRes.url) {
+          updateField(field, uploadRes.url);
+        } else {
+          // Fallback to data URL only if storage upload failed
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === 'string') {
+              updateField(field, reader.result);
+            }
+          };
+          reader.readAsDataURL(file);
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.warn('Direct upload error, falling back:', err);
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            updateField(field, reader.result);
+          }
+        };
+        reader.readAsDataURL(file);
+      } finally {
+        setIsUploadingMedia(false);
+      }
     }
   };
 
@@ -228,6 +254,11 @@ export default function EditBrandProfileSheet({
                     )}
                   </div>
                 </div>
+                {isUploadingMedia && (
+                  <div style={{ fontSize: '11px', color: '#6366f1', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '4px', fontWeight: 500 }}>
+                    <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Uploading directly to Supabase drobe-media bucket (0 Vercel bytes)...
+                  </div>
+                )}
                 <span className={styles.editFieldHint}>Square PNG or JPG recommended (min. 400x400px).</span>
               </div>
 

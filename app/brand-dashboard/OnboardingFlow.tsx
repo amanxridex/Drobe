@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Check, Upload, X, AlertCircle, Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Check, Upload, X, AlertCircle, Eye, EyeOff, Lock, Mail, Loader2 } from 'lucide-react';
 import { BrandProfile } from './types';
+import { supabaseUploadMedia } from '../lib/supabaseClient';
 import styles from './brand-dashboard.module.css';
 
 interface OnboardingFlowProps {
@@ -32,6 +33,7 @@ export default function OnboardingFlow({
   const [currentStep, setCurrentStep] = useState(0);
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
 
   const normalizedCategory: 'Male' | 'Both' | 'Female' = 
     brand.category === 'Male' ? 'Male' : 
@@ -45,19 +47,41 @@ export default function OnboardingFlow({
     });
   };
 
-  const handleFileUpload = (
+  const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    onComplete: (dataUrl: string) => void
+    folder: 'brands/logos' | 'brands/banners',
+    onComplete: (url: string) => void
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          onComplete(reader.result);
+      setIsUploadingMedia(true);
+      setErrorNotice(null);
+      try {
+        const brandSlug = (brand.name || 'brand').toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const uploadRes = await supabaseUploadMedia(file, folder, `${brandSlug}_${Date.now()}`);
+        if (uploadRes && uploadRes.url) {
+          onComplete(uploadRes.url);
+        } else {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === 'string') {
+              onComplete(reader.result);
+            }
+          };
+          reader.readAsDataURL(file);
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.warn('Storage upload error, fallback to data URL:', err);
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            onComplete(reader.result);
+          }
+        };
+        reader.readAsDataURL(file);
+      } finally {
+        setIsUploadingMedia(false);
+      }
     }
   };
 
@@ -391,7 +415,7 @@ export default function OnboardingFlow({
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => handleFileUpload(e, (data) => updateField('profileImage', data))}
+                            onChange={(e) => handleFileUpload(e, 'brands/logos', (data) => updateField('profileImage', data))}
                             style={{ display: 'none' }}
                           />
                         </label>
@@ -406,6 +430,11 @@ export default function OnboardingFlow({
                           style={{ fontSize: '11px', padding: '8px 10px' }}
                         />
                       </div>
+                      {isUploadingMedia && (
+                        <div style={{ fontSize: '11px', color: '#6366f1', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', fontWeight: 500 }}>
+                          <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Uploading directly to Supabase drobe-media bucket (0 Vercel bytes)...
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -446,7 +475,7 @@ export default function OnboardingFlow({
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => handleFileUpload(e, (data) => updateField('coverImage', data))}
+                        onChange={(e) => handleFileUpload(e, 'brands/banners', (data) => updateField('coverImage', data))}
                         style={{ display: 'none' }}
                       />
                     </label>
@@ -459,6 +488,11 @@ export default function OnboardingFlow({
                       style={{ flex: 1, fontSize: '12px' }}
                     />
                   </div>
+                  {isUploadingMedia && (
+                    <div style={{ fontSize: '11px', color: '#6366f1', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', fontWeight: 500 }}>
+                      <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Uploading directly to Supabase drobe-media bucket (0 Vercel bytes)...
+                    </div>
+                  )}
                 </div>
               </div>
 
