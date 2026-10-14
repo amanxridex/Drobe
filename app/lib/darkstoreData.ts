@@ -99,6 +99,9 @@ export interface DarkstoreProduct {
   subCategory?: string;
   price: string;
   originalPrice?: number;
+  brandBasePrice?: number; // Base wholesale / listing price set by brand (e.g. ₹600)
+  markupAmount?: number; // Markup added in rupees (e.g. ₹29)
+  markupPercentage?: number; // Actual markup percentage in decimals (e.g. 4.83)
   discountPercentage?: number;
   volume?: string; // sizing (e.g. M, L)
   sizes?: string[];
@@ -117,6 +120,101 @@ export interface DarkstoreProduct {
   warehouseLocation?: WarehouseShelfLocation;
   inwardDate?: string;
   isLive: boolean; // true only after Admin verification & shelf allocation
+}
+
+export interface DrobeMarkupPricing {
+  brandBasePrice: number;
+  rawWithMarkup: number;
+  sellingPrice: number;
+  markupAmount: number;
+  markupPercentage: number;
+  formattedPercentage: string; // e.g. "+4.83%"
+}
+
+/**
+ * Drobe Markup & Charm Pricing Model:
+ * 1. Takes the Brand Base Price B (e.g. ₹600).
+ * 2. Adds 5% platform markup: raw = B * 1.05 (e.g. ₹630).
+ * 3. Rounds to nearest figure ending in 9:
+ *    - 630 -> 629
+ *    - 621 -> 619
+ *    - 626 -> 629
+ *    Formula: Math.max(9, Math.round((raw + 1) / 10) * 10 - 1)
+ * 4. Calculates actual markup value and percentage in decimals:
+ *    - markupAmount = sellingPrice - B (e.g. ₹29)
+ *    - markupPercentage = ((markupAmount / B) * 100).toFixed(2) (e.g. 4.83%)
+ */
+export function calculateDrobeMarkupPricing(brandBasePrice: number): DrobeMarkupPricing {
+  const base = Math.max(0, Math.round(brandBasePrice));
+  if (base <= 0) {
+    return {
+      brandBasePrice: 0,
+      rawWithMarkup: 0,
+      sellingPrice: 0,
+      markupAmount: 0,
+      markupPercentage: 0,
+      formattedPercentage: '0.00%'
+    };
+  }
+
+  // 1. Add 5% markup
+  const rawWithMarkup = base * 1.05;
+
+  // 2. Round to closest figure ending in 9 (e.g. 630 -> 629, 621 -> 619, 626 -> 629)
+  const sellingPrice = Math.max(9, Math.round((rawWithMarkup + 1) / 10) * 10 - 1);
+
+  // 3. Exact markup in rupees and decimal percentage
+  const markupAmount = sellingPrice - base;
+  const markupPercentage = Number(((markupAmount / base) * 100).toFixed(2));
+  const formattedPercentage = `${markupPercentage >= 0 ? '+' : ''}${markupPercentage.toFixed(2)}%`;
+
+  return {
+    brandBasePrice: base,
+    rawWithMarkup: Number(rawWithMarkup.toFixed(2)),
+    sellingPrice,
+    markupAmount,
+    markupPercentage,
+    formattedPercentage
+  };
+}
+
+export function getProductPricingInfo(prod: {
+  price?: string | number;
+  brandBasePrice?: number;
+  originalPrice?: number;
+}): DrobeMarkupPricing {
+  if (prod.brandBasePrice && prod.brandBasePrice > 0) {
+    return calculateDrobeMarkupPricing(prod.brandBasePrice);
+  }
+
+  // Derive base from selling price if brandBasePrice not explicitly set
+  const rawNum = typeof prod.price === 'number'
+    ? prod.price
+    : parseFloat(String(prod.price || '0').replace(/[^0-9.]/g, '')) || 0;
+
+  if (rawNum <= 0) {
+    return {
+      brandBasePrice: 0,
+      rawWithMarkup: 0,
+      sellingPrice: 0,
+      markupAmount: 0,
+      markupPercentage: 0,
+      formattedPercentage: '0.00%'
+    };
+  }
+
+  const impliedBase = Math.round(rawNum / 1.05);
+  const markupAmount = rawNum - impliedBase;
+  const markupPct = Number(((markupAmount / (impliedBase || 1)) * 100).toFixed(2));
+
+  return {
+    brandBasePrice: impliedBase,
+    rawWithMarkup: rawNum,
+    sellingPrice: rawNum,
+    markupAmount,
+    markupPercentage: markupPct,
+    formattedPercentage: `${markupPct >= 0 ? '+' : ''}${markupPct.toFixed(2)}%`
+  };
 }
 
 export interface InboundStockShipment {
@@ -607,6 +705,11 @@ export function registerBrandApplication(brand: any): DarkstoreBrand {
       const prodId = prod.id || `${brandId}-prod-${idx + 1}`;
       const existingPIdx = updatedProducts.findIndex(p => p.id === prodId || (p.brandId === brandId && p.name.toLowerCase() === prodName.toLowerCase()));
 
+      const rawBase = prod.brandBasePrice !== undefined 
+        ? Number(prod.brandBasePrice) 
+        : (parseFloat(String(prod.price || '600').replace(/[^0-9.]/g, '')) || 600);
+      const pricing = calculateDrobeMarkupPricing(rawBase);
+
       const newProd: DarkstoreProduct = {
         id: prodId,
         sku: prod.sku,
@@ -615,7 +718,10 @@ export function registerBrandApplication(brand: any): DarkstoreBrand {
         brandId: brandId,
         brandName: brandName || 'Your Brand',
         category: prod.category || brand.category || 'Apparel',
-        price: prod.price || '₹1499',
+        brandBasePrice: pricing.brandBasePrice,
+        price: `₹${pricing.sellingPrice}`,
+        markupAmount: pricing.markupAmount,
+        markupPercentage: pricing.markupPercentage,
         volume: prod.volume || 'M',
         inventory: Number(prod.inventory) || 20,
         inwardUnits: 0,
@@ -634,7 +740,10 @@ export function registerBrandApplication(brand: any): DarkstoreBrand {
           ...newProd,
           ...updatedProducts[existingPIdx],
           name: prodName,
-          price: prod.price || updatedProducts[existingPIdx].price
+          brandBasePrice: pricing.brandBasePrice,
+          price: `₹${pricing.sellingPrice}`,
+          markupAmount: pricing.markupAmount,
+          markupPercentage: pricing.markupPercentage
         };
       } else {
         updatedProducts.push(newProd);
@@ -763,6 +872,7 @@ export interface InwardParams {
     shelf: string;
     bin: string;
   };
+  brandBasePrice?: number;
   verifiedBy?: string;
   shipmentId?: string;
 }
@@ -772,6 +882,7 @@ export function adminInwardProduct({
   sku,
   unitsReceived,
   shelfLocation,
+  brandBasePrice,
   verifiedBy = 'Admin (Ahmedabad Hub)',
   shipmentId
 }: InwardParams): { product: DarkstoreProduct; skuAssigned: string; shelfCode: string } {
@@ -805,6 +916,11 @@ export function adminInwardProduct({
 
   const updatedProducts = products.map(p => {
     if (p.id === productId) {
+      const baseNum = brandBasePrice !== undefined 
+        ? brandBasePrice 
+        : (p.brandBasePrice || parseFloat(String(p.price || '0').replace(/[^0-9.]/g, '')) || 0);
+      const pricing = baseNum > 0 ? calculateDrobeMarkupPricing(baseNum) : null;
+
       const updated: DarkstoreProduct = {
         ...p,
         sku: finalSku,
@@ -814,7 +930,13 @@ export function adminInwardProduct({
         inwardStatus: 'Inwarded & Live',
         warehouseLocation: locationObj,
         inwardDate: todayStr,
-        isLive: true
+        isLive: true,
+        ...(pricing ? {
+          brandBasePrice: pricing.brandBasePrice,
+          price: `₹${pricing.sellingPrice}`,
+          markupAmount: pricing.markupAmount,
+          markupPercentage: pricing.markupPercentage
+        } : {})
       };
       updatedTargetProduct = updated;
       return updated;

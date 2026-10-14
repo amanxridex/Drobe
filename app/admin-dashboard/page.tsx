@@ -53,7 +53,10 @@ import {
   getNextSkuNumber,
   getNextAvailableShelfLocation,
   markShipmentArrived,
-  syncDarkstoreWithSupabase
+  syncDarkstoreWithSupabase,
+  calculateDrobeMarkupPricing,
+  getProductPricingInfo,
+  DrobeMarkupPricing
 } from '../lib/darkstoreData';
 import { 
   subscribeToRealtimeOrders, 
@@ -105,6 +108,7 @@ export default function AdminDashboardPage() {
 
   // Inward Form State
   const [inwardUnits, setInwardUnits] = useState<number>(20);
+  const [inwardBasePrice, setInwardBasePrice] = useState<number>(600);
   const [inwardSku, setInwardSku] = useState<string>('');
   const [selectedZone, setSelectedZone] = useState('Zone A - Outerwear & Heavy Silhouettes');
   const [selectedRack, setSelectedRack] = useState('Rack A-02');
@@ -219,6 +223,11 @@ export default function AdminDashboardPage() {
     setSelectedProductToInward(prod);
     setAssociatedShipment(ship || null);
     setInwardUnits(ship ? ship.units : (prod.inventory || 20));
+
+    // Initialize brand wholesale base price
+    const currentPricing = getProductPricingInfo(prod);
+    setInwardBasePrice(currentPricing.brandBasePrice || 600);
+
     const nextSku = getNextSkuNumber();
     setInwardSku(prod.sku || nextSku.sku);
 
@@ -271,6 +280,7 @@ export default function AdminDashboardPage() {
       productId: selectedProductToInward.id,
       sku: inwardSku.trim().toUpperCase(),
       unitsReceived: Number(inwardUnits) || 20,
+      brandBasePrice: Number(inwardBasePrice) || 600,
       shelfLocation: {
         zone: selectedZone,
         rack: selectedRack,
@@ -283,7 +293,7 @@ export default function AdminDashboardPage() {
 
     setInwardModalOpen(false);
     loadAllData();
-    triggerToast(`🎉 Verified & Placed on Shelf ${res.shelfCode}! Assigned ${res.skuAssigned} · Stored at Shivam Bungalows 1, Koteshwar Road · Now LIVE on Platform & App!`);
+    triggerToast(`🎉 Verified & Placed on Shelf ${res.shelfCode}! Assigned ${res.skuAssigned} · Base ₹${res.product.brandBasePrice} marked up to ${res.product.price} (+${res.product.markupPercentage}% actual margin) · Now LIVE!`);
   };
 
   const handleOrderAction = (orderId: string, newStatus: TrialOrder['status']) => {
@@ -886,13 +896,52 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
+                {/* DROBE 5% PLATFORM MARKUP & CHARM 9 PRICING MODEL BANNER */}
+                <div style={{
+                  background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(2, 132, 199, 0.08) 100%)',
+                  border: '1px solid rgba(16, 185, 129, 0.25)',
+                  borderRadius: '14px',
+                  padding: '14px 18px',
+                  marginBottom: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '12px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
+                      ⚡
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0f172a' }}>
+                        Drobe 5% Dynamic Markup &amp; Charm 9 Pricing Model
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', maxWidth: '640px', lineHeight: 1.5 }}>
+                        Brands list products at base wholesale price (e.g. ₹600). The platform adds a <strong>5% markup fee</strong> and rounds to the nearest figure ending in <strong>9</strong> (e.g. ₹600 + 5% = ₹630 → <strong>₹629</strong>, ₹621 → <strong>₹619</strong>, ₹626 → <strong>₹629</strong>). Below, admin can inspect the actual added markup and decimal percentage.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '6px 12px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Model Rule</div>
+                      <div style={{ fontSize: '14px', fontWeight: 900, color: '#0284c7' }}>+5% → Ends in 9</div>
+                    </div>
+                    <div style={{ background: '#ffffff', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '6px 12px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '10px', color: '#166534', textTransform: 'uppercase', fontWeight: 700 }}>Avg Margin</div>
+                      <div style={{ fontSize: '14px', fontWeight: 900, color: '#15803d' }}>+4.88%</div>
+                    </div>
+                  </div>
+                </div>
+
                 <div style={{ overflowX: 'auto' }}>
                   <table className={styles.lightTable}>
                     <thead>
                       <tr>
                         <th>Product & Photos</th>
                         <th>Brand Name</th>
-                        <th>Price & Sizing</th>
+                        <th>Wholesale vs Selling Price (Markup)</th>
                         <th>Inward Status</th>
                         <th>Assigned SKU</th>
                         <th>Stored Warehouse Shelf</th>
@@ -902,6 +951,7 @@ export default function AdminDashboardPage() {
                     <tbody>
                       {filteredProducts.map((prod) => {
                         const isLive = prod.isLive;
+                        const pricing = getProductPricingInfo(prod);
 
                         return (
                           <tr key={prod.id}>
@@ -926,8 +976,18 @@ export default function AdminDashboardPage() {
                             </td>
                             <td style={{ fontWeight: 600 }}>{prod.brandName}</td>
                             <td>
-                              <div style={{ fontWeight: 800, color: '#0284c7' }}>{prod.price}</div>
-                              <div style={{ fontSize: '11px', color: '#64748b' }}>Size: {prod.volume || 'Standard'}</div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ fontWeight: 900, color: '#0f172a', fontSize: '13px' }}>
+                                  ₹{pricing.sellingPrice}
+                                </span>
+                                <span style={{ fontSize: '10px', fontWeight: 800, background: '#ecfdf5', color: '#059669', padding: '1px 6px', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
+                                  {pricing.formattedPercentage}
+                                </span>
+                              </div>
+                              <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px' }}>
+                                Brand: <strong>₹{pricing.brandBasePrice}</strong> (+₹{pricing.markupAmount})
+                              </div>
+                              <div style={{ fontSize: '10px', color: '#94a3b8' }}>Size: {prod.volume || 'Standard'}</div>
                             </td>
                             <td>
                               {isLive ? (
@@ -1078,9 +1138,19 @@ export default function AdminDashboardPage() {
                               )}
                               <div>
                                 <div style={{ fontWeight: 800, color: '#0f172a' }}>{prod.name}</div>
-                                <div style={{ fontSize: '11px', color: '#64748b' }}>
-                                  Size: {prod.volume || 'Standard'} · {prod.price}
-                                </div>
+                                {(() => {
+                                  const pPricing = getProductPricingInfo(prod);
+                                  return (
+                                    <div style={{ fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px', flexWrap: 'wrap' }}>
+                                      <span>Size: {prod.volume || 'Standard'}</span>
+                                      <span>·</span>
+                                      <span style={{ fontWeight: 800, color: '#0f172a' }}>₹{pPricing.sellingPrice}</span>
+                                      <span style={{ fontSize: '9.5px', fontWeight: 800, background: '#ecfdf5', color: '#047857', padding: '1px 6px', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
+                                        +{pPricing.markupAmount} ({pPricing.formattedPercentage})
+                                      </span>
+                                    </div>
+                                  );
+                                })()}
                               </div>
                             </div>
                           </td>
@@ -2066,11 +2136,70 @@ export default function AdminDashboardPage() {
                       {selectedProductToInward.name}
                     </h4>
                     <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#64748b' }}>
-                      Brand: <strong style={{ color: '#0284c7' }}>{selectedProductToInward.brandName}</strong> · Price: {selectedProductToInward.price}
+                      Brand: <strong style={{ color: '#0284c7' }}>{selectedProductToInward.brandName}</strong> · Listed Price: {selectedProductToInward.price}
                     </p>
                   </div>
                 </div>
               </div>
+
+              {/* Drobe 5% Dynamic Markup & Charm 9 Pricing Box */}
+              {(() => {
+                const preview = calculateDrobeMarkupPricing(inwardBasePrice || 600);
+                return (
+                  <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '12px', padding: '14px', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 800, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        ⚡ Drobe 5% Markup + Charm 9 Pricing Model
+                      </span>
+                      <span style={{ fontSize: '10px', background: '#dcfce7', color: '#15803d', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
+                        Auto-Rounded to Last Digit 9
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                      <div>
+                        <label className={styles.inputLabel} style={{ fontSize: '11px' }}>
+                          Brand Base Wholesale Price (₹) *
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={inwardBasePrice}
+                          onChange={(e) => setInwardBasePrice(Math.max(1, Number(e.target.value)))}
+                          required
+                          className={styles.inputField}
+                          style={{ fontWeight: 800, color: '#0f172a' }}
+                        />
+                        <span style={{ fontSize: '10px', color: '#64748b' }}>e.g. ₹600 set by brand</span>
+                      </div>
+
+                      <div>
+                        <label className={styles.inputLabel} style={{ fontSize: '11px' }}>
+                          Customer Selling Price on App (₹)
+                        </label>
+                        <div style={{ height: '38px', background: '#ffffff', border: '1px solid #86efac', borderRadius: '8px', display: 'flex', alignItems: 'center', padding: '0 12px', fontWeight: 900, fontSize: '15px', color: '#15803d' }}>
+                          ₹{preview.sellingPrice}
+                        </div>
+                        <span style={{ fontSize: '10px', color: '#166534' }}>Ends in 9 (e.g. ₹629)</span>
+                      </div>
+                    </div>
+
+                    {/* Exact Markup in Rupees & Decimals */}
+                    <div style={{ background: '#ffffff', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11.5px' }}>
+                      <div>
+                        <span style={{ color: '#64748b' }}>Actual Added Markup: </span>
+                        <strong style={{ color: '#15803d' }}>+₹{preview.markupAmount}</strong>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ color: '#64748b' }}>Actual Percentage: </span>
+                        <span style={{ background: '#ecfdf5', color: '#047857', fontWeight: 900, padding: '2px 8px', borderRadius: '6px', border: '1px solid #a7f3d0' }}>
+                          {preview.formattedPercentage} ({preview.markupPercentage}%)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* SEQUENTIAL SKU GENERATOR */}
               <div className={styles.inputGroup}>
@@ -2457,7 +2586,7 @@ export default function AdminDashboardPage() {
                       <tr>
                         <th>Product Details</th>
                         <th>Category</th>
-                        <th>Live Price</th>
+                        <th>Wholesale vs Selling Price (Markup)</th>
                         <th>Sizes Available</th>
                         <th>Inward Stock</th>
                         <th>Shelf Location</th>
@@ -2497,14 +2626,24 @@ export default function AdminDashboardPage() {
                               </span>
                             </td>
                             <td>
-                              <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '13px' }}>
-                                {p.price.startsWith('₹') ? p.price : `₹${p.price}`}
-                              </div>
-                              {p.originalPrice && (
-                                <div style={{ fontSize: '10.5px', color: '#94a3b8', textDecoration: 'line-through' }}>
-                                  ₹{p.originalPrice}
-                                </div>
-                              )}
+                              {(() => {
+                                const bp = getProductPricingInfo(p);
+                                return (
+                                  <div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                      <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '13px' }}>
+                                        ₹{bp.sellingPrice}
+                                      </span>
+                                      <span style={{ fontSize: '9.5px', fontWeight: 800, background: '#ecfdf5', color: '#047857', padding: '1px 5px', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
+                                        {bp.formattedPercentage}
+                                      </span>
+                                    </div>
+                                    <div style={{ fontSize: '10px', color: '#64748b', marginTop: '2px' }}>
+                                      Base: <strong>₹{bp.brandBasePrice}</strong> (+₹{bp.markupAmount})
+                                    </div>
+                                  </div>
+                                );
+                              })()}
                             </td>
                             <td>
                               <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
