@@ -18,6 +18,7 @@ import ProductCard from '@/components/ProductCard';
 import MEN_CURATED_SECTIONS from '@/data/men_curated_sections.json';
 import DISCOVER_BRANDS_DATA from '@/data/discover_brands_manifest.json';
 import AUTHENTIC_HOME_WIDGETS from '@/data/authentic_home_widgets.json';
+import { getDarkstoreProducts, DarkstoreProduct, createCustomerOrder } from '@/app/lib/darkstoreData';
 
 export default function HomePage() {
   const { gender, wishlist, toggleWishlist, setIsCouponOpen } = useApp();
@@ -31,6 +32,41 @@ export default function HomePage() {
   const [selectedBrandCategory, setSelectedBrandCategory] = useState('all');
   const [currentBrandSlide, setCurrentBrandSlide] = useState(0);
   const categoryScrollRef = useRef<HTMLDivElement>(null);
+
+  // Live Darkstore products inwarded & shelved at Ahmedabad Central Hub
+  const [darkstoreProducts, setDarkstoreProducts] = useState<DarkstoreProduct[]>([]);
+  const [trialOrderToast, setTrialOrderToast] = useState<{ orderNumber: string; product: string } | null>(null);
+
+  const handleQuickTryOrder = (e: React.MouseEvent, p: DarkstoreProduct) => {
+    e.stopPropagation();
+    const ord = createCustomerOrder({
+      productId: p.id,
+      productName: p.name,
+      productSku: p.sku || 'DR1',
+      brandId: p.brandId,
+      brandName: p.brandName,
+      price: p.price,
+      size: 'M',
+      customerName: 'Aarav Parekh',
+      customerPhone: '+91 98250 88123',
+      customerAddress: 'B-702, Shaligram Plus, Opp. Iskcon Temple, SG Highway, Ahmedabad',
+      landmark: 'Opp. Iskcon Temple',
+      shelfLocation: p.warehouseLocation?.code || 'AMD-RA02-S3-B04'
+    });
+    setTrialOrderToast({ orderNumber: ord.orderNumber, product: ord.productName });
+  };
+
+  useEffect(() => {
+    const loadDarkstore = () => {
+      if (typeof window !== 'undefined') {
+        const liveProds = getDarkstoreProducts().filter(p => p.isLive);
+        setDarkstoreProducts(liveProds);
+      }
+    };
+    loadDarkstore();
+    window.addEventListener('storage', loadDarkstore);
+    return () => window.removeEventListener('storage', loadDarkstore);
+  }, []);
 
   // Exact authentic lookbook banners downloaded from Drobe's ImageKit CDN
   const menLookbookCards = [
@@ -455,6 +491,247 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+
+        {/* ========================================================
+            30-MINUTE LIVE DARKSTORE CONSIGNMENTS (AHMEDABAD HUB #01)
+            Live pieces inwarded and assigned physical shelves
+            ======================================================== */}
+        {darkstoreProducts.length > 0 && (
+          <section
+            style={{
+              width: '100%',
+              background: 'linear-gradient(180deg, #18181b 0%, #0f172a 100%)',
+              padding: '16px 12px 18px',
+              borderTop: '1px solid rgba(2, 132, 199, 0.25)',
+              borderBottom: '1px solid rgba(2, 132, 199, 0.25)',
+              boxSizing: 'border-box',
+              position: 'relative'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                  <span style={{ fontSize: 9.5, fontWeight: 900, textTransform: 'uppercase', letterSpacing: 0.8, color: '#38bdf8', background: 'rgba(2, 132, 199, 0.2)', padding: '2px 7px', borderRadius: 6, border: '1px solid rgba(56, 189, 248, 0.3)' }}>
+                    ⚡ 30-MIN DARKSTORE LIVE DROPS
+                  </span>
+                  <span style={{ fontSize: 10, color: '#10b981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+                    Live at Shivam Bungalows 1, Koteshwar
+                  </span>
+                </div>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#ffffff', letterSpacing: -0.3 }}>
+                  Direct Consignments from Darkstore Hub
+                </h3>
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <Link
+                  href="/order-portal"
+                  target="_blank"
+                  style={{ fontSize: 10.5, fontWeight: 700, color: '#f59e0b', textDecoration: 'none', background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '3px 7px', borderRadius: 6 }}
+                >
+                  ⚡ Order Portal
+                </Link>
+                <Link
+                  href="/delivery-partner"
+                  target="_blank"
+                  style={{ fontSize: 10.5, fontWeight: 700, color: '#60a5fa', textDecoration: 'none', background: 'rgba(59, 130, 246, 0.15)', border: '1px solid rgba(59, 130, 246, 0.4)', padding: '3px 7px', borderRadius: 6 }}
+                >
+                  🛵 Delivery App
+                </Link>
+                <Link
+                  href="/admin-dashboard"
+                  target="_blank"
+                  style={{ fontSize: 10.5, fontWeight: 700, color: '#38bdf8', textDecoration: 'none', background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '3px 7px', borderRadius: 6 }}
+                >
+                  Hub ↗
+                </Link>
+              </div>
+            </div>
+
+            {/* Horizontal Cards Rail */}
+            <div
+              style={{
+                display: 'flex',
+                gap: 12,
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                paddingBottom: 4
+              }}
+            >
+              {darkstoreProducts.map((p) => (
+                <div
+                  key={p.id}
+                  onClick={() => router.push(`/product/${p.id}`)}
+                  style={{
+                    flex: '0 0 165px',
+                    background: '#1e293b',
+                    borderRadius: 14,
+                    overflow: 'hidden',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 14px rgba(0,0,0,0.4)',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                >
+                  <div style={{ position: 'relative', width: '100%', height: 180, background: '#0f172a' }}>
+                    <img
+                      src={p.images?.[0] || 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80'}
+                      alt={p.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    {/* SKU Badge */}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 8,
+                        left: 8,
+                        background: 'rgba(15, 23, 42, 0.88)',
+                        backdropFilter: 'blur(6px)',
+                        color: '#38bdf8',
+                        fontSize: 10,
+                        fontWeight: 800,
+                        padding: '3px 7px',
+                        borderRadius: 6,
+                        border: '1px solid rgba(56, 189, 248, 0.4)',
+                        letterSpacing: 0.5
+                      }}
+                    >
+                      {p.sku || 'DR1'}
+                    </div>
+                    {/* Shelf Location Code */}
+                    {p.warehouseLocation && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          bottom: 8,
+                          left: 8,
+                          right: 8,
+                          background: 'rgba(0, 0, 0, 0.82)',
+                          backdropFilter: 'blur(4px)',
+                          color: '#f8fafc',
+                          fontSize: 9.5,
+                          fontWeight: 700,
+                          padding: '3px 6px',
+                          borderRadius: 6,
+                          textAlign: 'center',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          border: '1px solid rgba(255, 255, 255, 0.15)'
+                        }}
+                      >
+                        📍 {p.warehouseLocation.code}
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ padding: '10px 10px 12px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ fontSize: 10, color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800, letterSpacing: 0.5 }}>
+                        {p.brandName}
+                      </div>
+                      <div style={{ fontSize: 12.5, fontWeight: 700, color: '#ffffff', margin: '2px 0 6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {p.name}
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
+                      <span style={{ fontSize: 14, fontWeight: 900, color: '#38bdf8' }}>
+                        {p.price}
+                      </span>
+                      <span style={{ fontSize: 9, fontWeight: 800, color: '#10b981', background: 'rgba(16, 185, 129, 0.15)', padding: '2px 5px', borderRadius: 4 }}>
+                        30-MIN
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => handleQuickTryOrder(e, p)}
+                      style={{
+                        marginTop: 8,
+                        background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                        border: 'none',
+                        color: '#000',
+                        fontSize: 10,
+                        fontWeight: 800,
+                        padding: '6px 8px',
+                        borderRadius: 6,
+                        cursor: 'pointer',
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 4
+                      }}
+                    >
+                      <span>⚡</span>
+                      <span>Try in 30 Mins</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Real-time Order Placed Floating Toast */}
+            {trialOrderToast && (
+              <div
+                style={{
+                  margin: '12px 10px 0',
+                  background: 'linear-gradient(90deg, #1e293b, #0f172a)',
+                  border: '1px solid #f59e0b',
+                  borderRadius: 10,
+                  padding: '10px 14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 10,
+                  animation: 'fadeIn 0.2s ease-out'
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: '#fef08a' }}>
+                    🚨 ORDER {trialOrderToast.orderNumber} DIVERTED TO HUB!
+                  </div>
+                  <div style={{ fontSize: 10.5, color: '#cbd5e1' }}>
+                    {trialOrderToast.product} • Ready for shelf picker at Koteshwar Hub!
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <Link
+                    href="/order-portal"
+                    target="_blank"
+                    style={{
+                      background: '#f59e0b',
+                      color: '#000',
+                      fontSize: 11,
+                      fontWeight: 800,
+                      padding: '4px 8px',
+                      borderRadius: 6,
+                      textDecoration: 'none'
+                    }}
+                  >
+                    View Portal
+                  </Link>
+                  <Link
+                    href="/delivery-partner"
+                    target="_blank"
+                    style={{
+                      background: '#3b82f6',
+                      color: '#fff',
+                      fontSize: 11,
+                      fontWeight: 800,
+                      padding: '4px 8px',
+                      borderRadius: 6,
+                      textDecoration: 'none'
+                    }}
+                  >
+                    Runner App
+                  </Link>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* ========================================================
             SECTION 3: LOOKBOOK CAROUSEL (MEN vs WOMEN 1:1)

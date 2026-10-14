@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { PRODUCTS, Product } from '@/data/catalog';
 import MEN_CURATED_SECTIONS from '@/data/men_curated_sections.json';
+import { getDarkstoreProducts } from '@/app/lib/darkstoreData';
 import confetti from 'canvas-confetti';
 import TryAndBuySlider from '@/components/TryAndBuySlider';
 import ProductCard from '@/components/ProductCard';
@@ -17,11 +18,41 @@ export default function ProductDetailPage() {
   const { cart, addToCart, wishlist, toggleWishlist } = useApp();
 
   const productId = params?.id as string;
+  const darkstoreProduct = typeof window !== 'undefined' 
+    ? getDarkstoreProducts().find(p => p.id === productId || p.sku?.toLowerCase() === productId?.toLowerCase())
+    : null;
+
+  const mappedDarkstoreProduct: Product | null = darkstoreProduct ? {
+    id: darkstoreProduct.id,
+    brand: darkstoreProduct.brandName,
+    title: darkstoreProduct.name,
+    price: parseInt(darkstoreProduct.price.replace(/\D/g, ''), 10) || 1499,
+    originalPrice: Math.round((parseInt(darkstoreProduct.price.replace(/\D/g, ''), 10) || 1499) * 1.35),
+    discountPercentage: 26,
+    gender: 'men',
+    category: darkstoreProduct.category?.toLowerCase() || 'top',
+    subCategory: 'Atelier Darkstore Creation',
+    images: darkstoreProduct.images?.length > 0 ? darkstoreProduct.images : ['https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80'],
+    thumbnail: darkstoreProduct.images?.[0] || 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80',
+    description: `${darkstoreProduct.description || darkstoreProduct.tagline || ''} Stored securely at Ahmedabad Central Hub #01 (Shelf: ${darkstoreProduct.warehouseLocation ? darkstoreProduct.warehouseLocation.code : 'AMD-HUB-01'}). Ready for 30-min express doorstep fitting.`,
+    fabric: 'Luxury Cotton / Linen Blend',
+    fit: 'Contemporary Tailored Fit',
+    rating: 4.9,
+    reviewsCount: 38,
+    sizes: [darkstoreProduct.volume || 'M', 'L', 'XL'],
+    inStock: darkstoreProduct.inwardUnits > 0 || darkstoreProduct.inventory > 0,
+    tryAndBuyEligible: true,
+    extraDiscountBadge: darkstoreProduct.sku ? `SKU: ${darkstoreProduct.sku}` : '30-MIN EXPRESS',
+    deliveryMinutes: 30,
+    deliveryLocation: 'Ahmedabad (30-Min Zone)',
+    promoTag: `Stored at ${darkstoreProduct.warehouseLocation ? darkstoreProduct.warehouseLocation.code : 'Ahmedabad Darkstore Hub'}`
+  } : null;
+
   const curatedProduct = (MEN_CURATED_SECTIONS as any[])
     .flatMap((s: any) => s.products)
     .find((p: any) => p.id === productId);
 
-  const product: Product = (curatedProduct as unknown as Product) || PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
+  const product: Product = mappedDarkstoreProduct || (curatedProduct as unknown as Product) || PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
 
   const thumbnails: string[] = (product.images && product.images.length > 0) ? product.images : [product.thumbnail];
   const [activeThumbIndex, setActiveThumbIndex] = useState(0);

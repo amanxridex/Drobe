@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Lock, Mail, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { X, Lock, Mail, Eye, EyeOff, AlertCircle, ShieldCheck } from 'lucide-react';
 import { BrandProfile } from './types';
 import styles from './brand-dashboard.module.css';
 
@@ -9,6 +10,7 @@ interface BrandStartScreenProps {
   brand: BrandProfile;
   onStartOnboarding: () => void;
   onViewLiveDashboard: () => void;
+  onEditLiveBrand?: () => void;
   onResetBrand?: () => void;
   onLoginSuccess?: (email: string) => void;
 }
@@ -17,6 +19,7 @@ export default function BrandStartScreen({
   brand,
   onStartOnboarding,
   onViewLiveDashboard,
+  onEditLiveBrand,
   onResetBrand,
   onLoginSuccess
 }: BrandStartScreenProps) {
@@ -26,8 +29,9 @@ export default function BrandStartScreen({
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
 
-  const isAlreadyLive = brand.status === 'Published' && Boolean(brand.name?.trim());
-  const hasDraft = Boolean(brand.name?.trim()) && !isAlreadyLive;
+  const isApprovedOrPublished = (brand.status === 'Published' || brand.status === 'Approved') && Boolean(brand.name?.trim());
+  const isWaitingApproval = brand.status === 'Waiting for Approval' && Boolean(brand.name?.trim());
+  const hasDraft = Boolean(brand.name?.trim()) && !isApprovedOrPublished && !isWaitingApproval;
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,29 +58,32 @@ export default function BrandStartScreen({
 
   return (
     <div className={styles.screen1Container}>
-      {/* 1. Official DROBE Logo Showcase */}
-      <div className={styles.screen1LogoArea}>
-        <img
-          src="/drobe-logo.png"
-          alt="Drobe"
-          className={styles.screen1MainLogo}
-        />
-      </div>
+      {/* Centered Brand Presence */}
+      <div className={styles.screen1CenterStage}>
+        {/* 1. Official DROBE Logo Showcase */}
+        <div className={styles.screen1LogoArea}>
+          <img
+            src="/drobe-logo.png"
+            alt="Drobe"
+            className={styles.screen1MainLogo}
+          />
+        </div>
 
-      {/* 2. Apple SF Thin Typography Pitch */}
-      <div className={styles.screen1TextSection}>
-        <h1 className={styles.screen1Title}>
-          Start your new<br />Brand Journey
-        </h1>
+        {/* 2. Apple SF Thin Typography Pitch */}
+        <div className={styles.screen1TextSection}>
+          <h1 className={styles.screen1Title}>
+            Start your new<br />Brand Journey
+          </h1>
 
-        <p className={styles.screen1Subtext}>
-          List your luxury atelier, curate your signature collection, and connect directly with discerning clients on Drobe.
-        </p>
+          <p className={styles.screen1Subtext}>
+            List your luxury atelier, curate your signature collection, and connect directly with discerning clients on Drobe.
+          </p>
+        </div>
       </div>
 
       {/* 3. Real Action Buttons */}
       <div className={styles.screen1BottomSection}>
-        {isAlreadyLive ? (
+        {isApprovedOrPublished ? (
           <>
             <button
               type="button"
@@ -88,10 +95,28 @@ export default function BrandStartScreen({
 
             <button
               type="button"
-              onClick={onStartOnboarding}
+              onClick={onEditLiveBrand || onViewLiveDashboard}
               className={styles.screen1BtnSecondary}
             >
               Edit Brand Details
+            </button>
+          </>
+        ) : isWaitingApproval ? (
+          <>
+            <button
+              type="button"
+              onClick={onViewLiveDashboard}
+              className={styles.screen1BtnPrimary}
+            >
+              ⏳ View Application Status ({brand.name})
+            </button>
+
+            <button
+              type="button"
+              onClick={onStartOnboarding}
+              className={styles.screen1BtnSecondary}
+            >
+              Review Submitted Dossier
             </button>
           </>
         ) : hasDraft ? (
@@ -143,7 +168,7 @@ export default function BrandStartScreen({
         )}
 
         <div className={styles.screen1Footnote}>
-          Drobe Partner Portal
+          Drobe Partner Portal · <Link href="/admin-dashboard" target="_blank" style={{ color: '#0284c7', textDecoration: 'none', fontWeight: 600 }}>Ahmedabad Darkstore Admin ↗</Link>
         </div>
       </div>
 

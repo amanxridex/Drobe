@@ -16,10 +16,53 @@ interface OnboardingFlowProps {
 
 const STEPS = [
   { id: 'account', num: '01', title: 'Account', fullTitle: 'Account credentials', sub: 'Atelier email & secure password' },
-  { id: 'basics', num: '02', title: 'Brand basics', fullTitle: 'Brand basics', sub: 'Name, category & atelier location' },
-  { id: 'visuals', num: '03', title: 'Visual assets', fullTitle: 'Visual assets', sub: 'Logo emblem, cover banner & story' },
+  { id: 'basics', num: '02', title: 'Basics', fullTitle: 'Brand basics', sub: 'Name, category & atelier location' },
+  { id: 'visuals', num: '03', title: 'Visuals', fullTitle: 'Visual assets', sub: 'Logo emblem, cover banner & story' },
   { id: 'channels', num: '04', title: 'Channels', fullTitle: 'Channels', sub: 'Website, Instagram & concierge email' },
-  { id: 'launch', num: '05', title: 'Review & launch', fullTitle: 'Review & launch', sub: 'Verify brand dossier & go live' }
+  { id: 'launch', num: '05', title: 'Launch', fullTitle: 'Review & launch', sub: 'Verify brand dossier & go live' }
+];
+
+const STEP_THEMES = [
+  {
+    id: 'account',
+    name: 'Obsidian Black',
+    bg: 'linear-gradient(135deg, #18181b 0%, #09090b 100%)',
+    shadow: '0 6px 18px -2px rgba(15, 23, 42, 0.42)',
+    border: 'rgba(255, 255, 255, 0.22)',
+    badgeBg: '#09090b'
+  },
+  {
+    id: 'basics',
+    name: 'Royal Cobalt Blue',
+    bg: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+    shadow: '0 6px 18px -2px rgba(37, 99, 235, 0.48)',
+    border: 'rgba(191, 219, 254, 0.45)',
+    badgeBg: '#1d4ed8'
+  },
+  {
+    id: 'visuals',
+    name: 'Emerald Jade',
+    bg: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+    shadow: '0 6px 18px -2px rgba(5, 150, 105, 0.48)',
+    border: 'rgba(167, 243, 208, 0.45)',
+    badgeBg: '#047857'
+  },
+  {
+    id: 'channels',
+    name: 'Electric Violet',
+    bg: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+    shadow: '0 6px 18px -2px rgba(139, 92, 246, 0.48)',
+    border: 'rgba(221, 214, 254, 0.45)',
+    badgeBg: '#7c3aed'
+  },
+  {
+    id: 'launch',
+    name: 'Champagne Amber Gold',
+    bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+    shadow: '0 6px 18px -2px rgba(245, 158, 11, 0.5)',
+    border: 'rgba(254, 243, 199, 0.5)',
+    badgeBg: '#d97706'
+  }
 ];
 
 const CATEGORY_OPTIONS: Array<'Male' | 'Both' | 'Female'> = ['Male', 'Both', 'Female'];
@@ -101,36 +144,70 @@ export default function OnboardingFlow({
   const activeStepMeta = STEPS[currentStep];
 
   return (
-    <div className={styles.mobileContainer} style={{ backgroundColor: '#ffffff' }}>
-      {/* 1. Sticky Apple Header */}
-      <header className={styles.appTopHeader} style={{ justifyContent: 'center' }}>
-        <span className={styles.appTopTag}>Drobe Brand Studio</span>
-      </header>
+    <div className={styles.mobileContainer}>
 
-      {/* 2. Horizontal Step Indicator (4 clean steps, no products) */}
-      <div className={styles.onboardingPillsBar}>
-        {STEPS.map((st, idx) => {
-          const isActive = idx === currentStep;
-          const isDone = idx < currentStep;
+      {/* 1. Haute Couture Glass Stepper */}
+      <div className={styles.stepperWrapper}>
+        <div className={styles.stepperPillTrack}>
+          {STEPS.map((st, idx) => {
+            const isActive = idx === currentStep;
+            const isDone = idx < currentStep;
+            const theme = STEP_THEMES[idx] || STEP_THEMES[0];
 
-          return (
-            <button
-              key={st.id}
-              type="button"
-              onClick={() => handleStepClick(idx)}
-              className={`${styles.stepPillItem} ${isActive ? styles.stepPillItemActive : ''} ${isDone ? styles.stepPillItemDone : ''}`}
-            >
-              <span className={styles.stepPillNum}>{st.num}</span>
-              <span className={styles.stepPillLabel}>{st.title}</span>
-              {isActive && <span className={styles.stepActiveDot} />}
-            </button>
-          );
-        })}
+            return (
+              <motion.button
+                key={st.id}
+                type="button"
+                onClick={() => handleStepClick(idx)}
+                whileTap={{ scale: 0.96 }}
+                className={`${styles.stepPillItem} ${isActive ? styles.stepPillItemActive : ''} ${isDone ? styles.stepPillItemDone : ''}`}
+                aria-current={isActive ? 'step' : undefined}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeStepGlider"
+                    className={styles.stepGlider}
+                    style={{
+                      background: theme.bg,
+                      boxShadow: `${theme.shadow}, inset 0 1px 0.5px ${theme.border}`,
+                      border: `1px solid ${theme.border}`
+                    }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 420,
+                      damping: 32
+                    }}
+                  />
+                )}
+                <div className={styles.stepPillContent}>
+                  <div className={styles.stepPillNumRow}>
+                    {isDone ? (
+                      <span
+                        className={styles.stepDoneBadge}
+                        style={{ background: theme.badgeBg }}
+                      >
+                        <Check size={8} strokeWidth={3} />
+                      </span>
+                    ) : (
+                      <span className={`${styles.stepPillNum} ${isActive ? styles.stepPillNumActive : ''}`}>
+                        {st.num}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`${styles.stepPillLabel} ${isActive ? styles.stepPillLabelActive : ''} ${isDone ? styles.stepPillLabelDone : ''}`}>
+                    {st.title}
+                  </span>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
       </div>
 
       {/* 3. Scrollable Form Content */}
       <div className={styles.onboardingScrollContent}>
-        {/* Step Header */}
+        <div className={styles.onboardingCenterStage}>
+          {/* Step Header */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeStepMeta.id}
@@ -138,11 +215,8 @@ export default function OnboardingFlow({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18 }}
-            style={{ marginBottom: '14px' }}
+            style={{ marginBottom: '14px', textAlign: 'center' }}
           >
-            <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0f172a' }}>
-              STEP {activeStepMeta.num} OF 0{STEPS.length}
-            </div>
             <h2 className={styles.onboardingStepTitle}>
               {activeStepMeta.fullTitle || activeStepMeta.title}
             </h2>
@@ -154,10 +228,18 @@ export default function OnboardingFlow({
 
         {/* Validation Error Banner */}
         {errorNotice && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', color: '#b91c1c', fontSize: '12px', marginBottom: '12px' }}>
-            <AlertCircle size={15} />
-            <span>{errorNotice}</span>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+            className={styles.glassErrorBanner}
+          >
+            <div className={styles.glassErrorIconWrapper}>
+              <AlertCircle size={14} strokeWidth={2.4} />
+            </div>
+            <span className={styles.glassErrorText}>{errorNotice}</span>
+          </motion.div>
         )}
 
         {/* STEP 1: Account Credentials */}
@@ -172,12 +254,11 @@ export default function OnboardingFlow({
                   onChange={(e) => updateField('email', e.target.value)}
                   placeholder="founder@yourbrand.com"
                   className={styles.ronasInputField}
-                  style={{ paddingLeft: '38px' }}
                   autoFocus
                 />
-                <Mail size={16} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                <Mail size={16} color="#94a3b8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
               </div>
-              <span style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', display: 'block' }}>
+              <span style={{ fontSize: '11px', color: '#64748b', marginTop: '5px', display: 'block' }}>
                 Used to log in, receive partner notices, and client inquiries.
               </span>
             </div>
@@ -191,30 +272,20 @@ export default function OnboardingFlow({
                   onChange={(e) => updateField('password', e.target.value)}
                   placeholder="Create a password (min. 6 characters)"
                   className={styles.ronasInputField}
-                  style={{ paddingLeft: '38px', paddingRight: '40px' }}
+                  style={{ paddingRight: '48px' }}
                 />
-                <Lock size={16} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                <Lock size={16} color="#94a3b8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: '#94a3b8',
-                    cursor: 'pointer',
-                    padding: '2px',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
+                  className={styles.inputEyeButton}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
-              <span style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', display: 'block' }}>
+              <span style={{ fontSize: '11px', color: '#64748b', marginTop: '5px', display: 'block' }}>
                 Must be at least 6 characters.
               </span>
             </div>
@@ -552,19 +623,20 @@ export default function OnboardingFlow({
                 </div>
                 <div>
                   <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>Portal Status</div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#059669' }}>
-                    ● Ready for Live Store
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#0284c7' }}>
+                    ● Ready for Admin Submission
                   </div>
                 </div>
               </div>
             </div>
 
             <div className={styles.ronasReadyNotice}>
-              <Check size={16} color="#059669" />
-              <span>Everything is verified. Tap &ldquo;Go Live on Drobe&rdquo; to launch your store. You can curate products from your dashboard anytime.</span>
+              <Check size={16} color="#0284c7" />
+              <span>Everything is verified. Tap &ldquo;Submit Profile for Admin Approval&rdquo;. Once Drobe Admin approves your brand, you will be authorized to dispatch physical inventory to the Ahmedabad Darkstore Hub.</span>
             </div>
           </div>
         )}
+        </div>
       </div>
 
       {/* 4. Sticky Bottom Action Bar */}
@@ -592,6 +664,10 @@ export default function OnboardingFlow({
             type="button"
             onClick={handleNext}
             className={styles.ronasContinuePillBtn}
+            style={{
+              background: (STEP_THEMES[currentStep] || STEP_THEMES[0]).bg,
+              boxShadow: (STEP_THEMES[currentStep] || STEP_THEMES[0]).shadow
+            }}
           >
             Continue
             <ArrowRight size={15} />
@@ -601,8 +677,12 @@ export default function OnboardingFlow({
             type="button"
             onClick={onGoLive}
             className={styles.ronasGoLivePillBtn}
+            style={{
+              background: (STEP_THEMES[currentStep] || STEP_THEMES[0]).bg,
+              boxShadow: (STEP_THEMES[currentStep] || STEP_THEMES[0]).shadow
+            }}
           >
-            Go Live on Drobe →
+            Submit Profile for Admin Approval →
           </button>
         )}
       </footer>

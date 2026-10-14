@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import BottomNav from '@/components/BottomNav';
 import confetti from 'canvas-confetti';
+import { createCustomerOrder } from '@/app/lib/darkstoreData';
 
 export default function CartPage() {
   const router = useRouter();
@@ -29,6 +30,27 @@ export default function CartPage() {
   const handleCheckout = () => {
     if (cart.length === 0) return;
     confetti({ particleCount: 70, spread: 70, origin: { y: 0.8 } });
+    
+    // Divert customer order to Ahmedabad Darkstore Hub Order Fulfillment Bay
+    try {
+      cart.forEach(item => {
+        createCustomerOrder({
+          productId: item.product.id,
+          productName: item.product.title,
+          productSku: item.product.extraDiscountBadge?.startsWith('SKU:') ? item.product.extraDiscountBadge.replace('SKU: ', '') : 'DR1',
+          brandId: 'brand-chanel-01',
+          brandName: item.product.brand || 'Atelier Collection',
+          price: `₹${item.product.price}`,
+          size: item.size || 'M',
+          customerName: 'Aarav Parekh',
+          customerPhone: '+91 98250 88123',
+          customerAddress: `${location || 'B-702, Shaligram Plus, Opp. Iskcon Temple, SG Highway'}, Ahmedabad`,
+          landmark: 'Opp. Iskcon Temple',
+          shelfLocation: 'AMD-RA02-S3-B04'
+        });
+      });
+    } catch {}
+
     const order = createOrder('UPI');
     router.push(`/order/${order.id}`);
   };
