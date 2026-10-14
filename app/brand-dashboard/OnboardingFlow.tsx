@@ -15,8 +15,8 @@ interface OnboardingFlowProps {
 }
 
 const STEPS = [
-  { id: 'account', num: '01', title: 'Account', fullTitle: 'Account credentials', sub: 'Atelier email & secure password' },
-  { id: 'basics', num: '02', title: 'Basics', fullTitle: 'Brand basics', sub: 'Name, category & atelier location' },
+  { id: 'account', num: '01', title: 'Account', fullTitle: 'Account credentials', sub: 'Brand email & secure password' },
+  { id: 'basics', num: '02', title: 'Basics', fullTitle: 'Brand basics', sub: 'Name, category & location' },
   { id: 'visuals', num: '03', title: 'Visuals', fullTitle: 'Visual assets', sub: 'Logo emblem, cover banner & story' },
   { id: 'channels', num: '04', title: 'Channels', fullTitle: 'Channels', sub: 'Website, Instagram & concierge email' },
   { id: 'launch', num: '05', title: 'Launch', fullTitle: 'Review & launch', sub: 'Verify brand dossier & submit for approval' }
@@ -66,7 +66,7 @@ export default function OnboardingFlow({
     if (step.id === 'account') {
       const emailTrimmed = brand.email?.trim() || '';
       if (!emailTrimmed || !emailTrimmed.includes('@')) {
-        setErrorNotice('Please enter a valid atelier email address to continue.');
+        setErrorNotice('Please enter a valid brand email address to continue.');
         return false;
       }
       if (!brand.password || brand.password.length < 6) {
@@ -199,7 +199,7 @@ export default function OnboardingFlow({
           {activeStepMeta.id === 'account' && (
             <div className={styles.ronasFormContainer}>
               <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Atelier Email *</label>
+                <label className={styles.ronasInputLabel}>Brand Email *</label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type="email"
@@ -254,7 +254,7 @@ export default function OnboardingFlow({
                   type="text"
                   value={brand.name}
                   onChange={(e) => updateField('name', e.target.value)}
-                  placeholder="e.g. Atelier Vesper"
+                  placeholder="e.g. Studio Vesper"
                   className={styles.ronasInputField}
                   autoFocus
                 />
@@ -305,7 +305,7 @@ export default function OnboardingFlow({
 
               <div className={styles.ronasRowTwo}>
                 <div className={styles.ronasInputGroup}>
-                  <label className={styles.ronasInputLabel}>Atelier Location</label>
+                  <label className={styles.ronasInputLabel}>Brand Location</label>
                   <input
                     type="text"
                     value={brand.basedOutOf}
@@ -464,7 +464,7 @@ export default function OnboardingFlow({
 
               {/* Brand Story & Ethos */}
               <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Atelier Story &amp; Craft</label>
+                <label className={styles.ronasInputLabel}>Brand Story &amp; Craft</label>
                 <textarea
                   value={brand.about}
                   onChange={(e) => updateField('about', e.target.value)}
@@ -549,10 +549,10 @@ export default function OnboardingFlow({
                       {normalizedCategory === 'Both' ? 'Both (Male & Female)' : normalizedCategory}
                     </div>
                     <div style={{ fontSize: '19px', fontWeight: 800, color: '#0b132b', letterSpacing: '-0.02em', fontFamily: 'var(--brand-display-font)' }}>
-                      {brand.name || 'Untitled Atelier'}
+                      {brand.name || 'Untitled Brand'}
                     </div>
                     <div style={{ fontSize: '12px', color: '#64748b' }}>
-                      {brand.basedOutOf || 'Global Atelier'} · Est. {brand.establishedYear || '2024'}
+                      {brand.basedOutOf || 'India'} · Est. {brand.establishedYear || '2024'}
                     </div>
                   </div>
                 </div>
@@ -569,7 +569,7 @@ export default function OnboardingFlow({
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
                   <div>
-                    <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Atelier Dossier</div>
+                    <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Brand Summary</div>
                     <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
                       Profile Verified
                     </div>

@@ -20,7 +20,7 @@ const CAROUSEL_SLIDES = [
     id: 'space',
     titleLine1: 'Build your',
     titleLine2: 'brand space',
-    subtitle: 'Curate your designer atelier, showcase signature collections, and connect directly with discerning clients on Drobe.',
+    subtitle: 'Showcase your signature collections and connect directly with discerning clients on Drobe.',
     illustration: 'box'
   },
   {
@@ -32,7 +32,7 @@ const CAROUSEL_SLIDES = [
   },
   {
     id: 'control',
-    titleLine1: 'Your atelier.',
+    titleLine1: 'Your brand.',
     titleLine2: 'Your control.',
     subtitle: 'Track warehouse stock, manage trial orders, and receive direct automated payouts to your verified bank account.',
     illustration: 'telemetry'
@@ -72,7 +72,7 @@ export default function BrandStartScreen({
 
     const emailTrimmed = loginEmail.trim();
     if (!emailTrimmed || !emailTrimmed.includes('@')) {
-      setLoginError('Please enter a valid atelier email address.');
+      setLoginError('Please enter a valid brand email address.');
       return;
     }
 
@@ -98,7 +98,7 @@ export default function BrandStartScreen({
         {/* Drobe Wordmark / Emblem */}
         <div className={styles.topBarBrand}>
           <span className={styles.brandWordmark}>DROBE</span>
-          <span className={styles.brandAtelierTag}>ATELIER</span>
+          <span className={styles.brandPartnerTag}>PARTNER</span>
         </div>
 
         {/* Center Pill Pagination Indicator (Abode style) */}
@@ -124,7 +124,7 @@ export default function BrandStartScreen({
           onClick={() => setShowLoginModal(true)}
           className={styles.topLoginPill}
         >
-          {isApprovedOrPublished ? 'Atelier' : 'Login'}
+          {isApprovedOrPublished ? 'Dashboard' : 'Login'}
         </button>
       </div>
 
@@ -404,7 +404,7 @@ export default function BrandStartScreen({
                   PARTNER PORTAL
                 </span>
                 <h3 style={{ fontSize: '22px', fontWeight: 800, color: '#0b132b', margin: '4px 0 2px 0', letterSpacing: '-0.02em', fontFamily: 'var(--brand-display-font)' }}>
-                  Log In to Atelier
+                  Log In to Brand Portal
                 </h3>
                 <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
                   Sign in with your email and password to access your brand store.
@@ -433,7 +433,7 @@ export default function BrandStartScreen({
             <form onSubmit={handleLoginSubmit}>
               <div style={{ marginBottom: '14px' }}>
                 <label className={styles.loginInputLabel}>
-                  Atelier Email
+                  Brand Email
                 </label>
                 <div style={{ position: 'relative' }}>
                   <input

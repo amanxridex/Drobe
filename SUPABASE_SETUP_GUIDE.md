@@ -22,11 +22,11 @@ Everything in the codebase is **100% wired and ready**. Follow these 3 simple st
 All 8 tables, indexes, triggers, auto-update timestamps, realtime channels, and pre-seeded data are now live!
 - `drobe_warehouses` (Ahmedabad Central Hub at Shivam Bungalows 1, Koteshwar Road)
 - `drobe_warehouse_shelves` (Rack matrix: Zone A, B, C, D)
-- `drobe_brands` (CHANEL, Underrated Club, Atelier Nova)
+- `drobe_brands` (CHANEL, Underrated Club, Nova Studios)
 - `drobe_products` (SKU DR1, DR2, DR3, DR4 with shelf tags & prices)
 - `drobe_runners` (Meet Dave, Jay Suthar, Karan Shah, Aarav Patel, Hardik Vaghela)
 - `drobe_trial_orders` (Incoming & active 30-min trial orders with phone, address, and live SLA timers)
-- `drobe_inbound_shipments` (Consignment shipments from ateliers)
+- `drobe_inbound_shipments` (Consignment shipments from brands)
 - `drobe_order_events` (Full audit trail)
 
 ---

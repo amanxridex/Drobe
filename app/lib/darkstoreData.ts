@@ -162,7 +162,7 @@ const INITIAL_BRANDS: DarkstoreBrand[] = [
     category: 'Male & Female',
     founderName: 'Gabrielle Chanel',
     founderRole: 'Creative Director',
-    email: 'atelier@chanel.com',
+    email: 'contact@chanel.com',
     basedOutOf: 'Paris / Ahmedabad Consignment',
     status: 'Approved',
     profileImage: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=400&q=80',
@@ -190,13 +190,13 @@ const INITIAL_BRANDS: DarkstoreBrand[] = [
     inwardedUnitsCount: 30
   },
   {
-    id: 'brand-atelier-nova-03',
-    name: 'Atelier Nova Ahmedabad',
+    id: 'brand-nova-studios-03',
+    name: 'Nova Studios Ahmedabad',
     tagline: 'Handloom artisanal linen and structured minimal jackets',
     category: 'Female',
     founderName: 'Rhea Patel',
     founderRole: 'Founder & Designer',
-    email: 'rhea@ateliernova.in',
+    email: 'rhea@novastudios.in',
     basedOutOf: 'Ahmedabad (Ellisbridge)',
     status: 'Waiting for Approval',
     profileImage: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=400&q=80',
@@ -299,8 +299,8 @@ const INITIAL_PRODUCTS: DarkstoreProduct[] = [
   {
     id: 'prod-pending-04',
     name: 'Pleated Linen Trouser',
-    brandId: 'brand-atelier-nova-03',
-    brandName: 'Atelier Nova Ahmedabad',
+    brandId: 'brand-nova-studios-03',
+    brandName: 'Nova Studios Ahmedabad',
     category: 'Bottoms',
     price: '₹2200',
     volume: '32 (M)',
@@ -336,8 +336,8 @@ const INITIAL_INBOUNDS: InboundStockShipment[] = [
   },
   {
     id: 'INW-AMD-102',
-    brandId: 'brand-atelier-nova-03',
-    brandName: 'Atelier Nova Ahmedabad',
+    brandId: 'brand-nova-studios-03',
+    brandName: 'Nova Studios Ahmedabad',
     productId: 'prod-pending-04',
     productName: 'Pleated Linen Trouser',
     units: 20,
@@ -775,8 +775,8 @@ export function registerBrandApplication(brand: any): DarkstoreBrand {
 
   const darkstoreBrand: DarkstoreBrand = {
     id: brandId,
-    name: brandName || 'Untitled Atelier',
-    tagline: brand.tagline || brand.about?.slice(0, 90) || 'Artisanal Luxury Atelier',
+    name: brandName || 'Untitled Brand',
+    tagline: brand.tagline || brand.about?.slice(0, 90) || 'Artisanal Modern Brand',
     category: brand.category || 'Male & Female',
     founderName: brand.founderName || 'Founder',
     founderRole: brand.founderRole || 'Creative Director',
@@ -820,7 +820,7 @@ export function registerBrandApplication(brand: any): DarkstoreBrand {
         id: prodId,
         name: prodName,
         brandId: brandId,
-        brandName: brandName || 'Your Atelier',
+        brandName: brandName || 'Your Brand',
         category: prod.category || brand.category || 'Apparel',
         price: prod.price || '₹1499',
         volume: prod.volume || 'M',
@@ -1099,7 +1099,7 @@ export function adminInwardProduct({
   };
 }
 
-// Brand: Dispatch stock from Brand Atelier to Ahmedabad Warehouse
+// Brand: Dispatch stock from Brand to Ahmedabad Warehouse
 export function brandDispatchStock({
   brandId,
   brandName,

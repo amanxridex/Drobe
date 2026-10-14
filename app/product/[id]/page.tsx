@@ -31,7 +31,7 @@ export default function ProductDetailPage() {
     discountPercentage: 26,
     gender: 'men',
     category: darkstoreProduct.category?.toLowerCase() || 'top',
-    subCategory: 'Atelier Darkstore Creation',
+    subCategory: 'Designer Darkstore Creation',
     images: darkstoreProduct.images?.length > 0 ? darkstoreProduct.images : ['https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80'],
     thumbnail: darkstoreProduct.images?.[0] || 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80',
     description: `${darkstoreProduct.description || darkstoreProduct.tagline || ''} Stored securely at Ahmedabad Central Hub #01 (Shelf: ${darkstoreProduct.warehouseLocation ? darkstoreProduct.warehouseLocation.code : 'AMD-HUB-01'}). Ready for 30-min express doorstep fitting.`,

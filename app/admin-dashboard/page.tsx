@@ -414,7 +414,7 @@ export default function AdminDashboardPage() {
               <h2 className={styles.topbarTitle}>
                 {activeTab === 'inwarding' && 'Stock Inwarding & Physical Shelf Allocation'}
                 {activeTab === 'inventory' && 'Darkstore SKU Matrix & Barcode Label Station'}
-                {activeTab === 'approvals' && 'Brand Partner Approvals & Atelier Verification'}
+                {activeTab === 'approvals' && 'Brand Partner Approvals & Verification'}
                 {activeTab === 'shelves' && 'Ahmedabad Warehouse Floor Plan & Rack Matrix'}
                 {activeTab === 'trials' && 'Doorstep Fitting & Instant Return Room'}
               </h2>
@@ -612,7 +612,7 @@ export default function AdminDashboardPage() {
           {/* TAB 1: STOCK INWARDING & PHYSICAL SHELF ALLOCATION */}
           {activeTab === 'inwarding' && (
             <div>
-              {/* Inbound Parcels from Brand Ateliers */}
+              {/* Inbound Parcels from Brands */}
               <div className={styles.sectionCard}>
                 <div className={styles.sectionHeader}>
                   <div>
@@ -631,7 +631,7 @@ export default function AdminDashboardPage() {
                     <thead>
                       <tr>
                         <th>Consignment ID</th>
-                        <th>Brand Atelier</th>
+                        <th>Brand Name</th>
                         <th>Creation</th>
                         <th>Units</th>
                         <th>Logistics / Courier</th>
@@ -748,7 +748,7 @@ export default function AdminDashboardPage() {
                     <thead>
                       <tr>
                         <th>Product & Photos</th>
-                        <th>Brand Atelier</th>
+                        <th>Brand Name</th>
                         <th>Price & Sizing</th>
                         <th>Inward Status</th>
                         <th>Assigned SKU</th>
@@ -777,7 +777,7 @@ export default function AdminDashboardPage() {
                                 )}
                                 <div>
                                   <div style={{ fontWeight: 700, color: '#0f172a' }}>{prod.name}</div>
-                                  <div style={{ fontSize: '11px', color: '#64748b' }}>{prod.tagline || 'Signature Atelier Item'}</div>
+                                  <div style={{ fontSize: '11px', color: '#64748b' }}>{prod.tagline || 'Signature Brand Item'}</div>
                                 </div>
                               </div>
                             </td>
@@ -1025,7 +1025,7 @@ export default function AdminDashboardPage() {
                 <div>
                   <h3 className={styles.sectionTitle}>
                     <UserCheck size={17} color="#0284c7" />
-                    Atelier Brand Applications & Verification
+                    Brand Applications & Verification
                   </h3>
                   <p className={styles.sectionDesc}>
                     Review newly submitted brand registrations. Once approved, the brand is listed on Drobe and authorized to dispatch physical inventory to the Ahmedabad hub.
@@ -1061,7 +1061,7 @@ export default function AdminDashboardPage() {
                 <table className={styles.lightTable}>
                   <thead>
                     <tr>
-                      <th>Brand / Atelier</th>
+                      <th>Brand Name</th>
                       <th>Category</th>
                       <th>Founder & Contact</th>
                       <th>Application Date</th>

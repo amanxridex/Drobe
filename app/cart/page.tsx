@@ -39,7 +39,7 @@ export default function CartPage() {
           productName: item.product.title,
           productSku: item.product.extraDiscountBadge?.startsWith('SKU:') ? item.product.extraDiscountBadge.replace('SKU: ', '') : 'DR1',
           brandId: 'brand-chanel-01',
-          brandName: item.product.brand || 'Atelier Collection',
+          brandName: item.product.brand || 'Designer Collection',
           price: `₹${item.product.price}`,
           size: item.size || 'M',
           customerName: 'Aarav Parekh',

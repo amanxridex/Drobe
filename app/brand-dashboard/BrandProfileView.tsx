@@ -124,7 +124,7 @@ export default function BrandProfileView({
 
     const ship = brandDispatchStock({
       brandId: brand.id || 'brand-active-01',
-      brandName: brand.name || 'Your Atelier',
+      brandName: brand.name || 'Your Brand',
       productId: prod.id || `prod-${dispatchProductIndex}`,
       productName: prod.name,
       units: Number(dispatchUnits) || 20,
@@ -166,7 +166,7 @@ export default function BrandProfileView({
   };
 
   const currentBankAccount = brand.bankAccount || {
-    accountHolderName: brand.founderName || brand.name || 'Atelier Founder',
+    accountHolderName: brand.founderName || brand.name || 'Brand Founder',
     bankName: 'HDFC Bank',
     accountNumber: '5010048921892',
     ifscCode: 'HDFC0001842',
@@ -405,7 +405,7 @@ export default function BrandProfileView({
               Hello, {brand.founderName ? brand.founderName.split(' ')[0] : (brand.name || 'Partner')}
             </div>
             <div className={styles.darkHeaderSub}>
-              Live on Drobe · {brand.basedOutOf || 'Global Atelier'}
+              Live on Drobe · {brand.basedOutOf || 'India'}
             </div>
           </div>
         </div>
@@ -1176,12 +1176,12 @@ export default function BrandProfileView({
           </div>
         )}
 
-        {/* TAB 5: Atelier Dossier, Settings & Support */}
+        {/* TAB 5: Brand Profile, Settings & Support */}
         {activeTab === 'profile' && (
           <div>
-            {/* Atelier Identity & Founder Dossier Card */}
+            {/* Brand Identity & Founder Card */}
             <div className={styles.darkCardBox} style={{ marginBottom: '14px' }}>
-              <span className={styles.darkCardTag}>Verified Atelier</span>
+              <span className={styles.darkCardTag}>Verified Brand</span>
               <h4 className={styles.darkCardTitle}>Founder Dossier</h4>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '12px', marginBottom: '14px' }}>
@@ -1290,7 +1290,7 @@ export default function BrandProfileView({
               <div className={styles.settingsCardHeader}>
                 <div>
                   <span className={styles.settingsCardTag}>Store Controls</span>
-                  <h4 className={styles.settingsCardTitle}>Atelier Settings & Dispatch</h4>
+                  <h4 className={styles.settingsCardTitle}>Store Settings & Dispatch</h4>
                 </div>
               </div>
 
@@ -1313,7 +1313,7 @@ export default function BrandProfileView({
                     onClick={() => {
                       const next = !isStoreLive;
                       setIsStoreLive(next);
-                      if (onToast) onToast(next ? 'Atelier is now LIVE on Drobe' : 'Atelier paused · Vacation mode active');
+                      if (onToast) onToast(next ? 'Store is now LIVE on Drobe' : 'Store paused · Vacation mode active');
                     }}
                     className={`${styles.switchToggle} ${isStoreLive ? styles.switchToggleActive : ''}`}
                   >
@@ -1468,7 +1468,7 @@ export default function BrandProfileView({
 
                 {/* 2. WhatsApp Concierge */}
                 <a
-                  href="https://wa.me/918003762300?text=Hi%20Drobe%20Partner%20Desk,%20I%20need%20assistance%20with%20my%20Atelier"
+                  href="https://wa.me/918003762300?text=Hi%20Drobe%20Partner%20Desk,%20I%20need%20assistance%20with%20my%20brand"
                   target="_blank"
                   rel="noreferrer"
                   className={styles.supportItemCard}
@@ -1492,9 +1492,9 @@ export default function BrandProfileView({
                   <div className={styles.supportItemSub}>partners@drobe.luxury</div>
                 </a>
 
-                {/* 4. Atelier Protocol */}
+                {/* 4. Packaging & Protocol */}
                 <div
-                  onClick={() => onToast ? onToast('Opening Drobe Atelier Packaging & Protocol Guide') : undefined}
+                  onClick={() => onToast ? onToast('Opening Drobe Packaging & Protocol Guide') : undefined}
                   className={styles.supportItemCard}
                   style={{ cursor: 'pointer' }}
                 >
@@ -1515,16 +1515,16 @@ export default function BrandProfileView({
                   if (onSignOut) {
                     onSignOut();
                   } else if (onToast) {
-                    onToast('Signed out of Atelier session');
+                    onToast('Signed out of brand session');
                   }
                 }}
                 className={styles.signOutCardBtn}
               >
-                <LogOut size={16} /> Sign Out of Atelier
+                <LogOut size={16} /> Sign Out
               </button>
 
               <div style={{ textAlign: 'center', marginTop: '12px', fontSize: '11px', color: '#94a3b8' }}>
-                DROBE Atelier v2.4.0 · 256-Bit SSL Encrypted
+                DROBE Partner Portal v2.4.0 · 256-Bit SSL Encrypted
               </div>
             </div>
           </div>
@@ -1667,7 +1667,7 @@ export default function BrandProfileView({
                   type="text"
                   value={newProduct.inventory ?? ''}
                   onChange={(e) => setNewProduct({ ...newProduct, inventory: e.target.value })}
-                  placeholder="e.g. 24 units in atelier (or 'Made-to-Order')"
+                  placeholder="e.g. 24 units in stock (or 'Made-to-Order')"
                   style={{ width: '100%', padding: '10px 12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>

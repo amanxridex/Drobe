@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS drobe_products (
 );
 
 -- ==============================================================================
--- 5. INBOUND CONSIGNMENT SHIPMENTS (Atelier -> Ahmedabad Hub)
+-- 5. INBOUND CONSIGNMENT SHIPMENTS (Brand -> Ahmedabad Hub)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS drobe_inbound_shipments (
     id VARCHAR(128) PRIMARY KEY,      -- e.g. "INW-AMD-204"
@@ -303,7 +303,7 @@ VALUES
         'Male & Female',
         'Gabrielle Chanel',
         'Creative Director',
-        'atelier@chanel.com',
+        'contact@chanel.com',
         'Paris / Ahmedabad Consignment',
         'Approved',
         'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=400&q=80',
@@ -327,13 +327,13 @@ VALUES
         30
     ),
     (
-        'brand-atelier-nova-03',
-        'Atelier Nova Ahmedabad',
+        'brand-nova-studios-03',
+        'Nova Studios Ahmedabad',
         'Handloom artisanal linen and structured minimal jackets',
         'Female',
         'Rhea Patel',
         'Founder & Designer',
-        'rhea@ateliernova.in',
+        'rhea@novastudios.in',
         'Ahmedabad (Ellisbridge)',
         'Waiting for Approval',
         'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=400&q=80',
@@ -408,8 +408,8 @@ VALUES
         'DR4',
         4,
         'Minimal Linen Overshirt',
-        'brand-atelier-nova-03',
-        'Atelier Nova Ahmedabad',
+        'brand-nova-studios-03',
+        'Nova Studios Ahmedabad',
         'Artisanal',
         '₹2199',
         'M',

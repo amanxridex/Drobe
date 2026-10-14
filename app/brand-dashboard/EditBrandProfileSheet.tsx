@@ -145,7 +145,7 @@ export default function EditBrandProfileSheet({
 
             <div className={styles.editProfileTitleGroup}>
               <h3 className={styles.editProfileMainTitle}>Edit Brand Profile</h3>
-              <span className={styles.editProfileSubTitle}>Live Atelier Dossier</span>
+              <span className={styles.editProfileSubTitle}>Live Brand Profile</span>
             </div>
 
             <button
@@ -181,13 +181,13 @@ export default function EditBrandProfileSheet({
                 <Camera size={15} className={styles.editSectionIcon} />
                 <div>
                   <h4 className={styles.editSectionTitle}>Visual Assets</h4>
-                  <p className={styles.editSectionSub}>Atelier emblem & signature lookbook banner</p>
+                  <p className={styles.editSectionSub}>Brand logo & signature lookbook banner</p>
                 </div>
               </div>
 
               {/* Logo / Profile Image */}
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>Atelier Emblem / Logo</label>
+                <label className={styles.editFieldLabel}>Brand Logo</label>
                 <div className={styles.editAvatarRow}>
                   <div className={styles.editAvatarPreview}>
                     {formData.profileImage ? (
@@ -233,7 +233,7 @@ export default function EditBrandProfileSheet({
 
               {/* Cover Banner */}
               <div className={styles.editFieldGroup} style={{ marginTop: '16px' }}>
-                <label className={styles.editFieldLabel}>Atelier Cover Banner</label>
+                <label className={styles.editFieldLabel}>Cover Banner</label>
                 <div className={styles.editBannerContainer}>
                   {formData.coverImage ? (
                     <img src={formData.coverImage} alt="Cover Banner" className={styles.editBannerImg} />
@@ -282,7 +282,7 @@ export default function EditBrandProfileSheet({
                 <Building2 size={15} className={styles.editSectionIcon} />
                 <div>
                   <h4 className={styles.editSectionTitle}>Brand Identity & Basics</h4>
-                  <p className={styles.editSectionSub}>Name, target client audience & atelier provenance</p>
+                  <p className={styles.editSectionSub}>Name, target client audience & brand location</p>
                 </div>
               </div>
 
@@ -420,12 +420,12 @@ export default function EditBrandProfileSheet({
                 <FileText size={15} className={styles.editSectionIcon} />
                 <div>
                   <h4 className={styles.editSectionTitle}>Narrative & Heritage</h4>
-                  <p className={styles.editSectionSub}>The atelier story displayed to verified clients</p>
+                  <p className={styles.editSectionSub}>The brand story displayed to verified clients</p>
                 </div>
               </div>
 
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>About the Atelier</label>
+                <label className={styles.editFieldLabel}>About the Brand</label>
                 <textarea
                   rows={3}
                   value={formData.about || ''}
@@ -504,7 +504,7 @@ export default function EditBrandProfileSheet({
                 </div>
               </div>
 
-              {/* Atelier Account Email */}
+              {/* Brand Account Email */}
               <div className={styles.editFieldGroup}>
                 <label className={styles.editFieldLabel}>Partner Account Email</label>
                 <div className={styles.editInputWithIcon}>
@@ -525,7 +525,7 @@ export default function EditBrandProfileSheet({
               <div className={styles.editSectionHeader}>
                 <Lock size={15} className={styles.editSectionIcon} />
                 <div>
-                  <h4 className={styles.editSectionTitle}>Atelier Security</h4>
+                  <h4 className={styles.editSectionTitle}>Account Security</h4>
                   <p className={styles.editSectionSub}>Password for partner portal sign-in</p>
                 </div>
               </div>

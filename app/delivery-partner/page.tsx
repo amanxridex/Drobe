@@ -470,7 +470,7 @@ export default function DeliveryPartnerApp() {
                 <div className={styles.bagInfoSection}>
                   <div className={styles.bagItemMeta}>
                     <h4>{prodName} ({prodSize})</h4>
-                    <span>{activeOrder.brandName || 'Atelier'} • SKU: {activeOrder.productSku || 'DR1'} • Collect: <strong>{activeOrder.price}</strong></span>
+                    <span>{activeOrder.brandName || 'Brand'} • SKU: {activeOrder.productSku || 'DR1'} • Collect: <strong>{activeOrder.price}</strong></span>
                   </div>
 
                   <div className={styles.shelfOriginBadge}>

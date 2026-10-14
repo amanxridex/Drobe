@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap');
 
-/* Brand Dashboard Stylesheet - Clean Atelier Onboarding Flow */
+/* Brand Dashboard Stylesheet - Clean Brand Onboarding Flow */
 .mobileContainer {
   --brand-display-font: 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   width: 100%;
@@ -1234,7 +1234,7 @@
   font-family: inherit;
 }
 
-/* --- SCREEN 2: CLEAN ATELIER ONBOARDING STEPPER --- */
+/* --- SCREEN 2: CLEAN BRAND ONBOARDING STEPPER --- */
 .onboardingTopNav {
   height: 52px;
   padding: 0 16px;
@@ -1495,7 +1495,7 @@
   letter-spacing: -0.01em;
 }
 
-/* Clean Atelier Form Container */
+/* Clean Brand Form Container */
 .ronasFormContainer {
   background: #ffffff;
   border: 1.5px solid #e2e8f0;
@@ -2218,7 +2218,7 @@
 }
 
 /* ==========================================================
-   SCREEN 1: DROBE CLEAN ATELIER ONBOARDING CAROUSEL
+   SCREEN 1: DROBE CLEAN BRAND ONBOARDING CAROUSEL
    ========================================================== */
 
 .screen1Container {
@@ -2263,7 +2263,7 @@
   color: #0b132b;
 }
 
-.brandAtelierTag {
+.brandPartnerTag {
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.08em;

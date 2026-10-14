@@ -152,7 +152,7 @@ export default function AddBankAccountModal({
                 type="text"
                 value={holderName}
                 onChange={(e) => setHolderName(e.target.value)}
-                placeholder="e.g. Atelier Luxury Creations Pvt Ltd"
+                placeholder="e.g. Brand Luxury Creations Pvt Ltd"
                 className={styles.bankInput}
                 autoFocus
               />
