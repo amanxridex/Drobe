@@ -394,26 +394,6 @@ export default function BrandProfileView({
             Review & Approve in Admin ↗
           </Link>
         </div>
-      ) : isBrandApproved ? (
-        <div style={{ background: '#f0fdf4', borderBottom: '1px solid #bbf7d0', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <CheckCircle2 size={14} color="#16a34a" />
-            <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#166534' }}>
-              ✓ Brand Approved & Listed · Authorized to send consignment stock to Ahmedabad Darkstore Hub
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setDispatchProductIndex(0);
-              setDispatchUnits(20);
-              setShowDispatchModal(true);
-            }}
-            style={{ fontSize: '11px', fontWeight: 700, color: '#ffffff', background: '#16a34a', border: 'none', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-          >
-            <Truck size={12} /> Send Inward Stock
-          </button>
-        </div>
       ) : null}
 
       {/* 1. Header with Brand Emblem & Actions */}
