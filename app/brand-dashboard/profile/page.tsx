@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { BrandProfile } from '../types';
 import { EMPTY_BRAND_PROFILE } from '../jihiData';
+import { registerBrandApplication } from '../../lib/darkstoreData';
 import BrandProfileView from '../BrandProfileView';
 
 const STORAGE_KEY = 'drobe_brand_profile_v1';
@@ -45,6 +46,15 @@ export default function StandaloneProfilePage() {
         onShareClick={() => {
           if (typeof window !== 'undefined' && navigator.clipboard) {
             navigator.clipboard.writeText(window.location.href);
+          }
+        }}
+        onUpdateBrand={(updated) => {
+          setBrand(updated);
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+          } catch {}
+          if (updated.name && updated.name.trim().length > 0) {
+            registerBrandApplication(updated);
           }
         }}
       />

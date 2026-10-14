@@ -53,6 +53,13 @@ export default function BrandDashboardPage() {
     } catch {
       // Local storage unavailable
     }
+    if (updated.name && updated.name.trim().length > 0) {
+      try {
+        registerBrandApplication(updated);
+      } catch (e) {
+        console.warn('Failed to register brand application:', e);
+      }
+    }
   };
 
   const handleGoLive = async () => {

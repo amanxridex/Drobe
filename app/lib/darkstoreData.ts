@@ -54,8 +54,18 @@ export interface DarkstoreBrand {
   category: string;
   founderName: string;
   founderRole?: string;
+  founderBio?: string;
+  founderQuote?: string;
+  about?: string;
+  mission?: string;
+  values?: Array<{ title: string; description: string }>;
+  website?: string;
+  instagram?: string;
+  inquiriesEmail?: string;
   email: string;
+  phone?: string;
   basedOutOf: string;
+  establishedYear?: string;
   status: BrandApprovalStatus;
   profileImage?: string;
   coverImage?: string;
@@ -63,6 +73,16 @@ export interface DarkstoreBrand {
   approvedDate?: string;
   totalProductsCount: number;
   inwardedUnitsCount: number;
+  bankAccount?: {
+    accountHolderName?: string;
+    bankName?: string;
+    accountNumber?: string;
+    ifscCode?: string;
+    accountType?: 'Current' | 'Savings';
+    isVerified?: boolean;
+  };
+  products?: any[];
+  dossierData?: any;
 }
 
 export interface DarkstoreProduct {
@@ -168,202 +188,14 @@ const KEY_ORDERS = 'drobe_darkstore_orders_v2';
 const KEY_RUNNERS = 'drobe_darkstore_runners_v2';
 const KEY_LEGACY_BRAND = 'drobe_brand_profile_v1';
 
-// Pre-seeded Brands
-const INITIAL_BRANDS: DarkstoreBrand[] = [
-  {
-    id: 'brand-chanel-01',
-    name: 'CHANEL',
-    tagline: 'Timeless Haute Couture & Modern Luxury',
-    category: 'Male & Female',
-    founderName: 'Gabrielle Chanel',
-    founderRole: 'Creative Director',
-    email: 'contact@chanel.com',
-    basedOutOf: 'Paris / Ahmedabad Consignment',
-    status: 'Approved',
-    profileImage: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=400&q=80',
-    coverImage: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80',
-    appliedDate: '02 Oct 2026',
-    approvedDate: '04 Oct 2026',
-    totalProductsCount: 3,
-    inwardedUnitsCount: 42
-  },
-  {
-    id: 'brand-underrated-02',
-    name: 'Underrated Club',
-    tagline: 'High-octane Indian streetwear engineered for darkstore velocity',
-    category: 'Male',
-    founderName: 'Kabir Varma',
-    founderRole: 'Founder',
-    email: 'ops@underratedclub.com',
-    basedOutOf: 'Mumbai / Ahmedabad Darkstore',
-    status: 'Approved',
-    profileImage: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80',
-    coverImage: 'https://images.unsplash.com/photo-1523381294911-8d3cead13475?auto=format&fit=crop&w=1200&q=80',
-    appliedDate: '06 Oct 2026',
-    approvedDate: '07 Oct 2026',
-    totalProductsCount: 2,
-    inwardedUnitsCount: 30
-  },
-  {
-    id: 'brand-nova-studios-03',
-    name: 'Nova Studios Ahmedabad',
-    tagline: 'Handloom artisanal linen and structured minimal jackets',
-    category: 'Female',
-    founderName: 'Rhea Patel',
-    founderRole: 'Founder & Designer',
-    email: 'rhea@novastudios.in',
-    basedOutOf: 'Ahmedabad (Ellisbridge)',
-    status: 'Waiting for Approval',
-    profileImage: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=400&q=80',
-    coverImage: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1200&q=80',
-    appliedDate: '13 Oct 2026',
-    totalProductsCount: 1,
-    inwardedUnitsCount: 0
-  }
-];
+// Initial Brands (Populated live from Supabase & Brand Onboarding)
+const INITIAL_BRANDS: DarkstoreBrand[] = [];
 
-// Pre-seeded Products with SKUs and Ahmedabad Shelf Allocations
-const INITIAL_PRODUCTS: DarkstoreProduct[] = [
-  {
-    id: 'prod-dr-01',
-    sku: 'DR1',
-    skuSerial: 1,
-    name: 'Bomber Drop shoulder',
-    brandId: 'brand-chanel-01',
-    brandName: 'CHANEL',
-    category: 'Outerwear',
-    price: '₹1200',
-    volume: 'M',
-    inventory: 24,
-    inwardUnits: 20,
-    unitsInTrial: 2,
-    unitsSold: 2,
-    tagline: 'test test test test test test test test test',
-    description: 'Heavyweight matte bomber silhouette with relaxed drop shoulder tailoring.',
-    images: ['https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80'],
-    inwardStatus: 'Inwarded & Live',
-    warehouseLocation: {
-      zone: 'Zone A - Outerwear & Heavy Silhouettes',
-      rack: 'Rack A-02',
-      shelf: 'Shelf 3',
-      bin: 'Bin 04',
-      code: 'AMD-RA02-S3-B04',
-      hubName: 'Ahmedabad Central Darkstore #01'
-    },
-    inwardDate: '08 Oct 2026',
-    isLive: true
-  },
-  {
-    id: 'prod-dr-02',
-    sku: 'DR2',
-    skuSerial: 2,
-    name: 'Sculpted Wool Overcoat',
-    brandId: 'brand-chanel-01',
-    brandName: 'CHANEL',
-    category: 'Outerwear',
-    price: '₹4200',
-    volume: 'L',
-    inventory: 18,
-    inwardUnits: 16,
-    unitsInTrial: 1,
-    unitsSold: 1,
-    tagline: 'Double-faced virgin wool with horn buttons',
-    description: 'Mastercrafted virgin wool silhouette with brushed silk inner lining.',
-    images: ['https://images.unsplash.com/photo-1539533018447-63fcce667823?auto=format&fit=crop&w=600&q=80'],
-    inwardStatus: 'Inwarded & Live',
-    warehouseLocation: {
-      zone: 'Zone A - Outerwear & Heavy Silhouettes',
-      rack: 'Rack A-03',
-      shelf: 'Shelf 2',
-      bin: 'Bin 08',
-      code: 'AMD-RA03-S2-B08',
-      hubName: 'Ahmedabad Central Darkstore #01'
-    },
-    inwardDate: '09 Oct 2026',
-    isLive: true
-  },
-  {
-    id: 'prod-dr-03',
-    sku: 'DR3',
-    skuSerial: 3,
-    name: 'Acid Washed Boxy Tee',
-    brandId: 'brand-underrated-02',
-    brandName: 'Underrated Club',
-    category: 'Tops',
-    price: '₹1499',
-    volume: 'Oversized L',
-    inventory: 30,
-    inwardUnits: 28,
-    unitsInTrial: 1,
-    unitsSold: 1,
-    tagline: '280 GSM French Terry with distressed ribbed collar',
-    description: 'Heavyweight loopback cotton treated with volcanic enzyme wash.',
-    images: ['https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80'],
-    inwardStatus: 'Inwarded & Live',
-    warehouseLocation: {
-      zone: 'Zone B - Tops, Tees & Shirts',
-      rack: 'Rack B-01',
-      shelf: 'Shelf 1',
-      bin: 'Bin 02',
-      code: 'AMD-RB01-S1-B02',
-      hubName: 'Ahmedabad Central Darkstore #01'
-    },
-    inwardDate: '10 Oct 2026',
-    isLive: true
-  },
-  {
-    id: 'prod-pending-04',
-    name: 'Pleated Linen Trouser',
-    brandId: 'brand-nova-studios-03',
-    brandName: 'Nova Studios Ahmedabad',
-    category: 'Bottoms',
-    price: '₹2200',
-    volume: '32 (M)',
-    inventory: 20,
-    inwardUnits: 0,
-    unitsInTrial: 0,
-    unitsSold: 0,
-    tagline: 'Pure organic flax linen with relaxed double pleats',
-    description: 'Artisanal organic flax linen loomed in Gujarat.',
-    images: ['https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=600&q=80'],
-    inwardStatus: 'Stock In Transit to Ahmedabad',
-    isLive: false
-  }
-];
+// Initial Products (Populated live from Supabase & Brand Onboarding)
+const INITIAL_PRODUCTS: DarkstoreProduct[] = [];
 
-// Pre-seeded Inbound Shipments
-const INITIAL_INBOUNDS: InboundStockShipment[] = [
-  {
-    id: 'INW-AMD-101',
-    brandId: 'brand-chanel-01',
-    brandName: 'CHANEL',
-    productId: 'prod-dr-01',
-    productName: 'Bomber Drop shoulder',
-    units: 24,
-    courierPartner: 'BlueDart Express',
-    trackingNumber: 'BD-889102482-AMD',
-    dispatchDate: '06 Oct 2026',
-    receivedDate: '08 Oct 2026',
-    status: 'Verified & Shelved',
-    assignedSku: 'DR1',
-    assignedShelf: 'AMD-RA02-S3-B04',
-    verifiedBy: 'Harshil M. (Hub Ops)'
-  },
-  {
-    id: 'INW-AMD-102',
-    brandId: 'brand-nova-studios-03',
-    brandName: 'Nova Studios Ahmedabad',
-    productId: 'prod-pending-04',
-    productName: 'Pleated Linen Trouser',
-    units: 20,
-    courierPartner: 'Delhivery Surface',
-    trackingNumber: 'DEL-449102919-IN',
-    dispatchDate: '13 Oct 2026',
-    status: 'Arrived at Hub', // Ready for admin inwarding
-    assignedSku: 'Pending Verification',
-    assignedShelf: 'Pending Allocation'
-  }
-];
+// Initial Inbound Shipments (Populated live from Supabase & Brand Dispatches)
+const INITIAL_INBOUNDS: InboundStockShipment[] = [];
 
 // Ahmedabad Darkstore Express Runner Fleet (Active Runners)
 export const AHMEDABAD_RUNNERS_POOL: DarkstoreRunner[] = [
@@ -419,161 +251,29 @@ export const AHMEDABAD_RUNNERS_POOL: DarkstoreRunner[] = [
   }
 ];
 
-// Pre-seeded 30-Minute Doorstep Trial & Instant Return Orders
-const INITIAL_ORDERS: TrialOrder[] = [
-  {
-    id: 'ord-30m-105',
-    orderNumber: '#DRB-9850',
-    customerName: 'Rohan Mehta',
-    customerPhone: '+91 98251 44021',
-    customerAddress: 'B-304, Goyal Park, Judges Bungalow Road, Bodakdev, Ahmedabad',
-    landmark: 'Near Pakwan Cross Road',
-    distanceKm: '1.8 km',
-    productId: 'prod-dr-01',
-    productName: 'Bomber Drop shoulder',
-    productSku: 'DR1',
-    brandId: 'brand-chanel-01',
-    brandName: 'CHANEL',
-    price: '₹1200',
-    size: 'M',
-    shelfLocation: 'AMD-RA02-S3-B04',
-    receivedAt: 'Just Now (1 min ago)',
-    dispatchedAt: '',
-    status: 'Order Received (Awaiting Picker)',
-    notes: 'New 30-minute trial order placed from app! Ready for picker at Shivam Bungalows 1, Koteshwar Road.'
-  },
-  {
-    id: 'ord-30m-106',
-    orderNumber: '#DRB-9849',
-    customerName: 'Ananya Desai',
-    customerPhone: '+91 97122 88319',
-    customerAddress: 'Penthouse 12, Westgate, SG Highway, Ahmedabad',
-    landmark: 'Opp. YMCA Club',
-    distanceKm: '3.1 km',
-    productId: 'prod-dr-02',
-    productName: 'Sculpted Wool Overcoat',
-    productSku: 'DR2',
-    brandId: 'brand-chanel-01',
-    brandName: 'CHANEL',
-    price: '₹4200',
-    size: 'L',
-    shelfLocation: 'AMD-RA03-S2-B08',
-    receivedAt: '8 mins ago',
-    pickedAt: '3 mins ago',
-    dispatchedAt: '',
-    status: 'Picked & Packed in Trial Bag',
-    notes: 'Item picked from Rack A-03, Shelf 2, Bin 08. Packed in trial bag. Ready for delivery partner assignment!'
-  },
-  {
-    id: 'ord-30m-101',
-    orderNumber: '#DRB-9842',
-    customerName: 'Aarav Parekh',
-    customerPhone: '+91 98250 88123',
-    customerAddress: 'B-702, Shaligram Plus, Opp. Iskcon Temple, SG Highway, Ahmedabad',
-    landmark: 'Opp. Iskcon Temple',
-    distanceKm: '2.1 km',
-    productId: 'prod-dr-01',
-    productName: 'Bomber Drop shoulder',
-    productSku: 'DR1',
-    brandId: 'brand-chanel-01',
-    brandName: 'CHANEL',
-    price: '₹1200',
-    size: 'M',
-    shelfLocation: 'AMD-RA02-S3-B04',
-    riderName: 'Meet Dave',
-    riderPhone: '+91 98250 88123',
-    riderVehicle: 'Ather 450X (GJ-01-MW-9021)',
-    receivedAt: '24 mins ago',
-    pickedAt: '20 mins ago',
-    handedOverAt: '18 mins ago',
-    dispatchedAt: '12 mins ago',
-    status: 'Doorstep Fitting (Runner Waiting Outside)',
-    doorstepTimerMinutesLeft: 7,
-    runnerWaitElapsedMinutes: 8,
-    notes: 'Runner waiting outside apartment with trial bag while client tries size M. Decision pending.'
-  },
-  {
-    id: 'ord-30m-102',
-    orderNumber: '#DRB-9843',
-    customerName: 'Pooja Shah',
-    customerPhone: '+91 98792 33410',
-    customerAddress: 'Villa 14, Sun City, Bopal, Ahmedabad',
-    landmark: 'Near Bopal Cross Road',
-    distanceKm: '4.2 km',
-    productId: 'prod-dr-02',
-    productName: 'Sculpted Wool Overcoat',
-    productSku: 'DR2',
-    brandId: 'brand-chanel-01',
-    brandName: 'CHANEL',
-    price: '₹4200',
-    size: 'L',
-    shelfLocation: 'AMD-RA03-S2-B08',
-    riderName: 'Jay Suthar',
-    riderPhone: '+91 97120 44912',
-    riderVehicle: 'Ola S1 Pro (GJ-01-ET-3304)',
-    receivedAt: '18 mins ago',
-    pickedAt: '14 mins ago',
-    handedOverAt: '12 mins ago',
-    dispatchedAt: '6 mins ago',
-    status: 'Out for 30-Min Delivery',
-    notes: 'Runner en route to Bopal. Will wait outside doorstep for instant 10-min fitting.'
-  },
-  {
-    id: 'ord-30m-103',
-    orderNumber: '#DRB-9839',
-    customerName: 'Devang V.',
-    customerPhone: '+91 98790 12049',
-    customerAddress: 'A-101, Titanium Heights, Prahlad Nagar, Ahmedabad',
-    landmark: 'Prahlad Nagar Garden',
-    distanceKm: '1.4 km',
-    productId: 'prod-dr-03',
-    productName: 'Acid Washed Boxy Tee',
-    productSku: 'DR3',
-    brandId: 'brand-underrated-02',
-    brandName: 'Underrated Club',
-    price: '₹1499',
-    size: 'Oversized L',
-    shelfLocation: 'AMD-RB01-S1-B02',
-    riderName: 'Karan Shah',
-    riderPhone: '+91 98790 12049',
-    riderVehicle: 'TVS iQube (GJ-01-KB-1122)',
-    dispatchedAt: '25 mins ago',
-    status: 'Kept on Spot (Purchased)',
-    notes: 'Client tried on at door, loved the fit, and kept it instantly. Payment finalized & credited to brand payout.'
-  },
-  {
-    id: 'ord-30m-104',
-    orderNumber: '#DRB-9836',
-    customerName: 'Meera Trivedi',
-    customerPhone: '+91 98244 55109',
-    customerAddress: 'C-404, Indraprasth, Satellite, Ahmedabad',
-    landmark: 'Behind Star Bazaar',
-    distanceKm: '2.8 km',
-    productId: 'prod-dr-01',
-    productName: 'Bomber Drop shoulder',
-    productSku: 'DR1',
-    brandId: 'brand-chanel-01',
-    brandName: 'CHANEL',
-    price: '₹1200',
-    size: 'S',
-    shelfLocation: 'AMD-RA02-S3-B04',
-    riderName: 'Aarav Patel',
-    riderPhone: '+91 98240 55102',
-    riderVehicle: 'Honda Activa 6G (GJ-01-PQ-5581)',
-    dispatchedAt: '40 mins ago',
-    status: 'Restocked to Warehouse Shelf',
-    instantRefundStatus: '₹1,200 Refunded Instantly to UPI',
-    notes: 'Client tried on, preferred larger size, handed back to runner at door immediately. Runner rode straight back to Shivam Bungalows 1 hub and restocked to shelf in 18 minutes. Full refund processed.'
-  }
-];
+// Real 30-Minute Doorstep Trial & Instant Return Orders (Loaded live from Supabase)
+const INITIAL_ORDERS: TrialOrder[] = [];
+
+
+// Known mock identifiers to purge on sight
+const MOCK_BRAND_IDS = new Set(['brand-chanel-01', 'brand-underrated-02', 'brand-nova-03']);
+const MOCK_PRODUCT_IDS = new Set(['prod-dr-01', 'prod-dr-02', 'prod-dr-03', 'prod-dr-04', 'prod-dr-05']);
+const MOCK_INBOUND_IDS = new Set(['inb-001', 'inb-002', 'inb-003']);
+const MOCK_ORDER_IDS = new Set(['ord-30m-101', 'ord-30m-102', 'ord-30m-103', 'ord-30m-104', 'ord-30m-105', 'ord-30m-106']);
 
 // Helper Functions
 export function getDarkstoreBrands(): DarkstoreBrand[] {
   if (typeof window === 'undefined') return INITIAL_BRANDS;
   try {
     const raw = localStorage.getItem(KEY_BRANDS);
-    if (raw) return JSON.parse(raw);
-    localStorage.setItem(KEY_BRANDS, JSON.stringify(INITIAL_BRANDS));
+    if (raw) {
+      const parsed: DarkstoreBrand[] = JSON.parse(raw);
+      const filtered = parsed.filter(b => !MOCK_BRAND_IDS.has(b.id) && b.name !== 'CHANEL' && b.name !== 'Underrated Club' && b.name !== 'Nova Studios');
+      if (filtered.length !== parsed.length) {
+        localStorage.setItem(KEY_BRANDS, JSON.stringify(filtered));
+      }
+      return filtered;
+    }
     return INITIAL_BRANDS;
   } catch {
     return INITIAL_BRANDS;
@@ -594,8 +294,14 @@ export function getDarkstoreProducts(): DarkstoreProduct[] {
   if (typeof window === 'undefined') return INITIAL_PRODUCTS;
   try {
     const raw = localStorage.getItem(KEY_PRODUCTS);
-    if (raw) return JSON.parse(raw);
-    localStorage.setItem(KEY_PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
+    if (raw) {
+      const parsed: DarkstoreProduct[] = JSON.parse(raw);
+      const filtered = parsed.filter(p => !MOCK_PRODUCT_IDS.has(p.id) && !MOCK_BRAND_IDS.has(p.brandId));
+      if (filtered.length !== parsed.length) {
+        localStorage.setItem(KEY_PRODUCTS, JSON.stringify(filtered));
+      }
+      return filtered;
+    }
     return INITIAL_PRODUCTS;
   } catch {
     return INITIAL_PRODUCTS;
@@ -616,8 +322,14 @@ export function getInboundShipments(): InboundStockShipment[] {
   if (typeof window === 'undefined') return INITIAL_INBOUNDS;
   try {
     const raw = localStorage.getItem(KEY_INBOUNDS);
-    if (raw) return JSON.parse(raw);
-    localStorage.setItem(KEY_INBOUNDS, JSON.stringify(INITIAL_INBOUNDS));
+    if (raw) {
+      const parsed: InboundStockShipment[] = JSON.parse(raw);
+      const filtered = parsed.filter(s => !MOCK_INBOUND_IDS.has(s.id) && !MOCK_BRAND_IDS.has(s.brandId));
+      if (filtered.length !== parsed.length) {
+        localStorage.setItem(KEY_INBOUNDS, JSON.stringify(filtered));
+      }
+      return filtered;
+    }
     return INITIAL_INBOUNDS;
   } catch {
     return INITIAL_INBOUNDS;
@@ -647,23 +359,27 @@ export async function syncDarkstoreWithSupabase(): Promise<boolean> {
     ]);
 
     let changed = false;
-    if (orders && orders.length > 0) {
-      localStorage.setItem(KEY_ORDERS, JSON.stringify(orders));
+    if (orders !== null) {
+      const filteredOrders = orders.filter(o => !MOCK_ORDER_IDS.has(o.id));
+      localStorage.setItem(KEY_ORDERS, JSON.stringify(filteredOrders));
       changed = true;
     }
-    if (products && products.length > 0) {
-      localStorage.setItem(KEY_PRODUCTS, JSON.stringify(products));
+    if (products !== null) {
+      const filteredProds = products.filter(p => !MOCK_PRODUCT_IDS.has(p.id) && !MOCK_BRAND_IDS.has(p.brandId));
+      localStorage.setItem(KEY_PRODUCTS, JSON.stringify(filteredProds));
       changed = true;
     }
-    if (brands && brands.length > 0) {
-      localStorage.setItem(KEY_BRANDS, JSON.stringify(brands));
+    if (brands !== null) {
+      const filteredBrands = brands.filter(b => !MOCK_BRAND_IDS.has(b.id) && b.name !== 'CHANEL' && b.name !== 'Underrated Club' && b.name !== 'Nova Studios');
+      localStorage.setItem(KEY_BRANDS, JSON.stringify(filteredBrands));
       changed = true;
     }
-    if (shipments && shipments.length > 0) {
-      localStorage.setItem(KEY_INBOUNDS, JSON.stringify(shipments));
+    if (shipments !== null) {
+      const filteredShipments = shipments.filter(s => !MOCK_INBOUND_IDS.has(s.id));
+      localStorage.setItem(KEY_INBOUNDS, JSON.stringify(filteredShipments));
       changed = true;
     }
-    if (runners && runners.length > 0) {
+    if (runners !== null && runners.length > 0) {
       localStorage.setItem(KEY_RUNNERS, JSON.stringify(runners));
       changed = true;
     }
@@ -683,65 +399,13 @@ export function getTrialOrders(): TrialOrder[] {
   try {
     const raw = localStorage.getItem(KEY_ORDERS);
     if (raw) {
-      const parsed: any[] = JSON.parse(raw);
-      let needsSave = false;
-      const migrated: TrialOrder[] = parsed.map(ord => {
-        let status = ord.status;
-        if (status === 'Trial in Progress (Waiting Confirmation)' || status === 'Trial in Progress') {
-          status = 'Doorstep Fitting (Runner Waiting Outside)';
-          needsSave = true;
-        } else if (status === 'Purchased & Kept') {
-          status = 'Kept on Spot (Purchased)';
-          needsSave = true;
-        } else if (status === 'Returned to Warehouse') {
-          status = 'Restocked to Warehouse Shelf';
-          needsSave = true;
-        }
-        if (ord.minutesRemaining !== undefined) {
-          delete ord.minutesRemaining;
-          needsSave = true;
-        }
-
-        const customerPhone = ord.customerPhone || (ord.orderNumber === '#DRB-9850' ? '+91 98251 44021' : ord.orderNumber === '#DRB-9849' ? '+91 97122 88319' : '+91 98250 88123');
-        const customerAddress = ord.customerAddress || 'B-702, Shaligram Plus, Opp. Iskcon Temple, SG Highway, Ahmedabad';
-        const landmark = ord.landmark || 'Opp. Iskcon Temple';
-        const distanceKm = ord.distanceKm || '2.1 km';
-        const shelfLocation = ord.shelfLocation || 'AMD-RA02-S3-B04';
-        const riderName = ord.riderName || (status.includes('Delivery') || status.includes('Fitting') ? 'Meet Dave' : undefined);
-        const riderPhone = ord.riderPhone || (status.includes('Delivery') || status.includes('Fitting') ? '+91 98250 88123' : undefined);
-        const riderVehicle = ord.riderVehicle || (status.includes('Delivery') || status.includes('Fitting') ? 'Ather 450X EV (GJ-01-MW-9021)' : undefined);
-
-        if (!ord.customerPhone) needsSave = true;
-
-        return {
-          ...ord,
-          status,
-          customerPhone,
-          customerAddress,
-          landmark,
-          distanceKm,
-          shelfLocation,
-          riderName,
-          riderPhone,
-          riderVehicle,
-          doorstepTimerMinutesLeft: ord.doorstepTimerMinutesLeft ?? (status === 'Doorstep Fitting (Runner Waiting Outside)' ? 7 : undefined)
-        };
-      });
-
-      // Merge newly seeded orders if missing in user's localStorage
-      for (const initOrd of INITIAL_ORDERS) {
-        if (!migrated.some(p => p.orderNumber === initOrd.orderNumber || p.id === initOrd.id)) {
-          migrated.unshift(initOrd);
-          needsSave = true;
-        }
+      const parsed: TrialOrder[] = JSON.parse(raw);
+      const filtered = parsed.filter(o => !MOCK_ORDER_IDS.has(o.id) && !MOCK_BRAND_IDS.has(o.brandId));
+      if (filtered.length !== parsed.length) {
+        localStorage.setItem(KEY_ORDERS, JSON.stringify(filtered));
       }
-
-      if (needsSave) {
-        localStorage.setItem(KEY_ORDERS, JSON.stringify(migrated));
-      }
-      return migrated;
+      return filtered;
     }
-    localStorage.setItem(KEY_ORDERS, JSON.stringify(INITIAL_ORDERS));
     return INITIAL_ORDERS;
   } catch {
     return INITIAL_ORDERS;
@@ -833,6 +497,7 @@ export function getNextAvailableShelfLocation(category?: string): WarehouseShelf
 }
 
 // Register brand submission from Brand Studio -> sets status to 'Waiting for Approval'
+// Register brand submission from Brand Studio -> sets status to 'Waiting for Approval' and pushes to Supabase
 export function registerBrandApplication(brand: any): DarkstoreBrand {
   const brands = getDarkstoreBrands();
   const brandName = (brand.name || '').trim();
@@ -841,21 +506,43 @@ export function registerBrandApplication(brand: any): DarkstoreBrand {
   const brandId = brand.id || (existingIndex >= 0 ? brands[existingIndex].id : `brand-${brandName ? brandName.toLowerCase().replace(/[^a-z0-9]/g, '-') : 'active'}-${Date.now().toString().slice(-4)}`);
   const todayStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
+  const bank = brand.bankAccount || brand.bankDetails || {};
+
   const darkstoreBrand: DarkstoreBrand = {
     id: brandId,
     name: brandName || 'Untitled Brand',
     tagline: brand.tagline || brand.about?.slice(0, 90) || 'Artisanal Modern Brand',
     category: brand.category || 'Male & Female',
-    founderName: brand.founderName || 'Founder',
-    founderRole: brand.founderRole || 'Creative Director',
+    founderName: brand.founderName || brand.founder?.name || 'Founder',
+    founderRole: brand.founderRole || brand.founder?.role || 'Founder & Creative Director',
+    founderBio: brand.founderBio || brand.founder?.bio || '',
+    founderQuote: brand.founderQuote || brand.founder?.quote || '',
+    about: brand.about || '',
+    mission: brand.mission || '',
+    values: Array.isArray(brand.values) ? brand.values : [],
+    website: brand.website || '',
+    instagram: brand.instagram || '',
+    inquiriesEmail: brand.inquiriesEmail || brand.email || '',
     email: brand.email || brand.inquiriesEmail || 'concierge@brand.com',
-    basedOutOf: brand.basedOutOf || 'Ahmedabad Darkstore Hub',
-    status: 'Waiting for Approval',
-    profileImage: brand.profileImage || '',
-    coverImage: brand.coverImage || '',
-    appliedDate: todayStr,
+    phone: brand.phone || '',
+    basedOutOf: brand.basedOutOf || brand.location || 'Ahmedabad Darkstore Hub',
+    establishedYear: brand.establishedYear || brand.established || '',
+    status: (brand.status === 'Approved' ? 'Approved' : 'Waiting for Approval') as BrandApprovalStatus,
+    profileImage: brand.profileImage || brand.logo || '',
+    coverImage: brand.coverImage || brand.bannerImage || '',
+    appliedDate: brand.appliedDate || todayStr,
     totalProductsCount: brand.products?.length || 0,
-    inwardedUnitsCount: 0
+    inwardedUnitsCount: brand.inwardedUnitsCount || 0,
+    bankAccount: {
+      accountHolderName: bank.accountHolderName || '',
+      bankName: bank.bankName || '',
+      accountNumber: bank.accountNumber || '',
+      ifscCode: bank.ifscCode || '',
+      accountType: bank.accountType || 'Current',
+      isVerified: bank.isVerified ?? false
+    },
+    products: brand.products || [],
+    dossierData: brand.dossierData || brand
   };
 
   let updatedBrands: DarkstoreBrand[];
@@ -886,6 +573,8 @@ export function registerBrandApplication(brand: any): DarkstoreBrand {
 
       const newProd: DarkstoreProduct = {
         id: prodId,
+        sku: prod.sku,
+        skuSerial: prod.skuSerial,
         name: prodName,
         brandId: brandId,
         brandName: brandName || 'Your Brand',
@@ -899,8 +588,9 @@ export function registerBrandApplication(brand: any): DarkstoreBrand {
         tagline: prod.tagline || '',
         description: prod.description || '',
         images: prod.images && prod.images.length > 0 ? prod.images : (prod.image ? [prod.image] : []),
-        inwardStatus: 'Pending Stock Dispatch',
-        isLive: false
+        inwardStatus: prod.inwardStatus || 'Pending Stock Dispatch',
+        warehouseLocation: prod.warehouseLocation,
+        isLive: Boolean(prod.isLive)
       };
 
       if (existingPIdx >= 0) {
@@ -924,7 +614,7 @@ export function registerBrandApplication(brand: any): DarkstoreBrand {
       const activeRaw = localStorage.getItem(KEY_LEGACY_BRAND);
       if (activeRaw) {
         const parsed = JSON.parse(activeRaw);
-        parsed.status = 'Waiting for Approval';
+        parsed.status = darkstoreBrand.status;
         parsed.id = brandId;
         localStorage.setItem(KEY_LEGACY_BRAND, JSON.stringify(parsed));
       }

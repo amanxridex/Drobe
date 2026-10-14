@@ -237,16 +237,37 @@ export async function supabaseFetchBrands(): Promise<DarkstoreBrand[] | null> {
       name: row.name,
       tagline: row.tagline || '',
       category: row.category || 'Male & Female',
-      founderName: row.founder_name,
-      founderRole: row.founder_role,
-      email: row.email,
-      basedOutOf: row.based_out_of,
+      founderName: row.founder_name || '',
+      founderRole: row.founder_role || 'Founder',
+      founderBio: row.founder_bio || '',
+      founderQuote: row.founder_quote || '',
+      about: row.about || '',
+      mission: row.mission || '',
+      values: Array.isArray(row.values) ? row.values : [],
+      website: row.website || '',
+      instagram: row.instagram || '',
+      inquiriesEmail: row.inquiries_email || '',
+      email: row.email || '',
+      phone: row.phone || '',
+      basedOutOf: row.based_out_of || 'Ahmedabad',
+      establishedYear: row.established_year || '',
       status: row.status,
       profileImage: row.profile_image,
       coverImage: row.cover_image,
       appliedDate: row.applied_date ? new Date(row.applied_date).toLocaleDateString() : 'Just Now',
+      approvedDate: row.approved_date ? new Date(row.approved_date).toLocaleDateString() : undefined,
       totalProductsCount: row.total_products_count || 0,
-      inwardedUnitsCount: row.inwarded_units_count || 0
+      inwardedUnitsCount: row.inwarded_units_count || 0,
+      bankAccount: {
+        accountHolderName: row.bank_account_holder || '',
+        bankName: row.bank_name || '',
+        accountNumber: row.bank_account_number || '',
+        ifscCode: row.bank_ifsc || '',
+        accountType: row.bank_account_type || 'Current',
+        isVerified: Boolean(row.bank_is_verified)
+      },
+      products: row.dossier_data?.products || [],
+      dossierData: row.dossier_data || null
     }));
   } catch {
     return null;
@@ -280,25 +301,43 @@ export async function supabaseFetchRunners(): Promise<DarkstoreRunner[] | null> 
 }
 
 // Upsert brand to Supabase
-export async function supabaseUpsertBrand(brand: DarkstoreBrand): Promise<boolean> {
+export async function supabaseUpsertBrand(brand: DarkstoreBrand | any): Promise<boolean> {
   if (!supabase) return false;
   try {
+    const bank = brand.bankAccount || {};
     const { error } = await supabase
       .from('drobe_brands')
       .upsert({
         id: brand.id,
         name: brand.name,
-        tagline: brand.tagline || '',
+        tagline: brand.tagline || brand.about?.slice(0, 120) || '',
         category: brand.category || 'Male & Female',
-        founder_name: brand.founderName,
-        founder_role: brand.founderRole,
-        email: brand.email,
-        based_out_of: brand.basedOutOf,
+        founder_name: brand.founderName || brand.founder_name || '',
+        founder_role: brand.founderRole || brand.founder_role || 'Founder',
+        founder_bio: brand.founderBio || brand.founder_bio || '',
+        founder_quote: brand.founderQuote || brand.founder_quote || '',
+        about: brand.about || '',
+        mission: brand.mission || '',
+        values: brand.values || [],
+        website: brand.website || '',
+        instagram: brand.instagram || '',
+        inquiries_email: brand.inquiriesEmail || brand.inquiries_email || '',
+        email: brand.email || brand.inquiriesEmail || '',
+        phone: brand.phone || '',
+        based_out_of: brand.basedOutOf || brand.based_out_of || 'Ahmedabad',
+        established_year: brand.establishedYear || brand.established_year || '',
         status: brand.status,
-        profile_image: brand.profileImage,
-        cover_image: brand.coverImage,
-        total_products_count: brand.totalProductsCount || 0,
+        profile_image: brand.profileImage || brand.profile_image || '',
+        cover_image: brand.coverImage || brand.cover_image || '',
+        total_products_count: brand.totalProductsCount || (Array.isArray(brand.products) ? brand.products.length : 0),
         inwarded_units_count: brand.inwardedUnitsCount || 0,
+        bank_account_holder: bank.accountHolderName || brand.bank_account_holder || '',
+        bank_name: bank.bankName || brand.bank_name || '',
+        bank_account_number: bank.accountNumber || brand.bank_account_number || '',
+        bank_ifsc: bank.ifscCode || brand.bank_ifsc || '',
+        bank_account_type: bank.accountType || brand.bank_account_type || 'Current',
+        bank_is_verified: bank.isVerified ?? brand.bank_is_verified ?? false,
+        dossier_data: brand,
         updated_at: new Date().toISOString()
       });
     return !error;

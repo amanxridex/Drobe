@@ -26,7 +26,12 @@ import {
   Store,
   UserCheck,
   Activity,
-  Calendar
+  Calendar,
+  FileText,
+  Globe,
+  Mail,
+  Phone,
+  Eye
 } from 'lucide-react';
 import { 
   AHMEDABAD_WAREHOUSE,
@@ -58,6 +63,9 @@ export default function AdminDashboardPage() {
   const [inbounds, setInbounds] = useState<InboundStockShipment[]>([]);
   const [trialOrders, setTrialOrders] = useState<TrialOrder[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Brand Dossier Review Modal State
+  const [selectedBrandForDossier, setSelectedBrandForDossier] = useState<DarkstoreBrand | null>(null);
 
   // Brand Filter
   const [brandFilter, setBrandFilter] = useState<'all' | 'waiting' | 'approved'>('all');
@@ -1144,34 +1152,56 @@ export default function AdminDashboardPage() {
                             )}
                           </td>
                           <td>
-                            {isWaiting ? (
-                              <div style={{ display: 'flex', gap: '6px' }}>
-                                <button
-                                  type="button"
-                                  onClick={() => handleApproveBrand(brand.id, brand.name)}
-                                  className={styles.btnSuccess}
-                                >
-                                  <Check size={12} /> Approve Brand
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleRejectBrand(brand.id, brand.name)}
-                                  className={styles.btnDanger}
-                                >
-                                  Reject
-                                </button>
-                              </div>
-                            ) : (
-                              <span style={{ fontSize: '11.5px', color: '#64748b' }}>
-                                Approved on {brand.approvedDate || 'Active'}
-                              </span>
-                            )}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedBrandForDossier(brand)}
+                                className={styles.btnSecondary}
+                                style={{ padding: '5px 9px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                title="View full brand dossier, founder, bank details and products"
+                              >
+                                <Eye size={12} color="#0284c7" /> View Dossier
+                              </button>
+                              {isWaiting ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleApproveBrand(brand.id, brand.name)}
+                                    className={styles.btnSuccess}
+                                    style={{ padding: '5px 9px', fontSize: '11px' }}
+                                  >
+                                    <Check size={12} /> Approve
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRejectBrand(brand.id, brand.name)}
+                                    className={styles.btnDanger}
+                                    style={{ padding: '5px 9px', fontSize: '11px' }}
+                                  >
+                                    Reject
+                                  </button>
+                                </>
+                              ) : (
+                                <span style={{ fontSize: '11.5px', color: '#64748b' }}>
+                                  {brand.approvedDate || 'Active'}
+                                </span>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       );
                     })}
                   </tbody>
                 </table>
+                {filteredBrands.length === 0 && (
+                  <div style={{ textAlign: 'center', padding: '48px 24px', color: '#64748b' }}>
+                    <Building2 size={36} color="#94a3b8" style={{ margin: '0 auto 12px auto' }} />
+                    <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>No Brand Submissions Yet</div>
+                    <p style={{ fontSize: '13px', maxWidth: '440px', margin: '6px auto 0 auto', lineHeight: 1.5 }}>
+                      When brands onboard at <code>/brand-dashboard</code> and upload their company dossier, their profile, founder details, verified bank account, and creation catalog will appear here live from Supabase.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -1793,6 +1823,352 @@ export default function AdminDashboardPage() {
               >
                 <Barcode size={16} /> Print to Thermal Printer
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. BRAND ONBOARDING DOSSIER INSPECTION MODAL */}
+      {selectedBrandForDossier && (
+        <div className={styles.modalOverlay} onClick={() => setSelectedBrandForDossier(null)}>
+          <div 
+            className={styles.modalContent} 
+            style={{ maxWidth: '820px', padding: 0, overflow: 'hidden', borderRadius: '24px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Banner & Brand Identity Header */}
+            <div style={{ 
+              position: 'relative', 
+              height: '140px', 
+              background: selectedBrandForDossier.coverImage 
+                ? `url(${selectedBrandForDossier.coverImage}) center/cover no-repeat` 
+                : 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0284c7 100%)',
+              padding: '16px 20px',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'flex-start'
+            }}>
+              <button
+                type="button"
+                onClick={() => setSelectedBrandForDossier(null)}
+                style={{ 
+                  background: 'rgba(15, 23, 42, 0.65)', 
+                  backdropFilter: 'blur(8px)',
+                  border: 'none', 
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  color: '#ffffff', 
+                  cursor: 'pointer', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center' 
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Brand Profile Meta Header */}
+            <div style={{ padding: '0 28px 20px 28px', borderBottom: '1px solid #f1f5f9' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: '-42px', marginBottom: '14px', flexWrap: 'wrap', gap: '14px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '16px' }}>
+                  {selectedBrandForDossier.profileImage ? (
+                    <img
+                      src={selectedBrandForDossier.profileImage}
+                      alt={selectedBrandForDossier.name}
+                      style={{ width: '84px', height: '84px', borderRadius: '20px', objectFit: 'cover', border: '4px solid #ffffff', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', background: '#ffffff' }}
+                    />
+                  ) : (
+                    <div style={{ width: '84px', height: '84px', borderRadius: '20px', border: '4px solid #ffffff', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', background: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: 900 }}>
+                      {selectedBrandForDossier.name.slice(0, 1)}
+                    </div>
+                  )}
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                        {selectedBrandForDossier.name}
+                      </h2>
+                      <span className={`${styles.statusChip} ${selectedBrandForDossier.status === 'Approved' ? styles.statusLive : styles.statusTransit}`}>
+                        {selectedBrandForDossier.status === 'Approved' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
+                        {selectedBrandForDossier.status}
+                      </span>
+                    </div>
+                    <p style={{ margin: '3px 0 0 0', fontSize: '13px', color: '#64748b', fontWeight: 500 }}>
+                      {selectedBrandForDossier.tagline || 'Artisanal Modern Brand'}
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '4px 10px', borderRadius: '8px', fontSize: '11.5px', fontWeight: 600, color: '#334155' }}>
+                    {selectedBrandForDossier.category}
+                  </span>
+                  <span style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '4px 10px', borderRadius: '8px', fontSize: '11.5px', fontWeight: 600, color: '#334155' }}>
+                    Est. {selectedBrandForDossier.establishedYear || '2024'}
+                  </span>
+                  <span style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '4px 10px', borderRadius: '8px', fontSize: '11.5px', fontWeight: 600, color: '#334155' }}>
+                    📍 {selectedBrandForDossier.basedOutOf}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Scrollable Body with Exhaustive Dossier Sections */}
+            <div style={{ maxHeight: 'calc(88vh - 280px)', overflowY: 'auto', padding: '22px 28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              
+              {/* Section 1: Founder Dossier & Quote */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px 18px' }}>
+                <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 800, color: '#0284c7', marginBottom: '8px' }}>
+                  Founder & Creative Direction
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap', gap: '4px' }}>
+                  <div style={{ fontWeight: 800, fontSize: '15px', color: '#0f172a' }}>
+                    {selectedBrandForDossier.founderName || 'Founder Name Unspecified'}
+                  </div>
+                  <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>
+                    {selectedBrandForDossier.founderRole || 'Founder & Director'}
+                  </span>
+                </div>
+                {selectedBrandForDossier.founderBio && (
+                  <p style={{ margin: '6px 0 0 0', fontSize: '12.5px', color: '#475569', lineHeight: 1.55 }}>
+                    {selectedBrandForDossier.founderBio}
+                  </p>
+                )}
+                {selectedBrandForDossier.founderQuote && (
+                  <div style={{ marginTop: '10px', padding: '10px 14px', background: '#ffffff', borderLeft: '3px solid #0284c7', borderRadius: '0 8px 8px 0', fontStyle: 'italic', fontSize: '12.5px', color: '#334155' }}>
+                    &ldquo;{selectedBrandForDossier.founderQuote}&rdquo;
+                  </div>
+                )}
+              </div>
+
+              {/* Section 2: Brand Story & Mission */}
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px 18px' }}>
+                <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 800, color: '#0284c7', marginBottom: '8px' }}>
+                  Brand Story & Manifesto
+                </div>
+                <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>
+                  {selectedBrandForDossier.about || 'No brand narrative entered yet.'}
+                </p>
+                {selectedBrandForDossier.mission && (
+                  <div style={{ marginTop: '8px', paddingTop: '10px', borderTop: '1px dashed #e2e8f0' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '3px' }}>Mission Statement</div>
+                    <p style={{ margin: 0, fontSize: '12.5px', color: '#475569', lineHeight: 1.5 }}>
+                      {selectedBrandForDossier.mission}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Section 3: Brand Core Values */}
+              {selectedBrandForDossier.values && selectedBrandForDossier.values.length > 0 && (
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px 18px' }}>
+                  <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 800, color: '#0284c7', marginBottom: '12px' }}>
+                    Core Brand Pillars & Values ({selectedBrandForDossier.values.length})
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+                    {selectedBrandForDossier.values.map((val, vIdx) => (
+                      <div key={vIdx} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px 12px' }}>
+                        <div style={{ fontWeight: 700, fontSize: '12.5px', color: '#0f172a' }}>{val.title}</div>
+                        <div style={{ fontSize: '11.5px', color: '#64748b', marginTop: '3px', lineHeight: 1.4 }}>{val.description}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Section 4: Contact & Digital Presence */}
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px 18px' }}>
+                <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 800, color: '#0284c7', marginBottom: '12px' }}>
+                  Contact & Digital Presence
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                    <Mail size={15} color="#0284c7" />
+                    <div>
+                      <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Official Email</div>
+                      <div style={{ fontWeight: 600, color: '#0f172a' }}>{selectedBrandForDossier.email || 'concierge@brand.com'}</div>
+                    </div>
+                  </div>
+                  {selectedBrandForDossier.inquiriesEmail && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                      <Mail size={15} color="#0284c7" />
+                      <div>
+                        <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Inquiries Email</div>
+                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{selectedBrandForDossier.inquiriesEmail}</div>
+                      </div>
+                    </div>
+                  )}
+                  {selectedBrandForDossier.phone && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                      <Phone size={15} color="#0284c7" />
+                      <div>
+                        <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Direct Phone</div>
+                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{selectedBrandForDossier.phone}</div>
+                      </div>
+                    </div>
+                  )}
+                  {selectedBrandForDossier.website && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                      <Globe size={15} color="#0284c7" />
+                      <div>
+                        <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Official Website</div>
+                        <a href={selectedBrandForDossier.website.startsWith('http') ? selectedBrandForDossier.website : `https://${selectedBrandForDossier.website}`} target="_blank" rel="noreferrer" style={{ fontWeight: 600, color: '#0284c7', textDecoration: 'none' }}>
+                          {selectedBrandForDossier.website}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                  {selectedBrandForDossier.instagram && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                      <ExternalLink size={15} color="#0284c7" />
+                      <div>
+                        <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Instagram</div>
+                        <span style={{ fontWeight: 600, color: '#0f172a' }}>{selectedBrandForDossier.instagram}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Section 5: Verified Bank & Settlement Ledger */}
+              <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '14px', padding: '16px 18px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <ShieldCheck size={16} color="#047857" />
+                    <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 800, color: '#047857' }}>
+                      Darkstore Settlement Account
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '11px', fontWeight: 700, background: '#d1fae5', color: '#065f46', padding: '2px 8px', borderRadius: '6px' }}>
+                    {selectedBrandForDossier.bankAccount?.accountType || 'Current'} Account
+                  </span>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginTop: '6px' }}>
+                  <div>
+                    <div style={{ fontSize: '10px', color: '#047857', fontWeight: 700, textTransform: 'uppercase' }}>Account Holder</div>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#064e3b' }}>
+                      {selectedBrandForDossier.bankAccount?.accountHolderName || selectedBrandForDossier.founderName || selectedBrandForDossier.name}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '10px', color: '#047857', fontWeight: 700, textTransform: 'uppercase' }}>Bank Name</div>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#064e3b' }}>
+                      {selectedBrandForDossier.bankAccount?.bankName || 'HDFC Bank'}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '10px', color: '#047857', fontWeight: 700, textTransform: 'uppercase' }}>Account Number</div>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#064e3b', letterSpacing: '0.04em' }}>
+                      {selectedBrandForDossier.bankAccount?.accountNumber ? `•••• •••• ${selectedBrandForDossier.bankAccount.accountNumber.slice(-4)}` : '•••• 8921'}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '10px', color: '#047857', fontWeight: 700, textTransform: 'uppercase' }}>IFSC Code</div>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#064e3b' }}>
+                      {selectedBrandForDossier.bankAccount?.ifscCode || 'HDFC0001842'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 6: Submitted Product Catalog */}
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px 18px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '6px' }}>
+                  <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 800, color: '#0284c7' }}>
+                    Creations Submitted ({selectedBrandForDossier.products?.length || selectedBrandForDossier.totalProductsCount || 0})
+                  </div>
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>
+                    Pending Inward Verification at Ahmedabad Darkstore
+                  </span>
+                </div>
+
+                {selectedBrandForDossier.products && selectedBrandForDossier.products.length > 0 ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+                    {selectedBrandForDossier.products.map((prod: any, pIdx: number) => {
+                      const prodImg = (prod.images && prod.images[0]) || prod.image;
+                      return (
+                        <div key={pIdx} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            {prodImg ? (
+                              <img src={prodImg} alt={prod.name} style={{ width: '48px', height: '48px', borderRadius: '10px', objectFit: 'cover', border: '1px solid #e2e8f0' }} />
+                            ) : (
+                              <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+                                <Package size={20} />
+                              </div>
+                            )}
+                            <div>
+                              <div style={{ fontWeight: 700, fontSize: '13px', color: '#0f172a' }}>{prod.name}</div>
+                              <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '12.5px' }}>{prod.price || '₹1,499'}</div>
+                            </div>
+                          </div>
+                          {prod.tagline && (
+                            <div style={{ fontSize: '11px', color: '#64748b', fontStyle: 'italic' }}>
+                              {prod.tagline}
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#475569', paddingTop: '6px', borderTop: '1px solid #e2e8f0' }}>
+                            <span>Size: <strong>{prod.volume || 'Standard'}</strong></span>
+                            <span>Stock: <strong>{prod.inventory || 20} pcs</strong></span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8', fontSize: '12.5px' }}>
+                    No individual product highlights attached to dossier.
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Modal Action Footer */}
+            <div style={{ padding: '16px 28px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedBrandForDossier(null)}
+                className={styles.btnSecondary}
+              >
+                Close Dossier
+              </button>
+
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {selectedBrandForDossier.status !== 'Approved' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleApproveBrand(selectedBrandForDossier.id, selectedBrandForDossier.name);
+                      setSelectedBrandForDossier({
+                        ...selectedBrandForDossier,
+                        status: 'Approved'
+                      });
+                    }}
+                    className={styles.btnSuccess}
+                    style={{ padding: '8px 16px', fontWeight: 700 }}
+                  >
+                    <Check size={14} /> Approve Brand & Authorize Consignment
+                  </button>
+                )}
+                {selectedBrandForDossier.status !== 'Rejected' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleRejectBrand(selectedBrandForDossier.id, selectedBrandForDossier.name);
+                      setSelectedBrandForDossier({
+                        ...selectedBrandForDossier,
+                        status: 'Rejected'
+                      });
+                    }}
+                    className={styles.btnDanger}
+                    style={{ padding: '8px 16px' }}
+                  >
+                    Reject Application
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
