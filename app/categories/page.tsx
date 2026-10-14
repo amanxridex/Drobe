@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import BottomNav from '@/components/BottomNav';
 import { CATEGORIES_DATA } from '@/data/catalog';
+import { slugify } from '@/app/lib/supabaseClient';
 
 export default function CategoriesPage() {
   const router = useRouter();
@@ -269,7 +270,7 @@ export default function CategoriesPage() {
           {brands.map((b) => (
             <div
               key={b.name}
-              onClick={() => router.push(`/collection/${b.cat || 'ethnic'}`)}
+              onClick={() => router.push(`/brand/${slugify(b.name)}`)}
               style={{
                 background: '#1a1a20',
                 border: '1px solid #272732',

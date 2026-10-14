@@ -7,6 +7,7 @@ import {
   TrialOrder, 
   DarkstoreRunner 
 } from './darkstoreData';
+import { Product } from '@/data/catalog';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -495,4 +496,207 @@ export function subscribeToRealtimeOrders(onNewOrUpdatedOrder: (order: any) => v
   return () => {
     supabase.removeChannel(channel);
   };
+}
+
+// ==============================================================================
+// STOREFRONT DATABASE CONSUMPTION HELPERS (Live Supabase Catalog & Brands)
+// ==============================================================================
+
+export function slugify(text: string): string {
+  return (text || '')
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-');
+}
+
+export function mapDbProductToStorefrontProduct(row: any): Product {
+  const cleanPrice = typeof row.price === 'number'
+    ? row.price
+    : parseInt(String(row.price || '').replace(/\D/g, ''), 10) || (row.price_cents ? Math.round(row.price_cents / 100) : 1499);
+
+  const cleanOriginalPrice = Number(row.original_price) || Math.round(cleanPrice * 1.35);
+  const cleanDiscount = Number(row.discount_percentage) || Math.round(((cleanOriginalPrice - cleanPrice) / cleanOriginalPrice) * 100) || 25;
+
+  const imagesArr = Array.isArray(row.images) && row.images.length > 0
+    ? row.images
+    : (row.thumbnail ? [row.thumbnail] : ['/assets/real/test_dl/sample_product.webp']);
+
+  const thumb = row.thumbnail || imagesArr[0] || '/assets/real/test_dl/sample_product.webp';
+
+  return {
+    id: String(row.id),
+    brand: row.brand_name || row.brand_id || 'DROBE',
+    title: row.title || row.name || 'Designer Silhouette',
+    price: cleanPrice,
+    originalPrice: cleanOriginalPrice,
+    discountPercentage: cleanDiscount,
+    gender: row.gender === 'women' ? 'women' : 'men',
+    category: row.category || 'top',
+    subCategory: row.sub_category || 'Apparel',
+    images: imagesArr,
+    thumbnail: thumb,
+    description: row.description || `${row.title || row.name} crafted for premium comfort and 60-minute doorstep trial.`,
+    fabric: row.fabric || 'Luxury Cotton Blend',
+    fit: row.fit || 'Regular Fit',
+    rating: Number(row.rating) || 4.8,
+    reviewsCount: Number(row.reviews_count) || 28,
+    sizes: Array.isArray(row.sizes) && row.sizes.length > 0 ? row.sizes : ['S', 'M', 'L', 'XL'],
+    inStock: row.in_stock ?? true,
+    tryAndBuyEligible: row.try_and_buy_eligible ?? true,
+    deliveryMinutes: Number(row.delivery_minutes) || 60,
+    deliveryLocation: row.delivery_location || 'Ahmedabad (60-Min Zone)',
+    extraDiscountBadge: row.extra_discount_badge || undefined,
+    promoTag: row.promo_tag || undefined,
+    couponPromo: row.coupon_promo || undefined
+  };
+}
+
+export async function supabaseFetchStorefrontProducts(filters?: {
+  gender?: string;
+  category?: string;
+  brandId?: string;
+  brandName?: string;
+  limit?: number;
+}): Promise<Product[] | null> {
+  if (!supabase) return null;
+  try {
+    let query = supabase
+      .from('drobe_products')
+      .select('*')
+      .eq('is_live', true);
+
+    if (filters?.gender && filters.gender !== 'all') {
+      query = query.eq('gender', filters.gender);
+    }
+    if (filters?.category && filters.category !== 'all') {
+      query = query.ilike('category', `%${filters.category}%`);
+    }
+    if (filters?.brandId) {
+      query = query.or(`brand_id.eq.${filters.brandId},brand_id.eq.${slugify(filters.brandId)}`);
+    } else if (filters?.brandName) {
+      query = query.ilike('brand_name', `%${filters.brandName}%`);
+    }
+
+    query = query.order('sku_serial', { ascending: true });
+
+    if (filters?.limit) {
+      query = query.limit(filters.limit);
+    }
+
+    const { data, error } = await query;
+    if (error || !data) {
+      console.warn('Supabase fetch storefront products error:', error?.message);
+      return null;
+    }
+
+    return data.map(mapDbProductToStorefrontProduct);
+  } catch (err) {
+    console.warn('Supabase fetch storefront products exception:', err);
+    return null;
+  }
+}
+
+export async function supabaseFetchProductById(id: string): Promise<Product | null> {
+  if (!supabase || !id) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_products')
+      .select('*')
+      .or(`id.eq.${id},sku.eq.${id},sku.eq.DR-${id}`)
+      .limit(1);
+
+    if (error || !data || data.length === 0) {
+      return null;
+    }
+
+    return mapDbProductToStorefrontProduct(data[0]);
+  } catch (err) {
+    console.warn('Supabase fetch product by id exception:', err);
+    return null;
+  }
+}
+
+export async function supabaseFetchBrandById(brandIdOrSlug: string): Promise<any | null> {
+  if (!supabase || !brandIdOrSlug) return null;
+  try {
+    const normalized = slugify(brandIdOrSlug);
+    const stripped = normalized.replace(/^home-discover-brand-/, '').replace(/-men$|-women$/, '');
+
+    const { data, error } = await supabase
+      .from('drobe_brands')
+      .select('*')
+      .or(`id.eq.${normalized},id.eq.${brandIdOrSlug},id.eq.${stripped}`)
+      .limit(1);
+
+    if (!error && data && data.length > 0) {
+      return data[0];
+    }
+
+    // Try fuzzy match on name
+    const { data: nameData } = await supabase
+      .from('drobe_brands')
+      .select('*')
+      .ilike('name', `%${stripped.replace(/-/g, ' ')}%`)
+      .limit(1);
+
+    if (nameData && nameData.length > 0) {
+      return nameData[0];
+    }
+
+    return null;
+  } catch (err) {
+    console.warn('Supabase fetch brand exception:', err);
+    return null;
+  }
+}
+
+export async function supabaseFetchBrandProducts(brandIdOrSlug: string, brandName?: string): Promise<Product[] | null> {
+  if (!supabase || !brandIdOrSlug) return null;
+  try {
+    const slug = slugify(brandIdOrSlug);
+    const stripped = slug.replace(/^home-discover-brand-/, '').replace(/-men$|-women$/, '');
+    const cleanBrandName = (brandName || stripped.replace(/-/g, ' ')).trim();
+
+    let query = supabase
+      .from('drobe_products')
+      .select('*')
+      .eq('is_live', true);
+
+    query = query.or(`brand_id.eq.${slug},brand_id.eq.${stripped},brand_name.ilike.%${cleanBrandName}%`);
+    query = query.order('sku_serial', { ascending: true });
+
+    const { data, error } = await query;
+    if (error || !data) {
+      return null;
+    }
+
+    return data.map(mapDbProductToStorefrontProduct);
+  } catch (err) {
+    console.warn('Supabase fetch brand products exception:', err);
+    return null;
+  }
+}
+
+export async function supabaseFetchStorefrontCategories(gender?: string): Promise<any[] | null> {
+  if (!supabase) return null;
+  try {
+    let query = supabase
+      .from('drobe_categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true });
+
+    if (gender && gender !== 'all') {
+      query = query.or(`gender.eq.${gender},gender.eq.all`);
+    }
+
+    const { data, error } = await query;
+    if (error || !data) return null;
+    return data;
+  } catch {
+    return null;
+  }
 }

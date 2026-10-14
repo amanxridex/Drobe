@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Product } from '@/data/catalog';
+import { slugify } from '@/app/lib/supabaseClient';
 
 interface ProductCardProps {
   product: Product;
@@ -23,6 +25,7 @@ export default function ProductCard({
   className,
   imageAspectRatio = '1 / 1.25'
 }: ProductCardProps) {
+  const router = useRouter();
   const [popping, setPopping] = useState(false);
 
   const handleHeartClick = (e: React.MouseEvent) => {
@@ -31,6 +34,11 @@ export default function ProductCard({
     setPopping(true);
     onToggleWishlist();
     setTimeout(() => setPopping(false), 500);
+  };
+
+  const handleBrandClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    router.push(`/brand/${slugify(product.brand)}`);
   };
 
   return (
@@ -208,13 +216,15 @@ export default function ProductCard({
       >
         {/* Brand Name */}
         <h3
+          onClick={handleBrandClick}
           style={{
             fontSize: 15,
             fontWeight: 700,
             color: '#ffffff',
             margin: 0,
             lineHeight: 1.25,
-            letterSpacing: '-0.01em'
+            letterSpacing: '-0.01em',
+            cursor: 'pointer'
           }}
         >
           {product.brand}

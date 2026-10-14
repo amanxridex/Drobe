@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
-import { PRODUCTS, CATEGORIES_DATA } from '@/data/catalog';
+import { PRODUCTS, CATEGORIES_DATA, Product } from '@/data/catalog';
+import { supabaseFetchStorefrontProducts } from '@/app/lib/supabaseClient';
 import BottomNav from '@/components/BottomNav';
 import ProductCard from '@/components/ProductCard';
 
@@ -18,23 +19,35 @@ export default function CollectionPage() {
   const currentCat = categories.find((c) => c.id === collectionId) || { id: collectionId, name: collectionId ? collectionId.toUpperCase() : 'ALL PRODUCTS' };
 
   const [sortBy, setSortBy] = useState<'popular' | 'low' | 'high'>('popular');
+  const [dbProducts, setDbProducts] = useState<Product[] | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    supabaseFetchStorefrontProducts({ gender, category: collectionId }).then(prods => {
+      if (isMounted && prods && prods.length > 0) {
+        setDbProducts(prods);
+      }
+    });
+    return () => { isMounted = false; };
+  }, [gender, collectionId]);
 
   // STRICT 100% GENDER ISOLATION: Never leak opposite gender products
-  let products = PRODUCTS.filter((p) => {
+  let rawProducts = dbProducts || PRODUCTS.filter((p) => {
     if (p.gender !== gender) return false;
     if (!collectionId || collectionId === 'all') return true;
     return p.category.toLowerCase() === collectionId.toLowerCase();
   });
 
   // If a specific subcategory had zero items, fall back ONLY to products of the same gender
-  if (products.length === 0) {
-    products = PRODUCTS.filter((p) => p.gender === gender);
+  if (rawProducts.length === 0) {
+    rawProducts = PRODUCTS.filter((p) => p.gender === gender);
   }
 
+  let products = [...rawProducts];
   if (sortBy === 'low') {
-    products = [...products].sort((a, b) => a.price - b.price);
+    products.sort((a, b) => a.price - b.price);
   } else if (sortBy === 'high') {
-    products = [...products].sort((a, b) => b.price - a.price);
+    products.sort((a, b) => b.price - a.price);
   }
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);

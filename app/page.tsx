@@ -19,6 +19,7 @@ import MEN_CURATED_SECTIONS from '@/data/men_curated_sections.json';
 import DISCOVER_BRANDS_DATA from '@/data/discover_brands_manifest.json';
 import AUTHENTIC_HOME_WIDGETS from '@/data/authentic_home_widgets.json';
 import { getDarkstoreProducts, DarkstoreProduct, createCustomerOrder, syncDarkstoreWithSupabase } from '@/app/lib/darkstoreData';
+import { slugify } from '@/app/lib/supabaseClient';
 
 export default function HomePage() {
   const { gender, wishlist, toggleWishlist, setIsCouponOpen } = useApp();
@@ -1105,7 +1106,7 @@ export default function HomePage() {
             {wideBrandBanners.map((banner, idx) => (
               <div
                 key={idx}
-                onClick={() => router.push(banner.deeplink || '/categories')}
+                onClick={() => router.push(banner.name ? `/brand/${slugify(banner.name)}` : (banner.deeplink || '/categories'))}
                 style={{
                   flexShrink: 0,
                   width: 'calc(100% - 46px)',
@@ -1318,7 +1319,7 @@ export default function HomePage() {
                   {filteredBrandTiles.map((tile: any, idx: number) => (
                     <div
                       key={idx}
-                      onClick={() => router.push(tile.deeplink || '/categories')}
+                      onClick={() => router.push(tile.name ? `/brand/${slugify(tile.name)}` : (tile.deeplink || '/categories'))}
                       style={{
                         background: '#ffffff',
                         borderRadius: 14,

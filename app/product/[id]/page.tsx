@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { PRODUCTS, Product } from '@/data/catalog';
 import MEN_CURATED_SECTIONS from '@/data/men_curated_sections.json';
 import { getDarkstoreProducts } from '@/app/lib/darkstoreData';
+import { supabaseFetchProductById, slugify } from '@/app/lib/supabaseClient';
 import confetti from 'canvas-confetti';
 import TryAndBuySlider from '@/components/TryAndBuySlider';
 import ProductCard from '@/components/ProductCard';
@@ -18,6 +19,24 @@ export default function ProductDetailPage() {
   const { cart, addToCart, wishlist, toggleWishlist } = useApp();
 
   const productId = params?.id as string;
+  const [liveProduct, setLiveProduct] = useState<Product | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!productId) return;
+
+    supabaseFetchProductById(productId).then(p => {
+      if (isMounted && p) {
+        setLiveProduct(p);
+        if (p.sizes && p.sizes.length > 0) {
+          setSelectedSize(p.sizes[0]);
+        }
+      }
+    });
+
+    return () => { isMounted = false; };
+  }, [productId]);
+
   const darkstoreProduct = typeof window !== 'undefined' 
     ? getDarkstoreProducts().find(p => p.id === productId || p.sku?.toLowerCase() === productId?.toLowerCase())
     : null;
@@ -52,7 +71,7 @@ export default function ProductDetailPage() {
     .flatMap((s: any) => s.products)
     .find((p: any) => p.id === productId);
 
-  const product: Product = mappedDarkstoreProduct || (curatedProduct as unknown as Product) || PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
+  const product: Product = liveProduct || mappedDarkstoreProduct || (curatedProduct as unknown as Product) || PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
 
   const thumbnails: string[] = (product.images && product.images.length > 0) ? product.images : [product.thumbnail];
   const [activeThumbIndex, setActiveThumbIndex] = useState(0);
@@ -502,20 +521,33 @@ export default function ProductDetailPage() {
             4. PRODUCT BRAND & PRICE (Brand on Left, Price on Right)
             ======================================================== */}
         <div style={{ marginTop: 16, padding: '0 4px' }}>
-          {/* Top row: SPYKAR on left, ₹1,203 on right */}
+          {/* Top row: Brand on left, Price on right */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h2
+            <Link
+              href={`/brand/${encodeURIComponent(slugify(product.brand))}`}
               style={{
-                fontSize: 22,
-                fontWeight: 800,
-                color: '#ffffff',
-                margin: 0,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase'
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6
               }}
             >
-              {product.brand}
-            </h2>
+              <h2
+                style={{
+                  fontSize: 22,
+                  fontWeight: 800,
+                  color: '#ffffff',
+                  margin: 0,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase'
+                }}
+              >
+                {product.brand}
+              </h2>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </Link>
 
             <div style={{ fontSize: 24, fontWeight: 800, color: '#ffffff' }}>
               ₹{product.price.toLocaleString('en-IN')}
