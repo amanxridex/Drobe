@@ -181,7 +181,12 @@ export async function supabaseFetchOrders(): Promise<TrialOrder[] | null> {
       runnerWaitElapsedMinutes: row.runner_wait_elapsed_minutes,
       returnReason: row.return_reason,
       instantRefundStatus: row.instant_refund_status,
-      notes: row.notes
+      notes: row.notes,
+      advancePaidAmount: row.advance_paid_amount ? Number(row.advance_paid_amount) : undefined,
+      keptAmount: row.kept_amount ? Number(row.kept_amount) : undefined,
+      refundAmount: row.refund_amount ? Number(row.refund_amount) : undefined,
+      refundStatus: row.refund_status,
+      items: row.items_data || undefined
     }));
   } catch (err) {
     console.warn('Supabase fetchOrders exception:', err);
@@ -221,7 +226,12 @@ export async function supabaseInsertOrder(order: TrialOrder): Promise<boolean> {
         instant_refund_status: order.instantRefundStatus,
         status: order.status,
         doorstep_timer_minutes_left: order.doorstepTimerMinutesLeft || 15,
-        notes: order.notes
+        notes: order.notes,
+        advance_paid_amount: order.advancePaidAmount,
+        kept_amount: order.keptAmount,
+        refund_amount: order.refundAmount,
+        refund_status: order.refundStatus,
+        items_data: order.items || null
       });
 
     if (error) {
@@ -251,6 +261,11 @@ export async function supabaseUpdateOrderStatus(
     handedOverAt?: string;
     dispatchedAt?: string;
     deliveryOtp?: string;
+    advance_paid_amount?: number;
+    kept_amount?: number;
+    refund_amount?: number;
+    refund_status?: string;
+    items_data?: any;
   } | string
 ): Promise<boolean> {
   if (!supabase) return false;
@@ -275,6 +290,11 @@ export async function supabaseUpdateOrderStatus(
       if (extra.handedOverAt !== undefined) updatePayload.handed_over_at = new Date().toISOString();
       if (extra.dispatchedAt !== undefined) updatePayload.dispatched_at = new Date().toISOString();
       if (extra.deliveryOtp !== undefined) updatePayload.delivery_otp = extra.deliveryOtp;
+      if (extra.advance_paid_amount !== undefined) updatePayload.advance_paid_amount = extra.advance_paid_amount;
+      if (extra.kept_amount !== undefined) updatePayload.kept_amount = extra.kept_amount;
+      if (extra.refund_amount !== undefined) updatePayload.refund_amount = extra.refund_amount;
+      if (extra.refund_status !== undefined) updatePayload.refund_status = extra.refund_status;
+      if (extra.items_data !== undefined) updatePayload.items_data = extra.items_data;
     }
 
     const { error } = await supabase

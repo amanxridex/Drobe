@@ -34,32 +34,47 @@ export default function CartPage() {
     // Divert customer order to Ahmedabad Darkstore Hub Order Fulfillment Bay & auto-deduct stock from DB
     try {
       const darkstoreProds = getDarkstoreProducts();
-      cart.forEach(item => {
+      const orderItems = cart.map(item => {
         const matched = darkstoreProds.find(dp => dp.id === item.product.id || dp.name === item.product.title);
         const shelfCode = matched?.warehouseLocation?.code || 'AMD-RA01-S1-B01';
         const prodSku = matched?.sku || (item.product.extraDiscountBadge?.startsWith('SKU:') ? item.product.extraDiscountBadge.replace('SKU: ', '') : `DR-${item.product.id}`);
         const brandId = matched?.brandId || 'tilt';
         const brandName = matched?.brandName || item.product.brand || 'Drobe Partner';
 
-        createCustomerOrder({
+        return {
           productId: item.product.id,
           productName: item.product.title,
           productSku: prodSku,
           brandId: brandId,
           brandName: brandName,
           price: `₹${item.product.price}`,
+          priceNum: item.product.price,
           size: item.size || 'M',
-          customerName: 'Aarav Parekh',
-          customerPhone: '+91 98250 88123',
-          customerAddress: `${location || 'B-702, Shaligram Plus, Opp. Iskcon Temple, SG Highway'}, Ahmedabad`,
-          landmark: 'Opp. Iskcon Temple',
-          shelfLocation: shelfCode
-        });
+          shelfLocation: shelfCode,
+          thumbnail: item.product.thumbnail
+        };
       });
-    } catch {}
 
-    const order = createOrder('UPI');
-    router.push(`/order/${order.id}`);
+      const upiTxRef = `UPI-ADV-${Math.floor(10000000 + Math.random() * 90000000)}`;
+      const order = createOrder('UPI');
+
+      createCustomerOrder({
+        id: order.id,
+        orderNumber: `#${order.id}`,
+        items: orderItems,
+        advancePaidAmount: cartTotal,
+        customerName: 'Aarav Parekh',
+        customerPhone: '+91 98250 88123',
+        customerAddress: `${location || 'B-702, Shaligram Plus, Opp. Iskcon Temple, SG Highway'}, Ahmedabad`,
+        landmark: 'Opp. Iskcon Temple',
+        paymentMethod: 'UPI (GPay / PhonePe)',
+        paymentUpiRef: upiTxRef
+      });
+
+      router.push(`/order/${order.id}`);
+    } catch (err) {
+      console.warn('Darkstore order dispatch error:', err);
+    }
   };
 
   return (
@@ -372,6 +387,32 @@ export default function CartPage() {
                   You are saving ₹{totalSavings} on this order!
                 </div>
               </div>
+
+              {/* 100% Advance Payment & Instant Hub Refund Guarantee */}
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(99, 102, 241, 0.08) 100%)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: 14,
+                  padding: '12px 14px',
+                  marginTop: 14,
+                  display: 'flex',
+                  gap: 12,
+                  alignItems: 'center'
+                }}
+              >
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(16, 185, 129, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: 18 }}>⚡</span>
+                </div>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: '#34d399' }}>
+                    100% Advance Payment · Instant Hub Refund Guarantee
+                  </div>
+                  <div style={{ fontSize: 11, color: '#aaa', marginTop: 3, lineHeight: '15px' }}>
+                    Pay total in advance. Try all fits in your mirror for 15 mins. Keep what you love; any returned items are refunded <strong>instantly to your account</strong> the moment the runner checks them into our hub!
+                  </div>
+                </div>
+              </div>
             </div>
           </>
         )}
@@ -393,7 +434,7 @@ export default function CartPage() {
           }}
         >
           <div>
-            <div style={{ fontSize: 11, color: '#888' }}>Total Payable</div>
+            <div style={{ fontSize: 10, color: '#34d399', fontWeight: 700, textTransform: 'uppercase' }}>100% Advance Payment</div>
             <div style={{ fontSize: 20, fontWeight: 900, color: '#fff' }}>
               ₹{cartTotal}
             </div>
@@ -402,22 +443,26 @@ export default function CartPage() {
           <button
             onClick={handleCheckout}
             style={{
-              background: 'linear-gradient(135deg, #6678ff 0%, #8b5cf6 100%)',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
               color: '#ffffff',
               border: 'none',
               borderRadius: 16,
-              padding: '14px 28px',
-              fontSize: 14,
+              padding: '12px 22px',
+              fontSize: 13,
               fontWeight: 800,
               cursor: 'pointer',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: 8,
-              boxShadow: '0 4px 18px rgba(102, 120, 255, 0.4)'
+              justifyContent: 'center',
+              boxShadow: '0 4px 18px rgba(16, 185, 129, 0.4)'
             }}
           >
-            <span>Place 60-Min Order</span>
-            <img src="/assets/icons/right.svg" alt="" style={{ width: 14, height: 14, filter: 'brightness(0) invert(1)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>Pay ₹{cartTotal} &amp; Dispatch</span>
+              <img src="/assets/icons/right.svg" alt="" style={{ width: 14, height: 14, filter: 'brightness(0) invert(1)' }} />
+            </div>
+            <span style={{ fontSize: '10px', opacity: 0.85, fontWeight: 600 }}>Instant refund on hub return</span>
           </button>
         </div>
       )}

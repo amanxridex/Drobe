@@ -1755,6 +1755,31 @@ export default function AdminDashboardPage() {
                           )}
                         </div>
 
+                        {/* Advance Payment & Split Decision Badges */}
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                          <span style={{ fontSize: '10.5px', fontWeight: 800, background: '#eff6ff', color: '#1d4ed8', padding: '3px 8px', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
+                            ⚡ 100% Pre-Paid: {ord.price}
+                          </span>
+                          {(ord.keptAmount !== undefined && ord.keptAmount > 0) && (
+                            <span style={{ fontSize: '10.5px', fontWeight: 800, background: '#ecfdf5', color: '#047857', padding: '3px 8px', borderRadius: '6px', border: '1px solid #a7f3d0' }}>
+                              Kept: ₹{ord.keptAmount}
+                            </span>
+                          )}
+                          {(ord.refundAmount !== undefined && ord.refundAmount > 0) && (
+                            <span style={{
+                              fontSize: '10.5px',
+                              fontWeight: 800,
+                              background: ord.refundStatus === 'Refund Processed Instantly' ? '#ecfdf5' : '#fffbeb',
+                              color: ord.refundStatus === 'Refund Processed Instantly' ? '#047857' : '#b45309',
+                              padding: '3px 8px',
+                              borderRadius: '6px',
+                              border: ord.refundStatus === 'Refund Processed Instantly' ? '1px solid #a7f3d0' : '1px solid #fde68a'
+                            }}>
+                              Refund: ₹{ord.refundAmount} {ord.refundStatus === 'Refund Processed Instantly' ? '(Credited ✓)' : '(Pending Hub)'}
+                            </span>
+                          )}
+                        </div>
+
                         {/* Product & SKU Box */}
                         <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '12px', marginBottom: '12px', border: '1px solid #e2e8f0' }}>
                           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -1783,6 +1808,37 @@ export default function AdminDashboardPage() {
                               </div>
                             </div>
                           </div>
+
+                          {/* Multi-Item Breakdown inside Trial Bag */}
+                          {ord.items && ord.items.length > 1 && (
+                            <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed #cbd5e1', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                              <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>
+                                Bag Outfits ({ord.items.length} Fits)
+                              </div>
+                              {ord.items.map((it, iIdx) => (
+                                <div key={iIdx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', background: '#ffffff', padding: '4px 8px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <span style={{ fontWeight: 700, color: '#0f172a' }}>{it.productName}</span>
+                                    <span style={{ color: '#64748b' }}>({it.size})</span>
+                                    <span style={{ color: '#0284c7', fontSize: '10px' }}>📍 {it.shelfLocation}</span>
+                                  </div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span style={{ fontWeight: 800, color: '#0f172a' }}>{it.price}</span>
+                                    <span style={{
+                                      fontSize: '9.5px',
+                                      fontWeight: 800,
+                                      padding: '1px 6px',
+                                      borderRadius: '4px',
+                                      background: it.status === 'kept' ? '#ecfdf5' : it.status === 'returned' ? '#fef2f2' : '#f1f5f9',
+                                      color: it.status === 'kept' ? '#059669' : it.status === 'returned' ? '#dc2626' : '#64748b'
+                                    }}>
+                                      {it.status === 'kept' ? '✓ Kept' : it.status === 'returned' ? '↩ Return' : 'In Trial'}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
 
                           {/* Shelf & Location Bar */}
                           <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #e2e8f0', fontSize: '11px', color: '#334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
@@ -1920,15 +1976,15 @@ export default function AdminDashboardPage() {
                             </div>
                           )}
 
-                          {/* If runner is heading back, direct 1-click restock */}
+                          {/* If runner is heading back, direct 1-click restock & instant refund */}
                           {isRunnerHeadingBack && (
                             <button
                               type="button"
                               onClick={() => handleMarkReturned(ord.id, ord.returnReason || 'Doorstep return', 'Runner reached hub dispatch bay')}
                               className={styles.btnPrimary}
-                              style={{ width: '100%', justifyContent: 'center', fontSize: '11.5px', fontWeight: 800 }}
+                              style={{ width: '100%', justifyContent: 'center', fontSize: '11.5px', fontWeight: 800, background: '#059669', borderColor: '#047857' }}
                             >
-                              <CheckCircle2 size={13} /> Runner Reached Hub · Restock to {ord.shelfLocation} (+1 Stock)
+                              <CheckCircle2 size={13} /> Runner Reached Hub · Restock &amp; Refund ₹{ord.refundAmount || ord.price} Instantly
                             </button>
                           )}
 
@@ -2931,18 +2987,39 @@ export default function AdminDashboardPage() {
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ fontWeight: 800, color: '#0284c7', fontSize: '13px' }}>{returningOrderModal.orderNumber}</span>
-                <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '13px' }}>{returningOrderModal.price}</span>
+                <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '13px' }}>
+                  100% Pre-Paid: {returningOrderModal.price}
+                </span>
               </div>
-              <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#1e293b' }}>{returningOrderModal.productName} ({returningOrderModal.size})</div>
+              <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#1e293b' }}>
+                {returningOrderModal.productName} ({returningOrderModal.size})
+              </div>
               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
-                Brand: <strong>{returningOrderModal.brandName}</strong> · SKU: <strong>{returningOrderModal.productSku}</strong>
+                Client: <strong>{returningOrderModal.customerName}</strong> ({returningOrderModal.customerPhone}) · Source: <strong>{returningOrderModal.paymentMethod || 'UPI'}</strong>
               </div>
 
-              {/* Shelf Location & Inventory Delta */}
+              {/* Items to Restock to Warehouse Shelves */}
+              {returningOrderModal.items && returningOrderModal.items.length > 0 && (
+                <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 800, color: '#334155', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Items to Restock to Warehouse Rack ({returningOrderModal.items.filter(i => i.status === 'returned').length || 1})
+                  </div>
+                  {(returningOrderModal.items.filter(i => i.status === 'returned').length > 0 
+                    ? returningOrderModal.items.filter(i => i.status === 'returned') 
+                    : returningOrderModal.items).map((it, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11.5px', padding: '3px 0' }}>
+                      <span>• {it.productName} ({it.size}) 📍 <strong>{it.shelfLocation}</strong></span>
+                      <span style={{ fontWeight: 800, color: '#059669' }}>+1 Stock ({it.price})</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Instant Refund Settlement */}
               <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11.5px' }}>
-                <span>📍 Target Shelf: <strong style={{ color: '#0284c7' }}>{returningOrderModal.shelfLocation}</strong></span>
-                <span style={{ background: '#ecfdf5', color: '#047857', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
-                  +1 Stock to Database
+                <span>📍 Target Rack: <strong style={{ color: '#0284c7' }}>{returningOrderModal.shelfLocation}</strong></span>
+                <span style={{ background: '#ecfdf5', color: '#047857', fontWeight: 800, padding: '3px 8px', borderRadius: '6px' }}>
+                  ⚡ Instant Refund: ₹{returningOrderModal.refundAmount || returningOrderModal.price}
                 </span>
               </div>
             </div>
@@ -3011,7 +3088,7 @@ export default function AdminDashboardPage() {
                 className={styles.btnPrimary}
                 style={{ background: '#059669', borderColor: '#047857', padding: '8px 18px', fontWeight: 800 }}
               >
-                <CheckCircle2 size={14} /> Confirm Restock &amp; Add +1 to DB
+                <CheckCircle2 size={14} /> Confirm Restock &amp; Refund ₹{returningOrderModal.refundAmount || returningOrderModal.price}
               </button>
             </div>
           </div>

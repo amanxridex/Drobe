@@ -157,6 +157,20 @@ export interface DarkstoreRunner {
   batteryOrFuel: string;
 }
 
+export interface TrialOrderItem {
+  productId: string;
+  productName: string;
+  productSku?: string;
+  brandId: string;
+  brandName: string;
+  price: string;
+  priceNum: number;
+  size: string;
+  shelfLocation?: string;
+  thumbnail?: string;
+  status: 'pending' | 'in-trial' | 'kept' | 'returned';
+}
+
 export interface TrialOrder {
   id: string;
   orderNumber: string; // e.g. "#DRB-9842"
@@ -189,6 +203,17 @@ export interface TrialOrder {
   deliveryOtp?: string; // 4-digit verification code e.g. "9842"
   returnSealTag?: string; // Tamper-evident return bag seal e.g. "SEAL-8821"
   paymentUpiRef?: string; // UPI transaction reference
+
+  // 100% Advance Payment & Split Decision / Instant Refund Fields
+  advancePaidAmount?: number; // Total amount paid upfront (e.g. ₹9497)
+  paymentStatus?: 'Paid in Full' | 'Pending';
+  paymentMethod?: string; // 'UPI (GPay/PhonePe)' | 'Card'
+  items?: TrialOrderItem[]; // Itemized list for multi-item orders
+  keptAmount?: number; // Amount kept on spot (e.g. ₹2999)
+  refundAmount?: number; // Amount to be refunded instantly on hub check-in (e.g. ₹6498)
+  refundStatus?: 'No Refund' | 'Refund Pending Hub Arrival' | 'Refund Processed Instantly';
+  refundUpiRef?: string;
+  refundTimestamp?: string;
 }
 
 // Storage Keys
@@ -967,44 +992,126 @@ export function getDarkstoreRunners(): DarkstoreRunner[] {
 
 // Create new 30-minute doorstep trial order from Customer App / Platform
 export function createCustomerOrder(data: {
-  productId: string;
-  productName: string;
+  id?: string;
+  orderNumber?: string;
+  productId?: string;
+  productName?: string;
   productSku?: string;
-  brandId: string;
-  brandName: string;
-  price: string;
-  size: string;
-  customerName: string;
+  brandId?: string;
+  brandName?: string;
+  price?: string;
+  size?: string;
+  customerName?: string;
   customerPhone?: string;
   customerAddress?: string;
   landmark?: string;
   shelfLocation?: string;
+  // Multi-item / Advance payment support
+  items?: Array<{
+    productId: string;
+    productName: string;
+    productSku?: string;
+    brandId: string;
+    brandName: string;
+    price: string;
+    priceNum: number;
+    size: string;
+    shelfLocation?: string;
+    thumbnail?: string;
+  }>;
+  advancePaidAmount?: number;
+  paymentMethod?: string;
+  paymentUpiRef?: string;
 }): TrialOrder {
   const orders = getTrialOrders();
   const nextNumber = Math.floor(9851 + orders.length);
   const timeStr = 'Just Now (0 mins ago)';
 
+  // Build items array
+  let orderItems: TrialOrderItem[] = [];
+  if (data.items && data.items.length > 0) {
+    orderItems = data.items.map(it => ({
+      productId: it.productId,
+      productName: it.productName,
+      productSku: it.productSku || 'DR1',
+      brandId: it.brandId,
+      brandName: it.brandName,
+      price: it.price,
+      priceNum: it.priceNum || parseFloat(it.price.replace(/[^0-9.]/g, '')) || 0,
+      size: it.size || 'M',
+      shelfLocation: it.shelfLocation || 'AMD-RA01-S1-B01',
+      thumbnail: it.thumbnail,
+      status: 'pending' as const
+    }));
+  } else if (data.productId) {
+    const pNum = parseFloat((data.price || '0').replace(/[^0-9.]/g, '')) || 0;
+    orderItems = [{
+      productId: data.productId,
+      productName: data.productName || 'Item for Trial',
+      productSku: data.productSku || 'DR1',
+      brandId: data.brandId || 'tilt',
+      brandName: data.brandName || 'Drobe Partner',
+      price: data.price || '₹1200',
+      priceNum: pNum,
+      size: data.size || 'M',
+      shelfLocation: data.shelfLocation || 'AMD-RA01-S1-B01',
+      status: 'pending' as const
+    }];
+  }
+
+  const primaryItem = orderItems[0] || {
+    productId: 'prod-01',
+    productName: 'Trial Piece',
+    productSku: 'DR1',
+    brandId: 'tilt',
+    brandName: 'Drobe Partner',
+    price: '₹1200',
+    priceNum: 1200,
+    size: 'M',
+    shelfLocation: 'AMD-RA01-S1-B01'
+  };
+
+  const totalAdvance = data.advancePaidAmount 
+    ? data.advancePaidAmount 
+    : orderItems.reduce((acc, it) => acc + it.priceNum, 0);
+
+  const displayTitle = orderItems.length > 1 
+    ? `${primaryItem.productName} + ${orderItems.length - 1} other item(s) (${orderItems.length} Fits)`
+    : primaryItem.productName;
+
+  const upiTxRef = data.paymentUpiRef || `UPI-ADV-${Math.floor(10000000 + Math.random() * 90000000)}`;
+
   const newOrder: TrialOrder = {
-    id: `ord-30m-${Date.now()}`,
-    orderNumber: `#DRB-${nextNumber}`,
+    id: data.id || `ord-30m-${Date.now()}`,
+    orderNumber: data.orderNumber || `#DRB-${nextNumber}`,
     customerName: data.customerName || 'Aarav Parekh',
     customerPhone: data.customerPhone || '+91 98250 88123',
     customerAddress: data.customerAddress || 'B-702, Shaligram Plus, Opp. Iskcon Temple, SG Highway, Ahmedabad',
     landmark: data.landmark || 'Opp. Iskcon Temple',
     distanceKm: '2.4 km',
-    productId: data.productId,
-    productName: data.productName,
-    productSku: data.productSku || 'DR1',
-    brandId: data.brandId,
-    brandName: data.brandName,
-    price: data.price || '₹1200',
-    size: data.size || 'M',
-    shelfLocation: data.shelfLocation || 'AMD-RA02-S3-B04',
+    productId: primaryItem.productId,
+    productName: displayTitle,
+    productSku: orderItems.map(it => it.productSku || it.productId).join(', '),
+    brandId: primaryItem.brandId,
+    brandName: primaryItem.brandName,
+    price: `₹${totalAdvance}`,
+    size: orderItems.map(it => it.size).join(', '),
+    shelfLocation: orderItems.map(it => it.shelfLocation || 'AMD-RA01-S1-B01').join(' | '),
     deliveryOtp: nextNumber.toString().slice(-4),
     receivedAt: timeStr,
     dispatchedAt: '',
     status: 'Order Received (Awaiting Picker)',
-    notes: 'New 30-min doorstep trial order received! Ready for darkstore picker at Shivam Bungalows 1, Koteshwar Road.'
+    notes: `100% Advance Pre-Paid Order (₹${totalAdvance} via UPI: ${upiTxRef}). ${orderItems.length} items dispatched for 15-min doorstep fitting. Handed-back items refund instantly on warehouse check-in.`,
+    
+    // Financial & Split Decision fields
+    advancePaidAmount: totalAdvance,
+    paymentStatus: 'Paid in Full',
+    paymentMethod: data.paymentMethod || 'UPI (GPay/PhonePe)',
+    paymentUpiRef: upiTxRef,
+    items: orderItems,
+    keptAmount: 0,
+    refundAmount: 0,
+    refundStatus: 'No Refund'
   };
 
   const updatedOrders = [newOrder, ...orders];
@@ -1016,14 +1123,15 @@ export function createCustomerOrder(data: {
     supabaseRecordOrderEvent(newOrder.id, newOrder.orderNumber, newOrder.status, 'Customer App', newOrder.notes);
   } catch {}
 
-  // Auto-deduct 1 unit from inwardUnits (physically leaving warehouse shelf) and increment unitsInTrial
+  // Auto-deduct stock for each item from inwardUnits in local store and Supabase
   const products = getDarkstoreProducts();
   const updatedProds = products.map(p => {
-    if (p.id === data.productId || p.sku === data.productSku) {
+    const matchCount = orderItems.filter(it => it.productId === p.id || it.productSku === p.sku).length;
+    if (matchCount > 0) {
       return {
         ...p,
-        inwardUnits: Math.max(0, (p.inwardUnits || 0) - 1),
-        unitsInTrial: (p.unitsInTrial || 0) + 1
+        inwardUnits: Math.max(0, (p.inwardUnits || 0) - matchCount),
+        unitsInTrial: (p.unitsInTrial || 0) + matchCount
       };
     }
     return p;
@@ -1032,7 +1140,9 @@ export function createCustomerOrder(data: {
 
   // Sync auto stock deduction to Supabase drobe_products table
   try {
-    supabaseDeductProductStock(data.productId || data.productSku || '', 1).catch(() => {});
+    orderItems.forEach(it => {
+      supabaseDeductProductStock(it.productId || it.productSku || '', 1).catch(() => {});
+    });
   } catch {}
 
   if (typeof window !== 'undefined') {
@@ -1043,6 +1153,107 @@ export function createCustomerOrder(data: {
   }
 
   return newOrder;
+}
+
+// Record Customer Doorstep Decision: Kept vs Returned on Spot
+export function recordDoorstepDecision(
+  orderId: string, 
+  itemIdx: number, 
+  decision: 'kept' | 'returned'
+): TrialOrder | null {
+  const orders = getTrialOrders();
+  let updatedOrder: TrialOrder | null = null;
+
+  const updatedOrders = orders.map(ord => {
+    if (ord.id === orderId || ord.orderNumber === orderId) {
+      const items = (ord.items && ord.items.length > 0)
+        ? [...ord.items]
+        : [{
+            productId: ord.productId,
+            productName: ord.productName,
+            productSku: ord.productSku,
+            brandId: ord.brandId,
+            brandName: ord.brandName,
+            price: ord.price,
+            priceNum: parseFloat(ord.price.replace(/[^0-9.]/g, '')) || 0,
+            size: ord.size,
+            shelfLocation: ord.shelfLocation,
+            status: 'pending' as const
+          }];
+
+      if (items[itemIdx]) {
+        items[itemIdx] = {
+          ...items[itemIdx],
+          status: decision
+        };
+      }
+
+      const keptItems = items.filter(i => i.status === 'kept');
+      const returnedItems = items.filter(i => i.status === 'returned');
+      const keptAmount = keptItems.reduce((sum, i) => sum + i.priceNum, 0);
+      const refundAmount = returnedItems.reduce((sum, i) => sum + i.priceNum, 0);
+
+      const hasReturned = returnedItems.length > 0;
+      const allDecided = items.every(i => i.status === 'kept' || i.status === 'returned');
+
+      let newStatus: DoorstepFittingStatus = ord.status;
+      let refundStatus: 'No Refund' | 'Refund Pending Hub Arrival' | 'Refund Processed Instantly' = 'No Refund';
+      let instantRefundStatus = '';
+
+      if (hasReturned) {
+        newStatus = 'Returned on Spot (Runner Heading to Hub)';
+        refundStatus = 'Refund Pending Hub Arrival';
+        instantRefundStatus = `₹${refundAmount} Instant Refund Pending Hub Check-in`;
+      } else if (allDecided && keptItems.length === items.length) {
+        newStatus = 'Kept on Spot (Purchased)';
+        refundStatus = 'No Refund';
+        instantRefundStatus = 'All Items Kept · Full Amount Retained';
+      }
+
+      const u: TrialOrder = {
+        ...ord,
+        items,
+        status: newStatus,
+        keptAmount,
+        refundAmount,
+        refundStatus,
+        instantRefundStatus,
+        notes: hasReturned 
+          ? `Customer kept ${keptItems.length} item(s) (₹${keptAmount}) and handed back ${returnedItems.length} item(s) (₹${refundAmount}) to the runner. Runner en route to Hub. Instant refund will trigger on hub check-in.`
+          : `All ${keptItems.length} item(s) kept on spot (₹${keptAmount}). Advance payment retained in full.`
+      };
+
+      updatedOrder = u;
+      return u;
+    }
+    return ord;
+  });
+
+  saveTrialOrders(updatedOrders);
+
+  if (updatedOrder) {
+    const u = updatedOrder as TrialOrder;
+    try {
+      supabaseUpdateOrderStatus(u.id, u.status, {
+        kept_amount: u.keptAmount,
+        refund_amount: u.refundAmount,
+        refund_status: u.refundStatus,
+        instantRefundStatus: u.instantRefundStatus,
+        items_data: u.items,
+        notes: u.notes
+      });
+      supabaseRecordOrderEvent(u.id, u.orderNumber, u.status, 'Doorstep Fitting', u.notes);
+    } catch {}
+
+    if (typeof window !== 'undefined') {
+      try {
+        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new CustomEvent('drobe_order_decision', { detail: u }));
+      } catch {}
+    }
+  }
+
+  return updatedOrder;
 }
 
 // Hub Picker: Picks piece from shelf and packs into Drobe Signature Trial Bag
@@ -1319,28 +1530,39 @@ export function updateTrialOrderStatus(
   return targetOrder;
 }
 
-// Dedicated Admin Action: Mark order as Returned & Restock piece back to shelf (+1 stock to DB)
+// Dedicated Admin Action: Mark order as Returned & Restock piece back to shelf (+1 stock to DB) & Issue Instant Refund
 export function adminMarkOrderReturnedAndRestocked(
   orderId: string, 
   returnReason?: string, 
   notes?: string
-): { order: TrialOrder | null; updatedStock: number | null } {
+): { order: TrialOrder | null; updatedStock: number | null; refundAmount: number; refundUpiRef: string } {
   const orders = getTrialOrders();
   let updatedOrder: TrialOrder | null = null;
   let newStockLevel: number | null = null;
+  const refundUpiRef = `REF-UPI-${Date.now().toString().slice(-8)}`;
 
-  const defaultReason = returnReason || 'Instant Doorstep Return · Did not fit/suit';
-  const defaultNotes = notes || 'Admin verified return at Ahmedabad Darkstore Hub. Item inspected & restocked to shelf. +1 unit restored to live inventory.';
+  const defaultReason = returnReason || 'Doorstep Fitting Return · Item handed back to runner';
 
   const updatedOrders = orders.map(ord => {
     if (ord.id === orderId || ord.orderNumber === orderId) {
-      const wasSold = ord.status === 'Kept on Spot (Purchased)';
+      const returnedItems = (ord.items || []).filter(i => i.status === 'returned');
+      const refundAmt = ord.refundAmount && ord.refundAmount > 0 
+        ? ord.refundAmount 
+        : (parseFloat(ord.price.replace(/[^0-9.]/g, '')) || 0);
+
+      const countStr = returnedItems.length > 0 ? `${returnedItems.length} returned item(s)` : '1 returned item';
+      const defaultNotes = notes || `Runner arrived at Ahmedabad Darkstore Hub. ${countStr} inspected & restocked to shelf. Instant refund of ₹${refundAmt} credited to customer account (${refundUpiRef}).`;
+
       const u: TrialOrder = {
         ...ord,
         status: 'Restocked to Warehouse Shelf',
         doorstepTimerMinutesLeft: 0,
         returnReason: defaultReason,
-        instantRefundStatus: `${ord.price} Refunded Instantly to Client UPI`,
+        refundStatus: 'Refund Processed Instantly',
+        refundAmount: refundAmt,
+        refundUpiRef,
+        refundTimestamp: new Date().toISOString(),
+        instantRefundStatus: `₹${refundAmt} Refunded Instantly to Source Account (${refundUpiRef})`,
         notes: defaultNotes
       };
       updatedOrder = u;
@@ -1353,17 +1575,22 @@ export function adminMarkOrderReturnedAndRestocked(
 
   if (updatedOrder) {
     const u = updatedOrder as TrialOrder;
+    const returnedItems = (u.items || []).filter(i => i.status === 'returned');
+    const itemsToRestock = returnedItems.length > 0 
+      ? returnedItems 
+      : [{ productId: u.productId, productSku: u.productSku, productName: u.productName }];
 
-    // 1. Add +1 unit back to product inventory in darkstore store
+    // 1. Add units back to product inventory in darkstore store
     const products = getDarkstoreProducts();
     const updatedProds = products.map(p => {
-      if (p.id === u.productId || p.sku === u.productSku) {
-        const nextInward = (p.inwardUnits || 0) + 1;
+      const matchCount = itemsToRestock.filter(it => it.productId === p.id || it.productSku === p.sku).length;
+      if (matchCount > 0) {
+        const nextInward = (p.inwardUnits || 0) + matchCount;
         newStockLevel = nextInward;
         return {
           ...p,
           inwardUnits: nextInward,
-          unitsInTrial: Math.max(0, (p.unitsInTrial || 0) - 1)
+          unitsInTrial: Math.max(0, (p.unitsInTrial || 0) - matchCount)
         };
       }
       return p;
@@ -1376,11 +1603,17 @@ export function adminMarkOrderReturnedAndRestocked(
         doorstepTimerMinutesLeft: 0,
         returnReason: u.returnReason,
         instantRefundStatus: u.instantRefundStatus,
+        refund_status: u.refundStatus,
+        refund_amount: u.refundAmount,
+        paymentUpiRef: u.refundUpiRef,
+        items_data: u.items,
         notes: u.notes
       }).catch(() => {});
 
-      // 3. Sync stock restoration to Supabase drobe_products table
-      supabaseRestockProductStock(u.productId || u.productSku || '', 1, false).catch(() => {});
+      // 3. Sync stock restoration to Supabase drobe_products table for all returned items
+      itemsToRestock.forEach(it => {
+        supabaseRestockProductStock(it.productId || it.productSku || '', 1, false).catch(() => {});
+      });
 
       // 4. Record audit event in drobe_order_events
       supabaseRecordOrderEvent(
@@ -1388,7 +1621,7 @@ export function adminMarkOrderReturnedAndRestocked(
         u.orderNumber, 
         u.status, 
         'Admin Inwarding Desk', 
-        `Return confirmed. Restocked piece to shelf ${u.shelfLocation}. +1 Stock added to database.`
+        `Runner arrived at hub. ${itemsToRestock.length} item(s) restocked to shelf. Instant refund of ₹${u.refundAmount} credited to customer via ${refundUpiRef}.`
       ).catch(() => {});
     } catch {}
 
@@ -1396,11 +1629,19 @@ export function adminMarkOrderReturnedAndRestocked(
       try {
         window.dispatchEvent(new Event('storage'));
         window.dispatchEvent(new CustomEvent('drobe_stock_updated', { detail: { productId: u.productId, newStock: newStockLevel } }));
+        window.dispatchEvent(new CustomEvent('drobe_return_restocked', { detail: u }));
       } catch {}
     }
+
+    return { 
+      order: u, 
+      updatedStock: newStockLevel, 
+      refundAmount: u.refundAmount || 0,
+      refundUpiRef 
+    };
   }
 
-  return { order: updatedOrder, updatedStock: newStockLevel };
+  return { order: null, updatedStock: null, refundAmount: 0, refundUpiRef: '' };
 }
 
 // Dedicated Admin Action: Mark order as Delivered & Kept (Keeps stock deducted, converts trial -> sold)
