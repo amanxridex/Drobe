@@ -2467,21 +2467,6 @@
   margin: 4px auto 0 auto;
 }
 
-.screen1Footnote {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #64748b;
-  text-align: center;
-  margin-top: 2px;
-}
-
-.adminPortalLink {
-  color: #2563eb;
-  text-decoration: none;
-  font-weight: 700;
-}
 
 .loginModalOverlay {
   position: fixed;

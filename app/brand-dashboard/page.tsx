@@ -78,7 +78,7 @@ export default function BrandDashboardPage() {
     }
 
     setActiveView('profile');
-    triggerToast('📋 Profile submitted! Awaiting Drobe Admin approval before inventory dispatch.');
+    triggerToast('📋 Profile submitted! Awaiting verification before inventory dispatch.');
   };
 
   const handleSaveDraft = () => {

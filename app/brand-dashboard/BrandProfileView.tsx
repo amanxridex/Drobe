@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { 
   Home, 
   LayoutGrid, 
@@ -377,22 +376,13 @@ export default function BrandProfileView({
 
   return (
     <div className={styles.darkProfileContainer}>
-      {/* 0. Brand Review Banner & Admin Station Link */}
+      {/* 0. Brand Review Banner */}
       {brand.status === 'Waiting for Approval' ? (
-        <div style={{ background: '#fffbeb', borderBottom: '1px solid #fef3c7', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Clock size={14} color="#d97706" />
-            <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#b45309' }}>
-              ⏳ Application Under Review by Drobe Hub Admin · Consignment stock dispatch unlocks upon approval
-            </span>
-          </div>
-          <Link 
-            href="/admin-dashboard" 
-            target="_blank" 
-            style={{ fontSize: '11px', fontWeight: 700, color: '#0284c7', textDecoration: 'none', background: '#ffffff', padding: '4px 10px', borderRadius: '6px', border: '1px solid #bae6fd', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}
-          >
-            Review & Approve in Admin ↗
-          </Link>
+        <div style={{ background: '#fffbeb', borderBottom: '1px solid #fef3c7', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Clock size={14} color="#d97706" />
+          <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#b45309' }}>
+            ⏳ Application Under Review · Consignment stock dispatch unlocks upon approval
+          </span>
         </div>
       ) : null}
 
@@ -421,16 +411,6 @@ export default function BrandProfileView({
         </div>
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <Link
-            href="/admin-dashboard"
-            target="_blank"
-            className={styles.darkCircleBtn}
-            title="Open Ahmedabad Darkstore Ops Control Center"
-            style={{ textDecoration: 'none', color: '#0284c7', background: '#f0f9ff', border: '1px solid #bae6fd' }}
-          >
-            <ShieldCheck size={15} />
-          </Link>
-
           {onShareClick && (
             <button
               type="button"
@@ -749,10 +729,10 @@ export default function BrandProfileView({
                                   type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    if (onToast) onToast('🔒 Consignment dispatch unlocks once Drobe Admin approves your brand profile.');
+                                    if (onToast) onToast('🔒 Consignment dispatch unlocks once your brand profile is approved.');
                                   }}
                                   style={{ background: '#f1f5f9', color: '#94a3b8', border: '1px solid #cbd5e1', padding: '4px 8px', borderRadius: '8px', fontSize: '10.5px', fontWeight: 600, cursor: 'not-allowed', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-                                  title="Awaiting Admin Approval"
+                                  title="Awaiting Approval"
                                 >
                                   <Lock size={11} /> Locked (Awaiting Approval)
                                 </button>
@@ -851,7 +831,7 @@ export default function BrandProfileView({
                     <Clock size={14} /> Consignment Dispatch Locked
                   </div>
                   <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#92400e' }}>
-                    Awaiting Drobe Admin approval before stock can be sent to Shivam Bungalows 1, Koteshwar Road.
+                    Awaiting brand profile approval before stock can be sent to Shivam Bungalows 1, Koteshwar Road.
                   </p>
                 </div>
               )}

@@ -577,7 +577,7 @@ export default function OnboardingFlow({
                   <div>
                     <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Portal Status</div>
                     <div style={{ fontSize: '13px', fontWeight: 700, color: '#2563eb' }}>
-                      ● Ready for Admin Submission
+                      ● Ready for Submission
                     </div>
                   </div>
                 </div>
@@ -585,7 +585,7 @@ export default function OnboardingFlow({
 
               <div className={styles.ronasReadyNotice}>
                 <Check size={16} color="#2563eb" />
-                <span>Everything is verified. Tap &ldquo;Submit Profile for Admin Approval&rdquo;. Once Drobe Admin approves your brand, you will be authorized to dispatch physical inventory to the Ahmedabad Darkstore Hub.</span>
+                <span>Everything is verified. Tap &ldquo;Submit Profile for Verification&rdquo;. Once your brand is approved, you will be authorized to dispatch physical inventory to the Ahmedabad Darkstore Hub.</span>
               </div>
             </div>
           )}
@@ -627,7 +627,7 @@ export default function OnboardingFlow({
             onClick={onGoLive}
             className={styles.ronasGoLivePillBtn}
           >
-            <span>Submit Profile for Admin Approval →</span>
+            <span>Submit Profile for Verification →</span>
           </button>
         )}
       </footer>

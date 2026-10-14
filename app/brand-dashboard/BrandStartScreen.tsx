@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Lock, Mail, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { BrandProfile } from './types';
@@ -392,10 +391,6 @@ export default function BrandStartScreen({
           <p className={styles.screen1Terms}>
             By joining Drobe you acknowledge that you have read and agree to Drobe&apos;s Terms &amp; Conditions and Partner Policy.
           </p>
-
-          <div className={styles.screen1Footnote}>
-            Drobe Partner Portal · <Link href="/admin-dashboard" target="_blank" className={styles.adminPortalLink}>Ahmedabad Darkstore Admin ↗</Link>
-          </div>
         </div>
       </div>
 
