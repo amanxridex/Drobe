@@ -47,13 +47,20 @@ import {
   adminRejectBrand,
   adminInwardProduct,
   updateTrialOrderStatus,
+  adminMarkOrderReturnedAndRestocked,
+  adminMarkOrderDeliveredAndKept,
   adjustProductStock,
   getNextSkuNumber,
   getNextAvailableShelfLocation,
   markShipmentArrived,
   syncDarkstoreWithSupabase
 } from '../lib/darkstoreData';
-import { subscribeToRealtimeOrders, supabaseFetchAdminBrandsWithProducts, slugify } from '../lib/supabaseClient';
+import { 
+  subscribeToRealtimeOrders, 
+  supabaseFetchAdminBrandsWithProducts, 
+  supabaseFetchOrders,
+  slugify 
+} from '../lib/supabaseClient';
 import styles from './admin.module.css';
 
 export default function AdminDashboardPage() {
@@ -70,6 +77,13 @@ export default function AdminDashboardPage() {
   // Brand Products Catalog Modal State
   const [selectedBrandForProducts, setSelectedBrandForProducts] = useState<DarkstoreBrand | null>(null);
   const [brandProductsSearch, setBrandProductsSearch] = useState<string>('');
+
+  // Orders & Returns Filter & Search State
+  const [ordersFilter, setOrdersFilter] = useState<'all' | 'active' | 'doorstep' | 'returning' | 'kept' | 'restocked'>('all');
+  const [ordersSearch, setOrdersSearch] = useState<string>('');
+  const [returningOrderModal, setReturningOrderModal] = useState<TrialOrder | null>(null);
+  const [selectedReturnReason, setSelectedReturnReason] = useState<string>('Size / fit did not suit at doorstep');
+  const [customReturnNotes, setCustomReturnNotes] = useState<string>('');
 
   // Brand Filter
   const [brandFilter, setBrandFilter] = useState<'all' | 'with_products' | 'awaiting_products' | 'waiting' | 'approved'>('all');
@@ -101,7 +115,7 @@ export default function AdminDashboardPage() {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage(null);
-    }, 3200);
+    }, 3500);
   };
 
   const loadAllData = async () => {
@@ -113,12 +127,18 @@ export default function AdminDashboardPage() {
     setInbounds(getInboundShipments());
     setTrialOrders(getTrialOrders());
 
-    // 2. Query live Supabase DB for all partner brands and catalog creations
+    // 2. Query live Supabase DB for all partner brands, catalog creations, and live orders
     try {
-      const dbData = await supabaseFetchAdminBrandsWithProducts();
+      const [dbData, dbOrders] = await Promise.all([
+        supabaseFetchAdminBrandsWithProducts(),
+        supabaseFetchOrders()
+      ]);
       if (dbData && dbData.brands && dbData.products) {
         setBrands(dbData.brands);
         setProducts(dbData.products);
+      }
+      if (dbOrders && dbOrders.length > 0) {
+        setTrialOrders(dbOrders);
       }
     } catch (err) {
       console.warn('Live fetch from Supabase failed, using cached data:', err);
@@ -153,6 +173,30 @@ export default function AdminDashboardPage() {
   const pendingInwardsCount = products.filter(p => p.inwardStatus !== 'Inwarded & Live').length;
   const liveSkusCount = products.filter(p => p.isLive).length;
   const activeTrialsCount = trialOrders.filter(o => o.status === 'Out for 30-Min Delivery' || o.status === 'Doorstep Fitting (Runner Waiting Outside)').length;
+
+  // Order & Return Telemetry Counts
+  const orderCountActive = trialOrders.filter(o => o.status === 'Out for 30-Min Delivery').length;
+  const orderCountDoorstep = trialOrders.filter(o => o.status === 'Doorstep Fitting (Runner Waiting Outside)').length;
+  const orderCountReturning = trialOrders.filter(o => o.status === 'Returned on Spot (Runner Heading to Hub)').length;
+  const orderCountKept = trialOrders.filter(o => o.status === 'Kept on Spot (Purchased)').length;
+  const orderCountRestocked = trialOrders.filter(o => o.status === 'Restocked to Warehouse Shelf').length;
+
+  const handleMarkReturned = (orderId: string, returnReason?: string, notes?: string) => {
+    const res = adminMarkOrderReturnedAndRestocked(orderId, returnReason, notes);
+    if (res.order) {
+      loadAllData();
+      triggerToast(`✓ Return Restocked: +1 Stock added back to DB for ${res.order.productName} on shelf ${res.order.shelfLocation} (Now ${res.updatedStock ?? ''} pcs). Full UPI refund issued.`);
+      setReturningOrderModal(null);
+    }
+  };
+
+  const handleMarkDelivered = (orderId: string) => {
+    const res = adminMarkOrderDeliveredAndKept(orderId);
+    if (res.order) {
+      loadAllData();
+      triggerToast(`🎉 Order ${res.order.orderNumber} marked Delivered & Kept! Stock remains deducted in live DB.`);
+    }
+  };
 
   // Handlers
   const handleApproveBrand = (brandId: string, brandName: string) => {
@@ -321,6 +365,29 @@ export default function AdminDashboardPage() {
       p.brandName.toLowerCase().includes(q) ||
       (p.sku && p.sku.toLowerCase().includes(q)) ||
       (p.warehouseLocation && p.warehouseLocation.code.toLowerCase().includes(q))
+    );
+  });
+
+  const filteredTrialOrders = trialOrders.filter(ord => {
+    if (ordersFilter === 'active') return ord.status === 'Out for 30-Min Delivery';
+    if (ordersFilter === 'doorstep') return ord.status === 'Doorstep Fitting (Runner Waiting Outside)';
+    if (ordersFilter === 'returning') return ord.status === 'Returned on Spot (Runner Heading to Hub)';
+    if (ordersFilter === 'kept') return ord.status === 'Kept on Spot (Purchased)';
+    if (ordersFilter === 'restocked') return ord.status === 'Restocked to Warehouse Shelf';
+    return true;
+  }).filter(ord => {
+    const q = (ordersSearch || searchQuery).toLowerCase().trim();
+    if (!q) return true;
+    return (
+      (ord.orderNumber && ord.orderNumber.toLowerCase().includes(q)) ||
+      (ord.customerName && ord.customerName.toLowerCase().includes(q)) ||
+      (ord.customerPhone && ord.customerPhone.toLowerCase().includes(q)) ||
+      (ord.customerAddress && ord.customerAddress.toLowerCase().includes(q)) ||
+      (ord.productName && ord.productName.toLowerCase().includes(q)) ||
+      (ord.productSku && ord.productSku.toLowerCase().includes(q)) ||
+      (ord.shelfLocation && ord.shelfLocation.toLowerCase().includes(q)) ||
+      (ord.brandName && ord.brandName.toLowerCase().includes(q)) ||
+      (ord.riderName && ord.riderName.toLowerCase().includes(q))
     );
   });
 
@@ -1455,22 +1522,22 @@ export default function AdminDashboardPage() {
             </div>
           )}
 
-          {/* TAB 4: DOORSTEP FITTING & INSTANT RETURN ROOM */}
+          {/* TAB 4: ORDERS & RETURNS MANAGEMENT (Auto Stock Deduction & Addition) */}
           {activeTab === 'trials' && (
             <div className={styles.sectionCard}>
               <div className={styles.sectionHeader}>
                 <div>
                   <h3 className={styles.sectionTitle}>
                     <Truck size={17} color="#0284c7" />
-                    Doorstep Fitting & Instant Return Room
+                    Orders & Returns Management · Live DB Auto Stock Sync
                   </h3>
                   <p className={styles.sectionDesc}>
-                    Quick-commerce consignment flow in Ahmedabad (Satellite, Prahlad Nagar, SG Highway, Bodakdev). Delivery runner arrives in 30 minutes and waits right outside the customer door. Customer tries on outfits, keeps what they love on the spot, and hands unpurchased garments back instantly to the runner. The runner returns straight to the darkstore shelf and customer is refunded immediately.
+                    Quick-commerce orders in Ahmedabad darkstore. When an order is placed or leaves the store, 1 stock unit is <strong>automatically deducted from DB inventory</strong>. If delivered &amp; kept, stock remains permanently deducted. When marked returned, <strong>+1 stock is immediately added back to the shelf in Supabase DB</strong>.
                   </p>
                 </div>
               </div>
 
-              {/* REAL-TIME DIVERTER & DISPATCH BAY CALLOUT */}
+              {/* REAL-TIME DIVERTER & PORTAL SHORTCUTS */}
               <div style={{
                 background: 'linear-gradient(90deg, rgba(245, 158, 11, 0.12), rgba(59, 130, 246, 0.12))',
                 border: '1px solid rgba(245, 158, 11, 0.3)',
@@ -1487,10 +1554,10 @@ export default function AdminDashboardPage() {
                   <span style={{ fontSize: '20px' }}>⚡</span>
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>
-                      Real-Time Order Inflow & Handover Active
+                      Auto Stock Sync &amp; Doorstep Returns Active
                     </div>
                     <div style={{ fontSize: '11px', color: '#64748b' }}>
-                      Every customer order placed from the app diverts instantly to the dedicated Hub Fulfillment bay where shift executives mark shelf picking, assign delivery partners, and confirm physical handover.
+                      Orders placed by customers immediately deduct physical units from warehouse shelves. Mark returns below to instantly restore stock to the database and issue refunds.
                     </div>
                   </div>
                 </div>
@@ -1512,7 +1579,7 @@ export default function AdminDashboardPage() {
                       gap: '5px'
                     }}
                   >
-                    <span>📦 Open Hub Order Portal</span>
+                    <span>📦 Hub Order Portal</span>
                   </Link>
 
                   <Link
@@ -1531,137 +1598,376 @@ export default function AdminDashboardPage() {
                       gap: '5px'
                     }}
                   >
-                    <span>🚴 Open Delivery Partner App</span>
+                    <span>🚴 Delivery Partner App</span>
                   </Link>
                 </div>
               </div>
 
-              <div className={styles.trialGrid}>
-                {trialOrders.map((ord) => {
-                  const isDoorstepFitting = ord.status === 'Doorstep Fitting (Runner Waiting Outside)';
-                  const isOut = ord.status === 'Out for 30-Min Delivery';
-                  const isKept = ord.status === 'Kept on Spot (Purchased)';
-                  const isRunnerHeadingBack = ord.status === 'Returned on Spot (Runner Heading to Hub)';
-                  const isRestocked = ord.status === 'Restocked to Warehouse Shelf';
+              {/* STOCK & ORDERS TELEMETRY METRICS */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                gap: '12px',
+                marginBottom: '16px'
+              }}>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px 14px' }}>
+                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Total Orders in DB</div>
+                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', marginTop: '4px' }}>{trialOrders.length}</div>
+                  <div style={{ fontSize: '10.5px', color: '#94a3b8' }}>Live synchronized</div>
+                </div>
 
-                  return (
-                    <div key={ord.id} className={styles.trialCard}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                        <span style={{ fontWeight: 800, color: '#0284c7', fontSize: '13.5px' }}>
-                          {ord.orderNumber}
-                        </span>
-                        {isDoorstepFitting ? (
-                          <span className={`${styles.statusChip} ${styles.statusTrial}`}>
-                            <Clock size={11} /> Runner Waiting Outside ({ord.doorstepTimerMinutesLeft || 7}m fitting window)
-                          </span>
-                        ) : isOut ? (
-                          <span className={`${styles.statusChip} ${styles.statusTransit}`}>
-                            <Truck size={11} /> Out for 30-Min Delivery
-                          </span>
-                        ) : isKept ? (
-                          <span className={`${styles.statusChip} ${styles.statusLive}`}>
-                            <CheckCircle2 size={11} /> Kept on Spot (Purchased)
-                          </span>
-                        ) : isRunnerHeadingBack ? (
-                          <span className={`${styles.statusChip} ${styles.statusPending}`}>
-                            <RotateCcw size={11} /> Returned at Door · Runner Heading to Hub
-                          </span>
-                        ) : (
-                          <span className={`${styles.statusChip} ${styles.statusLive}`} style={{ background: '#ecfdf5', color: '#059669', borderColor: '#a7f3d0' }}>
-                            <CheckCircle2 size={11} /> Restocked to Shelf & Refunded
-                          </span>
-                        )}
-                      </div>
+                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '12px 14px' }}>
+                  <div style={{ fontSize: '11px', color: '#1d4ed8', fontWeight: 700, textTransform: 'uppercase' }}>Out / Doorstep</div>
+                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#1d4ed8', marginTop: '4px' }}>{orderCountActive + orderCountDoorstep}</div>
+                  <div style={{ fontSize: '10.5px', color: '#60a5fa' }}>⚠️ Stock deducted (-1)</div>
+                </div>
 
-                      <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '12px', marginBottom: '14px', border: '1px solid #e2e8f0' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: '10px', padding: '12px 14px' }}>
+                  <div style={{ fontSize: '11px', color: '#7e22ce', fontWeight: 700, textTransform: 'uppercase' }}>Return In-Transit</div>
+                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#7e22ce', marginTop: '4px' }}>{orderCountReturning}</div>
+                  <div style={{ fontSize: '10.5px', color: '#a855f7' }}>↩ Heading back to hub</div>
+                </div>
+
+                <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '10px', padding: '12px 14px' }}>
+                  <div style={{ fontSize: '11px', color: '#047857', fontWeight: 700, textTransform: 'uppercase' }}>Delivered &amp; Kept</div>
+                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#047857', marginTop: '4px' }}>{orderCountKept}</div>
+                  <div style={{ fontSize: '10.5px', color: '#34d399' }}>✓ Kept deducted in DB</div>
+                </div>
+
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '12px 14px' }}>
+                  <div style={{ fontSize: '11px', color: '#15803d', fontWeight: 700, textTransform: 'uppercase' }}>Restocked to Shelf</div>
+                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#15803d', marginTop: '4px' }}>{orderCountRestocked}</div>
+                  <div style={{ fontSize: '10.5px', color: '#22c55e' }}>✓ +1 Stock added to DB</div>
+                </div>
+              </div>
+
+              {/* FILTER BUTTONS & SEARCH BAR */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => setOrdersFilter('all')}
+                    className={ordersFilter === 'all' ? styles.filterBtnActive : styles.filterBtn}
+                  >
+                    All Orders ({trialOrders.length})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrdersFilter('active')}
+                    className={ordersFilter === 'active' ? styles.filterBtnActive : styles.filterBtn}
+                  >
+                    Out for Delivery ({orderCountActive})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrdersFilter('doorstep')}
+                    className={ordersFilter === 'doorstep' ? styles.filterBtnActive : styles.filterBtn}
+                  >
+                    Doorstep Fitting ({orderCountDoorstep})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrdersFilter('returning')}
+                    className={ordersFilter === 'returning' ? styles.filterBtnActive : styles.filterBtn}
+                  >
+                    Return In-Transit ({orderCountReturning})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrdersFilter('kept')}
+                    className={ordersFilter === 'kept' ? styles.filterBtnActive : styles.filterBtn}
+                  >
+                    Delivered &amp; Kept ({orderCountKept})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrdersFilter('restocked')}
+                    className={ordersFilter === 'restocked' ? styles.filterBtnActive : styles.filterBtn}
+                  >
+                    Restocked ({orderCountRestocked})
+                  </button>
+                </div>
+
+                <div style={{ position: 'relative', minWidth: '240px' }}>
+                  <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  <input
+                    type="text"
+                    value={ordersSearch}
+                    onChange={(e) => setOrdersSearch(e.target.value)}
+                    placeholder="Search Order #, customer, SKU..."
+                    style={{
+                      width: '100%',
+                      padding: '7px 10px 7px 32px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '12px'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* ORDERS LIST */}
+              {filteredTrialOrders.length > 0 ? (
+                <div className={styles.trialGrid}>
+                  {filteredTrialOrders.map((ord) => {
+                    const isDoorstepFitting = ord.status === 'Doorstep Fitting (Runner Waiting Outside)';
+                    const isOut = ord.status === 'Out for 30-Min Delivery';
+                    const isKept = ord.status === 'Kept on Spot (Purchased)';
+                    const isRunnerHeadingBack = ord.status === 'Returned on Spot (Runner Heading to Hub)';
+                    const isRestocked = ord.status === 'Restocked to Warehouse Shelf';
+
+                    const matchedProduct = products.find(p => p.id === ord.productId || p.sku === ord.productSku);
+                    const prodImage = matchedProduct?.images?.[0] || matchedProduct?.thumbnail;
+
+                    return (
+                      <div key={ord.id} className={styles.trialCard} style={{ border: isRestocked ? '1px solid #bbf7d0' : isKept ? '1px solid #a7f3d0' : '1px solid #e2e8f0' }}>
+                        {/* Card Header */}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                           <div>
-                            <div style={{ fontWeight: 800, fontSize: '13.5px', color: '#0f172a' }}>
-                              {ord.productName} ({ord.size})
-                            </div>
-                            <div style={{ fontSize: '11px', color: '#64748b' }}>
-                              Brand: <strong>{ord.brandName}</strong> · SKU: <strong style={{ color: '#16a34a' }}>{ord.productSku}</strong>
-                            </div>
+                            <span style={{ fontWeight: 800, color: '#0284c7', fontSize: '14px' }}>
+                              {ord.orderNumber}
+                            </span>
+                            <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '8px' }}>
+                              {ord.receivedAt || 'Today'}
+                            </span>
                           </div>
-                          <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '13.5px' }}>
-                            {ord.price}
-                          </div>
-                        </div>
 
-                        <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e2e8f0', fontSize: '11.5px', color: '#334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span>📍 Darkstore Shelf: <strong style={{ color: '#0284c7' }}>{ord.shelfLocation}</strong></span>
-                          {ord.instantRefundStatus && (
-                            <span style={{ color: '#059669', fontWeight: 700, fontSize: '10.5px', background: '#ecfdf5', padding: '2px 8px', borderRadius: '6px' }}>
-                              ⚡ {ord.instantRefundStatus}
+                          {isDoorstepFitting ? (
+                            <span className={`${styles.statusChip} ${styles.statusTrial}`}>
+                              <Clock size={11} /> Runner Waiting Outside ({ord.doorstepTimerMinutesLeft || 7}m)
+                            </span>
+                          ) : isOut ? (
+                            <span className={`${styles.statusChip} ${styles.statusTransit}`}>
+                              <Truck size={11} /> Out for 30-Min Delivery
+                            </span>
+                          ) : isKept ? (
+                            <span className={`${styles.statusChip} ${styles.statusLive}`}>
+                              <CheckCircle2 size={11} /> Kept on Spot (Purchased)
+                            </span>
+                          ) : isRunnerHeadingBack ? (
+                            <span className={`${styles.statusChip} ${styles.statusPending}`}>
+                              <RotateCcw size={11} /> Return In-Transit
+                            </span>
+                          ) : (
+                            <span className={`${styles.statusChip} ${styles.statusLive}`} style={{ background: '#ecfdf5', color: '#059669', borderColor: '#a7f3d0' }}>
+                              <CheckCircle2 size={11} /> Restocked to Shelf &amp; Refunded
                             </span>
                           )}
                         </div>
+
+                        {/* Product & SKU Box */}
+                        <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '12px', marginBottom: '12px', border: '1px solid #e2e8f0' }}>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            {prodImage ? (
+                              <img
+                                src={prodImage}
+                                alt={ord.productName}
+                                style={{ width: '46px', height: '46px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e2e8f0' }}
+                              />
+                            ) : (
+                              <div style={{ width: '46px', height: '46px', borderRadius: '8px', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+                                <Package size={22} />
+                              </div>
+                            )}
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontWeight: 800, fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {ord.productName}
+                              </div>
+                              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                                Brand: <strong>{ord.brandName}</strong> · Size: <strong>{ord.size}</strong> · SKU: <strong style={{ color: '#16a34a' }}>{ord.productSku}</strong>
+                              </div>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                              <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '13.5px' }}>
+                                {ord.price}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Shelf & Location Bar */}
+                          <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #e2e8f0', fontSize: '11px', color: '#334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                            <span>📍 Shelf: <strong style={{ color: '#0284c7' }}>{ord.shelfLocation}</strong></span>
+                            <span style={{ color: '#475569' }}>
+                              📦 DB Stock: <strong style={{ color: (matchedProduct?.inwardUnits || 0) > 0 ? '#16a34a' : '#ef4444' }}>{matchedProduct?.inwardUnits ?? '—'} pcs</strong> on shelf
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* LIVE STOCK STATUS BANNER */}
+                        <div style={{
+                          padding: '8px 10px',
+                          borderRadius: '8px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          marginBottom: '12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          background: isRestocked 
+                            ? '#ecfdf5' 
+                            : isKept 
+                            ? '#f0fdf4' 
+                            : isRunnerHeadingBack 
+                            ? '#faf5ff' 
+                            : '#eff6ff',
+                          color: isRestocked 
+                            ? '#047857' 
+                            : isKept 
+                            ? '#15803d' 
+                            : isRunnerHeadingBack 
+                            ? '#7e22ce' 
+                            : '#1d4ed8',
+                          border: isRestocked 
+                            ? '1px solid #a7f3d0' 
+                            : isKept 
+                            ? '1px solid #bbf7d0' 
+                            : isRunnerHeadingBack 
+                            ? '1px solid #e9d5ff' 
+                            : '1px solid #bfdbfe'
+                        }}>
+                          {isRestocked ? (
+                            <>
+                              <CheckCircle2 size={13} />
+                              <span>✓ Stock Added Back (+1 Unit to DB) · Restored to shelf {ord.shelfLocation}</span>
+                            </>
+                          ) : isKept ? (
+                            <>
+                              <Check size={13} />
+                              <span>✓ Stock Kept Deducted · Purchase finalized in Supabase DB</span>
+                            </>
+                          ) : isRunnerHeadingBack ? (
+                            <>
+                              <RotateCcw size={13} />
+                              <span>↩ Return In-Transit · Sealed in tamper bag, awaiting hub shelf restock</span>
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle size={13} />
+                              <span>⚠️ Stock Deducted (-1 Unit) · Physically leaves warehouse with runner</span>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Customer & Runner Details */}
+                        <div style={{ fontSize: '11.5px', color: '#64748b', marginBottom: '12px', lineHeight: 1.5 }}>
+                          <div><strong>Client:</strong> {ord.customerName} ({ord.customerPhone || '+91 98250 88123'})</div>
+                          <div style={{ color: '#475569', fontSize: '11px' }}>{ord.customerAddress}</div>
+                          <div style={{ marginTop: '4px' }}><strong>Runner:</strong> {ord.riderName || 'Meet Dave'} ({ord.riderVehicle || 'Ather 450X'})</div>
+                        </div>
+
+                        {/* Refund status badge */}
+                        {ord.instantRefundStatus && (
+                          <div style={{ fontSize: '11px', color: '#047857', background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '6px 10px', borderRadius: '8px', marginBottom: '10px' }}>
+                            ⚡ <strong>Refund:</strong> {ord.instantRefundStatus}
+                          </div>
+                        )}
+
+                        {ord.returnReason && (
+                          <div style={{ fontSize: '11px', color: '#64748b', background: '#f1f5f9', padding: '6px 10px', borderRadius: '8px', marginBottom: '10px' }}>
+                            <strong>Return Reason:</strong> {ord.returnReason}
+                          </div>
+                        )}
+
+                        {/* ADMIN ORDER ACTION BUTTONS */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '10px', borderTop: '1px solid #f1f5f9' }}>
+                          {/* If not restocked yet, give Admin option to mark Returned & Restock */}
+                          {!isRestocked && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setReturningOrderModal(ord);
+                                setSelectedReturnReason(ord.returnReason || 'Size / fit did not suit at doorstep');
+                                setCustomReturnNotes('');
+                              }}
+                              className={styles.btnPrimary}
+                              style={{
+                                background: '#059669',
+                                borderColor: '#047857',
+                                justifyContent: 'center',
+                                padding: '8px 12px',
+                                fontSize: '11.5px',
+                                fontWeight: 800
+                              }}
+                              title="Mark as Returned, issue refund, and add +1 stock back to darkstore shelf in DB"
+                            >
+                              <RotateCcw size={13} />
+                              <span>Mark as Returned &amp; Restock (+1 Stock to DB)</span>
+                            </button>
+                          )}
+
+                          {/* Quick delivery / kept button if order is active or doorstep */}
+                          {(isDoorstepFitting || isOut) && (
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                              <button
+                                type="button"
+                                onClick={() => handleMarkDelivered(ord.id)}
+                                className={styles.btnSuccess}
+                                style={{ flex: 1, justifyContent: 'center', fontSize: '11px' }}
+                                title="Client completes doorstep trial and keeps garment. Keeps stock deducted."
+                              >
+                                <Check size={12} /> Mark Delivered &amp; Kept
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleOrderAction(ord.id, 'Returned on Spot (Runner Heading to Hub)')}
+                                className={styles.btnDanger}
+                                style={{ flex: 1, justifyContent: 'center', fontSize: '11px' }}
+                                title="Handed back to runner at doorstep"
+                              >
+                                <RotateCcw size={12} /> Return to Runner
+                              </button>
+                            </div>
+                          )}
+
+                          {/* If runner is heading back, direct 1-click restock */}
+                          {isRunnerHeadingBack && (
+                            <button
+                              type="button"
+                              onClick={() => handleMarkReturned(ord.id, ord.returnReason || 'Doorstep return', 'Runner reached hub dispatch bay')}
+                              className={styles.btnPrimary}
+                              style={{ width: '100%', justifyContent: 'center', fontSize: '11.5px', fontWeight: 800 }}
+                            >
+                              <CheckCircle2 size={13} /> Runner Reached Hub · Restock to {ord.shelfLocation} (+1 Stock)
+                            </button>
+                          )}
+
+                          {/* Footer links: Storefront & Barcode */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                            <Link
+                              href={`/product/${ord.productId}`}
+                              target="_blank"
+                              style={{ fontSize: '11px', color: '#0284c7', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '3px' }}
+                            >
+                              <ExternalLink size={11} /> View on Storefront
+                            </Link>
+                            {matchedProduct && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedProductForBarcode(matchedProduct);
+                                  setBarcodeModalOpen(true);
+                                }}
+                                style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                              >
+                                <Barcode size={11} /> Barcode
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       </div>
-
-                      <div style={{ fontSize: '11.5px', color: '#64748b', marginBottom: '12px', lineHeight: 1.5 }}>
-                        <div><strong>Client:</strong> {ord.customerName} ({ord.distanceKm} from hub)</div>
-                        <div style={{ color: '#475569' }}>{ord.customerAddress}</div>
-                        <div style={{ marginTop: '4px' }}><strong>Runner:</strong> {ord.riderName} ({ord.riderPhone})</div>
-                      </div>
-
-                      {ord.notes && (
-                        <div style={{ fontSize: '11px', color: '#475569', background: '#f1f5f9', padding: '8px 10px', borderRadius: '8px', marginBottom: '12px', borderLeft: '3px solid #0284c7' }}>
-                          {ord.notes}
-                        </div>
-                      )}
-
-                      {/* SIMULATION ACTION BUTTONS */}
-                      {(isDoorstepFitting || isOut) && (
-                        <div style={{ display: 'flex', gap: '8px', paddingTop: '10px', borderTop: '1px solid #f1f5f9' }}>
-                          <button
-                            type="button"
-                            onClick={() => handleOrderAction(ord.id, 'Kept on Spot (Purchased)')}
-                            className={styles.btnSuccess}
-                            style={{ flex: 1, justifyContent: 'center' }}
-                            title="Client tries on and keeps garment on the spot"
-                          >
-                            <Check size={12} /> Kept on Spot
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleOrderAction(ord.id, 'Returned on Spot (Runner Heading to Hub)')}
-                            className={styles.btnDanger}
-                            style={{ flex: 1, justifyContent: 'center' }}
-                            title="Client hands back instantly to runner waiting outside"
-                          >
-                            <RotateCcw size={12} /> Return to Runner
-                          </button>
-                        </div>
-                      )}
-
-                      {isRunnerHeadingBack && (
-                        <div style={{ paddingTop: '10px', borderTop: '1px solid #f1f5f9' }}>
-                          <button
-                            type="button"
-                            onClick={() => handleOrderAction(ord.id, 'Restocked to Warehouse Shelf')}
-                            className={styles.btnPrimary}
-                            style={{ width: '100%', justifyContent: 'center' }}
-                          >
-                            <CheckCircle2 size={13} /> Runner Reached Hub · Restock to {ord.shelfLocation}
-                          </button>
-                        </div>
-                      )}
-
-                      {isKept && (
-                        <div style={{ fontSize: '11.5px', color: '#16a34a', fontWeight: 700 }}>
-                          ✓ Doorstep fit approved · Kept on spot by client · Credited to {ord.brandName}
-                        </div>
-                      )}
-
-                      {isRestocked && (
-                        <div style={{ fontSize: '11.5px', color: '#059669', fontWeight: 700 }}>
-                          ✓ Restocked to {ord.shelfLocation} · Client refunded instantly
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '40px 20px', color: '#94a3b8' }}>
+                  <Package size={36} color="#cbd5e1" style={{ margin: '0 auto 8px auto' }} />
+                  <div style={{ fontWeight: 700, color: '#475569' }}>No orders found matching filter</div>
+                  <p style={{ fontSize: '12px', margin: '4px 0 0 0' }}>
+                    {ordersSearch ? 'Try a different search query or clear the filter.' : 'All incoming orders from customer checkout will appear here with automated stock sync.'}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </main>
@@ -2585,6 +2891,128 @@ export default function AdminDashboardPage() {
                   </button>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. ADMIN RETURN & STOCK RESTORATION CONFIRMATION MODAL */}
+      {returningOrderModal && (
+        <div className={styles.modalOverlay} onClick={() => setReturningOrderModal(null)}>
+          <div 
+            className={styles.modalContent} 
+            style={{ maxWidth: '540px', padding: '24px', borderRadius: '20px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <RotateCcw size={18} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#0f172a' }}>
+                    Confirm Return &amp; Restock to Shelf
+                  </h3>
+                  <div style={{ fontSize: '11px', color: '#64748b' }}>
+                    Restores physical inventory in Supabase DB and initiates instant UPI refund
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReturningOrderModal(null)}
+                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Order & Product Summary Box */}
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ fontWeight: 800, color: '#0284c7', fontSize: '13px' }}>{returningOrderModal.orderNumber}</span>
+                <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '13px' }}>{returningOrderModal.price}</span>
+              </div>
+              <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#1e293b' }}>{returningOrderModal.productName} ({returningOrderModal.size})</div>
+              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                Brand: <strong>{returningOrderModal.brandName}</strong> · SKU: <strong>{returningOrderModal.productSku}</strong>
+              </div>
+
+              {/* Shelf Location & Inventory Delta */}
+              <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11.5px' }}>
+                <span>📍 Target Shelf: <strong style={{ color: '#0284c7' }}>{returningOrderModal.shelfLocation}</strong></span>
+                <span style={{ background: '#ecfdf5', color: '#047857', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
+                  +1 Stock to Database
+                </span>
+              </div>
+            </div>
+
+            {/* Return Reason Selector */}
+            <div style={{ marginBottom: '14px' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#334155', textTransform: 'uppercase', marginBottom: '6px' }}>
+                Doorstep Return Reason
+              </label>
+              <select
+                value={selectedReturnReason}
+                onChange={(e) => setSelectedReturnReason(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '9px 12px',
+                  borderRadius: '10px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '12.5px',
+                  background: '#ffffff',
+                  color: '#0f172a'
+                }}
+              >
+                <option value="Size / fit did not suit at doorstep">Size / fit did not suit at doorstep</option>
+                <option value="Customer tried multiple sizes and kept alternate">Customer tried multiple sizes and kept alternate</option>
+                <option value="Customer preferred other trial outfit">Customer preferred other trial outfit</option>
+                <option value="Fabric or silhouette did not meet preference">Fabric or silhouette did not meet preference</option>
+                <option value="Client changed mind on spot">Client changed mind on spot</option>
+              </select>
+            </div>
+
+            {/* Custom Notes */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#334155', textTransform: 'uppercase', marginBottom: '6px' }}>
+                Admin Inspection &amp; Shelf Restock Notes
+              </label>
+              <textarea
+                value={customReturnNotes}
+                onChange={(e) => setCustomReturnNotes(e.target.value)}
+                placeholder="Item inspected for tags, aroma, and fold condition. Ready for warehouse rack..."
+                rows={2}
+                style={{
+                  width: '100%',
+                  padding: '9px 12px',
+                  borderRadius: '10px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '12px',
+                  fontFamily: 'inherit',
+                  resize: 'none'
+                }}
+              />
+            </div>
+
+            {/* Modal Actions */}
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setReturningOrderModal(null)}
+                className={styles.btnSecondary}
+                style={{ padding: '8px 16px' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleMarkReturned(returningOrderModal.id, selectedReturnReason, customReturnNotes)}
+                className={styles.btnPrimary}
+                style={{ background: '#059669', borderColor: '#047857', padding: '8px 18px', fontWeight: 800 }}
+              >
+                <CheckCircle2 size={14} /> Confirm Restock &amp; Add +1 to DB
+              </button>
             </div>
           </div>
         </div>

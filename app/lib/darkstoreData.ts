@@ -12,7 +12,10 @@ import {
   supabaseFetchBrands,
   supabaseFetchProducts,
   supabaseFetchShipments,
-  supabaseFetchRunners
+  supabaseFetchRunners,
+  supabaseDeductProductStock,
+  supabaseRestockProductStock,
+  supabaseConfirmSoldStock
 } from './supabaseClient';
 
 export const AHMEDABAD_WAREHOUSE = {
@@ -1013,18 +1016,24 @@ export function createCustomerOrder(data: {
     supabaseRecordOrderEvent(newOrder.id, newOrder.orderNumber, newOrder.status, 'Customer App', newOrder.notes);
   } catch {}
 
-  // Increment unitsInTrial on product
+  // Auto-deduct 1 unit from inwardUnits (physically leaving warehouse shelf) and increment unitsInTrial
   const products = getDarkstoreProducts();
   const updatedProds = products.map(p => {
     if (p.id === data.productId || p.sku === data.productSku) {
       return {
         ...p,
+        inwardUnits: Math.max(0, (p.inwardUnits || 0) - 1),
         unitsInTrial: (p.unitsInTrial || 0) + 1
       };
     }
     return p;
   });
   saveDarkstoreProducts(updatedProds);
+
+  // Sync auto stock deduction to Supabase drobe_products table
+  try {
+    supabaseDeductProductStock(data.productId || data.productSku || '', 1).catch(() => {});
+  } catch {}
 
   if (typeof window !== 'undefined') {
     try {
@@ -1240,8 +1249,32 @@ export function updateTrialOrderStatus(
     } catch {}
   }
 
-  // If restocked back to shelf or handed to runner
-  if (targetOrder && (newStatus === 'Restocked to Warehouse Shelf' || newStatus === 'Returned on Spot (Runner Heading to Hub)')) {
+  // Stock inventory adjustments based on lifecycle transitions
+  if (targetOrder && newStatus === 'Restocked to Warehouse Shelf') {
+    // 1. Returned & Restocked: ADD STOCK BACK (+1) to inwardUnits and decrement unitsInTrial
+    const products = getDarkstoreProducts();
+    const updatedProds = products.map(p => {
+      if (p.id === (targetOrder as TrialOrder).productId || p.sku === (targetOrder as TrialOrder).productSku) {
+        return {
+          ...p,
+          inwardUnits: (p.inwardUnits || 0) + 1,
+          unitsInTrial: Math.max(0, (p.unitsInTrial || 1) - 1)
+        };
+      }
+      return p;
+    });
+    saveDarkstoreProducts(updatedProds);
+
+    // Sync stock restoration to Supabase DB drobe_products table
+    try {
+      supabaseRestockProductStock(
+        (targetOrder as TrialOrder).productId || (targetOrder as TrialOrder).productSku || '', 
+        1, 
+        false
+      ).catch(() => {});
+    } catch {}
+  } else if (targetOrder && newStatus === 'Returned on Spot (Runner Heading to Hub)') {
+    // Runner heading back with item: decrement unitsInTrial
     const products = getDarkstoreProducts();
     const updatedProds = products.map(p => {
       if (p.id === (targetOrder as TrialOrder).productId || p.sku === (targetOrder as TrialOrder).productSku) {
@@ -1254,6 +1287,7 @@ export function updateTrialOrderStatus(
     });
     saveDarkstoreProducts(updatedProds);
   } else if (targetOrder && newStatus === 'Kept on Spot (Purchased)') {
+    // 2. Delivered & Kept: Keep stock deducted from inwardUnits! Decrement unitsInTrial, increment unitsSold
     const products = getDarkstoreProducts();
     const updatedProds = products.map(p => {
       if (p.id === (targetOrder as TrialOrder).productId || p.sku === (targetOrder as TrialOrder).productSku) {
@@ -1266,6 +1300,14 @@ export function updateTrialOrderStatus(
       return p;
     });
     saveDarkstoreProducts(updatedProds);
+
+    // Sync sold status to Supabase DB drobe_products table
+    try {
+      supabaseConfirmSoldStock(
+        (targetOrder as TrialOrder).productId || (targetOrder as TrialOrder).productSku || '', 
+        1
+      ).catch(() => {});
+    } catch {}
   }
 
   if (typeof window !== 'undefined') {
@@ -1275,6 +1317,168 @@ export function updateTrialOrderStatus(
   }
 
   return targetOrder;
+}
+
+// Dedicated Admin Action: Mark order as Returned & Restock piece back to shelf (+1 stock to DB)
+export function adminMarkOrderReturnedAndRestocked(
+  orderId: string, 
+  returnReason?: string, 
+  notes?: string
+): { order: TrialOrder | null; updatedStock: number | null } {
+  const orders = getTrialOrders();
+  let updatedOrder: TrialOrder | null = null;
+  let newStockLevel: number | null = null;
+
+  const defaultReason = returnReason || 'Instant Doorstep Return · Did not fit/suit';
+  const defaultNotes = notes || 'Admin verified return at Ahmedabad Darkstore Hub. Item inspected & restocked to shelf. +1 unit restored to live inventory.';
+
+  const updatedOrders = orders.map(ord => {
+    if (ord.id === orderId || ord.orderNumber === orderId) {
+      const wasSold = ord.status === 'Kept on Spot (Purchased)';
+      const u: TrialOrder = {
+        ...ord,
+        status: 'Restocked to Warehouse Shelf',
+        doorstepTimerMinutesLeft: 0,
+        returnReason: defaultReason,
+        instantRefundStatus: `${ord.price} Refunded Instantly to Client UPI`,
+        notes: defaultNotes
+      };
+      updatedOrder = u;
+      return u;
+    }
+    return ord;
+  });
+
+  saveTrialOrders(updatedOrders);
+
+  if (updatedOrder) {
+    const u = updatedOrder as TrialOrder;
+
+    // 1. Add +1 unit back to product inventory in darkstore store
+    const products = getDarkstoreProducts();
+    const updatedProds = products.map(p => {
+      if (p.id === u.productId || p.sku === u.productSku) {
+        const nextInward = (p.inwardUnits || 0) + 1;
+        newStockLevel = nextInward;
+        return {
+          ...p,
+          inwardUnits: nextInward,
+          unitsInTrial: Math.max(0, (p.unitsInTrial || 0) - 1)
+        };
+      }
+      return p;
+    });
+    saveDarkstoreProducts(updatedProds);
+
+    // 2. Sync order status in Supabase drobe_trial_orders
+    try {
+      supabaseUpdateOrderStatus(u.id, u.status, {
+        doorstepTimerMinutesLeft: 0,
+        returnReason: u.returnReason,
+        instantRefundStatus: u.instantRefundStatus,
+        notes: u.notes
+      }).catch(() => {});
+
+      // 3. Sync stock restoration to Supabase drobe_products table
+      supabaseRestockProductStock(u.productId || u.productSku || '', 1, false).catch(() => {});
+
+      // 4. Record audit event in drobe_order_events
+      supabaseRecordOrderEvent(
+        u.id, 
+        u.orderNumber, 
+        u.status, 
+        'Admin Inwarding Desk', 
+        `Return confirmed. Restocked piece to shelf ${u.shelfLocation}. +1 Stock added to database.`
+      ).catch(() => {});
+    } catch {}
+
+    if (typeof window !== 'undefined') {
+      try {
+        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new CustomEvent('drobe_stock_updated', { detail: { productId: u.productId, newStock: newStockLevel } }));
+      } catch {}
+    }
+  }
+
+  return { order: updatedOrder, updatedStock: newStockLevel };
+}
+
+// Dedicated Admin Action: Mark order as Delivered & Kept (Keeps stock deducted, converts trial -> sold)
+export function adminMarkOrderDeliveredAndKept(
+  orderId: string, 
+  notes?: string
+): { order: TrialOrder | null; unitsSold: number | null } {
+  const orders = getTrialOrders();
+  let updatedOrder: TrialOrder | null = null;
+  let newUnitsSold: number | null = null;
+
+  const defaultNotes = notes || 'Doorstep fitting successful! Customer loved the piece and kept it on spot. Stock remains deducted in live DB.';
+
+  const updatedOrders = orders.map(ord => {
+    if (ord.id === orderId || ord.orderNumber === orderId) {
+      const u: TrialOrder = {
+        ...ord,
+        status: 'Kept on Spot (Purchased)',
+        doorstepTimerMinutesLeft: 0,
+        notes: defaultNotes,
+        paymentUpiRef: ord.paymentUpiRef || `UPI-TXN-${Date.now().toString().slice(-6)}`
+      };
+      updatedOrder = u;
+      return u;
+    }
+    return ord;
+  });
+
+  saveTrialOrders(updatedOrders);
+
+  if (updatedOrder) {
+    const u = updatedOrder as TrialOrder;
+
+    // 1. Keep inwardUnits deducted; convert unitsInTrial -> unitsSold
+    const products = getDarkstoreProducts();
+    const updatedProds = products.map(p => {
+      if (p.id === u.productId || p.sku === u.productSku) {
+        const sold = (p.unitsSold || 0) + 1;
+        newUnitsSold = sold;
+        return {
+          ...p,
+          unitsInTrial: Math.max(0, (p.unitsInTrial || 1) - 1),
+          unitsSold: sold
+        };
+      }
+      return p;
+    });
+    saveDarkstoreProducts(updatedProds);
+
+    // 2. Sync order status in Supabase drobe_trial_orders
+    try {
+      supabaseUpdateOrderStatus(u.id, u.status, {
+        doorstepTimerMinutesLeft: 0,
+        paymentUpiRef: u.paymentUpiRef,
+        notes: u.notes
+      }).catch(() => {});
+
+      // 3. Sync confirmed sold status to Supabase drobe_products table
+      supabaseConfirmSoldStock(u.productId || u.productSku || '', 1).catch(() => {});
+
+      // 4. Record audit event in drobe_order_events
+      supabaseRecordOrderEvent(
+        u.id, 
+        u.orderNumber, 
+        u.status, 
+        'Admin Inwarding Desk', 
+        `Order marked delivered & kept on spot. Stock kept deducted in DB.`
+      ).catch(() => {});
+    } catch {}
+
+    if (typeof window !== 'undefined') {
+      try {
+        window.dispatchEvent(new Event('storage'));
+      } catch {}
+    }
+  }
+
+  return { order: updatedOrder, unitsSold: newUnitsSold };
 }
 
 // Admin: Adjust stock units directly on shelf (e.g. +5 units restocked, cycle count)
@@ -1376,6 +1580,10 @@ export function confirmCustomerPayment(
       return p;
     });
     saveDarkstoreProducts(updatedProds);
+
+    try {
+      supabaseConfirmSoldStock((updatedOrder as TrialOrder).productId || (updatedOrder as TrialOrder).productSku || '', 1).catch(() => {});
+    } catch {}
   }
 
   if (typeof window !== 'undefined') {

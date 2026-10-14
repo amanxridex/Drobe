@@ -185,6 +185,186 @@ export async function supabaseUpdateOrderStatus(
   }
 }
 
+// Auto-deduct stock when order is placed or dispatched (leaves darkstore shelf)
+export async function supabaseDeductProductStock(
+  productIdOrSku: string, 
+  qty: number = 1
+): Promise<{ inwardUnits: number; unitsInTrial: number; unitsSold: number } | null> {
+  if (!supabase || !productIdOrSku) return null;
+  try {
+    // 1. Try atomic database RPC
+    const { data, error } = await supabase.rpc('drobe_deduct_product_stock', {
+      p_product_id: productIdOrSku,
+      p_qty: qty
+    });
+
+    if (!error && Array.isArray(data) && data.length > 0) {
+      return {
+        inwardUnits: data[0].new_inward_units,
+        unitsInTrial: data[0].new_units_in_trial,
+        unitsSold: data[0].new_units_sold
+      };
+    }
+
+    // 2. Fallback to direct row update
+    const { data: rows } = await supabase
+      .from('drobe_products')
+      .select('id, inward_units, units_in_trial, units_sold')
+      .or(`id.eq.${productIdOrSku},sku.eq.${productIdOrSku}`)
+      .limit(1);
+
+    if (rows && rows.length > 0) {
+      const row = rows[0];
+      const newInward = Math.max(0, (row.inward_units || 0) - qty);
+      const newTrial = (row.units_in_trial || 0) + qty;
+      const { data: updated } = await supabase
+        .from('drobe_products')
+        .update({
+          inward_units: newInward,
+          units_in_trial: newTrial,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', row.id)
+        .select('inward_units, units_in_trial, units_sold')
+        .single();
+
+      if (updated) {
+        return {
+          inwardUnits: updated.inward_units,
+          unitsInTrial: updated.units_in_trial,
+          unitsSold: updated.units_sold
+        };
+      }
+    }
+    return null;
+  } catch (err) {
+    console.warn('supabaseDeductProductStock exception:', err);
+    return null;
+  }
+}
+
+// Auto-add stock back when item is returned & restocked to darkstore shelf
+export async function supabaseRestockProductStock(
+  productIdOrSku: string, 
+  qty: number = 1,
+  fromSold: boolean = false
+): Promise<{ inwardUnits: number; unitsInTrial: number; unitsSold: number } | null> {
+  if (!supabase || !productIdOrSku) return null;
+  try {
+    // 1. Try atomic database RPC
+    const { data, error } = await supabase.rpc('drobe_restock_product_stock', {
+      p_product_id: productIdOrSku,
+      p_qty: qty,
+      p_from_sold: fromSold
+    });
+
+    if (!error && Array.isArray(data) && data.length > 0) {
+      return {
+        inwardUnits: data[0].new_inward_units,
+        unitsInTrial: data[0].new_units_in_trial,
+        unitsSold: data[0].new_units_sold
+      };
+    }
+
+    // 2. Fallback to direct row update
+    const { data: rows } = await supabase
+      .from('drobe_products')
+      .select('id, inward_units, units_in_trial, units_sold')
+      .or(`id.eq.${productIdOrSku},sku.eq.${productIdOrSku}`)
+      .limit(1);
+
+    if (rows && rows.length > 0) {
+      const row = rows[0];
+      const newInward = (row.inward_units || 0) + qty;
+      const newTrial = fromSold ? (row.units_in_trial || 0) : Math.max(0, (row.units_in_trial || 0) - qty);
+      const newSold = fromSold ? Math.max(0, (row.units_sold || 0) - qty) : (row.units_sold || 0);
+
+      const { data: updated } = await supabase
+        .from('drobe_products')
+        .update({
+          inward_units: newInward,
+          units_in_trial: newTrial,
+          units_sold: newSold,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', row.id)
+        .select('inward_units, units_in_trial, units_sold')
+        .single();
+
+      if (updated) {
+        return {
+          inwardUnits: updated.inward_units,
+          unitsInTrial: updated.units_in_trial,
+          unitsSold: updated.units_sold
+        };
+      }
+    }
+    return null;
+  } catch (err) {
+    console.warn('supabaseRestockProductStock exception:', err);
+    return null;
+  }
+}
+
+// Finalize delivered & kept order: keeps stock deducted, converts units_in_trial -> units_sold
+export async function supabaseConfirmSoldStock(
+  productIdOrSku: string, 
+  qty: number = 1
+): Promise<{ inwardUnits: number; unitsInTrial: number; unitsSold: number } | null> {
+  if (!supabase || !productIdOrSku) return null;
+  try {
+    // 1. Try atomic database RPC
+    const { data, error } = await supabase.rpc('drobe_confirm_sold_stock', {
+      p_product_id: productIdOrSku,
+      p_qty: qty
+    });
+
+    if (!error && Array.isArray(data) && data.length > 0) {
+      return {
+        inwardUnits: data[0].new_inward_units,
+        unitsInTrial: data[0].new_units_in_trial,
+        unitsSold: data[0].new_units_sold
+      };
+    }
+
+    // 2. Fallback to direct row update
+    const { data: rows } = await supabase
+      .from('drobe_products')
+      .select('id, inward_units, units_in_trial, units_sold')
+      .or(`id.eq.${productIdOrSku},sku.eq.${productIdOrSku}`)
+      .limit(1);
+
+    if (rows && rows.length > 0) {
+      const row = rows[0];
+      const newTrial = Math.max(0, (row.units_in_trial || 0) - qty);
+      const newSold = (row.units_sold || 0) + qty;
+
+      const { data: updated } = await supabase
+        .from('drobe_products')
+        .update({
+          units_in_trial: newTrial,
+          units_sold: newSold,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', row.id)
+        .select('inward_units, units_in_trial, units_sold')
+        .single();
+
+      if (updated) {
+        return {
+          inwardUnits: updated.inward_units,
+          unitsInTrial: updated.units_in_trial,
+          unitsSold: updated.units_sold
+        };
+      }
+    }
+    return null;
+  } catch (err) {
+    console.warn('supabaseConfirmSoldStock exception:', err);
+    return null;
+  }
+}
+
 // Fetch all live products from Supabase
 export async function supabaseFetchProducts(): Promise<DarkstoreProduct[] | null> {
   if (!supabase) return null;
