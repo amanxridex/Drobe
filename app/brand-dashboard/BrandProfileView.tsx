@@ -17,7 +17,6 @@ import {
   X, 
   Upload,
   TrendingUp,
-  Sparkles,
   Award,
   ArrowUpRight,
   Building2,

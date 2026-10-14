@@ -14,7 +14,6 @@ import {
   Check, 
   AlertCircle,
   Building2,
-  Sparkles,
   Camera,
   User,
   Compass,

@@ -7,7 +7,6 @@ import { registerBrandApplication } from '../lib/darkstoreData';
 import BrandStartScreen from './BrandStartScreen';
 import OnboardingFlow from './OnboardingFlow';
 import BrandProfileView from './BrandProfileView';
-import LiquidSilkBg from './LiquidSilkBg';
 import styles from './brand-dashboard.module.css';
 
 const STORAGE_KEY = 'drobe_brand_profile_v1';
@@ -127,9 +126,7 @@ export default function BrandDashboardPage() {
   };
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      {/* Code-driven Liquid Silk Crimson Aurora Background */}
-      <LiquidSilkBg />
+    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff' }}>
       {/* 1. START SCREEN: Clean Drobe Logo & Entry Actions */}
       {activeView === 'start' && (
         <BrandStartScreen
