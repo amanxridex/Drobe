@@ -45,8 +45,10 @@ import {
   adjustProductStock,
   getNextSkuNumber,
   getNextAvailableShelfLocation,
-  markShipmentArrived
+  markShipmentArrived,
+  syncDarkstoreWithSupabase
 } from '../lib/darkstoreData';
+import { subscribeToRealtimeOrders } from '../lib/supabaseClient';
 import styles from './admin.module.css';
 
 export default function AdminDashboardPage() {
@@ -99,11 +101,22 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     loadAllData();
+    syncDarkstoreWithSupabase().then(() => {
+      loadAllData();
+    });
+
+    const unsubRealtime = subscribeToRealtimeOrders(() => {
+      syncDarkstoreWithSupabase().then(() => loadAllData());
+    });
+
     const handleStorageChange = () => {
       loadAllData();
     };
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      if (unsubRealtime) unsubRealtime();
+    };
   }, []);
 
   // Telemetry counts
@@ -493,6 +506,11 @@ export default function AdminDashboardPage() {
             >
               <Boxes size={14} /> + Inward Stock
             </button>
+
+            <div className={styles.telemetryTag} style={{ background: '#ecfdf5', borderColor: '#a7f3d0', color: '#047857' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
+              <span>Supabase Cloud Synced</span>
+            </div>
 
             <div className={styles.telemetryTag}>
               <Activity size={13} color="#16a34a" />

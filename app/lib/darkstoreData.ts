@@ -1,5 +1,19 @@
 // Drobe Ahmedabad Darkstore & Consignment Hub Shared Data Store
 // Connects Brand Dashboard and Admin Inwarding Station
+import {
+  supabase,
+  supabaseInsertOrder,
+  supabaseUpdateOrderStatus,
+  supabaseUpsertBrand,
+  supabaseUpsertProduct,
+  supabaseUpsertShipment,
+  supabaseRecordOrderEvent,
+  supabaseFetchOrders,
+  supabaseFetchBrands,
+  supabaseFetchProducts,
+  supabaseFetchShipments,
+  supabaseFetchRunners
+} from './supabaseClient';
 
 export const AHMEDABAD_WAREHOUSE = {
   id: 'AMD-DARKSTORE-01',
@@ -151,6 +165,7 @@ const KEY_BRANDS = 'drobe_darkstore_brands_v2';
 const KEY_PRODUCTS = 'drobe_darkstore_products_v2';
 const KEY_INBOUNDS = 'drobe_darkstore_inbounds_v2';
 const KEY_ORDERS = 'drobe_darkstore_orders_v2';
+const KEY_RUNNERS = 'drobe_darkstore_runners_v2';
 const KEY_LEGACY_BRAND = 'drobe_brand_profile_v1';
 
 // Pre-seeded Brands
@@ -570,6 +585,9 @@ export function saveDarkstoreBrands(brands: DarkstoreBrand[]) {
   try {
     localStorage.setItem(KEY_BRANDS, JSON.stringify(brands));
   } catch {}
+  try {
+    brands.forEach(b => supabaseUpsertBrand(b));
+  } catch {}
 }
 
 export function getDarkstoreProducts(): DarkstoreProduct[] {
@@ -588,6 +606,9 @@ export function saveDarkstoreProducts(products: DarkstoreProduct[]) {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(KEY_PRODUCTS, JSON.stringify(products));
+  } catch {}
+  try {
+    products.forEach(p => supabaseUpsertProduct(p));
   } catch {}
 }
 
@@ -608,6 +629,53 @@ export function saveInboundShipments(shipments: InboundStockShipment[]) {
   try {
     localStorage.setItem(KEY_INBOUNDS, JSON.stringify(shipments));
   } catch {}
+  try {
+    shipments.forEach(s => supabaseUpsertShipment(s));
+  } catch {}
+}
+
+// End-to-End Supabase Live Data Sync
+export async function syncDarkstoreWithSupabase(): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  try {
+    const [orders, products, brands, shipments, runners] = await Promise.all([
+      supabaseFetchOrders(),
+      supabaseFetchProducts(),
+      supabaseFetchBrands(),
+      supabaseFetchShipments(),
+      supabaseFetchRunners()
+    ]);
+
+    let changed = false;
+    if (orders && orders.length > 0) {
+      localStorage.setItem(KEY_ORDERS, JSON.stringify(orders));
+      changed = true;
+    }
+    if (products && products.length > 0) {
+      localStorage.setItem(KEY_PRODUCTS, JSON.stringify(products));
+      changed = true;
+    }
+    if (brands && brands.length > 0) {
+      localStorage.setItem(KEY_BRANDS, JSON.stringify(brands));
+      changed = true;
+    }
+    if (shipments && shipments.length > 0) {
+      localStorage.setItem(KEY_INBOUNDS, JSON.stringify(shipments));
+      changed = true;
+    }
+    if (runners && runners.length > 0) {
+      localStorage.setItem(KEY_RUNNERS, JSON.stringify(runners));
+      changed = true;
+    }
+
+    if (changed) {
+      window.dispatchEvent(new Event('storage'));
+    }
+    return true;
+  } catch (err) {
+    console.warn('Live sync with Supabase failed, using local offline storage:', err);
+    return false;
+  }
 }
 
 export function getTrialOrders(): TrialOrder[] {
@@ -1185,6 +1253,14 @@ export function brandDispatchStock({
 
 // Hub Runner Fleet
 export function getDarkstoreRunners(): DarkstoreRunner[] {
+  if (typeof window === 'undefined') return AHMEDABAD_RUNNERS_POOL;
+  try {
+    const raw = localStorage.getItem(KEY_RUNNERS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
   return AHMEDABAD_RUNNERS_POOL;
 }
 
@@ -1232,6 +1308,12 @@ export function createCustomerOrder(data: {
 
   const updatedOrders = [newOrder, ...orders];
   saveTrialOrders(updatedOrders);
+
+  // Sync order to Supabase
+  try {
+    supabaseInsertOrder(newOrder);
+    supabaseRecordOrderEvent(newOrder.id, newOrder.orderNumber, newOrder.status, 'Customer App', newOrder.notes);
+  } catch {}
 
   // Increment unitsInTrial on product
   const products = getDarkstoreProducts();
@@ -1314,6 +1396,19 @@ export function assignRunnerToOrder(
 
   saveTrialOrders(updated);
 
+  if (updatedOrder) {
+    const u = updatedOrder as TrialOrder;
+    try {
+      supabaseUpdateOrderStatus(u.id, u.status, {
+        riderName: u.riderName,
+        riderPhone: u.riderPhone,
+        riderVehicle: u.riderVehicle,
+        notes: u.notes
+      }).catch(() => {});
+      supabaseRecordOrderEvent(u.id, u.orderNumber, u.status, 'Hub Dispatch Desk', u.notes).catch(() => {});
+    } catch {}
+  }
+
   if (typeof window !== 'undefined') {
     try {
       window.dispatchEvent(new Event('storage'));
@@ -1345,6 +1440,19 @@ export function handoverOrderToRunner(orderId: string): TrialOrder | null {
   });
 
   saveTrialOrders(updated);
+
+  if (updatedOrder) {
+    const u = updatedOrder as TrialOrder;
+    try {
+      supabaseUpdateOrderStatus(u.id, u.status, {
+        doorstepTimerMinutesLeft: 12,
+        handedOverAt: u.handedOverAt,
+        dispatchedAt: u.dispatchedAt,
+        notes: u.notes
+      }).catch(() => {});
+      supabaseRecordOrderEvent(u.id, u.orderNumber, u.status, 'Hub Dispatcher', u.notes).catch(() => {});
+    } catch {}
+  }
 
   if (typeof window !== 'undefined') {
     try {
@@ -1420,6 +1528,19 @@ export function updateTrialOrderStatus(
   });
 
   saveTrialOrders(updated);
+
+  if (targetOrder) {
+    const t = targetOrder as TrialOrder;
+    try {
+      supabaseUpdateOrderStatus(t.id, newStatus, {
+        doorstepTimerMinutesLeft: t.doorstepTimerMinutesLeft,
+        returnReason: t.returnReason,
+        notes: t.notes,
+        instantRefundStatus: t.instantRefundStatus
+      }).catch(() => {});
+      supabaseRecordOrderEvent(t.id, t.orderNumber, newStatus, 'Hub System / Admin', t.notes).catch(() => {});
+    } catch {}
+  }
 
   // If restocked back to shelf or handed to runner
   if (targetOrder && (newStatus === 'Restocked to Warehouse Shelf' || newStatus === 'Returned on Spot (Runner Heading to Hub)')) {
@@ -1531,6 +1652,18 @@ export function confirmCustomerPayment(
 
   saveTrialOrders(updated);
 
+  if (updatedOrder) {
+    const u = updatedOrder as TrialOrder;
+    try {
+      supabaseUpdateOrderStatus(u.id, u.status, {
+        doorstepTimerMinutesLeft: 0,
+        paymentUpiRef: u.paymentUpiRef,
+        notes: u.notes
+      }).catch(() => {});
+      supabaseRecordOrderEvent(u.id, u.orderNumber, u.status, 'Runner Doorstep Dynamic UPI', u.notes).catch(() => {});
+    } catch {}
+  }
+
   // Update product sales stats
   if (updatedOrder) {
     const products = getDarkstoreProducts();
@@ -1582,6 +1715,20 @@ export function confirmCustomerReturnWithSeal(
   });
 
   saveTrialOrders(updated);
+
+  if (updatedOrder) {
+    const u = updatedOrder as TrialOrder;
+    try {
+      supabaseUpdateOrderStatus(u.id, u.status, {
+        doorstepTimerMinutesLeft: 0,
+        returnSealTag: u.returnSealTag,
+        returnReason: u.returnReason,
+        instantRefundStatus: u.instantRefundStatus,
+        notes: u.notes
+      }).catch(() => {});
+      supabaseRecordOrderEvent(u.id, u.orderNumber, u.status, 'Runner Doorstep Return Bag', u.notes).catch(() => {});
+    } catch {}
+  }
 
   if (typeof window !== 'undefined') {
     try {

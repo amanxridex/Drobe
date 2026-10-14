@@ -61,6 +61,9 @@ export async function supabaseFetchOrders(): Promise<TrialOrder[] | null> {
       riderName: row.rider_name,
       riderPhone: row.rider_phone,
       riderVehicle: row.rider_vehicle,
+      deliveryOtp: row.delivery_otp,
+      paymentUpiRef: row.payment_upi_ref,
+      returnSealTag: row.return_seal_tag,
       receivedAt: row.received_at ? new Date(row.received_at).toLocaleTimeString() : undefined,
       pickedAt: row.picked_at ? new Date(row.picked_at).toLocaleTimeString() : undefined,
       handedOverAt: row.handed_over_at ? new Date(row.handed_over_at).toLocaleTimeString() : undefined,
@@ -78,7 +81,7 @@ export async function supabaseFetchOrders(): Promise<TrialOrder[] | null> {
   }
 }
 
-// Insert new order to Supabase
+// Insert / Upsert order to Supabase
 export async function supabaseInsertOrder(order: TrialOrder): Promise<boolean> {
   if (!supabase) return false;
   try {
@@ -103,6 +106,11 @@ export async function supabaseInsertOrder(order: TrialOrder): Promise<boolean> {
         rider_name: order.riderName,
         rider_phone: order.riderPhone,
         rider_vehicle: order.riderVehicle,
+        delivery_otp: order.deliveryOtp,
+        payment_upi_ref: order.paymentUpiRef,
+        return_seal_tag: order.returnSealTag,
+        return_reason: order.returnReason,
+        instant_refund_status: order.instantRefundStatus,
         status: order.status,
         doorstep_timer_minutes_left: order.doorstepTimerMinutesLeft || 15,
         notes: order.notes
@@ -118,21 +126,52 @@ export async function supabaseInsertOrder(order: TrialOrder): Promise<boolean> {
   }
 }
 
-// Update order status in Supabase
+// Update order status and details in Supabase
 export async function supabaseUpdateOrderStatus(
   orderId: string, 
   status: string, 
-  notes?: string
+  extra?: {
+    doorstepTimerMinutesLeft?: number;
+    returnReason?: string;
+    notes?: string;
+    instantRefundStatus?: string;
+    paymentUpiRef?: string;
+    returnSealTag?: string;
+    riderName?: string;
+    riderPhone?: string;
+    riderVehicle?: string;
+    handedOverAt?: string;
+    dispatchedAt?: string;
+    deliveryOtp?: string;
+  } | string
 ): Promise<boolean> {
   if (!supabase) return false;
   try {
+    const updatePayload: Record<string, any> = {
+      status,
+      updated_at: new Date().toISOString()
+    };
+
+    if (typeof extra === 'string') {
+      updatePayload.notes = extra;
+    } else if (extra && typeof extra === 'object') {
+      if (extra.notes !== undefined) updatePayload.notes = extra.notes;
+      if (extra.doorstepTimerMinutesLeft !== undefined) updatePayload.doorstep_timer_minutes_left = extra.doorstepTimerMinutesLeft;
+      if (extra.returnReason !== undefined) updatePayload.return_reason = extra.returnReason;
+      if (extra.instantRefundStatus !== undefined) updatePayload.instant_refund_status = extra.instantRefundStatus;
+      if (extra.paymentUpiRef !== undefined) updatePayload.payment_upi_ref = extra.paymentUpiRef;
+      if (extra.returnSealTag !== undefined) updatePayload.return_seal_tag = extra.returnSealTag;
+      if (extra.riderName !== undefined) updatePayload.rider_name = extra.riderName;
+      if (extra.riderPhone !== undefined) updatePayload.rider_phone = extra.riderPhone;
+      if (extra.riderVehicle !== undefined) updatePayload.rider_vehicle = extra.riderVehicle;
+      if (extra.handedOverAt !== undefined) updatePayload.handed_over_at = new Date().toISOString();
+      if (extra.dispatchedAt !== undefined) updatePayload.dispatched_at = new Date().toISOString();
+      if (extra.deliveryOtp !== undefined) updatePayload.delivery_otp = extra.deliveryOtp;
+    }
+
     const { error } = await supabase
       .from('drobe_trial_orders')
-      .update({
-        status,
-        ...(notes ? { notes } : {}),
-        updated_at: new Date().toISOString()
-      })
+      .update(updatePayload)
       .or(`id.eq.${orderId},order_number.eq.${orderId}`);
 
     if (error) {
@@ -238,6 +277,165 @@ export async function supabaseFetchRunners(): Promise<DarkstoreRunner[] | null> 
   } catch {
     return null;
   }
+}
+
+// Upsert brand to Supabase
+export async function supabaseUpsertBrand(brand: DarkstoreBrand): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('drobe_brands')
+      .upsert({
+        id: brand.id,
+        name: brand.name,
+        tagline: brand.tagline || '',
+        category: brand.category || 'Male & Female',
+        founder_name: brand.founderName,
+        founder_role: brand.founderRole,
+        email: brand.email,
+        based_out_of: brand.basedOutOf,
+        status: brand.status,
+        profile_image: brand.profileImage,
+        cover_image: brand.coverImage,
+        total_products_count: brand.totalProductsCount || 0,
+        inwarded_units_count: brand.inwardedUnitsCount || 0,
+        updated_at: new Date().toISOString()
+      });
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// Upsert product to Supabase
+export async function supabaseUpsertProduct(product: DarkstoreProduct): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('drobe_products')
+      .upsert({
+        id: product.id,
+        sku: product.sku,
+        sku_serial: product.skuSerial,
+        name: product.name,
+        brand_id: product.brandId,
+        brand_name: product.brandName,
+        category: product.category,
+        price: product.price,
+        volume: product.volume,
+        declared_inventory: product.inventory || 20,
+        inward_units: product.inwardUnits || 0,
+        units_in_trial: product.unitsInTrial || 0,
+        units_sold: product.unitsSold || 0,
+        tagline: product.tagline,
+        description: product.description,
+        images: product.images || [],
+        inward_status: product.inwardStatus,
+        shelf_code: product.warehouseLocation?.code,
+        shelf_details: product.warehouseLocation,
+        is_live: Boolean(product.isLive),
+        updated_at: new Date().toISOString()
+      });
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// Upsert inbound shipment to Supabase
+export async function supabaseUpsertShipment(shipment: InboundStockShipment): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('drobe_inbound_shipments')
+      .upsert({
+        id: shipment.id,
+        brand_id: shipment.brandId,
+        brand_name: shipment.brandName,
+        product_id: shipment.productId,
+        product_name: shipment.productName,
+        units: shipment.units,
+        courier_partner: shipment.courierPartner,
+        tracking_number: shipment.trackingNumber,
+        dispatch_date: shipment.dispatchDate ? new Date().toISOString() : undefined,
+        status: shipment.status,
+        assigned_sku: shipment.assignedSku,
+        assigned_shelf: shipment.assignedShelf,
+        verified_by: shipment.verifiedBy,
+        updated_at: new Date().toISOString()
+      });
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// Fetch all inbound shipments from Supabase
+export async function supabaseFetchShipments(): Promise<InboundStockShipment[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_inbound_shipments')
+      .select('*')
+      .order('dispatch_date', { ascending: false });
+
+    if (error) return null;
+
+    return (data || []).map((row: any): InboundStockShipment => ({
+      id: row.id,
+      brandId: row.brand_id,
+      brandName: row.brand_name,
+      productId: row.product_id,
+      productName: row.product_name,
+      units: row.units,
+      courierPartner: row.courier_partner,
+      trackingNumber: row.tracking_number,
+      dispatchDate: row.dispatch_date ? new Date(row.dispatch_date).toLocaleDateString() : 'Today',
+      receivedDate: row.received_date ? new Date(row.received_date).toLocaleDateString() : undefined,
+      status: row.status,
+      assignedSku: row.assigned_sku,
+      assignedShelf: row.assigned_shelf,
+      verifiedBy: row.verified_by
+    }));
+  } catch {
+    return null;
+  }
+}
+
+// Fetch shelves from Supabase
+export async function supabaseFetchShelves(): Promise<any[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_warehouse_shelves')
+      .select('*')
+      .order('code', { ascending: true });
+
+    if (error) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+// Record an audit event
+export async function supabaseRecordOrderEvent(
+  orderId: string, 
+  orderNumber: string, 
+  toStatus: string, 
+  performedBy: string, 
+  notes?: string
+): Promise<void> {
+  if (!supabase) return;
+  try {
+    await supabase.from('drobe_order_events').insert({
+      order_id: orderId,
+      order_number: orderNumber,
+      to_status: toStatus,
+      performed_by: performedBy,
+      notes: notes || null
+    });
+  } catch {}
 }
 
 // Real-time listener for incoming orders

@@ -54,8 +54,10 @@ import {
   getInboundShipments,
   getTrialOrders,
   InboundStockShipment,
-  TrialOrder
+  TrialOrder,
+  syncDarkstoreWithSupabase
 } from '../lib/darkstoreData';
+import { subscribeToRealtimeOrders } from '../lib/supabaseClient';
 import EditBrandProfileSheet from './EditBrandProfileSheet';
 import AddBankAccountModal from './AddBankAccountModal';
 import styles from './brand-dashboard.module.css';
@@ -113,8 +115,20 @@ export default function BrandProfileView({
       setTrialOrders(getTrialOrders());
     };
     refreshData();
+
+    syncDarkstoreWithSupabase().then(() => {
+      refreshData();
+    });
+
+    const unsubRealtime = subscribeToRealtimeOrders(() => {
+      syncDarkstoreWithSupabase().then(() => refreshData());
+    });
+
     window.addEventListener('storage', refreshData);
-    return () => window.removeEventListener('storage', refreshData);
+    return () => {
+      window.removeEventListener('storage', refreshData);
+      if (unsubRealtime) unsubRealtime();
+    };
   }, []);
 
   const handleConfirmDispatch = (e: React.FormEvent) => {

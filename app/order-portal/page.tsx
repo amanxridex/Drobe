@@ -16,12 +16,15 @@ import {
   generateShiftReportCsv,
   AHMEDABAD_WAREHOUSE,
   TrialOrder,
-  DarkstoreRunner
+  DarkstoreRunner,
+  syncDarkstoreWithSupabase
 } from '../lib/darkstoreData';
+import { subscribeToRealtimeOrders } from '../lib/supabaseClient';
 
 export default function OrderPortalPage() {
   const [orders, setOrders] = useState<TrialOrder[]>([]);
   const [runners, setRunners] = useState<DarkstoreRunner[]>([]);
+  const [isSupabaseLive, setIsSupabaseLive] = useState<boolean>(true);
   const [selectedRunners, setSelectedRunners] = useState<Record<string, string>>({});
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -117,6 +120,28 @@ export default function OrderPortalPage() {
   useEffect(() => {
     refreshOrders();
 
+    // End-to-end sync with Supabase cloud database
+    syncDarkstoreWithSupabase().then(ok => {
+      setIsSupabaseLive(ok);
+      refreshOrders();
+    });
+
+    const unsubRealtime = subscribeToRealtimeOrders((incoming: any) => {
+      syncDarkstoreWithSupabase().then(() => {
+        refreshOrders();
+        playAlertChime();
+        if (incoming) {
+          setIncomingAlert({
+            orderNumber: incoming.order_number || incoming.orderNumber || '#DRB-LIVE',
+            customer: incoming.customer_name || incoming.customerName || 'Customer',
+            product: incoming.product_name || incoming.productName || 'Lookbook Piece',
+            shelf: incoming.shelf_location || incoming.shelfLocation || 'AMD-RA02',
+            time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+          });
+        }
+      });
+    });
+
     const handleStorage = () => refreshOrders();
     const handleNewOrder = (e: CustomEvent<TrialOrder>) => {
       refreshOrders();
@@ -138,6 +163,7 @@ export default function OrderPortalPage() {
     return () => {
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('drobe_new_order', handleNewOrder as EventListener);
+      if (unsubRealtime) unsubRealtime();
     };
   }, []);
 
@@ -276,6 +302,10 @@ export default function OrderPortalPage() {
               <span className={styles.liveTag}>
                 <span className={styles.pulseDot}></span>
                 Live Diverter Online
+              </span>
+              <span className={styles.liveTag} style={{ background: 'rgba(56, 189, 248, 0.12)', borderColor: 'rgba(56, 189, 248, 0.35)', color: '#38bdf8', marginLeft: '6px' }}>
+                <span className={styles.pulseDot} style={{ background: '#38bdf8' }}></span>
+                {isSupabaseLive ? 'Supabase Cloud Realtime' : 'Local Storage Cache'}
               </span>
             </h1>
             <div className={styles.hubAddressSub}>

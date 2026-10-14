@@ -18,7 +18,7 @@ import ProductCard from '@/components/ProductCard';
 import MEN_CURATED_SECTIONS from '@/data/men_curated_sections.json';
 import DISCOVER_BRANDS_DATA from '@/data/discover_brands_manifest.json';
 import AUTHENTIC_HOME_WIDGETS from '@/data/authentic_home_widgets.json';
-import { getDarkstoreProducts, DarkstoreProduct, createCustomerOrder } from '@/app/lib/darkstoreData';
+import { getDarkstoreProducts, DarkstoreProduct, createCustomerOrder, syncDarkstoreWithSupabase } from '@/app/lib/darkstoreData';
 
 export default function HomePage() {
   const { gender, wishlist, toggleWishlist, setIsCouponOpen } = useApp();
@@ -64,6 +64,7 @@ export default function HomePage() {
       }
     };
     loadDarkstore();
+    syncDarkstoreWithSupabase().then(() => loadDarkstore());
     window.addEventListener('storage', loadDarkstore);
     return () => window.removeEventListener('storage', loadDarkstore);
   }, []);

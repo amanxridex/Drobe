@@ -15,11 +15,14 @@ import {
   confirmCustomerReturnWithSeal,
   AHMEDABAD_WAREHOUSE,
   TrialOrder,
-  DarkstoreRunner
+  DarkstoreRunner,
+  syncDarkstoreWithSupabase
 } from '../lib/darkstoreData';
+import { subscribeToRealtimeOrders } from '../lib/supabaseClient';
 
 export default function DeliveryPartnerApp() {
   const [mounted, setMounted] = useState(false);
+  const [isSupabaseLive, setIsSupabaseLive] = useState(true);
   const [activeTab, setActiveTab] = useState<'fetch' | 'runs' | 'stats'>('fetch');
   const [runners, setRunners] = useState<DarkstoreRunner[]>([]);
   const [currentRunner, setCurrentRunner] = useState<DarkstoreRunner | null>(null);
@@ -70,6 +73,15 @@ export default function DeliveryPartnerApp() {
     setMounted(true);
     syncData();
 
+    syncDarkstoreWithSupabase().then(ok => {
+      setIsSupabaseLive(ok);
+      syncData();
+    });
+
+    const unsubRealtime = subscribeToRealtimeOrders(() => {
+      syncDarkstoreWithSupabase().then(() => syncData());
+    });
+
     const handleStorage = () => syncData();
     window.addEventListener('storage', handleStorage);
     window.addEventListener('drobe_new_order', handleStorage);
@@ -77,6 +89,7 @@ export default function DeliveryPartnerApp() {
     return () => {
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('drobe_new_order', handleStorage);
+      if (unsubRealtime) unsubRealtime();
     };
   }, []);
 
@@ -259,6 +272,9 @@ export default function DeliveryPartnerApp() {
           <div className={styles.riderLogoRow}>
             <span className={styles.riderBadge}>DROBE RUNNER</span>
             <span className={styles.appTitle}>Ahmedabad Express</span>
+            <span className={styles.riderBadge} style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0' }}>
+              ● {isSupabaseLive ? 'Supabase Synced' : 'Offline'}
+            </span>
           </div>
 
           <div className={styles.hubLinkGroup}>
