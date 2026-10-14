@@ -378,7 +378,7 @@ export default function HomePage() {
       <TopHeader />
 
       {/* Main Scrollable Content */}
-      <main style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 24 }}>
+      <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch', paddingBottom: 24 }}>
         {/* ========================================================
             SECTION 1: HERO SALE BANNER (MAGENTA WALLPAPER)
             Seamlessly merged with TopHeader background without any visible seam
@@ -555,6 +555,8 @@ export default function HomePage() {
                 display: 'flex',
                 gap: 12,
                 overflowX: 'auto',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
                 WebkitOverflowScrolling: 'touch',
                 paddingBottom: 4
               }}

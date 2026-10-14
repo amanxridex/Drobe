@@ -91,6 +91,8 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
             margin: '0 auto'
           }}
         >
@@ -131,6 +133,8 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
             flexDirection: 'column',
             overflowY: 'auto',
             overflowX: 'hidden',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
             margin: '0 auto'
           }}
         >
@@ -180,6 +184,8 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
           boxShadow: isMobile ? 'none' : '0 0 50px rgba(0,0,0,0.6)',
           margin: '0 auto'
         }}
