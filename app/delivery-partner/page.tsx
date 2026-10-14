@@ -9,6 +9,10 @@ import {
   getOrderByNumber,
   updateTrialOrderStatus,
   handoverOrderToRunner,
+  getOrderDeliveryOtp,
+  verifyOrderOtp,
+  confirmCustomerPayment,
+  confirmCustomerReturnWithSeal,
   AHMEDABAD_WAREHOUSE,
   TrialOrder,
   DarkstoreRunner
@@ -24,6 +28,23 @@ export default function DeliveryPartnerApp() {
   const [allOrders, setAllOrders] = useState<TrialOrder[]>([]);
   const [doorstepTimer, setDoorstepTimer] = useState<number>(14 * 60 + 22); // 14 mins 22 secs
   const [paymentSuccessMsg, setPaymentSuccessMsg] = useState<string | null>(null);
+
+  // Doorstep OTP Verification State
+  const [showOtpModal, setShowOtpModal] = useState<boolean>(false);
+  const [otpInput, setOtpInput] = useState<string>('');
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [isOtpVerified, setIsOtpVerified] = useState<boolean>(false);
+  const [pendingDecision, setPendingDecision] = useState<'kept' | 'returned' | null>(null);
+  const [showOtpHint, setShowOtpHint] = useState<boolean>(false);
+
+  // Doorstep Dynamic UPI QR Modal State
+  const [showUpiModal, setShowUpiModal] = useState<boolean>(false);
+  const [upiTxnId, setUpiTxnId] = useState<string>('');
+
+  // Tamper-Evident Return Bag Seal Modal State
+  const [showReturnSealModal, setShowReturnSealModal] = useState<boolean>(false);
+  const [returnSealInput, setReturnSealInput] = useState<string>('SEAL-8842');
+  const [returnReasonInput, setReturnReasonInput] = useState<string>('Size / fit did not suit at doorstep');
 
   // Sync data safely
   const syncData = () => {
@@ -69,6 +90,9 @@ export default function DeliveryPartnerApp() {
     try {
       const matched = getOrderByNumber(orderInput);
       setActiveOrder(matched);
+      setIsOtpVerified(false);
+      setOtpInput('');
+      setOtpError(null);
     } catch {
       setActiveOrder(null);
     }
@@ -114,17 +138,74 @@ export default function DeliveryPartnerApp() {
     syncData();
   };
 
-  const handleCustomerPurchased = () => {
+  // Step 3a: Initiate Purchased (checks OTP first)
+  const handleInitiateCustomerPurchased = () => {
     if (!activeOrder) return;
-    updateTrialOrderStatus(activeOrder.id, 'Kept on Spot (Purchased)');
-    setPaymentSuccessMsg(`Payment of ${activeOrder.price} collected via UPI QR code! Trial completed.`);
+    if (!isOtpVerified) {
+      setPendingDecision('kept');
+      setOtpInput('');
+      setOtpError(null);
+      setShowOtpHint(false);
+      setShowOtpModal(true);
+    } else {
+      setUpiTxnId(`UPI-TXN-${Math.floor(100000 + Math.random() * 900000)}`);
+      setShowUpiModal(true);
+    }
+  };
+
+  // Step 3b: Initiate Returned (checks OTP first)
+  const handleInitiateCustomerReturned = () => {
+    if (!activeOrder) return;
+    if (!isOtpVerified) {
+      setPendingDecision('returned');
+      setOtpInput('');
+      setOtpError(null);
+      setShowOtpHint(false);
+      setShowOtpModal(true);
+    } else {
+      setReturnSealInput(`SEAL-${Math.floor(1000 + Math.random() * 9000)}`);
+      setShowReturnSealModal(true);
+    }
+  };
+
+  // Verify OTP handler
+  const handleVerifyOtpSubmit = () => {
+    if (!activeOrder) return;
+    const isValid = verifyOrderOtp(activeOrder.id, otpInput);
+    if (!isValid) {
+      setOtpError('Invalid OTP. Please check the 4-digit code provided by the customer.');
+      return;
+    }
+    setOtpError(null);
+    setIsOtpVerified(true);
+    setShowOtpModal(false);
+
+    if (pendingDecision === 'kept') {
+      setUpiTxnId(`UPI-TXN-${Math.floor(100000 + Math.random() * 900000)}`);
+      setShowUpiModal(true);
+    } else if (pendingDecision === 'returned') {
+      setReturnSealInput(`SEAL-${Math.floor(1000 + Math.random() * 9000)}`);
+      setShowReturnSealModal(true);
+    }
+  };
+
+  // Confirm UPI payment collected on spot
+  const handleConfirmPayment = () => {
+    if (!activeOrder) return;
+    confirmCustomerPayment(activeOrder.id, upiTxnId);
+    setShowUpiModal(false);
+    setPaymentSuccessMsg(`✓ Payment of ${activeOrder.price} collected via Dynamic UPI QR (${upiTxnId})! Order finalized.`);
     setTimeout(() => setPaymentSuccessMsg(null), 5000);
     syncData();
   };
 
-  const handleCustomerReturned = () => {
+  // Confirm tamper seal tag on return
+  const handleConfirmReturnSeal = () => {
     if (!activeOrder) return;
-    updateTrialOrderStatus(activeOrder.id, 'Returned on Spot (Runner Heading to Hub)', 'Instant Doorstep Return · Heading back to Ahmedabad Hub');
+    confirmCustomerReturnWithSeal(activeOrder.id, returnSealInput, returnReasonInput);
+    setShowReturnSealModal(false);
+    setPaymentSuccessMsg(`✓ Tamper-proof bag #${returnSealInput} sealed. Heading back to Shivam Bungalows 1, Koteshwar Road.`);
+    setTimeout(() => setPaymentSuccessMsg(null), 5000);
     syncData();
   };
 
@@ -440,7 +521,7 @@ export default function DeliveryPartnerApp() {
                     <div className={styles.actionButtonDualRow}>
                       <button 
                         className={`${styles.bigActionButton} ${styles.btnSuccess}`}
-                        onClick={handleCustomerPurchased}
+                        onClick={handleInitiateCustomerPurchased}
                       >
                         <span>🎉</span>
                         <span>Customer Kept & Paid</span>
@@ -448,7 +529,7 @@ export default function DeliveryPartnerApp() {
 
                       <button 
                         className={`${styles.bigActionButton} ${styles.btnDanger}`}
-                        onClick={handleCustomerReturned}
+                        onClick={handleInitiateCustomerReturned}
                       >
                         <span>↩️</span>
                         <span>Customer Returned</span>
@@ -575,6 +656,17 @@ export default function DeliveryPartnerApp() {
                   <span className={styles.lbl}>Payout per Doorstep Trial</span>
                 </div>
               </div>
+
+              {/* Navigation Back to Ahmedabad Darkstore Hub */}
+              <a 
+                href="https://www.google.com/maps/search/?api=1&query=Shivam+Bungalows+1,+Koteshwar+Road,+Ahmedabad"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.returnHubBtn}
+              >
+                <span>🗺️</span>
+                <span>Navigate Return to Koteshwar Hub</span>
+              </a>
             </div>
 
             {/* Runner Profile Switcher for Testing */}
@@ -613,6 +705,239 @@ export default function DeliveryPartnerApp() {
           </section>
         )}
       </main>
+
+      {/* 1. DOORSTEP OTP VERIFICATION MODAL */}
+      {showOtpModal && activeOrder && (
+        <div className={styles.modalBackdrop} onClick={() => setShowOtpModal(false)}>
+          <div className={styles.runnerModalCard} onClick={e => e.stopPropagation()}>
+            <div className={styles.runnerModalHeader}>
+              <div>
+                <strong style={{ fontSize: '14px' }}>DOORSTEP OTP VERIFICATION</strong>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>Order {activeOrder.orderNumber}</div>
+              </div>
+              <button 
+                onClick={() => setShowOtpModal(false)}
+                style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', fontSize: '18px' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className={styles.runnerModalBody}>
+              <div style={{ fontSize: '13px', color: '#475569', lineHeight: 1.4 }}>
+                Ask customer <strong>{activeOrder.customerName}</strong> for the 4-digit verification PIN displayed in their DROBE order confirmation.
+              </div>
+
+              <input 
+                type="text"
+                maxLength={4}
+                placeholder="• • • •"
+                className={styles.otpInputBox}
+                value={otpInput}
+                onChange={e => setOtpInput(e.target.value.replace(/[^0-9]/g, ''))}
+                autoFocus
+              />
+
+              {otpError && (
+                <div style={{ color: '#ef4444', fontSize: '12px', fontWeight: 600, textAlign: 'center' }}>
+                  {otpError}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowOtpHint(!showOtpHint)}
+                  style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '12px', cursor: 'pointer', fontWeight: 600, padding: 0 }}
+                >
+                  {showOtpHint ? `Doorstep PIN: ${getOrderDeliveryOtp(activeOrder)}` : 'Customer Forgot OTP?'}
+                </button>
+                <span style={{ fontSize: '11px', color: '#94a3b8' }}>4 digits</span>
+              </div>
+
+              <button 
+                className={`${styles.bigActionButton} ${styles.btnPrimary}`}
+                onClick={handleVerifyOtpSubmit}
+                style={{ marginTop: '6px' }}
+              >
+                <span>🔒</span>
+                <span>Verify & Proceed to {pendingDecision === 'kept' ? 'Payment' : 'Return Bag Seal'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. DYNAMIC DOORSTEP UPI PAYMENT QR CODE MODAL */}
+      {showUpiModal && activeOrder && (
+        <div className={styles.modalBackdrop} onClick={() => setShowUpiModal(false)}>
+          <div className={styles.runnerModalCard} onClick={e => e.stopPropagation()}>
+            <div className={styles.runnerModalHeader} style={{ background: '#059669' }}>
+              <div>
+                <strong style={{ fontSize: '14px' }}>COLLECT UPI PAYMENT ON SPOT</strong>
+                <div style={{ fontSize: '11px', color: '#d1fae5' }}>Customer Kept: {activeOrder.productName}</div>
+              </div>
+              <button 
+                onClick={() => setShowUpiModal(false)}
+                style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', fontSize: '18px' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className={styles.runnerModalBody}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
+                  TOTAL AMOUNT TO COLLECT:
+                </div>
+                <div style={{ fontSize: '32px', fontWeight: 900, color: '#059669', margin: '4px 0' }}>
+                  {activeOrder.price}
+                </div>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                  Zero delivery charge · 30-min express trial
+                </div>
+              </div>
+
+              {/* Dynamic QR Display */}
+              <div className={styles.upiQrBox}>
+                <svg className={styles.upiQrSvg} viewBox="0 0 100 100">
+                  {/* Top-Left Finder */}
+                  <rect x="5" y="5" width="28" height="28" rx="4" fill="#0f172a" />
+                  <rect x="9" y="9" width="20" height="20" rx="2" fill="#ffffff" />
+                  <rect x="13" y="13" width="12" height="12" rx="1" fill="#0f172a" />
+
+                  {/* Top-Right Finder */}
+                  <rect x="67" y="5" width="28" height="28" rx="4" fill="#0f172a" />
+                  <rect x="71" y="9" width="20" height="20" rx="2" fill="#ffffff" />
+                  <rect x="75" y="13" width="12" height="12" rx="1" fill="#0f172a" />
+
+                  {/* Bottom-Left Finder */}
+                  <rect x="5" y="67" width="28" height="28" rx="4" fill="#0f172a" />
+                  <rect x="9" y="71" width="20" height="20" rx="2" fill="#ffffff" />
+                  <rect x="13" y="75" width="12" height="12" rx="1" fill="#0f172a" />
+
+                  {/* Matrix Pattern Dots */}
+                  <rect x="40" y="8" width="6" height="6" fill="#059669" />
+                  <rect x="52" y="8" width="6" height="6" fill="#0f172a" />
+                  <rect x="40" y="20" width="6" height="6" fill="#0f172a" />
+                  <rect x="48" y="24" width="8" height="8" fill="#059669" />
+
+                  <rect x="8" y="40" width="6" height="6" fill="#0f172a" />
+                  <rect x="20" y="40" width="8" height="6" fill="#059669" />
+                  <rect x="12" y="52" width="6" height="6" fill="#0f172a" />
+
+                  <rect x="40" y="40" width="18" height="18" rx="3" fill="#0f172a" />
+                  <rect x="44" y="44" width="10" height="10" fill="#ffffff" />
+                  <rect x="47" y="47" width="4" height="4" fill="#059669" />
+
+                  <rect x="68" y="40" width="6" height="6" fill="#0f172a" />
+                  <rect x="80" y="44" width="8" height="6" fill="#059669" />
+                  <rect x="74" y="56" width="6" height="6" fill="#0f172a" />
+
+                  <rect x="40" y="68" width="8" height="6" fill="#059669" />
+                  <rect x="54" y="72" width="6" height="8" fill="#0f172a" />
+                  <rect x="46" y="84" width="8" height="6" fill="#059669" />
+
+                  <rect x="68" y="68" width="6" height="8" fill="#0f172a" />
+                  <rect x="80" y="72" width="8" height="6" fill="#059669" />
+                  <rect x="72" y="84" width="6" height="6" fill="#0f172a" />
+                  <rect x="84" y="84" width="6" height="6" fill="#0f172a" />
+                </svg>
+
+                <div style={{ fontSize: '11px', color: '#334155', fontWeight: 700 }}>
+                  Scan via GPay · PhonePe · Paytm · BHIM · CRED
+                </div>
+                <div style={{ fontSize: '11px', color: '#64748b', fontFamily: 'monospace' }}>
+                  UPI: <strong>drobe.ahmedabad@icici</strong>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '4px' }}>
+                  UPI TRANSACTION / UTR REFERENCE:
+                </label>
+                <input 
+                  type="text"
+                  className={styles.sealInputBox}
+                  value={upiTxnId}
+                  onChange={e => setUpiTxnId(e.target.value)}
+                />
+              </div>
+
+              <button 
+                className={`${styles.bigActionButton} ${styles.btnSuccess}`}
+                onClick={handleConfirmPayment}
+              >
+                <span>✓</span>
+                <span>Confirm Payment Received ({activeOrder.price})</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. TAMPER-EVIDENT RETURN BAG SEAL MODAL */}
+      {showReturnSealModal && activeOrder && (
+        <div className={styles.modalBackdrop} onClick={() => setShowReturnSealModal(false)}>
+          <div className={styles.runnerModalCard} onClick={e => e.stopPropagation()}>
+            <div className={styles.runnerModalHeader} style={{ background: '#dc2626' }}>
+              <div>
+                <strong style={{ fontSize: '14px' }}>INSTANT DOORSTEP RETURN</strong>
+                <div style={{ fontSize: '11px', color: '#fee2e2' }}>Seal Bag & Return to Ahmedabad Hub</div>
+              </div>
+              <button 
+                onClick={() => setShowReturnSealModal(false)}
+                style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', fontSize: '18px' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className={styles.runnerModalBody}>
+              <div style={{ fontSize: '13px', color: '#475569', lineHeight: 1.4 }}>
+                Place <strong>{activeOrder.productName} ({activeOrder.size})</strong> back into the return pouch and lock with tamper-evident security seal.
+              </div>
+
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '4px' }}>
+                  TAMPER-EVIDENT BAG SEAL NUMBER:
+                </label>
+                <input 
+                  type="text"
+                  className={styles.sealInputBox}
+                  value={returnSealInput}
+                  onChange={e => setReturnSealInput(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '4px' }}>
+                  RETURN REASON:
+                </label>
+                <select 
+                  className={styles.sealInputBox}
+                  value={returnReasonInput}
+                  onChange={e => setReturnReasonInput(e.target.value)}
+                >
+                  <option value="Size / fit did not suit at doorstep">Size / fit did not suit at doorstep</option>
+                  <option value="Client preferred another color or silhouette">Client preferred another silhouette</option>
+                  <option value="Fabric / material feel not as expected">Fabric / material feel not as expected</option>
+                  <option value="Customer decided not to purchase">Customer decided not to purchase</option>
+                </select>
+              </div>
+
+              <button 
+                className={`${styles.bigActionButton} ${styles.btnDanger}`}
+                onClick={handleConfirmReturnSeal}
+              >
+                <span>🔒</span>
+                <span>Lock Bag Seal & Ride to Koteshwar Hub</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

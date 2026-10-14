@@ -12,6 +12,8 @@ import {
   handoverOrderToRunner,
   updateTrialOrderStatus,
   createCustomerOrder,
+  getOrderDeliveryOtp,
+  generateShiftReportCsv,
   AHMEDABAD_WAREHOUSE,
   TrialOrder,
   DarkstoreRunner
@@ -23,6 +25,8 @@ export default function OrderPortalPage() {
   const [selectedRunners, setSelectedRunners] = useState<Record<string, string>>({});
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  const [pickingSlipOrder, setPickingSlipOrder] = useState<TrialOrder | null>(null);
   const [incomingAlert, setIncomingAlert] = useState<{
     orderNumber: string;
     customer: string;
@@ -31,8 +35,44 @@ export default function OrderPortalPage() {
     time: string;
   } | null>(null);
 
+  // Load sound preference
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('drobe_hub_sound');
+      if (saved !== null) {
+        setSoundEnabled(saved === 'true');
+      }
+    } catch {}
+  }, []);
+
+  const toggleSound = () => {
+    setSoundEnabled(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('drobe_hub_sound', String(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  // Export shift report CSV
+  const handleExportCsv = () => {
+    try {
+      const csvContent = generateShiftReportCsv();
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `DROBE_Ahmedabad_Hub_Shift_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch {}
+  };
+
   // Play modern web audio chime when an order arrives
   const playAlertChime = () => {
+    if (!soundEnabled) return;
     try {
       if (typeof window === 'undefined') return;
       const AudioContext = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
@@ -248,6 +288,24 @@ export default function OrderPortalPage() {
 
         <div className={styles.hubHeaderActions}>
           <button 
+            className={styles.soundToggleBtn}
+            onClick={toggleSound}
+            title={soundEnabled ? "Mute notification chime" : "Enable notification chime"}
+          >
+            <span>{soundEnabled ? "🔔" : "🔕"}</span>
+            <span>{soundEnabled ? "Sound ON" : "Muted"}</span>
+          </button>
+
+          <button 
+            className={styles.exportBtn}
+            onClick={handleExportCsv}
+            title="Download full shift report in CSV format"
+          >
+            <span>📥</span>
+            <span>Export Shift (CSV)</span>
+          </button>
+
+          <button 
             className={styles.simulateBtn}
             onClick={handleSimulateIncomingOrder}
             title="Simulate customer placing 30-min trial order"
@@ -446,10 +504,25 @@ export default function OrderPortalPage() {
               getOrdersByCol(s => s === 'Order Received (Awaiting Picker)').map(order => (
                 <div key={order.id} className={`${styles.orderItem} ${styles.orderItemNew}`}>
                   <div className={styles.orderCardTop}>
-                    <span className={styles.orderNumTag}>{order.orderNumber}</span>
-                    <span className={styles.orderTimeTag}>
-                      <span>⏱️</span> {order.receivedAt || 'Just Now'}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className={styles.orderNumTag}>{order.orderNumber}</span>
+                      <span className={styles.otpBadge} title="Customer Doorstep OTP">
+                        OTP: {getOrderDeliveryOtp(order)}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <button 
+                        className={styles.slipBtn}
+                        onClick={() => setPickingSlipOrder(order)}
+                        title="Print Picking Slip with Shelf Bin & Barcode"
+                      >
+                        <span>🖨️</span>
+                        <span>Slip</span>
+                      </button>
+                      <span className={styles.orderTimeTag}>
+                        <span>⏱️</span> {order.receivedAt || 'Just Now'}
+                      </span>
+                    </div>
                   </div>
 
                   {/* High Priority Shelf Box */}
@@ -525,10 +598,25 @@ export default function OrderPortalPage() {
               getOrdersByCol(s => s === 'Picked & Packed in Trial Bag' || s === 'Runner Assigned (Ready for Handover)').map(order => (
                 <div key={order.id} className={`${styles.orderItem} ${styles.orderItemPicked}`}>
                   <div className={styles.orderCardTop}>
-                    <span className={styles.orderNumTag}>{order.orderNumber}</span>
-                    <span style={{ fontSize: '10px', color: '#10b981', fontWeight: 700 }}>
-                      ✓ PACKED IN TRIAL BAG
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className={styles.orderNumTag}>{order.orderNumber}</span>
+                      <span className={styles.otpBadge} title="Customer Doorstep OTP">
+                        OTP: {getOrderDeliveryOtp(order)}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <button 
+                        className={styles.slipBtn}
+                        onClick={() => setPickingSlipOrder(order)}
+                        title="Print Picking Slip with Shelf Bin & Barcode"
+                      >
+                        <span>🖨️</span>
+                        <span>Slip</span>
+                      </button>
+                      <span style={{ fontSize: '10px', color: '#10b981', fontWeight: 700 }}>
+                        ✓ PACKED
+                      </span>
+                    </div>
                   </div>
 
                   <div className={styles.productSnippet}>
@@ -748,6 +836,115 @@ export default function OrderPortalPage() {
           </div>
         </div>
       </main>
+
+      {/* Printable Warehouse Picking Slip & Dispatch Label Modal */}
+      {pickingSlipOrder && (
+        <div className={styles.modalBackdrop} onClick={() => setPickingSlipOrder(null)}>
+          <div className={styles.pickingSlipCard} onClick={e => e.stopPropagation()}>
+            <div className={styles.pickingSlipHeader}>
+              <div>
+                <strong style={{ fontSize: '14px', letterSpacing: '0.5px' }}>DROBE QUICK COMMERCE HUB #01</strong>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>30-Minute Dispatch Picking Slip</div>
+              </div>
+              <button 
+                onClick={() => setPickingSlipOrder(null)}
+                style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', fontSize: '18px' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className={styles.pickingSlipBody}>
+              {/* Barcode Graphic */}
+              <div className={styles.slipBarcodeRow}>
+                <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '2px', color: '#64748b' }}>
+                  {pickingSlipOrder.orderNumber}
+                </div>
+                <div className={styles.barcodeLines}>
+                  {[3, 1, 2, 4, 1, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3, 2, 1, 3, 2, 4, 1, 2, 3].map((w, idx) => (
+                    <div 
+                      key={idx} 
+                      className={styles.barcodeBar} 
+                      style={{ width: `${w * 2}px` }} 
+                    />
+                  ))}
+                </div>
+                <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+                  HUB DISPATCH BAY · SHIVAM BUNGALOWS 1, KOTESHWAR ROAD
+                </div>
+              </div>
+
+              {/* Huge Target Shelf Code */}
+              <div className={styles.slipShelfBox}>
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#b45309', textTransform: 'uppercase' }}>
+                  TARGET WAREHOUSE SHELF BIN
+                </div>
+                <div className={styles.slipShelfBig}>
+                  📍 {pickingSlipOrder.shelfLocation}
+                </div>
+              </div>
+
+              {/* Garment Details Grid */}
+              <div className={styles.slipDetailsGrid}>
+                <div className={styles.slipDetailRow}>
+                  <span style={{ color: '#64748b' }}>Garment:</span>
+                  <strong>{pickingSlipOrder.productName}</strong>
+                </div>
+                <div className={styles.slipDetailRow}>
+                  <span style={{ color: '#64748b' }}>SKU & Brand:</span>
+                  <span><strong>{pickingSlipOrder.productSku}</strong> · {pickingSlipOrder.brandName}</span>
+                </div>
+                <div className={styles.slipDetailRow}>
+                  <span style={{ color: '#64748b' }}>Size / Price:</span>
+                  <span>Size: <strong>{pickingSlipOrder.size}</strong> · {pickingSlipOrder.price}</span>
+                </div>
+                <div className={styles.slipDetailRow}>
+                  <span style={{ color: '#64748b' }}>Customer:</span>
+                  <strong>{pickingSlipOrder.customerName}</strong>
+                </div>
+                <div className={styles.slipDetailRow}>
+                  <span style={{ color: '#64748b' }}>Address:</span>
+                  <span style={{ textAlign: 'right', maxWidth: '65%' }}>{pickingSlipOrder.customerAddress}</span>
+                </div>
+                <div className={styles.slipDetailRow}>
+                  <span style={{ color: '#64748b' }}>Doorstep OTP:</span>
+                  <span className={styles.otpBadge} style={{ fontSize: '13px' }}>
+                    {getOrderDeliveryOtp(pickingSlipOrder)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Quality & Packing Checklist */}
+              <div className={styles.slipChecklist}>
+                <div style={{ fontWeight: 800, fontSize: '11px', textTransform: 'uppercase', color: '#0f172a' }}>
+                  Picker 4-Point Verification Checklist:
+                </div>
+                <div>☑ Size tag on collar matches order ({pickingSlipOrder.size})</div>
+                <div>☑ Attached to signature Drobe Wooden Hanger</div>
+                <div>☑ Security RFID tag verified on hem</div>
+                <div>☑ Packed inside clean Drobe Signature Matte Bag</div>
+              </div>
+            </div>
+
+            <div className={styles.pickingSlipActions}>
+              <button 
+                className={styles.actionBtnGhost}
+                onClick={() => setPickingSlipOrder(null)}
+              >
+                Close
+              </button>
+              <button 
+                className={styles.actionBtnPrimary}
+                onClick={() => window.print()}
+                style={{ padding: '8px 16px' }}
+              >
+                <span>🖨️</span>
+                <span>Print Picking Slip (Thermal / A4)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer Telemetry */}
       <footer className={styles.portalFooter}>

@@ -141,6 +141,9 @@ export interface TrialOrder {
   returnReason?: string;
   instantRefundStatus?: string;
   notes?: string;
+  deliveryOtp?: string; // 4-digit verification code e.g. "9842"
+  returnSealTag?: string; // Tamper-evident return bag seal e.g. "SEAL-8821"
+  paymentUpiRef?: string; // UPI transaction reference
 }
 
 // Storage Keys
@@ -1220,6 +1223,7 @@ export function createCustomerOrder(data: {
     price: data.price || '₹1200',
     size: data.size || 'M',
     shelfLocation: data.shelfLocation || 'AMD-RA02-S3-B04',
+    deliveryOtp: nextNumber.toString().slice(-4),
     receivedAt: timeStr,
     dispatchedAt: '',
     status: 'Order Received (Awaiting Picker)',
@@ -1479,4 +1483,157 @@ export function adjustProductStock(
 
   saveDarkstoreProducts(updated);
   return updatedProduct;
+}
+
+// Get 4-digit Delivery Verification OTP (fallback to last 4 digits of order number)
+export function getOrderDeliveryOtp(order: TrialOrder): string {
+  if (order.deliveryOtp && order.deliveryOtp.trim().length === 4) {
+    return order.deliveryOtp;
+  }
+  const digits = (order.orderNumber || '').replace(/[^0-9]/g, '');
+  if (digits.length >= 4) {
+    return digits.slice(-4);
+  }
+  return '4829';
+}
+
+// Verify Delivery OTP entered by runner at doorstep
+export function verifyOrderOtp(orderId: string, inputOtp: string): boolean {
+  const orders = getTrialOrders();
+  const order = orders.find(o => o.id === orderId || o.orderNumber === orderId);
+  if (!order) return false;
+  const expected = getOrderDeliveryOtp(order);
+  return (inputOtp || '').trim() === expected.trim();
+}
+
+// Confirm Customer Purchased on Spot with UPI reference
+export function confirmCustomerPayment(
+  orderId: string,
+  upiRef?: string
+): TrialOrder | null {
+  const orders = getTrialOrders();
+  let updatedOrder: TrialOrder | null = null;
+
+  const updated = orders.map(ord => {
+    if (ord.id === orderId || ord.orderNumber === orderId) {
+      const u: TrialOrder = {
+        ...ord,
+        status: 'Kept on Spot (Purchased)',
+        doorstepTimerMinutesLeft: 0,
+        paymentUpiRef: upiRef || `UPI-TXN-${Date.now().toString().slice(-6)}`,
+        notes: `Customer completed doorstep fitting & purchased on spot! Payment confirmed via UPI (${upiRef || 'Direct Doorstep Dynamic QR'}).`
+      };
+      updatedOrder = u;
+      return u;
+    }
+    return ord;
+  });
+
+  saveTrialOrders(updated);
+
+  // Update product sales stats
+  if (updatedOrder) {
+    const products = getDarkstoreProducts();
+    const updatedProds = products.map(p => {
+      if (p.id === (updatedOrder as TrialOrder).productId || p.sku === (updatedOrder as TrialOrder).productSku) {
+        return {
+          ...p,
+          unitsInTrial: Math.max(0, (p.unitsInTrial || 1) - 1),
+          unitsSold: (p.unitsSold || 0) + 1
+        };
+      }
+      return p;
+    });
+    saveDarkstoreProducts(updatedProds);
+  }
+
+  if (typeof window !== 'undefined') {
+    try {
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+
+  return updatedOrder;
+}
+
+// Confirm Customer Return with Tamper-Proof Bag Seal ID
+export function confirmCustomerReturnWithSeal(
+  orderId: string,
+  sealTag: string,
+  returnReason?: string
+): TrialOrder | null {
+  const orders = getTrialOrders();
+  let updatedOrder: TrialOrder | null = null;
+
+  const updated = orders.map(ord => {
+    if (ord.id === orderId || ord.orderNumber === orderId) {
+      const u: TrialOrder = {
+        ...ord,
+        status: 'Returned on Spot (Runner Heading to Hub)',
+        returnSealTag: sealTag || `SEAL-${Date.now().toString().slice(-4)}`,
+        returnReason: returnReason || 'Instant Doorstep Return · Did not fit/suit',
+        instantRefundStatus: `Instant refund initiated for ${ord.price}`,
+        notes: `Garment sealed inside tamper-evident return bag #${sealTag || 'SEAL-01'}. Runner heading back to Ahmedabad Darkstore Hub.`
+      };
+      updatedOrder = u;
+      return u;
+    }
+    return ord;
+  });
+
+  saveTrialOrders(updated);
+
+  if (typeof window !== 'undefined') {
+    try {
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+
+  return updatedOrder;
+}
+
+// Generate Shift Handover CSV Report for Ahmedabad Darkstore Hub
+export function generateShiftReportCsv(): string {
+  const orders = getTrialOrders();
+  const headers = [
+    'Order Number',
+    'Status',
+    'Shelf Location',
+    'Product Name',
+    'SKU',
+    'Size',
+    'Brand',
+    'Price',
+    'Customer Name',
+    'Customer Phone',
+    'Delivery Address',
+    'Runner Name',
+    'Received At',
+    'Dispatched At',
+    'Doorstep OTP',
+    'UPI Ref / Seal Tag',
+    'Hub Location'
+  ];
+
+  const rows = orders.map(o => [
+    `"${o.orderNumber}"`,
+    `"${o.status}"`,
+    `"${o.shelfLocation}"`,
+    `"${o.productName.replace(/"/g, '""')}"`,
+    `"${o.productSku || ''}"`,
+    `"${o.size || ''}"`,
+    `"${o.brandName || ''}"`,
+    `"${o.price}"`,
+    `"${o.customerName.replace(/"/g, '""')}"`,
+    `"${o.customerPhone || ''}"`,
+    `"${(o.customerAddress || '').replace(/"/g, '""')}"`,
+    `"${o.riderName || 'Unassigned'}"`,
+    `"${o.receivedAt || ''}"`,
+    `"${o.dispatchedAt || ''}"`,
+    `"${getOrderDeliveryOtp(o)}"`,
+    `"${o.paymentUpiRef || o.returnSealTag || ''}"`,
+    `"Shivam Bungalows 1, Koteshwar Road, Ahmedabad"`
+  ]);
+
+  return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
 }

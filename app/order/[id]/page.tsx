@@ -113,6 +113,44 @@ export default function OrderTrackingPage() {
           </p>
         </div>
 
+        {/* Doorstep Delivery Verification PIN Card */}
+        <div
+          style={{
+            background: 'rgba(56, 189, 248, 0.08)',
+            border: '1px solid rgba(56, 189, 248, 0.3)',
+            borderRadius: 14,
+            padding: '12px 16px',
+            marginBottom: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              Doorstep Delivery PIN
+            </div>
+            <div style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>
+              Share with runner to confirm trial bag delivery
+            </div>
+          </div>
+          <div
+            style={{
+              background: '#0f172a',
+              border: '1px solid #38bdf8',
+              color: '#38bdf8',
+              fontSize: 17,
+              fontWeight: 900,
+              fontFamily: 'monospace',
+              letterSpacing: 3,
+              padding: '6px 12px',
+              borderRadius: 8
+            }}
+          >
+            {currentOrder.id.replace(/[^0-9]/g, '').slice(-4) || '9842'}
+          </div>
+        </div>
+
         {/* Courier Rider Contact Card */}
         <div
           style={{
