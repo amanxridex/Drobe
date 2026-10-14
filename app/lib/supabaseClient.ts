@@ -123,6 +123,10 @@ export async function supabaseGetSignedUploadUrl(
 export function supabaseGetPublicMediaUrl(path: string): string {
   if (!path) return '';
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  if (path.startsWith('/assets/real/') || path.startsWith('assets/real/')) {
+    const clean = path.startsWith('/') ? path.slice(1) : path;
+    return `https://eswnhehlnzasiaybjikh.supabase.co/storage/v1/object/public/${DROBE_MEDIA_BUCKET}/${clean}`;
+  }
   if (!supabase) return path;
   const { data } = supabase.storage.from(DROBE_MEDIA_BUCKET).getPublicUrl(path);
   return data.publicUrl;
