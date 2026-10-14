@@ -200,20 +200,28 @@ export async function supabaseFetchProducts(): Promise<DarkstoreProduct[] | null
       id: row.id,
       sku: row.sku,
       skuSerial: row.sku_serial,
-      name: row.name,
+      name: row.name || row.title,
       brandId: row.brand_id,
       brandName: row.brand_name,
       category: row.category,
+      subCategory: row.sub_category,
       price: row.price,
-      volume: row.volume,
-      inventory: row.declared_inventory || 20,
+      originalPrice: Number(row.original_price) || undefined,
+      discountPercentage: Number(row.discount_percentage) || undefined,
+      volume: row.volume || (Array.isArray(row.sizes) ? row.sizes.join(', ') : 'M'),
+      sizes: Array.isArray(row.sizes) ? row.sizes : [],
+      thumbnail: row.thumbnail || (Array.isArray(row.images) ? row.images[0] : ''),
+      fabric: row.fabric,
+      fit: row.fit,
+      gender: row.gender,
+      inventory: row.declared_inventory || 40,
       inwardUnits: row.inward_units || 0,
       unitsInTrial: row.units_in_trial || 0,
       unitsSold: row.units_sold || 0,
       tagline: row.tagline,
       description: row.description,
-      images: Array.isArray(row.images) ? row.images : [],
-      inwardStatus: row.inward_status,
+      images: Array.isArray(row.images) ? row.images : (row.thumbnail ? [row.thumbnail] : []),
+      inwardStatus: row.inward_status || 'Inwarded & Live',
       warehouseLocation: row.shelf_details || (row.shelf_code ? { code: row.shelf_code, zone: '', rack: '', shelf: '', bin: '', hubName: 'Ahmedabad Hub' } : undefined),
       isLive: Boolean(row.is_live)
     }));
@@ -271,6 +279,55 @@ export async function supabaseFetchBrands(): Promise<DarkstoreBrand[] | null> {
       dossierData: row.dossier_data || null
     }));
   } catch {
+    return null;
+  }
+}
+
+// Fetch all brands with their exact live products from drobe_products for Admin Panel
+export async function supabaseFetchAdminBrandsWithProducts(): Promise<{
+  brands: DarkstoreBrand[];
+  products: DarkstoreProduct[];
+} | null> {
+  if (!supabase) return null;
+  try {
+    const [brandsResult, productsResult] = await Promise.all([
+      supabaseFetchBrands(),
+      supabaseFetchProducts()
+    ]);
+
+    if (!brandsResult || !productsResult) return null;
+
+    // Link every brand with its live products from drobe_products
+    const enrichedBrands = brandsResult.map(brand => {
+      const brandSlug = slugify(brand.id || brand.name);
+      const brandNameLower = brand.name?.toLowerCase().trim();
+
+      const brandProducts = productsResult.filter(p => {
+        if (p.brandId && (p.brandId === brand.id || slugify(p.brandId) === brandSlug)) {
+          return true;
+        }
+        if (p.brandName && (p.brandName.toLowerCase().trim() === brandNameLower || slugify(p.brandName) === brandSlug)) {
+          return true;
+        }
+        return false;
+      });
+
+      const totalInwarded = brandProducts.reduce((sum, p) => sum + (p.inwardUnits || 0), 0);
+
+      return {
+        ...brand,
+        totalProductsCount: brandProducts.length,
+        inwardedUnitsCount: totalInwarded > 0 ? totalInwarded : brand.inwardedUnitsCount,
+        products: brandProducts
+      };
+    });
+
+    return {
+      brands: enrichedBrands,
+      products: productsResult
+    };
+  } catch (err) {
+    console.warn('supabaseFetchAdminBrandsWithProducts error:', err);
     return null;
   }
 }

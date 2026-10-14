@@ -53,7 +53,7 @@ import {
   markShipmentArrived,
   syncDarkstoreWithSupabase
 } from '../lib/darkstoreData';
-import { subscribeToRealtimeOrders } from '../lib/supabaseClient';
+import { subscribeToRealtimeOrders, supabaseFetchAdminBrandsWithProducts, slugify } from '../lib/supabaseClient';
 import styles from './admin.module.css';
 
 export default function AdminDashboardPage() {
@@ -67,8 +67,12 @@ export default function AdminDashboardPage() {
   // Brand Dossier Review Modal State
   const [selectedBrandForDossier, setSelectedBrandForDossier] = useState<DarkstoreBrand | null>(null);
 
+  // Brand Products Catalog Modal State
+  const [selectedBrandForProducts, setSelectedBrandForProducts] = useState<DarkstoreBrand | null>(null);
+  const [brandProductsSearch, setBrandProductsSearch] = useState<string>('');
+
   // Brand Filter
-  const [brandFilter, setBrandFilter] = useState<'all' | 'waiting' | 'approved'>('all');
+  const [brandFilter, setBrandFilter] = useState<'all' | 'with_products' | 'awaiting_products' | 'waiting' | 'approved'>('all');
 
   // Inventory Filter
   const [inventoryFilter, setInventoryFilter] = useState<'all' | 'in_stock' | 'low_stock'>('all');
@@ -100,11 +104,25 @@ export default function AdminDashboardPage() {
     }, 3200);
   };
 
-  const loadAllData = () => {
-    setBrands(getDarkstoreBrands());
-    setProducts(getDarkstoreProducts());
+  const loadAllData = async () => {
+    // 1. Initial cached/offline state
+    const localBrands = getDarkstoreBrands();
+    const localProds = getDarkstoreProducts();
+    if (localBrands.length > 0) setBrands(localBrands);
+    if (localProds.length > 0) setProducts(localProds);
     setInbounds(getInboundShipments());
     setTrialOrders(getTrialOrders());
+
+    // 2. Query live Supabase DB for all partner brands and catalog creations
+    try {
+      const dbData = await supabaseFetchAdminBrandsWithProducts();
+      if (dbData && dbData.brands && dbData.products) {
+        setBrands(dbData.brands);
+        setProducts(dbData.products);
+      }
+    } catch (err) {
+      console.warn('Live fetch from Supabase failed, using cached data:', err);
+    }
   };
 
   useEffect(() => {
@@ -130,6 +148,8 @@ export default function AdminDashboardPage() {
   // Telemetry counts
   const waitingBrandsCount = brands.filter(b => b.status === 'Waiting for Approval').length;
   const approvedBrandsCount = brands.filter(b => b.status === 'Approved').length;
+  const brandsWithProductsCount = brands.filter(b => (b.totalProductsCount || 0) > 0).length;
+  const brandsAwaitingCount = brands.filter(b => (b.totalProductsCount || 0) === 0).length;
   const pendingInwardsCount = products.filter(p => p.inwardStatus !== 'Inwarded & Live').length;
   const liveSkusCount = products.filter(p => p.isLive).length;
   const activeTrialsCount = trialOrders.filter(o => o.status === 'Out for 30-Min Delivery' || o.status === 'Doorstep Fitting (Runner Waiting Outside)').length;
@@ -254,7 +274,37 @@ export default function AdminDashboardPage() {
   const filteredBrands = brands.filter(b => {
     if (brandFilter === 'waiting') return b.status === 'Waiting for Approval';
     if (brandFilter === 'approved') return b.status === 'Approved';
+    if (brandFilter === 'with_products') return (b.totalProductsCount || 0) > 0;
+    if (brandFilter === 'awaiting_products') return (b.totalProductsCount || 0) === 0;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase().trim();
+      const match = b.name.toLowerCase().includes(q) ||
+        (b.category && b.category.toLowerCase().includes(q)) ||
+        (b.founderName && b.founderName.toLowerCase().includes(q)) ||
+        (b.email && b.email.toLowerCase().includes(q));
+      if (!match) return false;
+    }
     return true;
+  });
+
+  const currentBrandProducts = selectedBrandForProducts ? (
+    (selectedBrandForProducts.products && selectedBrandForProducts.products.length > 0)
+      ? selectedBrandForProducts.products
+      : products.filter(p => {
+          const bSlug = slugify(selectedBrandForProducts.id || selectedBrandForProducts.name);
+          const bName = selectedBrandForProducts.name?.toLowerCase().trim();
+          return (p.brandId && (p.brandId === selectedBrandForProducts.id || slugify(p.brandId) === bSlug)) ||
+                 (p.brandName && (p.brandName.toLowerCase().trim() === bName || slugify(p.brandName) === bSlug));
+        })
+  ) : [];
+
+  const filteredCurrentBrandProducts = currentBrandProducts.filter(p => {
+    if (!brandProductsSearch) return true;
+    const q = brandProductsSearch.toLowerCase().trim();
+    return (p.name && p.name.toLowerCase().includes(q)) ||
+           (p.sku && p.sku.toLowerCase().includes(q)) ||
+           (p.category && p.category.toLowerCase().includes(q)) ||
+           (p.id && p.id.toLowerCase().includes(q));
   });
 
   const filteredProducts = products.filter(p => {
@@ -1058,13 +1108,28 @@ export default function AdminDashboardPage() {
                   </p>
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   <button
                     type="button"
                     onClick={() => setBrandFilter('all')}
                     className={brandFilter === 'all' ? styles.btnPrimary : styles.btnSecondary}
                   >
                     All Brands ({brands.length})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBrandFilter('with_products')}
+                    className={brandFilter === 'with_products' ? styles.btnPrimary : styles.btnSecondary}
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+                  >
+                    <Package size={13} /> With Products in DB ({brandsWithProductsCount})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBrandFilter('awaiting_products')}
+                    className={brandFilter === 'awaiting_products' ? styles.btnPrimary : styles.btnSecondary}
+                  >
+                    Awaiting Stock ({brandsAwaitingCount})
                   </button>
                   <button
                     type="button"
@@ -1109,7 +1174,7 @@ export default function AdminDashboardPage() {
                                 <img
                                   src={brand.profileImage}
                                   alt={brand.name}
-                                  style={{ width: '44px', height: '44px', borderRadius: '12px', objectFit: 'cover', border: '1px solid #e2e8f0' }}
+                                  style={{ width: '44px', height: '44px', borderRadius: '12px', objectFit: 'contain', border: '1px solid #e2e8f0', background: '#ffffff', padding: '3px' }}
                                 />
                               ) : (
                                 <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
@@ -1117,8 +1182,15 @@ export default function AdminDashboardPage() {
                                 </div>
                               )}
                               <div>
-                                <div style={{ fontWeight: 800, color: '#0f172a' }}>{brand.name}</div>
-                                <div style={{ fontSize: '11px', color: '#64748b' }}>{brand.basedOutOf}</div>
+                                <div style={{ fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span>{brand.name}</span>
+                                  {brand.status === 'Approved' && (
+                                    <span style={{ color: '#0284c7', fontSize: '11px' }} title="Verified Partner">✓</span>
+                                  )}
+                                </div>
+                                <div style={{ fontSize: '11px', color: '#64748b' }}>
+                                  {brand.basedOutOf} · ID: <code>{brand.id}</code>
+                                </div>
                               </div>
                             </div>
                           </td>
@@ -1133,8 +1205,43 @@ export default function AdminDashboardPage() {
                           </td>
                           <td>{brand.appliedDate}</td>
                           <td>
-                            <div style={{ fontSize: '12px', fontWeight: 700 }}>{brand.totalProductsCount} creations listed</div>
-                            <div style={{ fontSize: '11px', color: '#16a34a', fontWeight: 600 }}>{brand.inwardedUnitsCount} pcs stored in Ahmedabad hub</div>
+                            <div>
+                              {brand.totalProductsCount > 0 ? (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedBrandForProducts(brand);
+                                    setBrandProductsSearch('');
+                                  }}
+                                  style={{
+                                    background: '#e0f2fe',
+                                    color: '#0369a1',
+                                    border: '1px solid #bae6fd',
+                                    borderRadius: '8px',
+                                    padding: '4px 10px',
+                                    fontSize: '12px',
+                                    fontWeight: 800,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    cursor: 'pointer'
+                                  }}
+                                  title={`Click to inspect all ${brand.totalProductsCount} products for ${brand.name}`}
+                                >
+                                  <Package size={13} color="#0284c7" />
+                                  <span>{brand.totalProductsCount} Products in DB</span>
+                                </button>
+                              ) : (
+                                <span style={{ fontSize: '11.5px', color: '#94a3b8', fontStyle: 'italic' }}>
+                                  0 products (Awaiting Dispatch)
+                                </span>
+                              )}
+                              <div style={{ fontSize: '11px', color: brand.inwardedUnitsCount > 0 ? '#16a34a' : '#64748b', fontWeight: 600, marginTop: '4px' }}>
+                                {brand.inwardedUnitsCount > 0 
+                                  ? `${brand.inwardedUnitsCount} pcs stored in Ahmedabad hub` 
+                                  : 'No consignment on shelves yet'}
+                              </div>
+                            </div>
                           </td>
                           <td>
                             {isApproved ? (
@@ -1153,6 +1260,20 @@ export default function AdminDashboardPage() {
                           </td>
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                              {brand.totalProductsCount > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedBrandForProducts(brand);
+                                    setBrandProductsSearch('');
+                                  }}
+                                  className={styles.btnPrimary}
+                                  style={{ padding: '5px 9px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px', background: '#0284c7' }}
+                                  title="View full list of live products for this brand"
+                                >
+                                  <Package size={12} color="#ffffff" /> View Products ({brand.totalProductsCount})
+                                </button>
+                              )}
                               <button
                                 type="button"
                                 onClick={() => setSelectedBrandForDossier(brand)}
@@ -1162,7 +1283,16 @@ export default function AdminDashboardPage() {
                               >
                                 <Eye size={12} color="#0284c7" /> View Dossier
                               </button>
-                              {isWaiting ? (
+                              <Link
+                                href={`/brand/${slugify(brand.id || brand.name)}`}
+                                target="_blank"
+                                className={styles.btnSecondary}
+                                style={{ padding: '5px 9px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}
+                                title="Open live Brand Page on storefront"
+                              >
+                                <ExternalLink size={11} color="#475569" /> Storefront
+                              </Link>
+                              {isWaiting && (
                                 <>
                                   <button
                                     type="button"
@@ -1181,10 +1311,6 @@ export default function AdminDashboardPage() {
                                     Reject
                                   </button>
                                 </>
-                              ) : (
-                                <span style={{ fontSize: '11.5px', color: '#64748b' }}>
-                                  {brand.approvedDate || 'Active'}
-                                </span>
                               )}
                             </div>
                           </td>
@@ -1828,6 +1954,285 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
+      {/* 4.5. BRAND PRODUCTS CATALOG MODAL (WIRED TO SUPABASE DB) */}
+      {selectedBrandForProducts && (
+        <div className={styles.modalOverlay} onClick={() => setSelectedBrandForProducts(null)}>
+          <div 
+            className={styles.modalContent} 
+            onClick={e => e.stopPropagation()} 
+            style={{ maxWidth: '920px', width: '95vw', padding: '0', overflow: 'hidden', borderRadius: '20px' }}
+          >
+            {/* Modal Brand Header Banner */}
+            <div 
+              style={{ 
+                padding: '24px 28px', 
+                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
+                color: '#ffffff',
+                position: 'relative'
+              }}
+            >
+              <button 
+                type="button" 
+                onClick={() => setSelectedBrandForProducts(null)}
+                style={{ 
+                  position: 'absolute', 
+                  top: '18px', 
+                  right: '18px', 
+                  background: 'rgba(255,255,255,0.15)', 
+                  border: 'none', 
+                  borderRadius: '50%', 
+                  width: '32px', 
+                  height: '32px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  color: '#ffffff', 
+                  cursor: 'pointer' 
+                }}
+                aria-label="Close"
+              >
+                <X size={16} />
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                {selectedBrandForProducts.profileImage ? (
+                  <img 
+                    src={selectedBrandForProducts.profileImage} 
+                    alt={selectedBrandForProducts.name}
+                    style={{ width: '60px', height: '60px', borderRadius: '16px', objectFit: 'contain', background: '#ffffff', padding: '4px', border: '2px solid rgba(255,255,255,0.2)' }}
+                  />
+                ) : (
+                  <div style={{ width: '60px', height: '60px', borderRadius: '16px', background: '#38bdf8', color: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '24px' }}>
+                    {selectedBrandForProducts.name.slice(0, 1)}
+                  </div>
+                )}
+
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h2 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: '#ffffff' }}>
+                      {selectedBrandForProducts.name}
+                    </h2>
+                    <span style={{ background: '#38bdf8', color: '#0f172a', fontSize: '10px', fontWeight: 800, padding: '2px 8px', borderRadius: '12px' }}>
+                      VERIFIED PARTNER
+                    </span>
+                  </div>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#94a3b8' }}>
+                    {selectedBrandForProducts.tagline || `${selectedBrandForProducts.name} • Live in Ahmedabad Darkstore Hub #01`}
+                  </p>
+                </div>
+              </div>
+
+              {/* Metrics Ribbon */}
+              <div 
+                style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', 
+                  gap: '10px', 
+                  marginTop: '18px', 
+                  paddingTop: '16px', 
+                  borderTop: '1px solid rgba(255,255,255,0.1)' 
+                }}
+              >
+                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#38bdf8' }}>{currentBrandProducts.length}</div>
+                  <div style={{ fontSize: '10.5px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Catalog SKUs</div>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#4ade80' }}>
+                    {currentBrandProducts.reduce((sum, p) => sum + (p.inwardUnits || 0), 0)} pcs
+                  </div>
+                  <div style={{ fontSize: '10.5px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Stored at Hub</div>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#fbbf24' }}>60 Mins</div>
+                  <div style={{ fontSize: '10.5px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Express Trial</div>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '10px', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Link 
+                    href={`/brand/${slugify(selectedBrandForProducts.id || selectedBrandForProducts.name)}`}
+                    target="_blank"
+                    style={{ color: '#ffffff', fontSize: '11px', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px', background: 'rgba(56, 189, 248, 0.25)', border: '1px solid #38bdf8', padding: '6px 10px', borderRadius: '8px' }}
+                  >
+                    <span>Storefront View</span>
+                    <ExternalLink size={12} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Body: Products Table */}
+            <div style={{ padding: '20px 24px', maxHeight: '58vh', overflowY: 'auto' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                  Live Products Catalog ({filteredCurrentBrandProducts.length} of {currentBrandProducts.length})
+                </div>
+
+                {/* Filter Search inside Modal */}
+                <div style={{ position: 'relative', width: '260px' }}>
+                  <Search size={14} color="#94a3b8" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <input
+                    type="text"
+                    value={brandProductsSearch}
+                    onChange={(e) => setBrandProductsSearch(e.target.value)}
+                    placeholder="Search brand products or SKU..."
+                    style={{
+                      width: '100%',
+                      padding: '6px 12px 6px 32px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '12px',
+                      outline: 'none',
+                      background: '#f8fafc'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {filteredCurrentBrandProducts.length > 0 ? (
+                <div style={{ overflowX: 'auto' }}>
+                  <table className={styles.lightTable}>
+                    <thead>
+                      <tr>
+                        <th>Product Details</th>
+                        <th>Category</th>
+                        <th>Live Price</th>
+                        <th>Sizes Available</th>
+                        <th>Inward Stock</th>
+                        <th>Shelf Location</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredCurrentBrandProducts.map((p) => {
+                        const img = (p.images && p.images[0]) || p.thumbnail;
+                        return (
+                          <tr key={p.id}>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                {img ? (
+                                  <img 
+                                    src={img} 
+                                    alt={p.name}
+                                    style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e2e8f0' }}
+                                  />
+                                ) : (
+                                  <div style={{ width: '42px', height: '42px', borderRadius: '8px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+                                    <Package size={18} />
+                                  </div>
+                                )}
+                                <div>
+                                  <div style={{ fontWeight: 700, fontSize: '12.5px', color: '#0f172a' }}>{p.name}</div>
+                                  <div style={{ fontSize: '10.5px', color: '#64748b' }}>
+                                    ID: <code>{p.id}</code> · SKU: <strong>{p.sku || `DR-${p.id}`}</strong>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <span style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 600 }}>
+                                {p.category || 'Apparel'}
+                              </span>
+                            </td>
+                            <td>
+                              <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '13px' }}>
+                                {p.price.startsWith('₹') ? p.price : `₹${p.price}`}
+                              </div>
+                              {p.originalPrice && (
+                                <div style={{ fontSize: '10.5px', color: '#94a3b8', textDecoration: 'line-through' }}>
+                                  ₹{p.originalPrice}
+                                </div>
+                              )}
+                            </td>
+                            <td>
+                              <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                                {(p.sizes && p.sizes.length > 0 ? p.sizes : [p.volume || 'M']).map((sz: string, sIdx: number) => (
+                                  <span key={sIdx} style={{ background: '#e2e8f0', color: '#334155', fontSize: '10px', fontWeight: 700, padding: '1px 5px', borderRadius: '4px' }}>
+                                    {sz}
+                                  </span>
+                                ))}
+                              </div>
+                            </td>
+                            <td>
+                              <div style={{ fontWeight: 700, fontSize: '12px', color: '#16a34a' }}>
+                                {p.inwardUnits || 32} pcs inwarded
+                              </div>
+                              <div style={{ fontSize: '10.5px', color: '#64748b' }}>
+                                {p.inventory || 40} pcs declared
+                              </div>
+                            </td>
+                            <td>
+                              <div style={{ fontWeight: 700, color: '#0284c7', fontSize: '11.5px' }}>
+                                {p.warehouseLocation?.code || 'AMD-RA01-S1-B01'}
+                              </div>
+                              <div style={{ fontSize: '10px', color: '#64748b' }}>
+                                {p.warehouseLocation?.rack || 'Rack A-01'}
+                              </div>
+                            </td>
+                            <td>
+                              <span className={`${styles.statusChip} ${styles.statusLive}`}>
+                                <CheckCircle2 size={11} /> Inwarded & Live
+                              </span>
+                            </td>
+                            <td>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                <Link
+                                  href={`/product/${p.id}`}
+                                  target="_blank"
+                                  className={styles.btnSecondary}
+                                  style={{ padding: '4px 8px', fontSize: '10.5px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '3px' }}
+                                  title="View product on storefront"
+                                >
+                                  <ExternalLink size={11} /> Store
+                                </Link>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedProductForBarcode(p);
+                                    setBarcodeModalOpen(true);
+                                  }}
+                                  className={styles.btnSecondary}
+                                  style={{ padding: '4px 8px', fontSize: '10.5px' }}
+                                  title="Print thermal barcode label"
+                                >
+                                  <Barcode size={11} /> Barcode
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '36px 0', color: '#94a3b8' }}>
+                  <Package size={32} color="#cbd5e1" style={{ margin: '0 auto 8px auto' }} />
+                  <div style={{ fontWeight: 700, color: '#475569' }}>No products found</div>
+                  <p style={{ fontSize: '12px', margin: '4px 0 0 0' }}>
+                    {brandProductsSearch ? 'Try a different search term.' : 'This brand has registered on Drobe and is awaiting stock consignment dispatch to the Ahmedabad darkstore.'}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '14px 24px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '12px', color: '#64748b' }}>
+                Showing <strong>{filteredCurrentBrandProducts.length}</strong> creations for <strong>{selectedBrandForProducts.name}</strong>
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedBrandForProducts(null)}
+                className={styles.btnSecondary}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 5. BRAND ONBOARDING DOSSIER INSPECTION MODAL */}
       {selectedBrandForDossier && (
         <div className={styles.modalOverlay} onClick={() => setSelectedBrandForDossier(null)}>
@@ -2084,43 +2489,54 @@ export default function AdminDashboardPage() {
                   </span>
                 </div>
 
-                {selectedBrandForDossier.products && selectedBrandForDossier.products.length > 0 ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
-                    {selectedBrandForDossier.products.map((prod: any, pIdx: number) => {
-                      const prodImg = (prod.images && prod.images[0]) || prod.image;
-                      return (
-                        <div key={pIdx} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            {prodImg ? (
-                              <img src={prodImg} alt={prod.name} style={{ width: '48px', height: '48px', borderRadius: '10px', objectFit: 'cover', border: '1px solid #e2e8f0' }} />
-                            ) : (
-                              <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
-                                <Package size={20} />
+                {(() => {
+                  const dossierProds = (selectedBrandForDossier.products && selectedBrandForDossier.products.length > 0)
+                    ? selectedBrandForDossier.products
+                    : products.filter(p => {
+                        const bSlug = slugify(selectedBrandForDossier.id || selectedBrandForDossier.name);
+                        const bName = selectedBrandForDossier.name?.toLowerCase().trim();
+                        return (p.brandId && (p.brandId === selectedBrandForDossier.id || slugify(p.brandId) === bSlug)) ||
+                               (p.brandName && (p.brandName.toLowerCase().trim() === bName || slugify(p.brandName) === bSlug));
+                      });
+
+                  return dossierProds.length > 0 ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+                      {dossierProds.map((prod: any, pIdx: number) => {
+                        const prodImg = (prod.images && prod.images[0]) || prod.thumbnail || prod.image;
+                        return (
+                          <div key={pIdx} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                              {prodImg ? (
+                                <img src={prodImg} alt={prod.name} style={{ width: '48px', height: '48px', borderRadius: '10px', objectFit: 'cover', border: '1px solid #e2e8f0' }} />
+                              ) : (
+                                <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+                                  <Package size={20} />
+                                </div>
+                              )}
+                              <div>
+                                <div style={{ fontWeight: 700, fontSize: '13px', color: '#0f172a' }}>{prod.name}</div>
+                                <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '12.5px' }}>{prod.price || '₹1,499'}</div>
+                              </div>
+                            </div>
+                            {prod.tagline && (
+                              <div style={{ fontSize: '11px', color: '#64748b', fontStyle: 'italic' }}>
+                                {prod.tagline}
                               </div>
                             )}
-                            <div>
-                              <div style={{ fontWeight: 700, fontSize: '13px', color: '#0f172a' }}>{prod.name}</div>
-                              <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '12.5px' }}>{prod.price || '₹1,499'}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#475569', paddingTop: '6px', borderTop: '1px solid #e2e8f0' }}>
+                              <span>Size: <strong>{Array.isArray(prod.sizes) ? prod.sizes.join(', ') : (prod.volume || 'Standard')}</strong></span>
+                              <span>Stock: <strong>{prod.inwardUnits || prod.inventory || 20} pcs</strong></span>
                             </div>
                           </div>
-                          {prod.tagline && (
-                            <div style={{ fontSize: '11px', color: '#64748b', fontStyle: 'italic' }}>
-                              {prod.tagline}
-                            </div>
-                          )}
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#475569', paddingTop: '6px', borderTop: '1px solid #e2e8f0' }}>
-                            <span>Size: <strong>{prod.volume || 'Standard'}</strong></span>
-                            <span>Stock: <strong>{prod.inventory || 20} pcs</strong></span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8', fontSize: '12.5px' }}>
-                    No individual product highlights attached to dossier.
-                  </div>
-                )}
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8', fontSize: '12.5px' }}>
+                      No individual product highlights attached to dossier.
+                    </div>
+                  );
+                })()}
               </div>
 
             </div>

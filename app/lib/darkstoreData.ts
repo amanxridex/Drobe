@@ -93,8 +93,16 @@ export interface DarkstoreProduct {
   brandId: string;
   brandName: string;
   category?: string;
+  subCategory?: string;
   price: string;
+  originalPrice?: number;
+  discountPercentage?: number;
   volume?: string; // sizing (e.g. M, L)
+  sizes?: string[];
+  thumbnail?: string;
+  fabric?: string;
+  fit?: string;
+  gender?: string;
   inventory: number; // units declared
   inwardUnits: number; // units received on shelf
   unitsInTrial: number; // units currently in 30-min trial
@@ -268,7 +276,7 @@ export function getDarkstoreBrands(): DarkstoreBrand[] {
     const raw = localStorage.getItem(KEY_BRANDS);
     if (raw) {
       const parsed: DarkstoreBrand[] = JSON.parse(raw);
-      const filtered = parsed.filter(b => !MOCK_BRAND_IDS.has(b.id) && b.name !== 'CHANEL' && b.name !== 'Underrated Club' && b.name !== 'Nova Studios');
+      const filtered = parsed.filter(b => !MOCK_BRAND_IDS.has(b.id) && b.name !== 'CHANEL' && b.name !== 'Nova Studios');
       if (filtered.length !== parsed.length) {
         localStorage.setItem(KEY_BRANDS, JSON.stringify(filtered));
       }
@@ -370,7 +378,7 @@ export async function syncDarkstoreWithSupabase(): Promise<boolean> {
       changed = true;
     }
     if (brands !== null) {
-      const filteredBrands = brands.filter(b => !MOCK_BRAND_IDS.has(b.id) && b.name !== 'CHANEL' && b.name !== 'Underrated Club' && b.name !== 'Nova Studios');
+      const filteredBrands = brands.filter(b => !MOCK_BRAND_IDS.has(b.id) && b.name !== 'CHANEL' && b.name !== 'Nova Studios');
       localStorage.setItem(KEY_BRANDS, JSON.stringify(filteredBrands));
       changed = true;
     }
