@@ -8,6 +8,13 @@ import {
   DarkstoreRunner 
 } from './darkstoreData';
 import { Product } from '@/data/catalog';
+import { 
+  cacheRemember, 
+  CACHE_KEYS, 
+  CACHE_TTL, 
+  invalidateBrandCache, 
+  invalidateCacheKey 
+} from '@/lib/cache';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -1011,107 +1018,119 @@ export async function supabaseFetchProductById(id: string): Promise<Product | nu
 
 export async function supabaseFetchBrandById(brandIdOrSlug: string): Promise<any | null> {
   if (!supabase || !brandIdOrSlug) return null;
-  try {
-    const normalized = slugify(brandIdOrSlug);
-    const stripped = normalized.replace(/^home-discover-brand-/, '').replace(/-men$|-women$/, '');
+  const cacheKey = CACHE_KEYS.BRAND_PROFILE(brandIdOrSlug);
+  return cacheRemember(cacheKey, CACHE_TTL.LONG, async () => {
+    try {
+      const normalized = slugify(brandIdOrSlug);
+      const stripped = normalized.replace(/^home-discover-brand-/, '').replace(/-men$|-women$/, '');
 
-    const { data, error } = await supabase
-      .from('drobe_brands')
-      .select('*')
-      .or(`id.eq.${normalized},id.eq.${brandIdOrSlug},id.eq.${stripped}`)
-      .limit(1);
+      const { data, error } = await supabase
+        .from('drobe_brands')
+        .select('*')
+        .or(`id.eq.${normalized},id.eq.${brandIdOrSlug},id.eq.${stripped}`)
+        .limit(1);
 
-    if (!error && data && data.length > 0) {
-      return data[0];
+      if (!error && data && data.length > 0) {
+        return data[0];
+      }
+
+      // Try fuzzy match on name
+      const { data: nameData } = await supabase
+        .from('drobe_brands')
+        .select('*')
+        .ilike('name', `%${stripped.replace(/-/g, ' ')}%`)
+        .limit(1);
+
+      if (nameData && nameData.length > 0) {
+        return nameData[0];
+      }
+
+      return null;
+    } catch (err) {
+      console.warn('Supabase fetch brand exception:', err);
+      return null;
     }
-
-    // Try fuzzy match on name
-    const { data: nameData } = await supabase
-      .from('drobe_brands')
-      .select('*')
-      .ilike('name', `%${stripped.replace(/-/g, ' ')}%`)
-      .limit(1);
-
-    if (nameData && nameData.length > 0) {
-      return nameData[0];
-    }
-
-    return null;
-  } catch (err) {
-    console.warn('Supabase fetch brand exception:', err);
-    return null;
-  }
+  });
 }
 
 export async function supabaseFetchBrandProducts(brandIdOrSlug: string, brandName?: string): Promise<Product[] | null> {
   if (!supabase || !brandIdOrSlug) return null;
-  try {
-    const slug = slugify(brandIdOrSlug);
-    const stripped = slug.replace(/^home-discover-brand-/, '').replace(/-men$|-women$/, '');
-    const cleanBrandName = (brandName || stripped.replace(/-/g, ' ')).trim();
+  const cacheKey = CACHE_KEYS.BRAND_PRODUCTS(brandIdOrSlug);
+  return cacheRemember(cacheKey, CACHE_TTL.MEDIUM, async () => {
+    try {
+      const slug = slugify(brandIdOrSlug);
+      const stripped = slug.replace(/^home-discover-brand-/, '').replace(/-men$|-women$/, '');
+      const cleanBrandName = (brandName || stripped.replace(/-/g, ' ')).trim();
 
-    let query = supabase
-      .from('drobe_products')
-      .select('*')
-      .eq('is_live', true);
+      let query = supabase
+        .from('drobe_products')
+        .select('*')
+        .eq('is_live', true);
 
-    const orClauses: string[] = [
-      `brand_id.eq.${slug}`,
-      `brand_id.eq.${stripped}`
-    ];
-    if (cleanBrandName && cleanBrandName.length >= 2) {
-      orClauses.push(`brand_name.ilike.%${cleanBrandName}%`);
-    }
+      const orClauses: string[] = [
+        `brand_id.eq.${slug}`,
+        `brand_id.eq.${stripped}`
+      ];
+      if (cleanBrandName && cleanBrandName.length >= 2) {
+        orClauses.push(`brand_name.ilike.%${cleanBrandName}%`);
+      }
 
-    query = query.or(orClauses.join(','));
-    query = query.order('sku_serial', { ascending: true });
+      query = query.or(orClauses.join(','));
+      query = query.order('sku_serial', { ascending: true });
 
-    const { data, error } = await query;
-    if (error || !data) {
+      const { data, error } = await query;
+      if (error || !data) {
+        return null;
+      }
+
+      // STRICT BRAND ISOLATION: Double check returned items so other brand items NEVER leak in
+      const strictlyFiltered = data.filter(item => {
+        const itemBrandId = (item.brand_id || '').toLowerCase().trim();
+        const itemBrandName = (item.brand_name || '').toLowerCase().trim();
+        const itemBrandSlug = slugify(itemBrandName);
+
+        if (itemBrandId && (itemBrandId === slug || itemBrandId === stripped)) return true;
+        if (itemBrandSlug && (itemBrandSlug === slug || itemBrandSlug === stripped)) return true;
+        if (cleanBrandName.length >= 2 && itemBrandName.length >= 2) {
+          if (itemBrandName === cleanBrandName.toLowerCase()) return true;
+          if (itemBrandName.includes(cleanBrandName.toLowerCase()) || cleanBrandName.toLowerCase().includes(itemBrandName)) {
+            return true;
+          }
+        }
+        return false;
+      });
+
+      return strictlyFiltered.map(mapDbProductToStorefrontProduct);
+    } catch (err) {
+      console.warn('Supabase fetch brand products exception:', err);
       return null;
     }
-
-    // STRICT BRAND ISOLATION: Double check returned items so other brand items NEVER leak in
-    const strictlyFiltered = data.filter(item => {
-      const itemBrandId = (item.brand_id || '').toLowerCase().trim();
-      const itemBrandName = (item.brand_name || '').toLowerCase().trim();
-      const itemBrandSlug = slugify(itemBrandName);
-
-      if (itemBrandId && (itemBrandId === slug || itemBrandId === stripped)) return true;
-      if (itemBrandSlug && (itemBrandSlug === slug || itemBrandSlug === stripped)) return true;
-      if (cleanBrandName.length >= 2 && itemBrandName.length >= 2) {
-        if (itemBrandName === cleanBrandName.toLowerCase()) return true;
-        if (itemBrandName.includes(cleanBrandName.toLowerCase()) || cleanBrandName.toLowerCase().includes(itemBrandName)) {
-          return true;
-        }
-      }
-      return false;
-    });
-
-    return strictlyFiltered.map(mapDbProductToStorefrontProduct);
-  } catch (err) {
-    console.warn('Supabase fetch brand products exception:', err);
-    return null;
-  }
+  });
 }
 
 export async function supabaseFetchStorefrontCategories(gender?: string): Promise<any[] | null> {
   if (!supabase) return null;
-  try {
-    let query = supabase
-      .from('drobe_categories')
-      .select('*')
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true });
+  const cacheKey = CACHE_KEYS.STOREFRONT_CATEGORIES(gender || 'all');
+  return cacheRemember(cacheKey, CACHE_TTL.MEDIUM, async () => {
+    try {
+      let query = supabase
+        .from('drobe_categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
 
-    if (gender && gender !== 'all') {
-      query = query.or(`gender.eq.${gender},gender.eq.all`);
+      if (gender && gender !== 'all') {
+        query = query.or(`gender.eq.${gender},gender.eq.all`);
+      }
+
+      const { data, error } = await query;
+      if (error || !data) return null;
+      return data;
+    } catch {
+      return null;
     }
-
-    const { data, error } = await query;
-    if (error || !data) return null;
-    return data;
-  } catch {
-    return null;
-  }
+  });
 }
+
+export { invalidateBrandCache, invalidateCacheKey };
+

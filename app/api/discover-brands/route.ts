@@ -29,37 +29,57 @@ async function readLocalManifest(): Promise<DiscoverBrandsData | null> {
   }
 }
 
+import { cacheRemember, CACHE_KEYS, CACHE_TTL, invalidateCacheKey } from '@/lib/cache';
+
 export async function GET() {
   try {
-    // 1. Try fetching from Supabase DB first if configured
-    if (isSupabaseConfigured() && supabase) {
-      try {
-        const { data, error } = await supabase
-          .from('drobe_app_configs')
-          .select('value')
-          .eq('key', 'discover_brands')
-          .maybeSingle();
+    const cachedResult = await cacheRemember(
+      CACHE_KEYS.DISCOVER_BRANDS_SLIDES,
+      CACHE_TTL.LONG,
+      async () => {
+        // 1. Try fetching from Supabase DB first if configured
+        if (isSupabaseConfigured() && supabase) {
+          try {
+            const { data, error } = await supabase
+              .from('drobe_app_configs')
+              .select('value')
+              .eq('key', 'discover_brands')
+              .maybeSingle();
 
-        if (!error && data?.value && Array.isArray(data.value.slides) && data.value.slides.length > 0) {
-          return NextResponse.json({
-            success: true,
-            source: 'supabase_db',
-            data: data.value
-          });
+            if (!error && data?.value && Array.isArray(data.value.slides) && data.value.slides.length > 0) {
+              return {
+                success: true,
+                source: 'supabase_db',
+                data: data.value
+              };
+            }
+          } catch (dbErr) {
+            console.warn('Supabase drobe_app_configs fetch warning:', dbErr);
+          }
         }
-      } catch (dbErr) {
-        console.warn('Supabase drobe_app_configs fetch warning:', dbErr);
-      }
-    }
 
-    // 2. Fallback to local JSON file
-    const localData = await readLocalManifest();
-    if (localData) {
-      return NextResponse.json({
-        success: true,
-        source: 'local_manifest',
-        data: localData
-      });
+        // 2. Fallback to local JSON file
+        const localData = await readLocalManifest();
+        if (localData) {
+          return {
+            success: true,
+            source: 'local_manifest',
+            data: localData
+          };
+        }
+
+        return null;
+      }
+    );
+
+    if (cachedResult) {
+      const response = NextResponse.json(cachedResult);
+      // Edge CDN & Browser microcaching
+      response.headers.set(
+        'Cache-Control',
+        'public, s-maxage=300, stale-while-revalidate=600'
+      );
+      return response;
     }
 
     return NextResponse.json(
@@ -154,6 +174,9 @@ export async function POST(req: Request) {
         console.warn('Database sync exception:', dbSyncErr);
       }
     }
+
+    // Invalidate Redis/In-Memory Cache so Edge immediately serves fresh discover slides
+    await invalidateCacheKey(CACHE_KEYS.DISCOVER_BRANDS_SLIDES);
 
     return NextResponse.json({
       success: true,
