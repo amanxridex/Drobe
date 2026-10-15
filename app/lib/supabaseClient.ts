@@ -185,6 +185,11 @@ export async function supabaseFetchOrders(): Promise<TrialOrder[] | null> {
       advancePaidAmount: row.advance_paid_amount ? Number(row.advance_paid_amount) : undefined,
       keptAmount: row.kept_amount ? Number(row.kept_amount) : undefined,
       refundAmount: row.refund_amount ? Number(row.refund_amount) : undefined,
+      netRefundAmount: row.net_refund_amount ? Number(row.net_refund_amount) : undefined,
+      overtimeMinutes: Number(row.overtime_minutes) || 0,
+      overtimeFee: Number(row.overtime_fee) || 0,
+      doorstepStartedAt: row.doorstep_started_at || undefined,
+      doorstepCompletedAt: row.doorstep_completed_at || undefined,
       refundStatus: row.refund_status,
       items: row.items_data || undefined
     }));
@@ -225,11 +230,16 @@ export async function supabaseInsertOrder(order: TrialOrder): Promise<boolean> {
         return_reason: order.returnReason,
         instant_refund_status: order.instantRefundStatus,
         status: order.status,
-        doorstep_timer_minutes_left: order.doorstepTimerMinutesLeft || 15,
+        doorstep_timer_minutes_left: order.doorstepTimerMinutesLeft || 6,
         notes: order.notes,
         advance_paid_amount: order.advancePaidAmount,
         kept_amount: order.keptAmount,
         refund_amount: order.refundAmount,
+        net_refund_amount: order.netRefundAmount,
+        overtime_minutes: order.overtimeMinutes || 0,
+        overtime_fee: order.overtimeFee || 0,
+        doorstep_started_at: order.doorstepStartedAt || null,
+        doorstep_completed_at: order.doorstepCompletedAt || null,
         refund_status: order.refundStatus,
         items_data: order.items || null
       });
@@ -264,6 +274,11 @@ export async function supabaseUpdateOrderStatus(
     advance_paid_amount?: number;
     kept_amount?: number;
     refund_amount?: number;
+    net_refund_amount?: number;
+    overtime_minutes?: number;
+    overtime_fee?: number;
+    doorstep_started_at?: string;
+    doorstep_completed_at?: string;
     refund_status?: string;
     items_data?: any;
   } | string
@@ -293,6 +308,11 @@ export async function supabaseUpdateOrderStatus(
       if (extra.advance_paid_amount !== undefined) updatePayload.advance_paid_amount = extra.advance_paid_amount;
       if (extra.kept_amount !== undefined) updatePayload.kept_amount = extra.kept_amount;
       if (extra.refund_amount !== undefined) updatePayload.refund_amount = extra.refund_amount;
+      if (extra.net_refund_amount !== undefined) updatePayload.net_refund_amount = extra.net_refund_amount;
+      if (extra.overtime_minutes !== undefined) updatePayload.overtime_minutes = extra.overtime_minutes;
+      if (extra.overtime_fee !== undefined) updatePayload.overtime_fee = extra.overtime_fee;
+      if (extra.doorstep_started_at !== undefined) updatePayload.doorstep_started_at = extra.doorstep_started_at;
+      if (extra.doorstep_completed_at !== undefined) updatePayload.doorstep_completed_at = extra.doorstep_completed_at;
       if (extra.refund_status !== undefined) updatePayload.refund_status = extra.refund_status;
       if (extra.items_data !== undefined) updatePayload.items_data = extra.items_data;
     }

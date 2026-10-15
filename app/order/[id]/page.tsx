@@ -27,9 +27,10 @@ export default function OrderTrackingPage() {
   // Persistent darkstore trial order
   const [activeDarkstoreOrder, setActiveDarkstoreOrder] = useState<TrialOrder | null>(null);
   const [isSimulatingHubArrival, setIsSimulatingHubArrival] = useState(false);
+  const [localItemStatus, setLocalItemStatus] = useState<Record<number, 'kept' | 'returned'>>({});
 
-  // 15-minute trial countdown
-  const [secondsLeft, setSecondsLeft] = useState(840);
+  // 6-minute doorstep trial countdown window (360 seconds)
+  const [secondsLeft, setSecondsLeft] = useState(360);
 
   const loadDarkstoreOrder = () => {
     try {
@@ -56,8 +57,9 @@ export default function OrderTrackingPage() {
   useEffect(() => {
     loadDarkstoreOrder();
 
+    // Live 1-second interval ticking down
     const timer = setInterval(() => {
-      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      setSecondsLeft((prev) => prev - 1);
     }, 1000);
 
     const handleSync = () => loadDarkstoreOrder();
@@ -73,8 +75,17 @@ export default function OrderTrackingPage() {
     };
   }, [orderId]);
 
-  const minutes = Math.floor(secondsLeft / 60);
-  const seconds = secondsLeft % 60;
+  // Overtime calculations: 6-minute window (360 seconds). If exceeded, ₹2 per minute
+  const isOvertime = secondsLeft < 0;
+  const overtimeTotalSeconds = isOvertime ? Math.abs(secondsLeft) : 0;
+  const overtimeMinutes = isOvertime ? Math.ceil(overtimeTotalSeconds / 60) : 0;
+  const overtimeFee = overtimeMinutes * 2;
+
+  const normalMinutes = Math.max(0, Math.floor(secondsLeft / 60));
+  const normalSeconds = Math.max(0, secondsLeft % 60);
+
+  const overtimeM = Math.floor(overtimeTotalSeconds / 60);
+  const overtimeS = overtimeTotalSeconds % 60;
 
   // Normalized display items
   interface NormalizedItem {
@@ -98,11 +109,11 @@ export default function OrderTrackingPage() {
       name: it.productName,
       brand: it.brandName,
       size: it.size,
-      price: it.priceNum || parseFloat(it.price.replace(/[^0-9.]/g, '')) || 0,
+      price: it.priceNum || parseFloat(it.price.replace(/[^0-9.]/g, '')) || 629,
       priceFormatted: it.price,
-      thumbnail: it.thumbnail || '/assets/images/placeholder_garment.jpg',
+      thumbnail: it.thumbnail || 'https://eswnhehlnzasiaybjikh.supabase.co/storage/v1/object/public/drobe-media/assets/real/products/37127/angle_1.jpg',
       shelfLocation: it.shelfLocation || 'AMD-RA01-S1-B01',
-      status: it.status,
+      status: localItemStatus[idx] || it.status,
       idx
     }));
   } else if (contextOrder?.items && contextOrder.items.length > 0) {
@@ -115,31 +126,65 @@ export default function OrderTrackingPage() {
       priceFormatted: `₹${entry.item.product.price}`,
       thumbnail: entry.item.product.thumbnail,
       shelfLocation: 'AMD-RA01-S1-B01',
-      status: entry.status,
+      status: localItemStatus[idx] || entry.status,
       idx
     }));
   } else {
+    // Standard 3-Item Trial Order with ₹600 + 5% Markup (₹629) from model
     itemsToDisplay = [
       {
-        id: PRODUCTS[0].id,
-        name: PRODUCTS[0].title,
-        brand: PRODUCTS[0].brand,
-        size: 'L',
-        price: PRODUCTS[0].price,
-        priceFormatted: `₹${PRODUCTS[0].price}`,
-        thumbnail: PRODUCTS[0].thumbnail,
+        id: '37127',
+        name: 'Deep Navy Cuban-Collar Jacquard Shirt Casual',
+        brand: 'The Indian Garage Co',
+        size: 'M',
+        price: 629,
+        priceFormatted: '₹629',
+        thumbnail: 'https://eswnhehlnzasiaybjikh.supabase.co/storage/v1/object/public/drobe-media/assets/real/products/37127/angle_1.jpg',
         shelfLocation: 'AMD-RA01-S1-B01',
-        status: 'pending',
+        status: localItemStatus[0] || 'pending',
         idx: 0
+      },
+      {
+        id: '37162',
+        name: 'Men Deep Chestnut Brown Jogger Cargo Pants',
+        brand: 'The Indian Garage Co',
+        size: 'L',
+        price: 629,
+        priceFormatted: '₹629',
+        thumbnail: 'https://eswnhehlnzasiaybjikh.supabase.co/storage/v1/object/public/drobe-media/assets/real/products/37162/angle_1.jpg',
+        shelfLocation: 'AMD-RA01-S2-B02',
+        status: localItemStatus[1] || 'pending',
+        idx: 1
+      },
+      {
+        id: '2623',
+        name: 'Men Black Cargo Jeans - Streetwear Casual',
+        brand: 'The Souled Store',
+        size: '32',
+        price: 629,
+        priceFormatted: '₹629',
+        thumbnail: 'https://eswnhehlnzasiaybjikh.supabase.co/storage/v1/object/public/drobe-media/assets/real/products/2623/angle_1.jpg',
+        shelfLocation: 'AMD-RA02-S1-B01',
+        status: localItemStatus[2] || 'pending',
+        idx: 2
       }
     ];
   }
 
   // Financial reconciliation
-  const advancePaid = activeDarkstoreOrder?.advancePaidAmount ?? (contextOrder?.totalAmount || itemsToDisplay.reduce((s, i) => s + i.price, 0));
-  const keptAmount = activeDarkstoreOrder?.keptAmount ?? itemsToDisplay.filter((i) => i.status === 'kept').reduce((s, i) => s + i.price, 0);
-  const refundAmount = activeDarkstoreOrder?.refundAmount ?? itemsToDisplay.filter((i) => i.status === 'returned').reduce((s, i) => s + i.price, 0);
-  const refundStatus = activeDarkstoreOrder?.refundStatus || (refundAmount > 0 ? 'Refund Pending Hub Arrival' : 'No Refund');
+  const advancePaid = activeDarkstoreOrder?.advancePaidAmount ?? (contextOrder?.totalAmount || itemsToDisplay.reduce((s, i) => s + i.price, 0) || 1887);
+  const keptAmount = itemsToDisplay.filter((i) => i.status === 'kept').reduce((s, i) => s + i.price, 0);
+  const grossRefundAmount = itemsToDisplay.filter((i) => i.status === 'returned').reduce((s, i) => s + i.price, 0);
+  
+  const currentOvertimeFee = activeDarkstoreOrder?.overtimeFee !== undefined && activeDarkstoreOrder.overtimeFee > 0
+    ? activeDarkstoreOrder.overtimeFee
+    : overtimeFee;
+  const currentOvertimeMinutes = activeDarkstoreOrder?.overtimeMinutes !== undefined && activeDarkstoreOrder.overtimeMinutes > 0
+    ? activeDarkstoreOrder.overtimeMinutes
+    : overtimeMinutes;
+
+  const netRefundAmount = Math.max(0, grossRefundAmount - currentOvertimeFee);
+  const refundStatus = activeDarkstoreOrder?.refundStatus || (grossRefundAmount > 0 ? 'Refund Pending Hub Arrival' : 'No Refund');
   const refundUpiRef = activeDarkstoreOrder?.refundUpiRef || '';
   const paymentUpiRef = activeDarkstoreOrder?.paymentUpiRef || 'UPI-ADV-98421098';
 
@@ -148,13 +193,22 @@ export default function OrderTrackingPage() {
   const hasReturnedItems = returnedCount > 0;
   const isRefundProcessed = refundStatus === 'Refund Processed Instantly' || activeDarkstoreOrder?.status === 'Restocked to Warehouse Shelf';
 
+  // Interactive toggle handler
   const handleDecision = (idx: number, decision: 'kept' | 'returned') => {
+    setLocalItemStatus((prev) => ({ ...prev, [idx]: decision }));
+
     if (contextOrder) {
       updateDoorstepStatus(contextOrder.id, idx, decision);
     }
 
     if (activeDarkstoreOrder) {
-      const updated = recordDoorstepDecision(activeDarkstoreOrder.id, idx, decision);
+      const updated = recordDoorstepDecision(
+        activeDarkstoreOrder.id, 
+        idx, 
+        decision, 
+        overtimeMinutes, 
+        overtimeFee
+      );
       if (updated) {
         setActiveDarkstoreOrder(updated);
       }
@@ -173,7 +227,7 @@ export default function OrderTrackingPage() {
       const res = adminMarkOrderReturnedAndRestocked(
         activeDarkstoreOrder.id,
         'Doorstep Fitting Return',
-        'Runner arrived at Ahmedabad Darkstore Hub. Pieces inspected and restocked to shelf.'
+        `Runner arrived at Ahmedabad Darkstore Hub. Pieces inspected and restocked to shelf.${currentOvertimeFee > 0 ? ` (Overtime fee of ₹${currentOvertimeFee} deducted for exceeding 6-min window).` : ''}`
       );
       if (res.order) {
         setActiveDarkstoreOrder(res.order);
@@ -183,7 +237,33 @@ export default function OrderTrackingPage() {
     }, 1200);
   };
 
-  const displayOrderId = activeDarkstoreOrder?.orderNumber || (contextOrder ? `#${contextOrder.id}` : '#DRB-9842');
+  // Helper buttons to easily test 6m timer & overtime surcharge
+  const simulateAddOvertimeMinute = () => {
+    setSecondsLeft((prev) => (prev <= 0 ? prev - 60 : -60));
+  };
+
+  const resetDoorstepTimer = () => {
+    setSecondsLeft(360);
+  };
+
+  // Dynamic Headline formatting matching user requirement
+  let liveBreakdownHeadline = '';
+  if (keptCount === 0 && returnedCount === 0) {
+    liveBreakdownHeadline = 'Choose which pieces to Keep and which to Return to the runner';
+  } else if (keptCount > 0 && returnedCount === 0) {
+    liveBreakdownHeadline = `Keeping ${keptCount} item${keptCount === 1 ? '' : 's'} (₹${keptAmount}) · Full deposit retained`;
+  } else if (keptCount === 0 && returnedCount > 0) {
+    liveBreakdownHeadline = currentOvertimeFee > 0
+      ? `Returning all ${returnedCount} items · Instant refund upon return: ₹${netRefundAmount} to UPI (after -₹${currentOvertimeFee} overtime surcharge)`
+      : `Returning all ${returnedCount} items · Instant refund upon return: ₹${netRefundAmount} to UPI`;
+  } else {
+    // e.g. "Keeping 1 item (₹629) · Instant refund upon return: ₹1,258 to UPI"
+    liveBreakdownHeadline = currentOvertimeFee > 0
+      ? `Keeping ${keptCount} item${keptCount === 1 ? '' : 's'} (₹${keptAmount}) · Overtime fee: -₹${currentOvertimeFee} (${currentOvertimeMinutes}m) · Instant refund upon return: ₹${netRefundAmount} to UPI`
+      : `Keeping ${keptCount} item${keptCount === 1 ? '' : 's'} (₹${keptAmount}) · Instant refund upon return: ₹${netRefundAmount} to UPI`;
+  }
+
+  const displayOrderId = activeDarkstoreOrder?.orderNumber || (contextOrder ? `#${contextOrder.id}` : '#DRB-9852');
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', background: '#121217', overflow: 'hidden' }}>
@@ -206,13 +286,15 @@ export default function OrderTrackingPage() {
             <img src="/assets/icons/back_arrow.svg" alt="Back" style={{ width: 22, height: 22 }} />
           </button>
           <div>
-            <h1 style={{ fontSize: 16, fontWeight: 800, color: '#fff' }}>Order {displayOrderId}</h1>
-            <p style={{ fontSize: 11, color: '#888' }}>Live 15-Min Doorstep Fitting &amp; Instant Refund</p>
+            <h1 style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0 }}>Order {displayOrderId}</h1>
+            <p style={{ fontSize: 11, color: '#888', margin: '2px 0 0 0' }}>Live 6-Min Doorstep Fitting &amp; Instant Refund</p>
           </div>
         </div>
 
-        <div style={{ background: '#0f382c', padding: '4px 10px', borderRadius: 12, border: '1px solid #1c5e48' }}>
-          <span style={{ fontSize: 11, fontWeight: 800, color: '#34d399' }}>⚡ ACTIVE</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ background: '#0f382c', padding: '4px 10px', borderRadius: 12, border: '1px solid #1c5e48' }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#34d399' }}>⚡ ACTIVE</span>
+          </div>
         </div>
       </header>
 
@@ -250,40 +332,127 @@ export default function OrderTrackingPage() {
             </div>
 
             <div>
-              <div style={{ fontSize: 10, color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Refund</div>
-              <div style={{ fontSize: 17, fontWeight: 900, color: refundAmount > 0 ? (isRefundProcessed ? '#34d399' : '#f59e0b') : '#94a3b8', marginTop: 2 }}>
-                ₹{refundAmount}
+              <div style={{ fontSize: 10, color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Net Refund</div>
+              <div style={{ fontSize: 17, fontWeight: 900, color: netRefundAmount > 0 ? (isRefundProcessed ? '#34d399' : '#38bdf8') : '#94a3b8', marginTop: 2 }}>
+                ₹{netRefundAmount}
               </div>
-              <div style={{ fontSize: 9.5, color: refundAmount > 0 ? (isRefundProcessed ? '#34d399' : '#f59e0b') : '#94a3b8' }}>
-                {isRefundProcessed ? 'Credited ✓' : (refundAmount > 0 ? 'Pending Hub' : 'None')}
+              <div style={{ fontSize: 9.5, color: netRefundAmount > 0 ? (isRefundProcessed ? '#34d399' : '#38bdf8') : '#94a3b8' }}>
+                {isRefundProcessed ? 'Credited ✓' : (netRefundAmount > 0 ? 'Instant to UPI' : 'None')}
               </div>
             </div>
           </div>
         </div>
 
-        {/* 15-Minute Trial Countdown Box */}
+        {/* 6-MINUTE DOORSTEP TRIAL COUNTDOWN & OVERTIME BOX */}
         <div
           style={{
-            background: '#191923',
-            border: '1px solid #28283a',
+            background: isOvertime ? '#261418' : '#191923',
+            border: isOvertime ? '1.5px solid #ef4444' : '1px solid #28283a',
             borderRadius: 18,
             padding: '16px',
             textAlign: 'center',
-            marginBottom: 16
+            marginBottom: 16,
+            transition: 'all 0.3s ease'
           }}
         >
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(245, 158, 11, 0.15)', padding: '4px 12px', borderRadius: 20, color: '#fbbf24', fontSize: 11, fontWeight: 800, marginBottom: 8 }}>
-            <img src="/assets/icons/stopwatch.svg" alt="" style={{ width: 14, height: 14 }} />
-            <span>DOORSTEP FITTING ROOM · 15 MIN TIMER</span>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            {isOvertime ? (
+              <span style={{ background: '#7f1d1d', color: '#fca5a5', padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 900, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span>⚠️ OVERTIME ACTIVE</span>
+                <span>·</span>
+                <span>₹2 / MINUTE CHARGE</span>
+              </span>
+            ) : (
+              <span style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <img src="/assets/icons/stopwatch.svg" alt="" style={{ width: 14, height: 14 }} />
+                <span>DOORSTEP FITTING ROOM · 6 MIN WINDOW</span>
+              </span>
+            )}
           </div>
 
-          <div style={{ fontSize: 36, fontWeight: 900, color: '#ffffff', letterSpacing: 1, fontFamily: 'monospace' }}>
-            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+          <div
+            style={{
+              fontSize: 38,
+              fontWeight: 900,
+              color: isOvertime ? '#ef4444' : '#ffffff',
+              letterSpacing: 1.5,
+              fontFamily: 'monospace'
+            }}
+          >
+            {isOvertime
+              ? `+${String(overtimeM).padStart(2, '0')}:${String(overtimeS).padStart(2, '0')}`
+              : `${String(normalMinutes).padStart(2, '0')}:${String(normalSeconds).padStart(2, '0')}`}
           </div>
 
-          <p style={{ fontSize: 12, color: '#aaa', marginTop: 4 }}>
-            Try each piece in your mirror. Choose below what to keep and what to hand back!
+          <p style={{ fontSize: 12, color: isOvertime ? '#fca5a5' : '#aaa', margin: '6px 0 0 0' }}>
+            {isOvertime
+              ? `6-minute trial window exceeded by ${overtimeMinutes} min. Surcharge of ₹${overtimeFee} applied (₹2/min).`
+              : 'Try each piece in your mirror. Runner is waiting outside with signature bag!'}
           </p>
+
+          {/* Interactive Timer Controls for Testing/Demo */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 12 }}>
+            <button
+              onClick={simulateAddOvertimeMinute}
+              style={{
+                background: '#371c22',
+                border: '1px solid #7f1d1d',
+                color: '#fca5a5',
+                fontSize: 10.5,
+                fontWeight: 800,
+                padding: '5px 10px',
+                borderRadius: 8,
+                cursor: 'pointer'
+              }}
+            >
+              ⚡ Test: +1m Overtime (+₹2)
+            </button>
+            <button
+              onClick={resetDoorstepTimer}
+              style={{
+                background: '#22222d',
+                border: '1px solid #38384a',
+                color: '#94a3b8',
+                fontSize: 10.5,
+                fontWeight: 800,
+                padding: '5px 10px',
+                borderRadius: 8,
+                cursor: 'pointer'
+              }}
+            >
+              Reset 6m Timer
+            </button>
+          </div>
+        </div>
+
+        {/* PROMINENT LIVE TRY & BUY REFUND BREAKDOWN BANNER */}
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #064e3b 0%, #022c22 100%)',
+            border: '1.5px solid #10b981',
+            borderRadius: 18,
+            padding: '16px',
+            marginBottom: 16,
+            boxShadow: '0 8px 25px rgba(16, 185, 129, 0.25)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <span style={{ fontSize: 18 }}>⚡</span>
+            <span style={{ fontSize: 11, fontWeight: 900, color: '#6ee7b7', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              Live Refund Breakdown
+            </span>
+          </div>
+
+          <div style={{ fontSize: 14.5, fontWeight: 800, color: '#ffffff', lineHeight: '20px' }}>
+            {liveBreakdownHeadline}
+          </div>
+
+          {currentOvertimeFee > 0 && (
+            <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(239, 68, 68, 0.25)', border: '1px solid #ef4444', color: '#fca5a5', padding: '3px 10px', borderRadius: 8, fontSize: 11, fontWeight: 800 }}>
+              <span>⚠️ Overtime Deducted:</span>
+              <span>-₹{currentOvertimeFee} ({currentOvertimeMinutes} min × ₹2/min)</span>
+            </div>
+          )}
         </div>
 
         {/* Doorstep Delivery Verification PIN Card */}
@@ -320,7 +489,7 @@ export default function OrderTrackingPage() {
               borderRadius: 8
             }}
           >
-            {activeDarkstoreOrder?.deliveryOtp || displayOrderId.replace(/[^0-9]/g, '').slice(-4) || '9842'}
+            {activeDarkstoreOrder?.deliveryOtp || displayOrderId.replace(/[^0-9]/g, '').slice(-4) || '4829'}
           </div>
         </div>
 
@@ -343,7 +512,7 @@ export default function OrderTrackingPage() {
             </div>
             <div>
               <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>
-                {activeDarkstoreOrder?.riderName || 'Meet Dave'} (Runner)
+                {activeDarkstoreOrder?.riderName || 'Jay Suthar'} (Runner)
               </div>
               <div style={{ fontSize: 11, color: '#34d399', fontWeight: 600 }}>
                 Waiting outside with Drobe Signature Bag
@@ -352,7 +521,7 @@ export default function OrderTrackingPage() {
           </div>
 
           <a
-            href={`tel:${activeDarkstoreOrder?.riderPhone || '+919876543210'}`}
+            href={`tel:${activeDarkstoreOrder?.riderPhone || '+919712044912'}`}
             style={{
               background: '#2c3e50',
               border: 'none',
@@ -369,28 +538,6 @@ export default function OrderTrackingPage() {
           </a>
         </div>
 
-        {/* Delivery Address Card */}
-        <div
-          style={{
-            background: '#1a1a24',
-            border: '1px solid #262635',
-            borderRadius: 14,
-            padding: '12px 14px',
-            marginBottom: 20,
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 10
-          }}
-        >
-          <img src="/assets/icons/pin_marker_outline_v3.svg" alt="" style={{ width: 18, height: 18, marginTop: 2 }} />
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 800, color: '#888', textTransform: 'uppercase' }}>Delivery Address</div>
-            <div style={{ fontSize: 12, color: '#ddd', marginTop: 2, lineHeight: '16px' }}>
-              {activeDarkstoreOrder?.customerAddress || location}
-            </div>
-          </div>
-        </div>
-
         {/* LIVE INSTANT DOORSTEP REFUND TRACKER (when any item is returned) */}
         {hasReturnedItems && (
           <div
@@ -403,7 +550,7 @@ export default function OrderTrackingPage() {
                 : '1.5px solid rgba(245, 158, 11, 0.35)',
               borderRadius: 20,
               padding: '16px',
-              marginBottom: 24,
+              marginBottom: 20,
               boxShadow: '0 8px 30px rgba(0,0,0,0.5)'
             }}
           >
@@ -413,12 +560,12 @@ export default function OrderTrackingPage() {
                 <div>
                   <h3 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: isRefundProcessed ? '#34d399' : '#fbbf24' }}>
                     {isRefundProcessed
-                      ? `₹${refundAmount} Refunded Instantly to Your Account!`
-                      : `₹${refundAmount} Instant Refund Pending Hub Check-in`}
+                      ? `₹${netRefundAmount} Refunded Instantly to Your Account!`
+                      : `₹${netRefundAmount} Instant Refund Pending Hub Restock`}
                   </h3>
                   <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
                     {isRefundProcessed
-                      ? `Restocked to Ahmedabad Darkstore Hub · Ref: ${refundUpiRef}`
+                      ? `Restocked to Ahmedabad Darkstore Hub · Ref: ${refundUpiRef || 'REF-UPI-8842'}`
                       : `Runner en route to Ahmedabad Darkstore Hub with ${returnedCount} piece(s)`}
                   </div>
                 </div>
@@ -447,7 +594,7 @@ export default function OrderTrackingPage() {
                   <div style={{ fontSize: 12, fontWeight: 700, color: isRefundProcessed ? '#fff' : '#fbbf24' }}>
                     {isRefundProcessed ? 'Rider Reached Darkstore Hub' : 'Rider En Route to Darkstore Hub'}
                   </div>
-                  <div style={{ fontSize: 10.5, color: '#888' }}>Heading to Shivam Bungalows 1, Koteshwar Road Hub</div>
+                  <div style={{ fontSize: 10.5, color: '#888' }}>Heading to Shivam Hub, Ahmedabad</div>
                 </div>
               </div>
 
@@ -458,7 +605,7 @@ export default function OrderTrackingPage() {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: isRefundProcessed ? '#34d399' : '#888' }}>
-                    {isRefundProcessed ? 'Restocked to Warehouse Shelf · Full Refund Credited' : `Hub Check-in & Restock · Instant ₹${refundAmount} Refund`}
+                    {isRefundProcessed ? 'Restocked to Warehouse Shelf · Full Refund Credited' : `Hub Check-in & Restock · Instant ₹${netRefundAmount} Refund`}
                   </div>
                   <div style={{ fontSize: 10.5, color: isRefundProcessed ? '#34d399' : '#666' }}>
                     {isRefundProcessed
@@ -469,7 +616,7 @@ export default function OrderTrackingPage() {
               </div>
             </div>
 
-            {/* Test Simulation Button (Allows user/tester to simulate runner arriving at warehouse and restocking immediately) */}
+            {/* Test Simulation Button */}
             {!isRefundProcessed && (
               <button
                 onClick={handleSimulateRestock}
@@ -503,13 +650,13 @@ export default function OrderTrackingPage() {
 
             {isRefundProcessed && (
               <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid #10b981', borderRadius: 12, padding: '10px 12px', fontSize: 11.5, color: '#d1fae5', lineHeight: '16px' }}>
-                <strong>✓ Instant UPI Credit Confirmed:</strong> ₹{refundAmount} was credited to your original payment source. Reference: <strong>{refundUpiRef}</strong>. Items placed back on rack.
+                <strong>✓ Instant UPI Credit Confirmed:</strong> ₹{netRefundAmount} was credited to your original payment source. Reference: <strong>{refundUpiRef || 'REF-UPI-8842'}</strong>.{currentOvertimeFee > 0 ? ` (Overtime fee of ₹${currentOvertimeFee} deducted).` : ''}
               </div>
             )}
           </div>
         )}
 
-        {/* Order Items & Trial Decision Section */}
+        {/* Order Items & Interactive Keep / Return Controls */}
         <h2 style={{ fontSize: 13, fontWeight: 800, color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
           Items for Doorstep Fitting ({itemsToDisplay.length})
         </h2>
@@ -570,7 +717,7 @@ export default function OrderTrackingPage() {
                   </div>
                 </div>
 
-                {/* Keep / Return Controls */}
+                {/* Keep / Return Toggle Controls */}
                 <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
                   <button
                     onClick={() => handleDecision(entry.idx, 'kept')}
@@ -592,7 +739,7 @@ export default function OrderTrackingPage() {
                     }}
                   >
                     <img src="/assets/icons/check.svg" alt="" style={{ width: 14, height: 14, filter: 'brightness(0) invert(1)' }} />
-                    {isKept ? 'Kept & Retained' : 'Keep This Fit'}
+                    {isKept ? `Kept (${entry.priceFormatted})` : `Keep (${entry.priceFormatted})`}
                   </button>
 
                   <button
@@ -615,7 +762,7 @@ export default function OrderTrackingPage() {
                     }}
                   >
                     <img src="/assets/icons/return.svg" alt="" style={{ width: 14, height: 14, filter: isReturned ? 'brightness(0) invert(1)' : 'none' }} />
-                    {isReturned ? 'Handed to Rider' : 'Return to Rider'}
+                    {isReturned ? `Returning (${entry.priceFormatted})` : `Return (${entry.priceFormatted})`}
                   </button>
                 </div>
               </div>
@@ -639,34 +786,41 @@ export default function OrderTrackingPage() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12.5 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa' }}>
-              <span>100% Pre-Paid Advance Amount</span>
+              <span>100% Pre-Paid Advance Amount ({itemsToDisplay.length} items)</span>
               <span style={{ color: '#fff', fontWeight: 700 }}>₹{advancePaid}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#34d399' }}>
               <span>Kept Outfits ({keptCount} item{keptCount === 1 ? '' : 's'})</span>
               <span style={{ fontWeight: 700 }}>-₹{keptAmount}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: refundAmount > 0 ? '#38bdf8' : '#aaa' }}>
-              <span>Hub Restock Refund ({returnedCount} item{returnedCount === 1 ? '' : 's'})</span>
-              <span style={{ fontWeight: 700 }}>{refundAmount > 0 ? `₹${refundAmount}` : '₹0'}</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: grossRefundAmount > 0 ? '#38bdf8' : '#aaa' }}>
+              <span>Gross Return Value ({returnedCount} item{returnedCount === 1 ? '' : 's'})</span>
+              <span style={{ fontWeight: 700 }}>{grossRefundAmount > 0 ? `₹${grossRefundAmount}` : '₹0'}</span>
             </div>
+
+            {currentOvertimeFee > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#ef4444' }}>
+                <span>Overtime Surcharge ({currentOvertimeMinutes} min @ ₹2/min)</span>
+                <span style={{ fontWeight: 700 }}>-₹{currentOvertimeFee}</span>
+              </div>
+            )}
 
             <div style={{ height: 1, background: '#2c2c3c', margin: '4px 0' }} />
 
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 900, color: '#fff' }}>
-              <span>Net Client Bill</span>
-              <span>₹{keptAmount}</span>
+              <span>Net Instant UPI Refund</span>
+              <span style={{ color: '#34d399' }}>₹{netRefundAmount}</span>
             </div>
 
             <div style={{ fontSize: 11, color: '#34d399', background: 'rgba(52,211,153,0.1)', padding: '6px 10px', borderRadius: 8, textAlign: 'center', marginTop: 4 }}>
-              {refundAmount > 0 ? (
+              {grossRefundAmount > 0 ? (
                 isRefundProcessed ? (
-                  <span>✓ ₹{refundAmount} Refunded Instantly to your UPI account!</span>
+                  <span>✓ ₹{netRefundAmount} Refunded Instantly to your UPI account!</span>
                 ) : (
-                  <span>⚡ ₹{refundAmount} will be refunded the second runner checks into the hub!</span>
+                  <span>⚡ ₹{netRefundAmount} will be refunded the second runner checks into the hub!</span>
                 )
               ) : (
-                <span>Zero pending balance · 100% Settled</span>
+                <span>All fits kept · 100% Retained</span>
               )}
             </div>
           </div>
@@ -686,7 +840,7 @@ export default function OrderTrackingPage() {
         >
           <img src="/assets/icons/easy_refund_icon_dark.svg" alt="" style={{ width: 24, height: 24 }} />
           <div style={{ fontSize: 11, color: '#ccc', lineHeight: '16px' }}>
-            <span style={{ fontWeight: 800, color: '#34d399' }}>Instant Hub Refund Guarantee:</span> For any garments handed back to the runner, the refund is credited instantly to your account the second the runner checks them into our Ahmedabad Darkstore Hub.
+            <span style={{ fontWeight: 800, color: '#34d399' }}>6-Minute Doorstep Trial Guarantee:</span> Take 6 complimentary minutes in your mirror. For any items returned, your refund is credited instantly to your UPI account as the runner drops them back at our Ahmedabad hub. Overtime beyond 6 minutes is billed at ₹2/min.
           </div>
         </div>
       </main>

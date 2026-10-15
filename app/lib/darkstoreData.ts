@@ -309,6 +309,11 @@ export interface TrialOrder {
   items?: TrialOrderItem[]; // Itemized list for multi-item orders
   keptAmount?: number; // Amount kept on spot (e.g. ₹2999)
   refundAmount?: number; // Amount to be refunded instantly on hub check-in (e.g. ₹6498)
+  netRefundAmount?: number; // Net refund after deducting overtime fees (e.g. ₹2 per minute beyond 6 min window)
+  overtimeMinutes?: number; // Overtime minutes beyond 6-minute window
+  overtimeFee?: number; // Surcharge of ₹2 per minute exceeded
+  doorstepStartedAt?: string;
+  doorstepCompletedAt?: string;
   refundStatus?: 'No Refund' | 'Refund Pending Hub Arrival' | 'Refund Processed Instantly';
   refundUpiRef?: string;
   refundTimestamp?: string;
@@ -1223,7 +1228,11 @@ export function createCustomerOrder(data: {
     receivedAt: timeStr,
     dispatchedAt: '',
     status: 'Order Received (Awaiting Picker)',
-    notes: `100% Advance Pre-Paid Order (₹${totalAdvance} via UPI: ${upiTxRef}). ${orderItems.length} items dispatched for 15-min doorstep fitting. Handed-back items refund instantly on warehouse check-in.`,
+    doorstepTimerMinutesLeft: 6,
+    overtimeMinutes: 0,
+    overtimeFee: 0,
+    netRefundAmount: 0,
+    notes: `100% Advance Pre-Paid Order (₹${totalAdvance} via UPI: ${upiTxRef}). ${orderItems.length} items dispatched for 6-min doorstep fitting. Handed-back items refund instantly on warehouse check-in.`,
     
     // Financial & Split Decision fields
     advancePaidAmount: totalAdvance,
@@ -1277,11 +1286,13 @@ export function createCustomerOrder(data: {
   return newOrder;
 }
 
-// Record Customer Doorstep Decision: Kept vs Returned on Spot
+// Record Customer Doorstep Decision: Kept vs Returned on Spot with 6-minute window & ₹2/min overtime calculation
 export function recordDoorstepDecision(
   orderId: string, 
   itemIdx: number, 
-  decision: 'kept' | 'returned'
+  decision: 'kept' | 'returned',
+  extraOvertimeMinutes?: number,
+  extraOvertimeFee?: number
 ): TrialOrder | null {
   const orders = getTrialOrders();
   let updatedOrder: TrialOrder | null = null;
@@ -1313,7 +1324,16 @@ export function recordDoorstepDecision(
       const keptItems = items.filter(i => i.status === 'kept');
       const returnedItems = items.filter(i => i.status === 'returned');
       const keptAmount = keptItems.reduce((sum, i) => sum + i.priceNum, 0);
-      const refundAmount = returnedItems.reduce((sum, i) => sum + i.priceNum, 0);
+      const grossRefundAmount = returnedItems.reduce((sum, i) => sum + i.priceNum, 0);
+
+      // Overtime calculation: ₹2 per minute beyond 6-minute trial window
+      const overtimeMinutes = extraOvertimeMinutes !== undefined 
+        ? extraOvertimeMinutes 
+        : (ord.overtimeMinutes || 0);
+      const overtimeFee = extraOvertimeFee !== undefined 
+        ? extraOvertimeFee 
+        : (overtimeMinutes * 2);
+      const netRefundAmount = Math.max(0, grossRefundAmount - overtimeFee);
 
       const hasReturned = returnedItems.length > 0;
       const allDecided = items.every(i => i.status === 'kept' || i.status === 'returned');
@@ -1325,7 +1345,9 @@ export function recordDoorstepDecision(
       if (hasReturned) {
         newStatus = 'Returned on Spot (Runner Heading to Hub)';
         refundStatus = 'Refund Pending Hub Arrival';
-        instantRefundStatus = `₹${refundAmount} Instant Refund Pending Hub Check-in`;
+        instantRefundStatus = overtimeFee > 0
+          ? `₹${netRefundAmount} Instant Refund (Gross ₹${grossRefundAmount} - ₹${overtimeFee} Overtime Surcharge) Pending Hub Check-in`
+          : `₹${netRefundAmount} Instant Refund Pending Hub Check-in`;
       } else if (allDecided && keptItems.length === items.length) {
         newStatus = 'Kept on Spot (Purchased)';
         refundStatus = 'No Refund';
@@ -1337,11 +1359,15 @@ export function recordDoorstepDecision(
         items,
         status: newStatus,
         keptAmount,
-        refundAmount,
+        refundAmount: grossRefundAmount,
+        netRefundAmount,
+        overtimeMinutes,
+        overtimeFee,
+        doorstepCompletedAt: new Date().toISOString(),
         refundStatus,
         instantRefundStatus,
         notes: hasReturned 
-          ? `Customer kept ${keptItems.length} item(s) (₹${keptAmount}) and handed back ${returnedItems.length} item(s) (₹${refundAmount}) to the runner. Runner en route to Hub. Instant refund will trigger on hub check-in.`
+          ? `Customer kept ${keptItems.length} item(s) (₹${keptAmount}) and handed back ${returnedItems.length} item(s) (₹${grossRefundAmount}) to runner.${overtimeFee > 0 ? ` 6-min window exceeded by ${overtimeMinutes} min (-₹${overtimeFee} surcharge applied).` : ''} Net instant refund of ₹${netRefundAmount} will credit on warehouse check-in.`
           : `All ${keptItems.length} item(s) kept on spot (₹${keptAmount}). Advance payment retained in full.`
       };
 
@@ -1359,6 +1385,10 @@ export function recordDoorstepDecision(
       supabaseUpdateOrderStatus(u.id, u.status, {
         kept_amount: u.keptAmount,
         refund_amount: u.refundAmount,
+        net_refund_amount: u.netRefundAmount,
+        overtime_minutes: u.overtimeMinutes,
+        overtime_fee: u.overtimeFee,
+        doorstep_completed_at: u.doorstepCompletedAt,
         refund_status: u.refundStatus,
         instantRefundStatus: u.instantRefundStatus,
         items_data: u.items,
@@ -1668,12 +1698,16 @@ export function adminMarkOrderReturnedAndRestocked(
   const updatedOrders = orders.map(ord => {
     if (ord.id === orderId || ord.orderNumber === orderId) {
       const returnedItems = (ord.items || []).filter(i => i.status === 'returned');
-      const refundAmt = ord.refundAmount && ord.refundAmount > 0 
+      const grossAmt = ord.refundAmount && ord.refundAmount > 0 
         ? ord.refundAmount 
         : (parseFloat(ord.price.replace(/[^0-9.]/g, '')) || 0);
+      const overtimeFee = ord.overtimeFee || 0;
+      const refundAmt = ord.netRefundAmount !== undefined && ord.netRefundAmount >= 0
+        ? ord.netRefundAmount
+        : Math.max(0, grossAmt - overtimeFee);
 
       const countStr = returnedItems.length > 0 ? `${returnedItems.length} returned item(s)` : '1 returned item';
-      const defaultNotes = notes || `Runner arrived at Ahmedabad Darkstore Hub. ${countStr} inspected & restocked to shelf. Instant refund of ₹${refundAmt} credited to customer account (${refundUpiRef}).`;
+      const defaultNotes = notes || `Runner arrived at Ahmedabad Darkstore Hub. ${countStr} inspected & restocked to shelf. Instant refund of ₹${refundAmt} credited to customer account (${refundUpiRef})${overtimeFee > 0 ? ` (after ₹${overtimeFee} overtime surcharge deduction)` : ''}.`;
 
       const u: TrialOrder = {
         ...ord,
@@ -1681,10 +1715,12 @@ export function adminMarkOrderReturnedAndRestocked(
         doorstepTimerMinutesLeft: 0,
         returnReason: defaultReason,
         refundStatus: 'Refund Processed Instantly',
-        refundAmount: refundAmt,
+        refundAmount: grossAmt,
+        netRefundAmount: refundAmt,
+        overtimeFee,
         refundUpiRef,
         refundTimestamp: new Date().toISOString(),
-        instantRefundStatus: `₹${refundAmt} Refunded Instantly to Source Account (${refundUpiRef})`,
+        instantRefundStatus: `₹${refundAmt} Refunded Instantly to Source Account (${refundUpiRef})${overtimeFee > 0 ? ` [Gross ₹${grossAmt} - ₹${overtimeFee} Overtime]` : ''}`,
         notes: defaultNotes
       };
       updatedOrder = u;
@@ -1727,6 +1763,9 @@ export function adminMarkOrderReturnedAndRestocked(
         instantRefundStatus: u.instantRefundStatus,
         refund_status: u.refundStatus,
         refund_amount: u.refundAmount,
+        net_refund_amount: u.netRefundAmount,
+        overtime_minutes: u.overtimeMinutes,
+        overtime_fee: u.overtimeFee,
         paymentUpiRef: u.refundUpiRef,
         items_data: u.items,
         notes: u.notes
@@ -1743,7 +1782,7 @@ export function adminMarkOrderReturnedAndRestocked(
         u.orderNumber, 
         u.status, 
         'Admin Inwarding Desk', 
-        `Runner arrived at hub. ${itemsToRestock.length} item(s) restocked to shelf. Instant refund of ₹${u.refundAmount} credited to customer via ${refundUpiRef}.`
+        `Runner arrived at hub. ${itemsToRestock.length} item(s) restocked to shelf. Instant refund of ₹${u.netRefundAmount ?? u.refundAmount} credited to customer via ${refundUpiRef}.`
       ).catch(() => {});
     } catch {}
 
