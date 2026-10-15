@@ -88,7 +88,10 @@ export default function ProductDetailPage() {
   const similarProducts = PRODUCTS.filter((p) => p.gender === product.gender && p.id !== product.id).slice(0, 4);
 
   const handleSliderCommit = (direction: 'buy' | 'add') => {
-    addToCart(product, selectedSize, 'tryAndBuy');
+    const added = addToCart(product, selectedSize, 'tryAndBuy');
+    if (!added) {
+      return;
+    }
 
     if (direction === 'buy') {
       setActionFeedback('Proceeding to Checkout...');

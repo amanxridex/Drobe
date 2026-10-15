@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
@@ -21,14 +21,26 @@ export default function CartPage() {
     cartTotal,
     createOrder,
     location,
-    user
+    user,
+    setIsAuthOpen
   } = useApp();
+
+  // If visitor is unauthenticated, prompt them with the Auth modal to sign in or create an account
+  useEffect(() => {
+    if (!user) {
+      setIsAuthOpen(true);
+    }
+  }, [user, setIsAuthOpen]);
 
   const rawSubtotal = cart.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
   const rawMrp = cart.reduce((sum, i) => sum + i.product.originalPrice * i.quantity, 0);
   const totalSavings = rawMrp - rawSubtotal + discountAmount;
 
   const handleCheckout = () => {
+    if (!user) {
+      setIsAuthOpen(true);
+      return;
+    }
     if (cart.length === 0) return;
     confetti({ particleCount: 70, spread: 70, origin: { y: 0.8 } });
     
@@ -112,7 +124,61 @@ export default function CartPage() {
 
       {/* Main Body */}
       <main style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 80px' }}>
-        {cart.length === 0 ? (
+        {!user ? (
+          /* Locked Auth State: Real JWT Email, Password & Phone required */
+          <div style={{ textAlign: 'center', padding: '50px 20px', maxWidth: 360, margin: '0 auto' }}>
+            <div
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 24,
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                margin: '0 auto 20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 16px 36px rgba(0,0,0,0.5)'
+              }}
+            >
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.3)', padding: '4px 12px', borderRadius: 20, marginBottom: 12 }}>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8', letterSpacing: '0.04em' }}>AUTHENTICATION REQUIRED</span>
+            </div>
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.3px' }}>
+              Sign In to Access Your Bag
+            </h2>
+            <p style={{ fontSize: 13, color: '#9ca3af', marginBottom: 28, lineHeight: '20px' }}>
+              Create an account or log in with your email, password &amp; phone number to add fits, claim doorstep trials, and checkout.
+            </p>
+            <button
+              onClick={() => setIsAuthOpen(true)}
+              style={{
+                width: '100%',
+                background: '#ffffff',
+                color: '#000000',
+                border: 'none',
+                borderRadius: 16,
+                padding: '14px',
+                fontSize: 13,
+                fontWeight: 900,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                boxShadow: '0 8px 24px rgba(255,255,255,0.2)'
+              }}
+            >
+              <span>Sign In / Create Account</span>
+              <span style={{ fontSize: 15 }}>→</span>
+            </button>
+          </div>
+        ) : cart.length === 0 ? (
           /* Empty Cart State */
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <div
@@ -420,7 +486,7 @@ export default function CartPage() {
       </main>
 
       {/* Sticky Bottom Checkout Bar */}
-      {cart.length > 0 && (
+      {user && cart.length > 0 && (
         <div
           style={{
             position: 'sticky',

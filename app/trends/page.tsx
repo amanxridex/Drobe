@@ -42,8 +42,10 @@ export default function TrendsPage() {
   };
 
   const handleQuickAdd = () => {
-    addToCart(linkedProduct, 'L', 'tryAndBuy');
-    confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+    const added = addToCart(linkedProduct, 'L', 'tryAndBuy');
+    if (added) {
+      confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+    }
   };
 
   return (

@@ -74,10 +74,10 @@ export default function ProfilePage() {
   // User Identity Data
   const [userData, setUserData] = useState({
     name: user?.name || (user ? 'Shopper' : 'Guest Shopper'),
-    email: user ? `${(user.phone || '').replace(/[^0-9]/g, '').slice(-10)}@drobe.in` : '',
+    email: user?.email || (user?.phone ? `${user.phone.replace(/[^0-9]/g, '').slice(-10)}@drobe.in` : ''),
     phone: user?.phone || '',
     username: user?.name ? `@${user.name.toLowerCase().replace(/\s+/g, '')}` : '@guest',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    avatar: user?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
     hubZone: 'Ahmedabad Hub #01 (SG Highway)'
   });
 
@@ -85,10 +85,10 @@ export default function ProfilePage() {
     if (user) {
       setUserData({
         name: user.name || 'Shopper',
-        email: `${(user.phone || 'shopper').replace(/[^0-9]/g, '').slice(-10)}@drobe.in`,
+        email: user.email || (user.phone ? `${user.phone.replace(/[^0-9]/g, '').slice(-10)}@drobe.in` : ''),
         phone: user.phone || '',
         username: user.name ? `@${user.name.toLowerCase().replace(/\s+/g, '')}` : '@shopper',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+        avatar: user.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
         hubZone: 'Ahmedabad Hub #01 (SG Highway)'
       });
     } else {

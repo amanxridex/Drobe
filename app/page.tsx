@@ -27,7 +27,7 @@ import { TiltedGridHero } from '@/components/ui/tilted-grid-hero';
 import StackingCardsHero from '@/components/StackingCardsHero';
 
 export default function HomePage() {
-  const { gender, wishlist, toggleWishlist, setIsCouponOpen, user, location } = useApp();
+  const { gender, wishlist, toggleWishlist, setIsCouponOpen, user, location, setIsAuthOpen } = useApp();
   const router = useRouter();
 
   const [categorySlideIndex, setCategorySlideIndex] = useState(0);
@@ -66,6 +66,10 @@ export default function HomePage() {
 
   const handleQuickTryOrder = (e: React.MouseEvent, p: DarkstoreProduct) => {
     e.stopPropagation();
+    if (!user) {
+      setIsAuthOpen(true);
+      return;
+    }
     const ord = createCustomerOrder({
       productId: p.id,
       productName: p.name,

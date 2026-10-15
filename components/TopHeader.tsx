@@ -96,9 +96,9 @@ export default function TopHeader() {
             />
           </button>
 
-          {/* Profile Icon */}
+          {/* Profile Icon / Avatar */}
           <button
-            onClick={() => router.push('/profile')}
+            onClick={() => user ? router.push('/profile') : setIsAuthOpen(true)}
             style={{
               background: 'none',
               border: 'none',
@@ -107,12 +107,38 @@ export default function TopHeader() {
               alignItems: 'center',
               padding: 0
             }}
+            aria-label={user ? 'My Profile' : 'Sign In'}
           >
-            <img
-              src="/assets/icons/profile_outline.svg"
-              alt="Profile"
-              style={{ width: 22, height: 22 }}
-            />
+            {user?.avatarUrl ? (
+              <img
+                src={user.avatarUrl}
+                alt={user.name}
+                style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover', border: '1.5px solid rgba(255,255,255,0.4)' }}
+              />
+            ) : user ? (
+              <div
+                style={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #38bdf8 0%, #6366f1 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 12,
+                  fontWeight: 900,
+                  color: '#fff'
+                }}
+              >
+                {user.name ? user.name[0].toUpperCase() : 'U'}
+              </div>
+            ) : (
+              <img
+                src="/assets/icons/profile_outline.svg"
+                alt="Profile"
+                style={{ width: 22, height: 22 }}
+              />
+            )}
           </button>
         </div>
       </div>
