@@ -38,6 +38,23 @@ const PRESET_MODELS = [
   }
 ];
 
+const getGarmentCutout = (product: Product) => {
+  const cat = (product.category || '').toLowerCase();
+  const sub = (product.subCategory || '').toLowerCase();
+  const title = (product.title || '').toLowerCase();
+
+  if (cat.includes('ethnic') || sub.includes('kurta') || title.includes('kurta') || title.includes('chanderi')) {
+    return '/assets/real/cat_women_ethnic_cutout.png';
+  }
+  if (cat.includes('dress') || sub.includes('dress') || title.includes('dress') || title.includes('maxi')) {
+    return '/assets/real/cat_women_dresses_cutout.png';
+  }
+  if (cat.includes('bottom') || sub.includes('pant') || sub.includes('trouser') || title.includes('bottom')) {
+    return '/assets/real/cat_women_bottom_cutout.png';
+  }
+  return '/assets/real/cat_women_top_cutout.png';
+};
+
 function TryOnContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -252,20 +269,51 @@ function TryOnContent() {
           ) : (
             /* CLEAN BEFORE / AFTER SLIDER */
             <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-              {/* Fitted Layer */}
-              <img
-                src={garmentImage}
-                alt="Fitted"
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-              />
+              {/* Fitted Layer (THE CLOTH DRAPED ON YOU!) */}
+              <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+                {/* 1. Base: The User's Own Photo */}
+                <img
+                  src={userPhoto}
+                  alt="You Fitted"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
 
-              {/* Original Layer */}
+                {/* 2. The Garment Draped Over the User's Torso */}
+                <div style={{
+                  position: 'absolute',
+                  top: '28%',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '74%',
+                  height: '66%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  pointerEvents: 'none',
+                  zIndex: 2
+                }}>
+                  <img
+                    src={getGarmentCutout(selectedProduct)}
+                    alt="Cloth on You"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.6)) contrast(1.05)',
+                      transform: 'scale(1.05)'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Original Layer (You in Your Original Clothes) */}
               <div style={{
                 position: 'absolute',
                 inset: 0,
                 width: `${sliderPos}%`,
                 overflow: 'hidden',
-                borderRight: '2px solid #ffffff'
+                borderRight: '2.5px solid #ffffff',
+                boxShadow: '2px 0 15px rgba(0,0,0,0.5)'
               }}>
                 <img
                   src={userPhoto}
