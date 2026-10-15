@@ -6,6 +6,7 @@ import { useApp } from '@/context/AppContext';
 import BottomNav from '@/components/BottomNav';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getTrialOrders, TrialOrder } from '@/app/lib/darkstoreData';
+import { supabaseUploadMedia, supabaseFetchOrders } from '@/app/lib/supabaseClient';
 import {
   Package,
   Heart,
@@ -66,30 +67,34 @@ type ActiveSheetType =
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, logoutUser, wishlist, setIsAuthOpen } = useApp();
+  const { user, logoutUser, wishlist, setIsAuthOpen, updateUserProfile } = useApp();
 
   // Active Bottom Sheet Modal
   const [activeSheet, setActiveSheet] = useState<ActiveSheetType>(null);
 
-  // User Identity Data
+  // Hidden File Input for Real Avatar Upload to Supabase Storage
+  const avatarInputRef = React.useRef<HTMLInputElement>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+
+  // User Identity Data (Real Supabase Auth & Profile Data)
   const [userData, setUserData] = useState({
-    name: user?.name || (user ? 'Shopper' : 'Guest Shopper'),
+    name: user?.name || (user ? 'Verified Shopper' : 'Guest Shopper'),
     email: user?.email || (user?.phone ? `${user.phone.replace(/[^0-9]/g, '').slice(-10)}@drobe.in` : ''),
     phone: user?.phone || '',
     username: user?.name ? `@${user.name.toLowerCase().replace(/\s+/g, '')}` : '@guest',
-    avatar: user?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-    hubZone: 'Ahmedabad Hub #01 (SG Highway)'
+    avatar: user?.avatarUrl || '',
+    hubZone: 'Ahmedabad Central Darkstore Hub #01 (Koteshwar / Motera)'
   });
 
   useEffect(() => {
     if (user) {
       setUserData({
-        name: user.name || 'Shopper',
+        name: user.name || 'Verified Shopper',
         email: user.email || (user.phone ? `${user.phone.replace(/[^0-9]/g, '').slice(-10)}@drobe.in` : ''),
         phone: user.phone || '',
         username: user.name ? `@${user.name.toLowerCase().replace(/\s+/g, '')}` : '@shopper',
-        avatar: user.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-        hubZone: 'Ahmedabad Hub #01 (SG Highway)'
+        avatar: user.avatarUrl || '',
+        hubZone: 'Ahmedabad Central Darkstore Hub #01 (Koteshwar / Motera)'
       });
     } else {
       setUserData({
@@ -97,8 +102,8 @@ export default function ProfilePage() {
         email: '',
         phone: '',
         username: '@guest',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-        hubZone: 'Ahmedabad Hub #01 (SG Highway)'
+        avatar: '',
+        hubZone: 'Ahmedabad Central Darkstore Hub #01 (Koteshwar / Motera)'
       });
     }
   }, [user]);
@@ -177,26 +182,108 @@ export default function ProfilePage() {
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  // Trial Orders (Only real orders for active user)
+  // Real Trial Orders (Fetched live from Supabase drobe_trial_orders and local dispatch)
   const [trialOrders, setTrialOrders] = useState<TrialOrder[]>([]);
 
   useEffect(() => {
-    try {
-      const orders = getTrialOrders();
-      if (Array.isArray(orders)) {
-        if (user && user.phone) {
-          const cleanPhone = user.phone.replace(/[^0-9]/g, '').slice(-10);
-          const filtered = orders.filter(o => 
-            (o.customerPhone && o.customerPhone.replace(/[^0-9]/g, '').includes(cleanPhone)) ||
-            (user.name && o.customerName?.toLowerCase() === user.name.toLowerCase())
-          );
-          setTrialOrders(filtered);
-        } else {
-          setTrialOrders([]);
+    let isMounted = true;
+    const loadRealOrders = async () => {
+      try {
+        let allOrders: TrialOrder[] = getTrialOrders();
+        // Query live Supabase database for all real customer trial orders
+        const remote = await supabaseFetchOrders();
+        if (remote && Array.isArray(remote)) {
+          const remoteIds = new Set(remote.map(r => r.id));
+          const localOnly = allOrders.filter(l => !remoteIds.has(l.id));
+          allOrders = [...remote, ...localOnly];
         }
+
+        if (isMounted) {
+          if (user && (user.phone || user.name)) {
+            const cleanPhone = user.phone ? user.phone.replace(/[^0-9]/g, '').slice(-10) : '';
+            const filtered = allOrders.filter(o => 
+              (cleanPhone && o.customerPhone && o.customerPhone.replace(/[^0-9]/g, '').includes(cleanPhone)) ||
+              (user.name && o.customerName?.toLowerCase() === user.name.toLowerCase()) ||
+              (user.id && (o as any).customerId === user.id)
+            );
+            setTrialOrders(filtered);
+          } else {
+            setTrialOrders([]);
+          }
+        }
+      } catch (e) {
+        console.warn('Real order loading error:', e);
       }
-    } catch {}
+    };
+
+    loadRealOrders();
+    return () => {
+      isMounted = false;
+    };
   }, [user]);
+
+  // Handle direct file upload to Supabase Storage bucket 'drobe-media'
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!user) {
+      setIsAuthOpen(true);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Image size should be under 5MB');
+      return;
+    }
+
+    try {
+      setIsUploadingPhoto(true);
+      showToast('Uploading photo to secure cloud storage...');
+
+      const uploaded = await supabaseUploadMedia(file, 'profiles/avatars');
+      if (uploaded?.url) {
+        const res = await updateUserProfile({ avatarUrl: uploaded.url });
+        if (res.success) {
+          setUserData(prev => ({ ...prev, avatar: uploaded.url }));
+          showToast('Profile photo saved to real database!');
+        } else {
+          showToast(res.error || 'Failed to update database profile');
+        }
+      } else {
+        showToast('Photo upload failed. Please try again.');
+      }
+    } catch (err) {
+      console.warn('Avatar upload error:', err);
+      showToast('Photo upload error');
+    } finally {
+      setIsUploadingPhoto(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
+  // Handle saving profile changes to Supabase drobe_profiles
+  const handleSaveProfile = async () => {
+    if (!user) {
+      setIsAuthOpen(true);
+      return;
+    }
+    const cleanName = userData.name.trim();
+    const cleanPhone = userData.phone.trim();
+    if (!cleanName) {
+      showToast('Please enter your full name');
+      return;
+    }
+
+    showToast('Saving to cloud database...');
+    const res = await updateUserProfile({ name: cleanName, phone: cleanPhone });
+    if (res.success) {
+      setActiveSheet(null);
+      showToast('Profile updated in real database!');
+    } else {
+      showToast(res.error || 'Failed to update profile');
+    }
+  };
 
   const handleLogout = () => {
     logoutUser();
@@ -320,23 +407,49 @@ export default function ProfilePage() {
             gap: 16
           }}
         >
-          {/* Avatar with Monochrome Camera Badge */}
+          {/* Avatar with Monochrome Camera Badge (Real Photo / Initials) */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
-            <img
-              src={userData.avatar}
-              alt={userData.name}
-              style={{
-                width: 72,
-                height: 72,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                background: '#1a1a1a',
-                border: '2px solid #333333'
-              }}
-            />
+            {userData.avatar ? (
+              <img
+                src={userData.avatar}
+                alt={userData.name}
+                style={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  background: '#1a1a1a',
+                  border: '2px solid #333333'
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #222222 0%, #111111 100%)',
+                  border: '2px solid #333333',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#ffffff',
+                  fontSize: 24,
+                  fontWeight: 900
+                }}
+              >
+                {userData.name ? userData.name.charAt(0).toUpperCase() : 'G'}
+              </div>
+            )}
             <button
               type="button"
-              onClick={() => setActiveSheet('editProfile')}
+              onClick={() => {
+                if (!user) {
+                  setIsAuthOpen(true);
+                } else {
+                  avatarInputRef.current?.click();
+                }
+              }}
               style={{
                 position: 'absolute',
                 bottom: -2,
@@ -352,10 +465,18 @@ export default function ProfilePage() {
                 cursor: 'pointer',
                 padding: 0
               }}
-              aria-label="Edit Profile Picture"
+              aria-label="Upload Real Profile Picture"
             >
               <Camera size={13} color="#000000" strokeWidth={2.5} />
             </button>
+            {/* Hidden File Input for Direct Supabase Media Storage Upload */}
+            <input
+              type="file"
+              ref={avatarInputRef}
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={handleAvatarUpload}
+            />
           </div>
 
           {/* User Information (Clean - No Taglines) */}
@@ -1608,6 +1729,38 @@ export default function ProfilePage() {
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+                    {/* Photo upload trigger inside edit sheet */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px', background: '#181818', border: '1px solid #262626', borderRadius: 12 }}>
+                      <div style={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', background: '#222', border: '1px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {userData.avatar ? (
+                          <img src={userData.avatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          <span style={{ fontSize: 18, fontWeight: 800, color: '#fff' }}>{userData.name.charAt(0).toUpperCase()}</span>
+                        )}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Profile Photo</div>
+                        <div style={{ fontSize: 11, color: UI.textSecondary }}>Saved to Supabase storage</div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => avatarInputRef.current?.click()}
+                        disabled={isUploadingPhoto}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: 8,
+                          background: '#ffffff',
+                          color: '#000000',
+                          fontSize: 11,
+                          fontWeight: 800,
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {isUploadingPhoto ? 'Uploading...' : 'Change Photo'}
+                      </button>
+                    </div>
+
                     <div style={{ background: '#181818', border: '1px solid #262626', borderRadius: 12, padding: '12px 14px' }}>
                       <label style={{ fontSize: 11, color: UI.textSecondary, fontWeight: 700, display: 'block', marginBottom: 4 }}>
                         FULL NAME
@@ -1655,27 +1808,26 @@ export default function ProfilePage() {
                       <input
                         type="email"
                         value={userData.email}
-                        onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                        disabled
                         style={{
                           width: '100%',
                           background: 'transparent',
                           border: 'none',
-                          color: '#ffffff',
+                          color: '#888888',
                           fontSize: 14,
                           fontWeight: 700,
-                          outline: 'none'
+                          outline: 'none',
+                          cursor: 'not-allowed'
                         }}
                       />
+                      <span style={{ fontSize: 10, color: '#666', marginTop: 2, display: 'block' }}>Verified authentication email</span>
                     </div>
                   </div>
 
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.97 }}
-                    onClick={() => {
-                      setActiveSheet(null);
-                      showToast('Profile updated successfully');
-                    }}
+                    onClick={handleSaveProfile}
                     style={{
                       width: '100%',
                       padding: '14px 0',

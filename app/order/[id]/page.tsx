@@ -13,6 +13,7 @@ import {
   TrialOrder,
   TrialOrderItem
 } from '@/app/lib/darkstoreData';
+import { supabase } from '@/app/lib/supabaseClient';
 import { 
   ArrowLeft, 
   MoreVertical, 
@@ -173,22 +174,68 @@ export default function OrderTrackingPage() {
   // In-memory order from AppContext
   const contextOrder = orders.find((o) => o.id === orderId);
 
-  const loadDarkstoreOrder = () => {
+  const loadDarkstoreOrder = async () => {
     try {
       const allOrders = getTrialOrders();
-      if (!allOrders || allOrders.length === 0) return;
+      if (allOrders && allOrders.length > 0) {
+        const matched = allOrders.find(
+          (o) =>
+            o.id === orderId ||
+            o.orderNumber === orderId ||
+            o.orderNumber === `#${orderId}` ||
+            o.id.includes(orderId) ||
+            (orderId && o.id.endsWith(orderId))
+        );
 
-      const matched = allOrders.find(
-        (o) =>
-          o.id === orderId ||
-          o.orderNumber === orderId ||
-          o.orderNumber === `#${orderId}` ||
-          o.id.includes(orderId) ||
-          (orderId && o.id.endsWith(orderId))
-      );
+        if (matched) {
+          setActiveDarkstoreOrder(matched);
+          return;
+        }
+      }
 
-      if (matched) {
-        setActiveDarkstoreOrder(matched);
+      // Live fetch from Supabase drobe_trial_orders table
+      if (supabase) {
+        const cleanId = orderId.replace('#', '');
+        const { data, error } = await supabase
+          .from('drobe_trial_orders')
+          .select('*')
+          .or(`id.eq.${cleanId},order_number.eq.#${cleanId},order_number.eq.${cleanId}`)
+          .maybeSingle();
+
+        if (data && !error) {
+          const remoteOrder: TrialOrder = {
+            id: data.id,
+            orderNumber: data.order_number,
+            customerName: data.customer_name,
+            customerPhone: data.customer_phone,
+            customerAddress: data.customer_address,
+            landmark: data.landmark,
+            distanceKm: data.distance_km || '2.1 km',
+            productId: data.product_id,
+            productName: data.product_name,
+            productSku: data.product_sku,
+            brandId: data.brand_id,
+            brandName: data.brand_name,
+            price: data.price,
+            size: data.size || 'M',
+            shelfLocation: data.shelf_location,
+            riderName: data.rider_name || 'Meet Dave',
+            riderPhone: data.rider_phone || '+91 98250 88123',
+            riderVehicle: data.rider_vehicle || 'Ather 450X EV (GJ-01-MW-9021)',
+            receivedAt: data.received_at,
+            pickedAt: data.picked_at,
+            handedOverAt: data.handed_over_at,
+            dispatchedAt: data.dispatched_at,
+            status: data.status,
+            doorstepTimerMinutesLeft: data.doorstep_timer_minutes_left ?? 6,
+            notes: data.notes,
+            deliveryOtp: data.delivery_otp,
+            paymentUpiRef: data.payment_upi_ref,
+            advancePaidAmount: data.advance_paid_amount,
+            items: data.items_data || []
+          };
+          setActiveDarkstoreOrder(remoteOrder);
+        }
       }
     } catch (e) {
       console.warn('Error loading trial order:', e);

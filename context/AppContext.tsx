@@ -119,6 +119,7 @@ interface AppContextType {
   logoutUser: () => Promise<void>;
   signUpWithEmail: (data: { email: string; password: string; phone: string; name: string; avatarUrl?: string }) => Promise<{ success: boolean; error?: string }>;
   signInWithEmail: (data: { email: string; password: string }) => Promise<{ success: boolean; error?: string }>;
+  updateUserProfile: (updates: { name?: string; phone?: string; avatarUrl?: string }) => Promise<{ success: boolean; error?: string }>;
   requireAuth: (callback?: () => void) => boolean;
 }
 
@@ -354,39 +355,75 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return null;
   });
 
-  // Sync with Supabase Auth Session on mount
+  // Sync with Supabase Auth Session and real drobe_profiles table on mount
   useEffect(() => {
     if (!supabase) return;
 
+    const syncWithDbProfile = async (session: any) => {
+      if (!session?.user || !supabase) return;
+      const meta = session.user.user_metadata || {};
+      let profileName = meta.name || session.user.email?.split('@')[0] || 'Verified Shopper';
+      let profilePhone = meta.phone || '';
+      let profileAvatar = meta.avatar_url || '';
+      let drobeCash = 250;
+      let knotCash = 250;
+
+      try {
+        const { data: dbProf, error } = await supabase
+          .from('drobe_profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+        if (dbProf && !error) {
+          profileName = dbProf.name || profileName;
+          profilePhone = dbProf.phone || profilePhone;
+          profileAvatar = dbProf.avatar_url || profileAvatar;
+          drobeCash = dbProf.drobe_cash ?? 250;
+          knotCash = dbProf.knot_cash ?? 250;
+        } else {
+          // Provision real row in drobe_profiles if not present
+          await supabase.from('drobe_profiles').upsert({
+            id: session.user.id,
+            email: session.user.email || '',
+            phone: profilePhone,
+            name: profileName,
+            avatar_url: profileAvatar,
+            drobe_cash: drobeCash,
+            knot_cash: knotCash,
+            updated_at: new Date().toISOString()
+          });
+        }
+      } catch (err) {
+        console.warn('Error fetching drobe_profiles on auth sync:', err);
+      }
+
+      const activeSession: UserSession = {
+        id: session.user.id,
+        email: session.user.email || '',
+        name: profileName,
+        phone: profilePhone,
+        avatarUrl: profileAvatar,
+        drobeCash,
+        knotCash,
+        token: session.access_token
+      };
+
+      setUser(activeSession);
+      try {
+        localStorage.setItem('drobe_user_session', JSON.stringify(activeSession));
+      } catch {}
+    };
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        const meta = session.user.user_metadata || {};
-        setUser(prev => ({
-          id: session.user.id,
-          email: session.user.email || prev?.email || '',
-          name: meta.name || prev?.name || session.user.email?.split('@')[0] || 'Verified Shopper',
-          phone: meta.phone || prev?.phone || '',
-          avatarUrl: meta.avatar_url || prev?.avatarUrl || '',
-          drobeCash: prev?.drobeCash ?? 250,
-          knotCash: prev?.knotCash ?? 250,
-          token: session.access_token
-        }));
+        syncWithDbProfile(session);
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        const meta = session.user.user_metadata || {};
-        setUser({
-          id: session.user.id,
-          email: session.user.email || '',
-          name: meta.name || session.user.email?.split('@')[0] || 'Verified Shopper',
-          phone: meta.phone || '',
-          avatarUrl: meta.avatar_url || '',
-          drobeCash: 250,
-          knotCash: 250,
-          token: session.access_token
-        });
+        syncWithDbProfile(session);
       } else if (_event === 'SIGNED_OUT') {
         setUser(null);
         if (typeof window !== 'undefined') {
@@ -725,6 +762,60 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsAuthOpen(false);
   };
 
+  const updateUserProfile = async (updates: {
+    name?: string;
+    phone?: string;
+    avatarUrl?: string;
+  }): Promise<{ success: boolean; error?: string }> => {
+    if (!user) {
+      return { success: false, error: 'User is not signed in' };
+    }
+
+    try {
+      const updatedUser: UserSession = {
+        ...user,
+        ...(updates.name !== undefined ? { name: updates.name.trim() } : {}),
+        ...(updates.phone !== undefined ? { phone: updates.phone.trim() } : {}),
+        ...(updates.avatarUrl !== undefined ? { avatarUrl: updates.avatarUrl } : {})
+      };
+
+      if (supabase && user.id) {
+        const payload: Record<string, any> = {
+          updated_at: new Date().toISOString()
+        };
+        if (updates.name !== undefined) payload.name = updates.name.trim();
+        if (updates.phone !== undefined) payload.phone = updates.phone.trim();
+        if (updates.avatarUrl !== undefined) payload.avatar_url = updates.avatarUrl;
+
+        const { error: dbErr } = await supabase
+          .from('drobe_profiles')
+          .update(payload)
+          .eq('id', user.id);
+
+        if (dbErr) {
+          console.warn('drobe_profiles update error:', dbErr.message);
+        }
+
+        // Also update Supabase Auth user metadata
+        await supabase.auth.updateUser({
+          data: {
+            ...(updates.name !== undefined ? { name: updates.name.trim() } : {}),
+            ...(updates.phone !== undefined ? { phone: updates.phone.trim() } : {}),
+            ...(updates.avatarUrl !== undefined ? { avatar_url: updates.avatarUrl } : {})
+          }
+        });
+      }
+
+      setUser(updatedUser);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('drobe_user_session', JSON.stringify(updatedUser));
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Failed to update profile' };
+    }
+  };
+
   const logoutUser = async () => {
     try {
       if (supabase) {
@@ -778,6 +869,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         logoutUser,
         signUpWithEmail,
         signInWithEmail,
+        updateUserProfile,
         requireAuth
       }}
     >
