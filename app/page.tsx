@@ -325,7 +325,7 @@ export default function HomePage() {
         <section
           style={{
             width: '100%',
-            background: "url('/assets/real/hero_slice_01_header.webp') center -108px / 100% auto repeat, #200416",
+            background: '#370428',
             position: 'relative',
             lineHeight: 0
           }}
@@ -341,7 +341,7 @@ export default function HomePage() {
             }}
           >
             <img
-              src="/assets/real/hero_slice_02_sale_merged_tight.png"
+              src="/assets/real/hero_slice_02_sale_clean.png"
               alt="Freakin' Festive Sale - Extra ₹999 Off On All Orders"
               style={{
                 width: '100%',
