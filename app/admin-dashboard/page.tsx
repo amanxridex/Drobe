@@ -48,7 +48,10 @@ import {
   AlertTriangle,
   Timer,
   RefreshCw,
-  Bot
+  Bot,
+  Database,
+  Copy,
+  Server
 } from 'lucide-react';
 import { 
   AHMEDABAD_WAREHOUSE,
@@ -102,12 +105,75 @@ import {
 import styles from './admin.module.css';
 
 export default function AdminDashboardPage() {
-  const [activeTab, setActiveTab] = useState<'inwarding' | 'inventory' | 'shelves' | 'trials' | 'approvals' | 'settlement' | 'users'>('inwarding');
+  const [activeTab, setActiveTab] = useState<'inwarding' | 'inventory' | 'shelves' | 'trials' | 'approvals' | 'settlement' | 'users' | 'database'>('inwarding');
   const [brands, setBrands] = useState<DarkstoreBrand[]>([]);
   const [products, setProducts] = useState<DarkstoreProduct[]>([]);
   const [inbounds, setInbounds] = useState<InboundStockShipment[]>([]);
   const [trialOrders, setTrialOrders] = useState<TrialOrder[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Database System Matrix & Connectivity State (27 Tables)
+  const [dbStatusData, setDbStatusData] = useState<{
+    summary: {
+      totalTables: number;
+      onlineCount: number;
+      missingCount: number;
+      healthPercentage: number;
+      hub: string;
+      supabaseProject: string;
+      sqlSchemaFile: string;
+      directSqlRunnerUrl: string;
+    };
+    tables: Array<{
+      table: string;
+      section: string;
+      description: string;
+      exists: boolean;
+      status: string;
+      rowCount: number;
+      httpStatus: number;
+      error?: string;
+    }>;
+  } | null>(null);
+  const [isDbStatusLoading, setIsDbStatusLoading] = useState<boolean>(false);
+  const [copiedSql, setCopiedSql] = useState<boolean>(false);
+  const [dbSectionFilter, setDbSectionFilter] = useState<string>('all');
+
+  const fetchDbStatus = async () => {
+    setIsDbStatusLoading(true);
+    try {
+      const res = await fetch('/api/admin/db-status');
+      if (res.ok) {
+        const data = await res.json();
+        setDbStatusData(data);
+      }
+    } catch (e) {
+      console.warn('Failed to fetch db status:', e);
+    } finally {
+      setIsDbStatusLoading(false);
+    }
+  };
+
+  const copyCompleteSql = async () => {
+    try {
+      const res = await fetch('/api/admin/sql-schema');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.sql) {
+          await navigator.clipboard.writeText(data.sql);
+          setCopiedSql(true);
+          setToastMessage('✅ Complete 27-Table SQL Schema copied! Paste in Supabase SQL editor & click Run.');
+          setTimeout(() => {
+            setCopiedSql(false);
+            setToastMessage(null);
+          }, 4500);
+        }
+      }
+    } catch {
+      setToastMessage('❌ Failed to copy SQL to clipboard.');
+      setTimeout(() => setToastMessage(null), 3000);
+    }
+  };
 
   // Customer User Profiles & Realtime Telemetry State
   const [userProfiles, setUserProfiles] = useState<DrobeUserProfile[]>([]);
@@ -238,6 +304,9 @@ export default function AdminDashboardPage() {
     } catch (err) {
       console.warn('Live fetch from Supabase failed, using cached data:', err);
     }
+
+    // Load initial 27-table Supabase DB connectivity status
+    fetchDbStatus();
   };
 
   const runAIShopperSynthesis = async (overrideApiKey?: string) => {
@@ -1219,6 +1288,28 @@ export default function AdminDashboardPage() {
           </button>
 
           <div className={styles.sidebarSectionTitle} style={{ marginTop: '12px' }}>
+            System Infrastructure & DB
+          </div>
+
+          <button
+            type="button"
+            onClick={() => { setActiveTab('database'); fetchDbStatus(); }}
+            className={`${styles.sidebarNavItem} ${activeTab === 'database' ? styles.sidebarNavItemActive : ''}`}
+          >
+            <div className={styles.navItemLeft}>
+              <Database size={16} />
+              <span>System Tables & DB Matrix</span>
+            </div>
+            {dbStatusData ? (
+              <span className={`${styles.badgePill} ${dbStatusData.summary.onlineCount === dbStatusData.summary.totalTables ? styles.badgeGreen : styles.badgeAmber}`}>
+                {dbStatusData.summary.onlineCount}/{dbStatusData.summary.totalTables} Live
+              </span>
+            ) : (
+              <span className={`${styles.badgePill} ${styles.badgeBlue}`}>27 Tables</span>
+            )}
+          </button>
+
+          <div className={styles.sidebarSectionTitle} style={{ marginTop: '12px' }}>
             External Hub Portals
           </div>
 
@@ -1291,6 +1382,7 @@ export default function AdminDashboardPage() {
                 {activeTab === 'trials' && 'Doorstep Fitting & Instant Return Room'}
                 {activeTab === 'settlement' && 'Brand Wholesale Settlement & Margin Ledger'}
                 {activeTab === 'users' && 'Shopper Profiles & Real-time Live Activity Telemetry'}
+                {activeTab === 'database' && 'System Tables & Telemetry Database Matrix (27 Tables)'}
               </h2>
               <div className={styles.topbarBreadcrumb}>
                 <span>Ahmedabad Darkstore Hub #01</span>
@@ -1299,6 +1391,7 @@ export default function AdminDashboardPage() {
                   {activeTab === 'trials' ? 'Doorstep Fittings & Returns' : 
                    activeTab === 'settlement' ? 'Wholesale & Margin Ledger' :
                    activeTab === 'users' ? 'Customers & Live Activity' :
+                   activeTab === 'database' ? 'System Infrastructure & DB Matrix' :
                    (activeTab.charAt(0).toUpperCase() + activeTab.slice(1))}
                 </span>
               </div>
@@ -4117,6 +4210,317 @@ export default function AdminDashboardPage() {
                       );
                     })}
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 8: MASTER DATABASE MATRIX & TRACKING TABLES (27 TABLES) */}
+          {activeTab === 'database' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {/* Database Hero Summary Card */}
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                  borderRadius: '18px',
+                  padding: '24px 28px',
+                  color: '#ffffff',
+                  boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.3)',
+                  border: '1px solid rgba(255,255,255,0.1)'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+                  <div style={{ maxWidth: '640px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                      <span style={{ background: '#38bdf8', color: '#0f172a', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', padding: '2px 8px', borderRadius: '6px' }}>
+                        PostgreSQL · Supabase Realtime
+                      </span>
+                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                        Project: <code>eswnhehlnzasiaybjikh</code> · Hub: AMD-DARKSTORE-01
+                      </span>
+                    </div>
+
+                    <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '0 0 8px 0', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Database size={24} color="#38bdf8" /> Master System Database &amp; Tracking Tables Matrix
+                    </h2>
+                    <p style={{ margin: 0, fontSize: '13px', color: '#cbd5e1', lineHeight: 1.5 }}>
+                      Comprehensive audit and live synchronization status of all 27 PostgreSQL database tables covering darkstore physical racks, wholesale settlements, margin ledgers, customer sizing profiles, hesitation signals, and AI pulse diagnostics.
+                    </p>
+                  </div>
+
+                  {/* Quick Action Buttons */}
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={fetchDbStatus}
+                      disabled={isDbStatusLoading}
+                      className={styles.btnSecondary}
+                      style={{
+                        background: 'rgba(255,255,255,0.1)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '10px 16px',
+                        fontWeight: 700
+                      }}
+                    >
+                      <RefreshCw size={14} className={isDbStatusLoading ? 'animate-spin' : ''} />
+                      {isDbStatusLoading ? 'Scanning Tables...' : 'Re-Scan DB Live'}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={copyCompleteSql}
+                      className={styles.btnPrimary}
+                      style={{
+                        background: copiedSql ? '#16a34a' : 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)',
+                        border: 'none',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '10px 18px',
+                        fontWeight: 800,
+                        boxShadow: '0 4px 14px rgba(2, 132, 199, 0.4)'
+                      }}
+                    >
+                      {copiedSql ? <Check size={16} /> : <Copy size={16} />}
+                      {copiedSql ? 'Schema Copied!' : 'Copy Master SQL Schema'}
+                    </button>
+
+                    <a
+                      href="https://supabase.com/dashboard/project/eswnhehlnzasiaybjikh/sql/new"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.btnPrimary}
+                      style={{
+                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        border: 'none',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '10px 18px',
+                        fontWeight: 800,
+                        textDecoration: 'none',
+                        boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)'
+                      }}
+                    >
+                      <ExternalLink size={16} /> Open Supabase SQL Editor
+                    </a>
+                  </div>
+                </div>
+
+                {/* Database Metrics Grid */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                    gap: '12px',
+                    marginTop: '22px',
+                    paddingTop: '20px',
+                    borderTop: '1px solid rgba(255,255,255,0.12)'
+                  }}
+                >
+                  <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '12px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '26px', fontWeight: 900, color: '#38bdf8' }}>
+                      {dbStatusData?.summary.totalTables ?? 27}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
+                      Defined Tables
+                    </div>
+                  </div>
+
+                  <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '12px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '26px', fontWeight: 900, color: '#4ade80' }}>
+                      {dbStatusData?.summary.onlineCount ?? '...'}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
+                      Live in Supabase
+                    </div>
+                  </div>
+
+                  <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '12px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '26px', fontWeight: 900, color: (dbStatusData?.summary.missingCount ?? 0) > 0 ? '#f87171' : '#4ade80' }}>
+                      {dbStatusData?.summary.missingCount ?? '...'}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
+                      Pending Creation
+                    </div>
+                  </div>
+
+                  <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '12px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '26px', fontWeight: 900, color: '#fbbf24' }}>
+                      {dbStatusData?.summary.healthPercentage ? `${dbStatusData.summary.healthPercentage}%` : '...'}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
+                      Schema Coverage
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Execution Guidance Notice */}
+              {dbStatusData && dbStatusData.summary.missingCount > 0 && (
+                <div
+                  style={{
+                    background: '#fffbeb',
+                    border: '1px solid #fde68a',
+                    borderRadius: '14px',
+                    padding: '16px 20px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '14px'
+                  }}
+                >
+                  <AlertTriangle size={22} color="#d97706" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <div style={{ flex: 1 }}>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 800, color: '#92400e' }}>
+                      {dbStatusData.summary.missingCount} Tables Awaiting 1-Time SQL Execution in Supabase
+                    </h4>
+                    <p style={{ margin: 0, fontSize: '12.5px', color: '#b45309', lineHeight: 1.5 }}>
+                      The frontend uses automatic local fallback caching for all operations, but to persist tracking, settlements, and hesitation logs permanently on your live Postgres cluster:
+                      <strong> Click &apos;Copy Master SQL Schema&apos;</strong>, click <strong>&apos;Open Supabase SQL Editor&apos;</strong>, paste the SQL, and click <strong>&apos;Run&apos;</strong>. Then hit &apos;Re-Scan DB Live&apos; to verify!
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Section Filters */}
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b' }}>Filter by Domain:</span>
+                {[
+                  'all',
+                  'Darkstore Operations',
+                  'Brand Ecosystem',
+                  'Catalog & Inventory',
+                  'Fleet & Dispatch',
+                  '30-Min Fitting Trial',
+                  'Customer Profiles & Tracking',
+                  'AI Telemetry & Diagnostics',
+                  'Wholesale & Financials',
+                  'CRM & Operations'
+                ].map((sec) => (
+                  <button
+                    key={sec}
+                    type="button"
+                    onClick={() => setDbSectionFilter(sec)}
+                    style={{
+                      background: dbSectionFilter === sec ? '#0f172a' : '#f1f5f9',
+                      color: dbSectionFilter === sec ? '#ffffff' : '#475569',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      padding: '6px 12px',
+                      fontSize: '11.5px',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {sec === 'all' ? 'All (27 Tables)' : sec}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tables Matrix List */}
+              <div
+                style={{
+                  background: '#ffffff',
+                  borderRadius: '16px',
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                  overflow: 'hidden'
+                }}
+              >
+                <div style={{ padding: '16px 20px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ fontWeight: 800, fontSize: '14px', color: '#0f172a' }}>
+                    PostgreSQL Tables Specification &amp; Telemetry Status
+                  </div>
+                  <span style={{ fontSize: '11.5px', color: '#64748b' }}>
+                    PostgREST REST API v1 · Public RLS Enabled
+                  </span>
+                </div>
+
+                <div style={{ overflowX: 'auto' }}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>Table Name</th>
+                        <th>Domain / Section</th>
+                        <th>Description &amp; Purpose</th>
+                        <th>Remote Status</th>
+                        <th>Rows in DB</th>
+                        <th>RLS &amp; Realtime</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(dbStatusData?.tables || [])
+                        .filter(t => dbSectionFilter === 'all' || t.section === dbSectionFilter)
+                        .map((tbl) => (
+                          <tr key={tbl.table}>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Database size={15} color={tbl.exists ? '#0284c7' : '#94a3b8'} />
+                                <code style={{ fontSize: '12.5px', fontWeight: 800, color: tbl.exists ? '#0f172a' : '#64748b' }}>
+                                  {tbl.table}
+                                </code>
+                              </div>
+                            </td>
+
+                            <td>
+                              <span style={{ fontSize: '11px', fontWeight: 700, background: '#f1f5f9', color: '#334155', padding: '2px 8px', borderRadius: '6px' }}>
+                                {tbl.section}
+                              </span>
+                            </td>
+
+                            <td style={{ fontSize: '11.5px', color: '#64748b', maxWidth: '320px' }}>
+                              {tbl.description}
+                            </td>
+
+                            <td>
+                              {tbl.exists ? (
+                                <span className={`${styles.badgePill} ${styles.badgeGreen}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <CheckCircle2 size={12} color="#16a34a" /> Online
+                                </span>
+                              ) : (
+                                <span className={`${styles.badgePill} ${styles.badgeAmber}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <Clock size={12} color="#d97706" /> Pending SQL Run
+                                </span>
+                              )}
+                            </td>
+
+                            <td>
+                              <strong style={{ fontSize: '12px', color: tbl.exists ? '#0f172a' : '#94a3b8' }}>
+                                {tbl.exists ? `${tbl.rowCount} rows` : '—'}
+                              </strong>
+                            </td>
+
+                            <td>
+                              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                <span style={{ fontSize: '10px', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                                  🛡️ RLS Public
+                                </span>
+                                {[
+                                  'drobe_trial_orders',
+                                  'drobe_products',
+                                  'drobe_brands',
+                                  'drobe_runners',
+                                  'drobe_user_profiles',
+                                  'drobe_user_activities',
+                                  'drobe_user_hesitation_logs',
+                                  'drobe_ai_telemetry_reports'
+                                ].includes(tbl.table) && (
+                                  <span style={{ fontSize: '10px', background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                                    ⚡ Realtime
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

@@ -8,7 +8,13 @@ import {
   DarkstoreRunner,
   DrobeUserProfile,
   DrobeUserActivity,
-  DrobeAIShopperReport 
+  DrobeAIShopperReport,
+  DrobeWholesaleSettlement,
+  DrobeMarginLedgerEntry,
+  DrobeHesitationLog,
+  DrobeRecoveryIntervention,
+  DrobeDarkstoreMetrics,
+  DrobeRefundRecord
 } from './darkstoreData';
 import { Product } from '@/data/catalog';
 import { 
@@ -1491,6 +1497,430 @@ export function subscribeToRealtimeUserProfiles(onProfileChange: (profile: any) 
   return () => {
     supabase.removeChannel(channel);
   };
+}
+
+// ==============================================================================
+// WHOLESALE BRAND SETTLEMENTS & DISBURSALS
+// ==============================================================================
+
+export async function supabaseFetchWholesaleSettlements(): Promise<DrobeWholesaleSettlement[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_wholesale_settlements')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error || !data) return null;
+
+    return data.map((row: any): DrobeWholesaleSettlement => ({
+      id: row.id,
+      settlementReference: row.settlement_reference,
+      brandId: row.brand_id,
+      brandName: row.brand_name,
+      category: row.category || 'Apparel',
+      keptUnitsCount: Number(row.kept_units_count) || 0,
+      baseWholesalePayoutDue: Number(row.base_wholesale_payout_due) || 0,
+      drobeRetainedMarkupInr: Number(row.drobe_retained_markup_inr) || 0,
+      grossGmvInr: Number(row.gross_gmv_inr) || 0,
+      bankUtrRef: row.bank_utr_ref || '',
+      status: row.status || 'Pending',
+      notes: row.notes || '',
+      createdAt: row.created_at ? new Date(row.created_at).toLocaleString('en-IN') : 'Recent'
+    }));
+  } catch {
+    return null;
+  }
+}
+
+export async function supabaseSaveWholesaleSettlement(settlement: Partial<DrobeWholesaleSettlement> & {
+  settlementReference: string;
+  brandId: string;
+  brandName: string;
+}): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('drobe_wholesale_settlements')
+      .upsert({
+        settlement_reference: settlement.settlementReference,
+        brand_id: settlement.brandId,
+        brand_name: settlement.brandName,
+        category: settlement.category || 'Apparel',
+        kept_units_count: settlement.keptUnitsCount || 0,
+        base_wholesale_payout_due: settlement.baseWholesalePayoutDue || 0,
+        drobe_retained_markup_inr: settlement.drobeRetainedMarkupInr || 0,
+        gross_gmv_inr: settlement.grossGmvInr || 0,
+        bank_utr_ref: settlement.bankUtrRef || null,
+        status: settlement.status || 'Pending',
+        notes: settlement.notes || null,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'settlement_reference' });
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// ==============================================================================
+// MARGIN & PROFITABILITY LEDGER
+// ==============================================================================
+
+export async function supabaseFetchMarginLedger(limit: number = 50): Promise<DrobeMarginLedgerEntry[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_margin_ledger')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error || !data) return null;
+
+    return data.map((row: any): DrobeMarginLedgerEntry => ({
+      id: row.id,
+      orderId: row.order_id,
+      productId: row.product_id,
+      sku: row.sku || '',
+      brandId: row.brand_id,
+      customerPaidMrp: Number(row.customer_paid_mrp) || 0,
+      baseWholesaleCostB: Number(row.base_wholesale_cost_b) || 0,
+      drobeMarkupEarned: Number(row.drobe_markup_earned) || 0,
+      runnerDeliveryFee: Number(row.runner_delivery_fee) || 0,
+      paymentGatewayFee: Number(row.payment_gateway_fee) || 0,
+      netProfitInr: Number(row.net_profit_inr) || 0,
+      createdAt: row.created_at ? new Date(row.created_at).toLocaleString('en-IN') : 'Recent'
+    }));
+  } catch {
+    return null;
+  }
+}
+
+export async function supabaseRecordMarginEntry(entry: {
+  orderId: string;
+  productId: string;
+  sku: string;
+  brandId: string;
+  customerPaidMrp: number;
+  baseWholesaleCostB: number;
+  drobeMarkupEarned: number;
+  runnerDeliveryFee?: number;
+  paymentGatewayFee?: number;
+  netProfitInr?: number;
+}): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const delivery = entry.runnerDeliveryFee ?? 45;
+    const gateway = entry.paymentGatewayFee ?? Math.round(entry.customerPaidMrp * 0.015);
+    const netProfit = entry.netProfitInr ?? (entry.drobeMarkupEarned - delivery - gateway);
+
+    const { error } = await supabase
+      .from('drobe_margin_ledger')
+      .insert({
+        order_id: entry.orderId,
+        product_id: entry.productId,
+        sku: entry.sku,
+        brand_id: entry.brandId,
+        customer_paid_mrp: entry.customerPaidMrp,
+        base_wholesale_cost_b: entry.baseWholesaleCostB,
+        drobe_markup_earned: entry.drobeMarkupEarned,
+        runner_delivery_fee: delivery,
+        payment_gateway_fee: gateway,
+        net_profit_inr: netProfit,
+        created_at: new Date().toISOString()
+      });
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// ==============================================================================
+// USER HESITATION LOGS & FRICTION SIGNALS
+// ==============================================================================
+
+export async function supabaseFetchHesitationLogs(limit: number = 50): Promise<DrobeHesitationLog[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_user_hesitation_logs')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error || !data) return null;
+
+    return data.map((row: any): DrobeHesitationLog => ({
+      id: row.id,
+      userId: row.user_id,
+      userName: row.user_name,
+      frictionType: row.friction_type,
+      funnelStage: row.funnel_stage,
+      hesitationNarrative: row.hesitation_narrative,
+      cartTotalInr: Number(row.cart_total_inr) || 0,
+      cartItemsCount: Number(row.cart_items_count) || 0,
+      dwellSeconds: Number(row.dwell_seconds) || 0,
+      aiRiskScore: Number(row.ai_risk_score) || 0,
+      createdAt: row.created_at ? new Date(row.created_at).toLocaleTimeString() : 'Just now'
+    }));
+  } catch {
+    return null;
+  }
+}
+
+export async function supabaseLogHesitationSignal(signal: {
+  userId: string;
+  userName: string;
+  frictionType: string;
+  funnelStage: string;
+  hesitationNarrative: string;
+  cartTotalInr?: number;
+  cartItemsCount?: number;
+  dwellSeconds?: number;
+  aiRiskScore?: number;
+}): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('drobe_user_hesitation_logs')
+      .insert({
+        user_id: signal.userId,
+        user_name: signal.userName,
+        friction_type: signal.frictionType,
+        funnel_stage: signal.funnelStage,
+        hesitation_narrative: signal.hesitationNarrative,
+        cart_total_inr: signal.cartTotalInr || 0,
+        cart_items_count: signal.cartItemsCount || 0,
+        dwell_seconds: signal.dwellSeconds || 0,
+        ai_risk_score: signal.aiRiskScore || 50,
+        created_at: new Date().toISOString()
+      });
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// ==============================================================================
+// CRM RECOVERY INTERVENTIONS
+// ==============================================================================
+
+export async function supabaseFetchRecoveryInterventions(): Promise<DrobeRecoveryIntervention[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_recovery_interventions')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error || !data) return null;
+
+    return data.map((row: any): DrobeRecoveryIntervention => ({
+      id: row.id,
+      userId: row.user_id,
+      customerName: row.customer_name,
+      customerPhone: row.customer_phone,
+      triggerReason: row.trigger_reason,
+      channel: row.channel || 'WhatsApp',
+      trialCreditInr: Number(row.trial_credit_inr) || 0,
+      couponCode: row.coupon_code || '',
+      status: row.status || 'Pending',
+      revenueRecoveredInr: Number(row.revenue_recovered_inr) || 0,
+      createdAt: row.created_at ? new Date(row.created_at).toLocaleTimeString() : 'Just now'
+    }));
+  } catch {
+    return null;
+  }
+}
+
+export async function supabaseSaveRecoveryIntervention(intervention: {
+  userId: string;
+  customerName: string;
+  customerPhone: string;
+  triggerReason: string;
+  channel?: 'WhatsApp' | 'SMS' | 'Push Notification' | 'Call';
+  trialCreditInr?: number;
+  couponCode?: string;
+  status?: 'Pending' | 'Sent' | 'Delivered' | 'Claimed' | 'Expired';
+}): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('drobe_recovery_interventions')
+      .insert({
+        user_id: intervention.userId,
+        customer_name: intervention.customerName,
+        customer_phone: intervention.customerPhone,
+        trigger_reason: intervention.triggerReason,
+        channel: intervention.channel || 'WhatsApp',
+        trial_credit_inr: intervention.trialCreditInr || 100,
+        coupon_code: intervention.couponCode || 'DROBE100',
+        status: intervention.status || 'Sent',
+        revenue_recovered_inr: 0,
+        created_at: new Date().toISOString()
+      });
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// ==============================================================================
+// DARKSTORE SLA & PICKER SPEED METRICS
+// ==============================================================================
+
+export async function supabaseFetchDarkstoreMetrics(warehouseId: string = 'AMD-DARKSTORE-01'): Promise<DrobeDarkstoreMetrics | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_darkstore_metrics')
+      .select('*')
+      .eq('warehouse_id', warehouseId)
+      .order('date_bucket', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error || !data) return null;
+
+    return {
+      id: data.id,
+      warehouseId: data.warehouse_id,
+      dateBucket: data.date_bucket,
+      totalOrdersReceived: Number(data.total_orders_received) || 0,
+      slaCompliancePercentage: Number(data.sla_compliance_percentage) || 0,
+      avgPickerSeconds: Number(data.avg_picker_seconds) || 0,
+      avgDeliveryMinutes: Number(data.avg_delivery_minutes) || 0,
+      totalUnitsInwarded: Number(data.total_units_inwarded) || 0,
+      totalUnitsKept: Number(data.total_units_kept) || 0,
+      totalUnitsReturned: Number(data.total_units_returned) || 0,
+      keptRatioPercentage: Number(data.kept_ratio_percentage) || 0
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function supabaseUpdateDarkstoreMetrics(metrics: Partial<DrobeDarkstoreMetrics> & { warehouseId: string }): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const dateBucket = metrics.dateBucket || new Date().toISOString().split('T')[0];
+    const { error } = await supabase
+      .from('drobe_darkstore_metrics')
+      .upsert({
+        warehouse_id: metrics.warehouseId,
+        date_bucket: dateBucket,
+        total_orders_received: metrics.totalOrdersReceived,
+        sla_compliance_percentage: metrics.slaCompliancePercentage,
+        avg_picker_seconds: metrics.avgPickerSeconds,
+        avg_delivery_minutes: metrics.avgDeliveryMinutes,
+        total_units_inwarded: metrics.totalUnitsInwarded,
+        total_units_kept: metrics.totalUnitsKept,
+        total_units_returned: metrics.totalUnitsReturned,
+        kept_ratio_percentage: metrics.keptRatioPercentage
+      }, { onConflict: 'warehouse_id,date_bucket' });
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// ==============================================================================
+// INSTANT UPI REFUND RECORDS
+// ==============================================================================
+
+export async function supabaseFetchRefundRecords(): Promise<DrobeRefundRecord[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_refund_records')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error || !data) return null;
+
+    return data.map((row: any): DrobeRefundRecord => ({
+      id: row.id,
+      orderId: row.order_id,
+      customerPhone: row.customer_phone,
+      upiId: row.upi_id,
+      refundAmountInr: Number(row.refund_amount_inr) || 0,
+      refundUtr: row.refund_utr || '',
+      gatewayProvider: row.gateway_provider || 'Razorpay UPI Instant',
+      processingTimeSeconds: Number(row.processing_time_seconds) || 3,
+      status: row.status || 'Success',
+      createdAt: row.created_at ? new Date(row.created_at).toLocaleString('en-IN') : 'Recent'
+    }));
+  } catch {
+    return null;
+  }
+}
+
+export async function supabaseRecordRefund(refund: {
+  orderId: string;
+  customerPhone: string;
+  upiId: string;
+  refundAmountInr: number;
+  refundUtr?: string;
+  gatewayProvider?: string;
+  processingTimeSeconds?: number;
+  status?: 'Initiated' | 'Processing' | 'Success' | 'Failed';
+}): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('drobe_refund_records')
+      .insert({
+        order_id: refund.orderId,
+        customer_phone: refund.customerPhone,
+        upi_id: refund.upiId,
+        refund_amount_inr: refund.refundAmountInr,
+        refund_utr: refund.refundUtr || `REF-UPI-${Date.now().toString().slice(-6)}`,
+        gateway_provider: refund.gatewayProvider || 'Razorpay UPI Instant',
+        processing_time_seconds: refund.processingTimeSeconds || 3,
+        status: refund.status || 'Success',
+        created_at: new Date().toISOString()
+      });
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// ==============================================================================
+// SYSTEM & ADMIN AUDIT TRAIL
+// ==============================================================================
+
+export async function supabaseLogAuditAction(audit: {
+  adminId?: string;
+  actionType: string;
+  targetEntity: string;
+  targetId: string;
+  details?: Record<string, any>;
+}): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('drobe_system_audit_logs')
+      .insert({
+        admin_id: audit.adminId || 'adm_aman_01',
+        action_type: audit.actionType,
+        target_entity: audit.targetEntity,
+        target_id: audit.targetId,
+        details: audit.details || {},
+        ip_address: '103.24.112.5',
+        created_at: new Date().toISOString()
+      });
+
+    return !error;
+  } catch {
+    return false;
+  }
 }
 
 export { invalidateBrandCache, invalidateCacheKey };

@@ -2687,3 +2687,328 @@ export function generateHeuristicAIShopperReport(
   };
 }
 
+// ==============================================================================
+// EXTENDED SYSTEM REPORTING & TELEMETRY DOMAIN MODELS (FULL DB SUITE)
+// ==============================================================================
+
+export interface DrobeWholesaleSettlement {
+  id: string;
+  settlementReference: string;
+  brandId: string;
+  brandName: string;
+  category: string;
+  keptUnitsCount: number;
+  baseWholesalePayoutDue: number;
+  drobeRetainedMarkupInr: number;
+  grossGmvInr: number;
+  bankUtrRef: string;
+  status: 'Pending' | 'Processing' | 'Disbursed' | 'On Hold';
+  notes: string;
+  createdAt: string;
+}
+
+export interface DrobeMarginLedgerEntry {
+  id: string;
+  orderId: string;
+  productId: string;
+  sku: string;
+  brandId: string;
+  customerPaidMrp: number;
+  baseWholesaleCostB: number;
+  drobeMarkupEarned: number;
+  runnerDeliveryFee: number;
+  paymentGatewayFee: number;
+  netProfitInr: number;
+  createdAt: string;
+}
+
+export interface DrobeHesitationLog {
+  id: string;
+  userId: string;
+  userName: string;
+  frictionType: string;
+  funnelStage: string;
+  hesitationNarrative: string;
+  cartTotalInr: number;
+  cartItemsCount: number;
+  dwellSeconds: number;
+  aiRiskScore: number;
+  createdAt: string;
+}
+
+export interface DrobeRecoveryIntervention {
+  id: string;
+  userId: string;
+  customerName: string;
+  customerPhone: string;
+  triggerReason: string;
+  channel: 'WhatsApp' | 'SMS' | 'Push Notification' | 'Call';
+  trialCreditInr: number;
+  couponCode: string;
+  status: 'Pending' | 'Sent' | 'Delivered' | 'Claimed' | 'Expired';
+  revenueRecoveredInr: number;
+  createdAt: string;
+}
+
+export interface DrobeDarkstoreMetrics {
+  id: string;
+  warehouseId: string;
+  dateBucket: string;
+  totalOrdersReceived: number;
+  slaCompliancePercentage: number;
+  avgPickerSeconds: number;
+  avgDeliveryMinutes: number;
+  totalUnitsInwarded: number;
+  totalUnitsKept: number;
+  totalUnitsReturned: number;
+  keptRatioPercentage: number;
+}
+
+export interface DrobeRefundRecord {
+  id: string;
+  orderId: string;
+  customerPhone: string;
+  upiId: string;
+  refundAmountInr: number;
+  refundUtr: string;
+  gatewayProvider: string;
+  processingTimeSeconds: number;
+  status: 'Initiated' | 'Processing' | 'Success' | 'Failed';
+  createdAt: string;
+}
+
+export const INITIAL_WHOLESALE_SETTLEMENTS: DrobeWholesaleSettlement[] = [
+  {
+    id: 'settl-01',
+    settlementReference: 'SETTL-DRB-2026-0041',
+    brandId: 'br_mark_leute',
+    brandName: 'Mark Leute',
+    category: 'Outerwear',
+    keptUnitsCount: 12,
+    baseWholesalePayoutDue: 22200,
+    drobeRetainedMarkupInr: 10788,
+    grossGmvInr: 32988,
+    bankUtrRef: 'NEFT-HDFC-9912038412',
+    status: 'Disbursed',
+    notes: 'Weekly batch settlement #41 · Consignment kept units',
+    createdAt: 'Today, 11:30 AM'
+  },
+  {
+    id: 'settl-02',
+    settlementReference: 'SETTL-DRB-2026-0042',
+    brandId: 'br_underrated_club',
+    brandName: 'Underrated Club',
+    category: 'Tops & Tees',
+    keptUnitsCount: 18,
+    baseWholesalePayoutDue: 15300,
+    drobeRetainedMarkupInr: 8982,
+    grossGmvInr: 24282,
+    bankUtrRef: 'IMPS-AXIS-8812903120',
+    status: 'Disbursed',
+    notes: 'Weekly batch settlement #42 · High kept ratio (91%)',
+    createdAt: 'Today, 02:15 PM'
+  }
+];
+
+export const INITIAL_MARGIN_LEDGER: DrobeMarginLedgerEntry[] = [
+  {
+    id: 'ledg-01',
+    orderId: 'ord-30m-102',
+    productId: 'prod_uc_tee_02',
+    sku: 'DR2',
+    brandId: 'br_underrated_club',
+    customerPaidMrp: 1499,
+    baseWholesaleCostB: 850,
+    drobeMarkupEarned: 649,
+    runnerDeliveryFee: 45,
+    paymentGatewayFee: 22,
+    netProfitInr: 582,
+    createdAt: 'Today, 01:20 PM'
+  },
+  {
+    id: 'ledg-02',
+    orderId: 'ord-30m-101',
+    productId: 'prod_ml_hoodie_01',
+    sku: 'DR1',
+    brandId: 'br_mark_leute',
+    customerPaidMrp: 2899,
+    baseWholesaleCostB: 1850,
+    drobeMarkupEarned: 1049,
+    runnerDeliveryFee: 45,
+    paymentGatewayFee: 43,
+    netProfitInr: 961,
+    createdAt: 'Today, 12:45 PM'
+  }
+];
+
+export const INITIAL_HESITATION_LOGS: DrobeHesitationLog[] = [
+  {
+    id: 'hes-01',
+    userId: 'usr_harshil_03',
+    userName: 'Harshil Patel',
+    frictionType: 'CHECKOUT_BACKOUT',
+    funnelStage: 'Payment Gateway (UPI)',
+    hesitationNarrative: 'Abandoned ₹3,498 cart after 180s dwell time on UPI intent screen without submitting PIN.',
+    cartTotalInr: 3498,
+    cartItemsCount: 2,
+    dwellSeconds: 180,
+    aiRiskScore: 92,
+    createdAt: 'Just now'
+  },
+  {
+    id: 'hes-02',
+    userId: 'usr_dhruv_05',
+    userName: 'Dhruv Mehta',
+    frictionType: 'SIZE_UNAVAILABLE',
+    funnelStage: 'Product Detail Sizing',
+    hesitationNarrative: 'Zero inward units available for Footwear Size UK 8 in darkstore rack AMD-RC01. User immediately bounced.',
+    cartTotalInr: 4499,
+    cartItemsCount: 1,
+    dwellSeconds: 40,
+    aiRiskScore: 84,
+    createdAt: '3 mins ago'
+  },
+  {
+    id: 'hes-03',
+    userId: 'usr_tanya_04',
+    userName: 'Tanya Joshi',
+    frictionType: 'DOORSTEP_TIMER_ANXIETY',
+    funnelStage: 'Cart & Doorstep Terms',
+    hesitationNarrative: 'Dwell time exceeded 95s reviewing 6-minute fitting rules and ₹2/min overtime surcharge.',
+    cartTotalInr: 2199,
+    cartItemsCount: 1,
+    dwellSeconds: 95,
+    aiRiskScore: 68,
+    createdAt: '7 mins ago'
+  }
+];
+
+export const INITIAL_RECOVERY_INTERVENTIONS: DrobeRecoveryIntervention[] = [
+  {
+    id: 'rec-01',
+    userId: 'usr_harshil_03',
+    customerName: 'Harshil Patel',
+    customerPhone: '+91 97120 44912',
+    triggerReason: 'UPI PIN Prompt Abandonment (₹3,498 cart)',
+    channel: 'WhatsApp',
+    trialCreditInr: 150,
+    couponCode: 'DROBE150',
+    status: 'Sent',
+    revenueRecoveredInr: 0,
+    createdAt: 'Just now'
+  }
+];
+
+export const INITIAL_DARKSTORE_METRICS: DrobeDarkstoreMetrics = {
+  id: 'met-01',
+  warehouseId: 'AMD-DARKSTORE-01',
+  dateBucket: new Date().toISOString().split('T')[0],
+  totalOrdersReceived: 48,
+  slaCompliancePercentage: 98,
+  avgPickerSeconds: 165,
+  avgDeliveryMinutes: 22,
+  totalUnitsInwarded: 120,
+  totalUnitsKept: 42,
+  totalUnitsReturned: 6,
+  keptRatioPercentage: 87
+};
+
+export function getWholesaleSettlements(): DrobeWholesaleSettlement[] {
+  if (typeof window === 'undefined') return INITIAL_WHOLESALE_SETTLEMENTS;
+  try {
+    const raw = localStorage.getItem('drobe_wholesale_settlements');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return INITIAL_WHOLESALE_SETTLEMENTS;
+}
+
+export function saveWholesaleSettlements(settlements: DrobeWholesaleSettlement[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('drobe_wholesale_settlements', JSON.stringify(settlements));
+    window.dispatchEvent(new Event('storage'));
+  } catch {}
+}
+
+export function getMarginLedger(): DrobeMarginLedgerEntry[] {
+  if (typeof window === 'undefined') return INITIAL_MARGIN_LEDGER;
+  try {
+    const raw = localStorage.getItem('drobe_margin_ledger');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return INITIAL_MARGIN_LEDGER;
+}
+
+export function saveMarginLedger(ledger: DrobeMarginLedgerEntry[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('drobe_margin_ledger', JSON.stringify(ledger));
+    window.dispatchEvent(new Event('storage'));
+  } catch {}
+}
+
+export function getHesitationLogs(): DrobeHesitationLog[] {
+  if (typeof window === 'undefined') return INITIAL_HESITATION_LOGS;
+  try {
+    const raw = localStorage.getItem('drobe_hesitation_logs');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return INITIAL_HESITATION_LOGS;
+}
+
+export function saveHesitationLogs(logs: DrobeHesitationLog[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('drobe_hesitation_logs', JSON.stringify(logs));
+    window.dispatchEvent(new Event('storage'));
+  } catch {}
+}
+
+export function getRecoveryInterventions(): DrobeRecoveryIntervention[] {
+  if (typeof window === 'undefined') return INITIAL_RECOVERY_INTERVENTIONS;
+  try {
+    const raw = localStorage.getItem('drobe_recovery_interventions');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return INITIAL_RECOVERY_INTERVENTIONS;
+}
+
+export function saveRecoveryInterventions(interventions: DrobeRecoveryIntervention[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('drobe_recovery_interventions', JSON.stringify(interventions));
+    window.dispatchEvent(new Event('storage'));
+  } catch {}
+}
+
+export function getDarkstoreMetrics(): DrobeDarkstoreMetrics {
+  if (typeof window === 'undefined') return INITIAL_DARKSTORE_METRICS;
+  try {
+    const raw = localStorage.getItem('drobe_darkstore_metrics');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.warehouseId) return parsed;
+    }
+  } catch {}
+  return INITIAL_DARKSTORE_METRICS;
+}
+
+export function saveDarkstoreMetrics(metrics: DrobeDarkstoreMetrics): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('drobe_darkstore_metrics', JSON.stringify(metrics));
+    window.dispatchEvent(new Event('storage'));
+  } catch {}
+}
