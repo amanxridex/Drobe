@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
+import { motion } from 'framer-motion';
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -207,59 +208,71 @@ export default function BottomNav() {
               cursor: 'pointer'
             }}
           >
-            {/* Authentic Drobe Tab Icon */}
-            <div
+            <motion.div
+              whileTap={{ scale: 0.86 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 25 }}
               style={{
-                position: 'relative',
-                width: 24,
-                height: 24,
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                width: '100%'
               }}
             >
-              {isActive ? tab.activeIcon : tab.inactiveIcon}
+              {/* Authentic Drobe Tab Icon */}
+              <div
+                style={{
+                  position: 'relative',
+                  width: 24,
+                  height: 24,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                {isActive ? tab.activeIcon : tab.inactiveIcon}
 
-              {/* Drobe Authentic Blue Notification Badge */}
-              {tab.badge !== undefined && tab.badge > 0 && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: -3,
-                    right: -6,
-                    background: '#6678FF',
-                    color: '#ffffff',
-                    fontSize: 10.5,
-                    fontWeight: 700,
-                    minWidth: 16,
-                    height: 16,
-                    padding: '0 3.5px',
-                    borderRadius: 9999,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxSizing: 'border-box',
-                    lineHeight: 1
-                  }}
-                >
-                  {tab.badge}
-                </span>
-              )}
-            </div>
+                {/* Drobe Authentic Blue Notification Badge */}
+                {tab.badge !== undefined && tab.badge > 0 && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: -3,
+                      right: -6,
+                      background: '#6678FF',
+                      color: '#ffffff',
+                      fontSize: 10.5,
+                      fontWeight: 700,
+                      minWidth: 16,
+                      height: 16,
+                      padding: '0 3.5px',
+                      borderRadius: 9999,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxSizing: 'border-box',
+                      lineHeight: 1
+                    }}
+                  >
+                    {tab.badge}
+                  </span>
+                )}
+              </div>
 
-            {/* Authentic Drobe Label */}
-            <span
-              style={{
-                fontSize: 13,
-                fontWeight: isActive ? 700 : 500,
-                color: isActive ? '#ffffff' : '#8A8A8A',
-                letterSpacing: 0,
-                marginTop: 4,
-                lineHeight: 1.2
-              }}
-            >
-              {tab.label}
-            </span>
+              {/* Authentic Drobe Label */}
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#ffffff' : '#8A8A8A',
+                  letterSpacing: 0,
+                  marginTop: 4,
+                  lineHeight: 1.2
+                }}
+              >
+                {tab.label}
+              </span>
+            </motion.div>
           </Link>
         );
       })}
