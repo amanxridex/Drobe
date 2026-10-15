@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@gradio/client": "^2.7.1",
     "@supabase/supabase-js": "^2.117.3",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.4.7",
