@@ -13,6 +13,7 @@ export interface Product {
   description: string;
   fabric: string;
   fit: string;
+  primaryColor?: string;
   rating: number;
   reviewsCount: number;
   sizes: string[];

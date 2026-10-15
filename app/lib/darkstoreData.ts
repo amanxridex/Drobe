@@ -107,6 +107,7 @@ export interface DarkstoreProduct {
   sizes?: string[];
   thumbnail?: string;
   fabric?: string;
+  primaryColor?: string;
   fit?: string;
   gender?: string;
   inventory: number; // units declared

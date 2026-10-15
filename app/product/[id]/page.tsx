@@ -53,8 +53,9 @@ export default function ProductDetailPage() {
     subCategory: 'Designer Darkstore Creation',
     images: darkstoreProduct.images?.length > 0 ? darkstoreProduct.images : ['https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80'],
     thumbnail: darkstoreProduct.images?.[0] || 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80',
-    description: `${darkstoreProduct.description || darkstoreProduct.tagline || ''} Stored securely at Ahmedabad Central Hub #01 (Shelf: ${darkstoreProduct.warehouseLocation ? darkstoreProduct.warehouseLocation.code : 'AMD-HUB-01'}). Ready for 30-min express doorstep fitting.`,
-    fabric: 'Luxury Cotton / Linen Blend',
+    description: darkstoreProduct.description || `${darkstoreProduct.tagline || ''} Stored securely at Ahmedabad Central Hub #01 (Shelf: ${darkstoreProduct.warehouseLocation ? darkstoreProduct.warehouseLocation.code : 'AMD-HUB-01'}). Ready for 30-min express doorstep fitting.`,
+    fabric: darkstoreProduct.fabric || 'Luxury Cotton / Linen Blend',
+    primaryColor: darkstoreProduct.primaryColor || 'Black',
     fit: 'Contemporary Tailored Fit',
     rating: 4.9,
     reviewsCount: 38,
@@ -77,7 +78,6 @@ export default function ProductDetailPage() {
   const [activeThumbIndex, setActiveThumbIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('S');
   const [activeTab, setActiveTab] = useState<'specification' | 'description'>('specification');
-  const [showAllSpecs, setShowAllSpecs] = useState(false);
   const [selectedStyleCategory, setSelectedStyleCategory] = useState('All');
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
   const [heartPopping, setHeartPopping] = useState(false);
@@ -854,7 +854,7 @@ export default function ProductDetailPage() {
 
           {activeTab === 'specification' ? (
             <div>
-              {/* 2x2 Grid of attributes */}
+              {/* Only Primary Color & Fabric */}
               <div
                 style={{
                   display: 'grid',
@@ -866,73 +866,15 @@ export default function ProductDetailPage() {
                 <div>
                   <span style={{ fontSize: 12, color: '#71717a' }}>Primary Color</span>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#ffffff', marginTop: 2 }}>
-                    {product.id === '12886' ? 'Olive Green' : 'Black'}
-                  </div>
-                </div>
-                <div>
-                  <span style={{ fontSize: 12, color: '#71717a' }}>Shade</span>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#ffffff', marginTop: 2 }}>
-                    Muted
+                    {product.primaryColor || (product.id === '12886' ? 'Olive Green' : 'Black')}
                   </div>
                 </div>
                 <div>
                   <span style={{ fontSize: 12, color: '#71717a' }}>Fabric</span>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#ffffff', marginTop: 2 }}>
-                    {product.fabric || 'Cotton'}
+                    {product.fabric || 'Cotton Blend'}
                   </div>
                 </div>
-                <div>
-                  <span style={{ fontSize: 12, color: '#71717a' }}>Parent Occasion</span>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#ffffff', marginTop: 2 }}>
-                    Daily, Travel & Outdoor, Work
-                  </div>
-                </div>
-              </div>
-
-              {showAllSpecs && (
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, 1fr)',
-                    gap: '16px 20px',
-                    marginTop: 16,
-                    paddingTop: 12,
-                    borderTop: '1px solid #272732'
-                  }}
-                >
-                  <div>
-                    <span style={{ fontSize: 12, color: '#71717a' }}>Fit</span>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#ffffff', marginTop: 2 }}>
-                      {product.fit || 'Regular Fit'}
-                    </div>
-                  </div>
-                  <div>
-                    <span style={{ fontSize: 12, color: '#71717a' }}>Pattern</span>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#ffffff', marginTop: 2 }}>
-                      Printed / Graphic
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* View more toggle */}
-              <div style={{ textAlign: 'center', marginTop: 14 }}>
-                <button
-                  onClick={() => setShowAllSpecs(!showAllSpecs)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#ffffff',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4
-                  }}
-                >
-                  {showAllSpecs ? 'View less ⌃' : 'View more ⌵'}
-                </button>
               </div>
             </div>
           ) : (

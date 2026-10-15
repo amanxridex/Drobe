@@ -56,7 +56,8 @@ import {
   getTrialOrders,
   InboundStockShipment,
   TrialOrder,
-  syncDarkstoreWithSupabase
+  syncDarkstoreWithSupabase,
+  saveDarkstoreProducts
 } from '../lib/darkstoreData';
 import { subscribeToRealtimeOrders, supabaseUploadMedia } from '../lib/supabaseClient';
 import EditBrandProfileSheet from './EditBrandProfileSheet';
@@ -220,6 +221,8 @@ export default function BrandProfileView({
     inventory: '',
     tagline: '',
     description: '',
+    primaryColor: '',
+    fabric: '',
     image: '',
     images: []
   });
@@ -236,6 +239,8 @@ export default function BrandProfileView({
       inventory: '',
       tagline: '',
       description: '',
+      primaryColor: '',
+      fabric: '',
       image: '',
       images: []
     });
@@ -257,6 +262,8 @@ export default function BrandProfileView({
       inventory: prod.inventory !== undefined ? String(prod.inventory) : '',
       tagline: prod.tagline || '',
       description: prod.description || '',
+      primaryColor: prod.primaryColor || '',
+      fabric: prod.fabric || '',
       image: existingImages[0] || '',
       images: existingImages
     });
@@ -273,6 +280,8 @@ export default function BrandProfileView({
       inventory: '',
       tagline: '',
       description: '',
+      primaryColor: '',
+      fabric: '',
       image: '',
       images: []
     });
@@ -393,6 +402,22 @@ export default function BrandProfileView({
         localStorage.setItem('drobe_brand_profile_v1', JSON.stringify(updatedBrand));
       } catch {}
     }
+
+    try {
+      const darkstoreProds = getDarkstoreProducts();
+      const matchIndex = darkstoreProds.findIndex(dp => dp.name === productToSave.name || (productToSave.id && dp.id === productToSave.id));
+      if (matchIndex >= 0) {
+        darkstoreProds[matchIndex] = {
+          ...darkstoreProds[matchIndex],
+          primaryColor: productToSave.primaryColor,
+          fabric: productToSave.fabric,
+          description: productToSave.description,
+          price: productToSave.price || darkstoreProds[matchIndex].price,
+          images: finalImages.length > 0 ? finalImages : darkstoreProds[matchIndex].images
+        };
+        saveDarkstoreProducts(darkstoreProds);
+      }
+    } catch {}
 
     if (onToast) {
       onToast(
@@ -722,6 +747,20 @@ export default function BrandProfileView({
                             <p className={styles.darkCardDesc}>
                               {prod.description}
                             </p>
+                          )}
+                          {(prod.primaryColor || prod.fabric) && (
+                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '6px' }}>
+                              {prod.primaryColor && (
+                                <span style={{ fontSize: '10px', fontWeight: 600, color: '#334155', backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '6px' }}>
+                                  Color: {prod.primaryColor}
+                                </span>
+                              )}
+                              {prod.fabric && (
+                                <span style={{ fontSize: '10px', fontWeight: 600, color: '#334155', backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '6px' }}>
+                                  Fabric: {prod.fabric}
+                                </span>
+                              )}
+                            </div>
                           )}
 
                           {/* Extra thumbnail strip if multiple images */}
@@ -1719,28 +1758,45 @@ export default function BrandProfileView({
                 />
               </div>
 
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ fontSize: '11px', color: '#475569', textTransform: 'uppercase', fontWeight: 600, display: 'block', marginBottom: '6px' }}>
-                  Tagline / Brief Summary
-                </label>
-                <input
-                  type="text"
-                  value={newProduct.tagline}
-                  onChange={(e) => setNewProduct({ ...newProduct, tagline: e.target.value })}
-                  placeholder="e.g. Double-faced virgin wool with horn buttons"
-                  style={{ width: '100%', padding: '10px 12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
-                />
+              {/* Product Specifications: Primary Color & Fabric */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', color: '#475569', textTransform: 'uppercase', fontWeight: 600, display: 'block', marginBottom: '6px' }}>
+                    Primary Color *
+                  </label>
+                  <input
+                    type="text"
+                    value={newProduct.primaryColor || ''}
+                    onChange={(e) => setNewProduct({ ...newProduct, primaryColor: e.target.value })}
+                    placeholder="e.g. Black, Olive Green, Beige"
+                    style={{ width: '100%', padding: '10px 12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '11px', color: '#475569', textTransform: 'uppercase', fontWeight: 600, display: 'block', marginBottom: '6px' }}>
+                    Fabric *
+                  </label>
+                  <input
+                    type="text"
+                    value={newProduct.fabric || ''}
+                    onChange={(e) => setNewProduct({ ...newProduct, fabric: e.target.value })}
+                    placeholder="e.g. Cotton Blend, 100% Linen"
+                    style={{ width: '100%', padding: '10px 12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
+                  />
+                </div>
               </div>
 
+              {/* Product Description */}
               <div style={{ marginBottom: '12px' }}>
                 <label style={{ fontSize: '11px', color: '#475569', textTransform: 'uppercase', fontWeight: 600, display: 'block', marginBottom: '6px' }}>
-                  Description & Materials
+                  Product Description *
                 </label>
                 <textarea
-                  value={newProduct.description}
+                  value={newProduct.description || ''}
                   onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                  placeholder="Craftsmanship, composition, and care details..."
-                  style={{ width: '100%', padding: '10px 12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a', fontSize: '13px', outline: 'none', minHeight: '64px', boxSizing: 'border-box' }}
+                  placeholder="Enter detailed description of the product, craftsmanship, styling notes..."
+                  style={{ width: '100%', padding: '10px 12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#0f172a', fontSize: '13px', outline: 'none', minHeight: '74px', boxSizing: 'border-box' }}
                 />
               </div>
 
