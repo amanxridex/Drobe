@@ -230,9 +230,13 @@ export default function HomePage() {
 
   const categorySlides = gender === 'women' ? womenGridSlides : menGridSlides;
 
+  const isCategoryDraggingRef = useRef(false);
+  const categoryDragStartPosRef = useRef({ x: 0, y: 0 });
+  const categoryScrollStartRef = useRef(0);
+
   const handleCategoryScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const scrollLeft = e.currentTarget.scrollLeft;
-    const width = e.currentTarget.clientWidth;
+    const width = e.currentTarget.offsetWidth || e.currentTarget.clientWidth;
     if (width > 0) {
       const newIndex = Math.round(scrollLeft / width);
       if (newIndex !== categorySlideIndex) {
@@ -243,11 +247,61 @@ export default function HomePage() {
 
   const scrollToSlide = (idx: number) => {
     if (categoryScrollRef.current) {
+      const width = categoryScrollRef.current.offsetWidth || categoryScrollRef.current.clientWidth;
       categoryScrollRef.current.scrollTo({
-        left: idx * categoryScrollRef.current.clientWidth,
+        left: idx * width,
         behavior: 'smooth'
       });
       setCategorySlideIndex(idx);
+    }
+  };
+
+  const handleCategoryMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    isCategoryDraggingRef.current = false;
+    categoryDragStartPosRef.current = { x: e.pageX, y: e.pageY };
+    categoryScrollStartRef.current = categoryScrollRef.current?.scrollLeft || 0;
+  };
+
+  const handleCategoryMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.buttons !== 1) return;
+    const dx = e.pageX - categoryDragStartPosRef.current.x;
+    if (Math.abs(dx) > 6) {
+      isCategoryDraggingRef.current = true;
+    }
+    if (isCategoryDraggingRef.current && categoryScrollRef.current) {
+      categoryScrollRef.current.scrollLeft = categoryScrollStartRef.current - dx;
+    }
+  };
+
+  const handleCategoryMouseUp = () => {
+    if (isCategoryDraggingRef.current) {
+      setTimeout(() => {
+        isCategoryDraggingRef.current = false;
+      }, 60);
+    }
+  };
+
+  const handleCategoryTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    isCategoryDraggingRef.current = false;
+    if (e.touches.length > 0) {
+      categoryDragStartPosRef.current = { x: e.touches[0].pageX, y: e.touches[0].pageY };
+    }
+  };
+
+  const handleCategoryTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length > 0) {
+      const dx = e.touches[0].pageX - categoryDragStartPosRef.current.x;
+      if (Math.abs(dx) > 8) {
+        isCategoryDraggingRef.current = true;
+      }
+    }
+  };
+
+  const handleCategoryTouchEnd = () => {
+    if (isCategoryDraggingRef.current) {
+      setTimeout(() => {
+        isCategoryDraggingRef.current = false;
+      }, 60);
     }
   };
 
@@ -471,17 +525,86 @@ export default function HomePage() {
             Slide 1: Kurtas, Kurta Sets, Ethnic Jackets, Pyjamas | Rings, Necklaces & Chains, Bracelets, Perfumes
             ...through 5 slides (40 total categories) with 5 pagination dots
             ======================================================== */}
-        <section style={{ padding: '0 0 16px', position: 'relative' }}>
+        <section style={{ padding: '0 0 16px', position: 'relative', width: '100%', overflow: 'hidden' }}>
+          {/* Left Floating Arrow */}
+          {categorySlideIndex > 0 && (
+            <button
+              onClick={() => scrollToSlide(Math.max(0, categorySlideIndex - 1))}
+              style={{
+                position: 'absolute',
+                left: 2,
+                top: '42%',
+                transform: 'translateY(-50%)',
+                width: 30,
+                height: 30,
+                borderRadius: '50%',
+                background: 'rgba(20, 20, 26, 0.88)',
+                backdropFilter: 'blur(6px)',
+                border: '1px solid #363642',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 10,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.6)'
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </button>
+          )}
+
+          {/* Right Floating Arrow */}
+          {categorySlideIndex < (categorySlides.length - 1) && (
+            <button
+              onClick={() => scrollToSlide(Math.min(categorySlides.length - 1, categorySlideIndex + 1))}
+              style={{
+                position: 'absolute',
+                right: 2,
+                top: '42%',
+                transform: 'translateY(-50%)',
+                width: 30,
+                height: 30,
+                borderRadius: '50%',
+                background: 'rgba(20, 20, 26, 0.88)',
+                backdropFilter: 'blur(6px)',
+                border: '1px solid #363642',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 10,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.6)'
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+          )}
+
           <div
             ref={categoryScrollRef}
             onScroll={handleCategoryScroll}
+            onMouseDown={handleCategoryMouseDown}
+            onMouseMove={handleCategoryMouseMove}
+            onMouseUp={handleCategoryMouseUp}
+            onTouchStart={handleCategoryTouchStart}
+            onTouchMove={handleCategoryTouchMove}
+            onTouchEnd={handleCategoryTouchEnd}
             style={{
               display: 'flex',
               overflowX: 'auto',
               scrollSnapType: 'x mandatory',
               scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
               width: '100%',
-              WebkitOverflowScrolling: 'touch'
+              WebkitOverflowScrolling: 'touch',
+              touchAction: 'pan-y',
+              userSelect: 'none'
             }}
           >
             {categorySlides.map((slideItems, slideIdx) => (
@@ -489,8 +612,10 @@ export default function HomePage() {
                 key={slideIdx}
                 style={{
                   flex: '0 0 100%',
+                  minWidth: '100%',
                   width: '100%',
                   scrollSnapAlign: 'start',
+                  scrollSnapStop: 'always',
                   boxSizing: 'border-box',
                   padding: '0 12px'
                 }}
@@ -511,14 +636,18 @@ export default function HomePage() {
                     return (
                       <div
                         key={itemIdx}
-                        onClick={() => router.push(targetRoute)}
+                        onClick={() => {
+                          if (isCategoryDraggingRef.current) return;
+                          router.push(targetRoute);
+                        }}
                         style={{
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
                           justifyContent: 'flex-start',
                           cursor: 'pointer',
-                          textAlign: 'center'
+                          textAlign: 'center',
+                          userSelect: 'none'
                         }}
                       >
                         <div
@@ -528,17 +657,21 @@ export default function HomePage() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            background: 'transparent'
+                            background: 'transparent',
+                            pointerEvents: 'none'
                           }}
                         >
                           <img
                             src={cat.img}
                             alt={displayName}
+                            draggable={false}
                             style={{
                               maxWidth: '100%',
                               maxHeight: '100%',
                               objectFit: 'contain',
-                              filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35))'
+                              filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35))',
+                              userSelect: 'none',
+                              pointerEvents: 'none'
                             }}
                           />
                         </div>
@@ -555,7 +688,9 @@ export default function HomePage() {
                             alignItems: 'flex-start',
                             justifyContent: 'center',
                             wordBreak: 'break-word',
-                            maxWidth: 78
+                            maxWidth: 78,
+                            userSelect: 'none',
+                            pointerEvents: 'none'
                           }}
                         >
                           {displayName}
