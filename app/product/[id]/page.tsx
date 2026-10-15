@@ -266,31 +266,6 @@ export default function ProductDetailPage() {
             }}
           />
 
-          {/* Top-Left: TRY 'n BUY Frosted Pill Badge */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 12,
-              left: 12,
-              background: 'rgba(0, 0, 0, 0.65)',
-              backdropFilter: 'blur(6px)',
-              WebkitBackdropFilter: 'blur(6px)',
-              padding: '4px 10px',
-              borderRadius: 9999,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 3,
-              zIndex: 2,
-              userSelect: 'none'
-            }}
-          >
-            <span style={{ color: '#f59e0b', fontSize: 11, fontWeight: 800, letterSpacing: '0.02em', lineHeight: 1 }}>
-              TRY
-            </span>
-            <span style={{ color: '#ffffff', fontSize: 11, fontWeight: 800, letterSpacing: '0.02em', lineHeight: 1 }}>
-              &apos;n BUY
-            </span>
-          </div>
 
           {/* Top-Right: EXTRA ₹999 OFF Magenta Badge */}
           <div
