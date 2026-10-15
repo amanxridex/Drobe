@@ -14,12 +14,12 @@ export default function LocationModal() {
   if (!isLocationOpen) return null;
 
   const popularLocations = [
-    { name: 'Shreepal Complex, Suren Rd, Mumbai', area: 'Andheri East, Mumbai - 400093', eta: '60 mins' },
-    { name: 'Bandra Linking Road, Mumbai', area: 'Bandra West, Mumbai - 400050', eta: '60 mins' },
-    { name: 'Juhu Tara Road, Mumbai', area: 'Juhu, Mumbai - 400049', eta: '60 mins' },
-    { name: 'Koramangala 4th Block, Bangalore', area: 'Koramangala, Bangalore - 560034', eta: '60 mins' },
-    { name: 'Indiranagar 100ft Road, Bangalore', area: 'Indiranagar, Bangalore - 560038', eta: '60 mins' },
-    { name: 'Vesu Main Road, Surat', area: 'Vesu, Surat - 395007', eta: '60 mins' }
+    { name: 'Shreepal Complex, Suren Rd, Mumbai', area: 'Andheri East, Mumbai - 400093', eta: '30 mins' },
+    { name: 'Bandra Linking Road, Mumbai', area: 'Bandra West, Mumbai - 400050', eta: '30 mins' },
+    { name: 'Juhu Tara Road, Mumbai', area: 'Juhu, Mumbai - 400049', eta: '30 mins' },
+    { name: 'Koramangala 4th Block, Bangalore', area: 'Koramangala, Bangalore - 560034', eta: '30 mins' },
+    { name: 'Indiranagar 100ft Road, Bangalore', area: 'Indiranagar, Bangalore - 560038', eta: '30 mins' },
+    { name: 'Vesu Main Road, Surat', area: 'Vesu, Surat - 395007', eta: '30 mins' }
   ];
 
   const handleSetDeliveryLocation = () => {

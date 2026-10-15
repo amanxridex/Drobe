@@ -193,7 +193,7 @@ export default function CategoriesPage() {
           <h2 style={{ fontSize: 13, fontWeight: 800, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: 0.8, margin: 0 }}>
             {gender === 'men' ? "Men's Collections" : "Women's Collections"}
           </h2>
-          <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 700 }}>⚡ 60-min delivery</span>
+          <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 700 }}>⚡ 30-min delivery</span>
         </div>
 
         {/* Categories Grid Cards */}

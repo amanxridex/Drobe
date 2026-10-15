@@ -53,7 +53,7 @@ export default function TopHeader() {
                 transition: 'color 0.25s ease'
               }}
             >
-              60 minutes
+              30 minutes
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 1 }}>

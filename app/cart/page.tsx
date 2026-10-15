@@ -105,7 +105,7 @@ export default function CartPage() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(56,189,248,0.1)', padding: '4px 10px', borderRadius: 20 }}>
           <span style={{ fontSize: 12 }}>⚡</span>
-          <span style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8' }}>60 Mins</span>
+          <span style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8' }}>30 Mins</span>
         </div>
       </header>
 
@@ -132,7 +132,7 @@ export default function CartPage() {
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Your bag is empty</h2>
             <p style={{ fontSize: 13, color: '#888', marginBottom: 24, maxWidth: 280, margin: '0 auto 24px' }}>
-              Explore fresh fits and get them delivered to your doorstep in 60 minutes!
+              Explore fresh fits and get them delivered to your doorstep in 30 minutes!
             </p>
             <Link
               href="/"
@@ -368,7 +368,7 @@ export default function CartPage() {
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa' }}>
-                  <span>⚡ 60-Min Instant Delivery</span>
+                  <span>⚡ 30-Min Instant Delivery</span>
                   <span style={{ color: '#34d399', fontWeight: 700 }}>FREE</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa' }}>

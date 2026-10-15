@@ -187,7 +187,7 @@ export default function StackingCardsHero({
     <section
       style={{
         width: '100%',
-        padding: '6px 0 20px',
+        padding: '4px 0 2px',
         position: 'relative',
         userSelect: 'none',
         display: 'flex',
@@ -216,7 +216,7 @@ export default function StackingCardsHero({
           padding: '0 16px',
           boxSizing: 'border-box',
           position: 'relative',
-          height: 184, // Gives room for the stacked cards peeking below
+          height: 168, // Gives room for the stacked cards peeking below with tight bottom space
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-start',
@@ -417,39 +417,6 @@ export default function StackingCardsHero({
           </motion.div>
         </AnimatePresence>
       </div>
-
-      {/* Pagination Indicator Dots / Pills (Subtle, tapping any dot jumps to it) */}
-      {count > 1 && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: 5,
-            marginTop: 14,
-            zIndex: 35
-          }}
-        >
-          {cards.map((_, dotIdx) => {
-            const isActive = dotIdx === activeIndex;
-            return (
-              <div
-                key={dotIdx}
-                onClick={() => goToCard(dotIdx)}
-                style={{
-                  width: isActive ? 16 : 5,
-                  height: 5,
-                  borderRadius: 999,
-                  backgroundColor: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.25)',
-                  boxShadow: isActive ? '0 1px 6px rgba(255, 255, 255, 0.4)' : 'none',
-                  transition: 'all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1)',
-                  cursor: 'pointer'
-                }}
-              />
-            );
-          })}
-        </div>
-      )}
     </section>
   );
 }

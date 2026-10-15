@@ -110,7 +110,7 @@ export default function CollectionPage() {
             {currentCat.name}
           </h1>
           <p style={{ fontSize: 10.5, color: '#8e8e93', margin: '2px 0 0 0', fontWeight: 500 }}>
-            {products.length} Items • 60-min delivery
+            {products.length} Items • 30-min delivery
           </p>
         </div>
 
@@ -201,7 +201,7 @@ export default function CollectionPage() {
             whiteSpace: 'nowrap'
           }}
         >
-          ⚡ 60-Min Express
+          ⚡ 30-Min Express
         </span>
 
         <span

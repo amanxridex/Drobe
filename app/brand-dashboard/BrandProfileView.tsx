@@ -1390,7 +1390,7 @@ export default function BrandProfileView({
                     <div>
                       <div className={styles.settingsRowHeading}>Accepting Orders</div>
                       <div className={styles.settingsRowDesc}>
-                        {isStoreLive ? 'Live on Drobe (60-min express active)' : 'Vacation Mode (store temporarily paused)'}
+                        {isStoreLive ? 'Live on Drobe (30-min express active)' : 'Vacation Mode (store temporarily paused)'}
                       </div>
                     </div>
                   </div>
@@ -1407,14 +1407,14 @@ export default function BrandProfileView({
                   </button>
                 </div>
 
-                {/* 60-min Express Radius */}
+                {/* 30-min Express Radius */}
                 <div className={styles.settingsRowItem}>
                   <div className={styles.settingsRowLeft}>
                     <div className={styles.settingsRowIconWrap}>
                       <Zap size={16} color="#0284c7" />
                     </div>
                     <div>
-                      <div className={styles.settingsRowHeading}>60-Min Express Dispatch</div>
+                      <div className={styles.settingsRowHeading}>30-Min Express Dispatch</div>
                       <div className={styles.settingsRowDesc}>Instant rider pickup within 12 km radius</div>
                     </div>
                   </div>
@@ -1746,7 +1746,7 @@ export default function BrandProfileView({
                     Available Inventory / Stock Units
                   </label>
                   <span style={{ fontSize: '10px', color: '#16a34a', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                    <Package size={10} /> 60-Min Express Ready
+                    <Package size={10} /> 30-Min Express Ready
                   </span>
                 </div>
                 <input

@@ -16,7 +16,7 @@
       "/assets/real/products/36440/angle_4.jpg",
       "/assets/real/products/36440/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -43,7 +43,7 @@
       "/assets/real/products/37600/angle_5.webp",
       "/assets/real/products/37600/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -69,7 +69,7 @@
       "/assets/real/products/31561/angle_4.jpg",
       "/assets/real/products/31561/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -97,7 +97,7 @@
       "/assets/real/products/29393/angle_6.jpg",
       "/assets/real/products/29393/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -126,7 +126,7 @@
       "/assets/real/products/12671/angle_7.jpg",
       "/assets/real/products/12671/angle_8.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -152,7 +152,7 @@
       "/assets/real/products/39505/angle_4.jpg",
       "/assets/real/products/39505/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -175,7 +175,7 @@
       "/assets/real/products/17298/angle_1.png",
       "/assets/real/products/17298/angle_2.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -198,7 +198,7 @@
       "/assets/real/products/24630/angle_1.webp",
       "/assets/real/products/24630/angle_2.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -225,7 +225,7 @@
       "/assets/real/products/36336/angle_5.jpg",
       "/assets/real/products/36336/angle_6.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -251,7 +251,7 @@
       "/assets/real/products/10225/angle_4.webp",
       "/assets/real/products/10225/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -276,7 +276,7 @@
       "/assets/real/products/35266/angle_3.jpg",
       "/assets/real/products/35266/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -303,7 +303,7 @@
       "/assets/real/products/33058/angle_5.jpg",
       "/assets/real/products/33058/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -326,7 +326,7 @@
       "/assets/real/products/3684/angle_1.jpg",
       "/assets/real/products/3684/angle_2.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -351,7 +351,7 @@
       "/assets/real/products/17637/angle_3.jpg",
       "/assets/real/products/17637/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -378,7 +378,7 @@
       "/assets/real/products/32424/angle_5.jpg",
       "/assets/real/products/32424/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -405,7 +405,7 @@
       "/assets/real/products/36362/angle_5.jpg",
       "/assets/real/products/36362/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -433,7 +433,7 @@
       "/assets/real/products/33388/angle_6.jpg",
       "/assets/real/products/33388/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -461,7 +461,7 @@
       "/assets/real/products/32718/angle_6.jpg",
       "/assets/real/products/32718/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -489,7 +489,7 @@
       "/assets/real/products/36464/angle_6.jpg",
       "/assets/real/products/36464/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -515,7 +515,7 @@
       "/assets/real/products/38962/angle_4.jpg",
       "/assets/real/products/38962/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -541,7 +541,7 @@
       "/assets/real/products/29268/angle_4.jpg",
       "/assets/real/products/29268/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -567,7 +567,7 @@
       "/assets/real/products/20788/angle_4.png",
       "/assets/real/products/20788/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -594,7 +594,7 @@
       "/assets/real/products/7446/angle_5.jpg",
       "/assets/real/products/7446/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -622,7 +622,7 @@
       "/assets/real/products/7767/angle_6.jpg",
       "/assets/real/products/7767/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -648,7 +648,7 @@
       "/assets/real/products/3515/angle_4.jpg",
       "/assets/real/products/3515/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -675,7 +675,7 @@
       "/assets/real/products/30593/angle_5.jpg",
       "/assets/real/products/30593/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -702,7 +702,7 @@
       "/assets/real/products/17123/angle_5.jpg",
       "/assets/real/products/17123/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -731,7 +731,7 @@
       "/assets/real/products/10308/angle_7.jpg",
       "/assets/real/products/10308/angle_8.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -758,7 +758,7 @@
       "/assets/real/products/22440/angle_5.jpg",
       "/assets/real/products/22440/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -787,7 +787,7 @@
       "/assets/real/products/10284/angle_7.jpg",
       "/assets/real/products/10284/angle_8.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -816,7 +816,7 @@
       "/assets/real/products/5709/angle_7.jpg",
       "/assets/real/products/5709/angle_8.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -842,7 +842,7 @@
       "/assets/real/products/37614/angle_4.webp",
       "/assets/real/products/37614/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -869,7 +869,7 @@
       "/assets/real/products/30621/angle_5.jpg",
       "/assets/real/products/30621/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -898,7 +898,7 @@
       "/assets/real/products/10285/angle_7.jpg",
       "/assets/real/products/10285/angle_8.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -925,7 +925,7 @@
       "/assets/real/products/37587/angle_5.webp",
       "/assets/real/products/37587/angle_6.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -952,7 +952,7 @@
       "/assets/real/products/30616/angle_5.jpg",
       "/assets/real/products/30616/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -979,7 +979,7 @@
       "/assets/real/products/17112/angle_5.jpg",
       "/assets/real/products/17112/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1005,7 +1005,7 @@
       "/assets/real/products/37625/angle_4.webp",
       "/assets/real/products/37625/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1032,7 +1032,7 @@
       "/assets/real/products/22396/angle_5.jpg",
       "/assets/real/products/22396/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1059,7 +1059,7 @@
       "/assets/real/products/37597/angle_5.webp",
       "/assets/real/products/37597/angle_6.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1086,7 +1086,7 @@
       "/assets/real/products/37186/angle_5.jpg",
       "/assets/real/products/37186/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1113,7 +1113,7 @@
       "/assets/real/products/37155/angle_5.jpg",
       "/assets/real/products/37155/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1140,7 +1140,7 @@
       "/assets/real/products/37190/angle_5.jpg",
       "/assets/real/products/37190/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1167,7 +1167,7 @@
       "/assets/real/products/37095/angle_5.jpg",
       "/assets/real/products/37095/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1194,7 +1194,7 @@
       "/assets/real/products/37127/angle_5.jpg",
       "/assets/real/products/37127/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1221,7 +1221,7 @@
       "/assets/real/products/37162/angle_5.jpg",
       "/assets/real/products/37162/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1248,7 +1248,7 @@
       "/assets/real/products/37111/angle_5.jpg",
       "/assets/real/products/37111/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1275,7 +1275,7 @@
       "/assets/real/products/37164/angle_5.jpg",
       "/assets/real/products/37164/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1302,7 +1302,7 @@
       "/assets/real/products/37199/angle_5.jpg",
       "/assets/real/products/37199/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1329,7 +1329,7 @@
       "/assets/real/products/37168/angle_5.jpg",
       "/assets/real/products/37168/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1356,7 +1356,7 @@
       "/assets/real/products/37172/angle_5.jpg",
       "/assets/real/products/37172/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1383,7 +1383,7 @@
       "/assets/real/products/37077/angle_5.jpg",
       "/assets/real/products/37077/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1410,7 +1410,7 @@
       "/assets/real/products/37143/angle_5.jpg",
       "/assets/real/products/37143/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1437,7 +1437,7 @@
       "/assets/real/products/37115/angle_5.jpg",
       "/assets/real/products/37115/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1464,7 +1464,7 @@
       "/assets/real/products/37150/angle_5.jpg",
       "/assets/real/products/37150/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1491,7 +1491,7 @@
       "/assets/real/products/8736/angle_5.jpg",
       "/assets/real/products/8736/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1516,7 +1516,7 @@
       "/assets/real/products/6561/angle_3.jpg",
       "/assets/real/products/6561/angle_4.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1542,7 +1542,7 @@
       "/assets/real/products/11426/angle_4.jpg",
       "/assets/real/products/11426/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1569,7 +1569,7 @@
       "/assets/real/products/7460/angle_5.jpg",
       "/assets/real/products/7460/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1599,7 +1599,7 @@
       "/assets/real/products/24135/angle_8.jpg",
       "/assets/real/products/24135/angle_9.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1625,7 +1625,7 @@
       "/assets/real/products/11019/angle_4.jpg",
       "/assets/real/products/11019/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1651,7 +1651,7 @@
       "/assets/real/products/17581/angle_4.jpg",
       "/assets/real/products/17581/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1676,7 +1676,7 @@
       "/assets/real/products/10862/angle_3.jpg",
       "/assets/real/products/10862/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1704,7 +1704,7 @@
       "/assets/real/products/36498/angle_6.jpg",
       "/assets/real/products/36498/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1734,7 +1734,7 @@
       "/assets/real/products/24148/angle_8.jpg",
       "/assets/real/products/24148/angle_9.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1760,7 +1760,7 @@
       "/assets/real/products/8661/angle_4.jpg",
       "/assets/real/products/8661/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1788,7 +1788,7 @@
       "/assets/real/products/36535/angle_6.jpg",
       "/assets/real/products/36535/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1812,7 +1812,7 @@
       "/assets/real/products/16666/angle_2.png",
       "/assets/real/products/16666/angle_3.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1838,7 +1838,7 @@
       "/assets/real/products/6014/angle_4.jpg",
       "/assets/real/products/6014/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1864,7 +1864,7 @@
       "/assets/real/products/17567/angle_4.jpg",
       "/assets/real/products/17567/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -1890,7 +1890,7 @@
       "/assets/real/products/19397/angle_4.jpg",
       "/assets/real/products/19397/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -1918,7 +1918,7 @@
       "/assets/real/products/19402/angle_6.jpg",
       "/assets/real/products/19402/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -1946,7 +1946,7 @@
       "/assets/real/products/19404/angle_6.jpg",
       "/assets/real/products/19404/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -1974,7 +1974,7 @@
       "/assets/real/products/19389/angle_6.jpg",
       "/assets/real/products/19389/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2000,7 +2000,7 @@
       "/assets/real/products/19408/angle_4.jpg",
       "/assets/real/products/19408/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2028,7 +2028,7 @@
       "/assets/real/products/20689/angle_6.webp",
       "/assets/real/products/20689/angle_7.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2056,7 +2056,7 @@
       "/assets/real/products/19442/angle_6.jpg",
       "/assets/real/products/19442/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2084,7 +2084,7 @@
       "/assets/real/products/19410/angle_6.jpg",
       "/assets/real/products/19410/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2111,7 +2111,7 @@
       "/assets/real/products/19411/angle_5.jpg",
       "/assets/real/products/19411/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2137,7 +2137,7 @@
       "/assets/real/products/19382/angle_4.jpg",
       "/assets/real/products/19382/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2163,7 +2163,7 @@
       "/assets/real/products/19415/angle_4.jpg",
       "/assets/real/products/19415/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2186,7 +2186,7 @@
       "/assets/real/products/19387/angle_1.jpg",
       "/assets/real/products/19387/angle_2.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2209,7 +2209,7 @@
       "/assets/real/products/32444/angle_1.jpg",
       "/assets/real/products/32444/angle_2.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2237,7 +2237,7 @@
       "/assets/real/products/19421/angle_6.jpg",
       "/assets/real/products/19421/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2265,7 +2265,7 @@
       "/assets/real/products/19359/angle_6.jpg",
       "/assets/real/products/19359/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2291,7 +2291,7 @@
       "/assets/real/products/21665/angle_4.jpg",
       "/assets/real/products/21665/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2317,7 +2317,7 @@
       "/assets/real/products/37382/angle_4.jpg",
       "/assets/real/products/37382/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2344,7 +2344,7 @@
       "/assets/real/products/27431/angle_5.jpg",
       "/assets/real/products/27431/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2372,7 +2372,7 @@
       "/assets/real/products/25291/angle_6.jpg",
       "/assets/real/products/25291/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2400,7 +2400,7 @@
       "/assets/real/products/25293/angle_6.jpg",
       "/assets/real/products/25293/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2428,7 +2428,7 @@
       "/assets/real/products/39470/angle_6.jpg",
       "/assets/real/products/39470/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2456,7 +2456,7 @@
       "/assets/real/products/32721/angle_6.jpg",
       "/assets/real/products/32721/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2483,7 +2483,7 @@
       "/assets/real/products/21683/angle_5.jpg",
       "/assets/real/products/21683/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2512,7 +2512,7 @@
       "/assets/real/products/36020/angle_7.png",
       "/assets/real/products/36020/angle_8.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2540,7 +2540,7 @@
       "/assets/real/products/18677/angle_6.jpg",
       "/assets/real/products/18677/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2568,7 +2568,7 @@
       "/assets/real/products/18678/angle_6.jpg",
       "/assets/real/products/18678/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2596,7 +2596,7 @@
       "/assets/real/products/21653/angle_6.jpg",
       "/assets/real/products/21653/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2623,7 +2623,7 @@
       "/assets/real/products/25752/angle_5.png",
       "/assets/real/products/25752/angle_6.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2650,7 +2650,7 @@
       "/assets/real/products/30553/angle_5.png",
       "/assets/real/products/30553/angle_6.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2677,7 +2677,7 @@
       "/assets/real/products/30687/angle_5.png",
       "/assets/real/products/30687/angle_6.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -2703,7 +2703,7 @@
       "/assets/real/products/12226/angle_4.jpg",
       "/assets/real/products/12226/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -2729,7 +2729,7 @@
       "/assets/real/products/30563/angle_4.jpg",
       "/assets/real/products/30563/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -2755,7 +2755,7 @@
       "/assets/real/products/39238/angle_4.webp",
       "/assets/real/products/39238/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -2781,7 +2781,7 @@
       "/assets/real/products/29194/angle_4.jpg",
       "/assets/real/products/29194/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -2807,7 +2807,7 @@
       "/assets/real/products/29195/angle_4.jpg",
       "/assets/real/products/29195/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -2835,7 +2835,7 @@
       "/assets/real/products/37036/angle_6.jpg",
       "/assets/real/products/37036/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -2862,7 +2862,7 @@
       "/assets/real/products/30572/angle_5.jpg",
       "/assets/real/products/30572/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -2889,7 +2889,7 @@
       "/assets/real/products/29876/angle_5.png",
       "/assets/real/products/29876/angle_6.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -2916,7 +2916,7 @@
       "/assets/real/products/12212/angle_5.jpg",
       "/assets/real/products/12212/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -2943,7 +2943,7 @@
       "/assets/real/products/16919/angle_5.jpg",
       "/assets/real/products/16919/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -2970,7 +2970,7 @@
       "/assets/real/products/15896/angle_5.jpg",
       "/assets/real/products/15896/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -2998,7 +2998,7 @@
       "/assets/real/products/38682/angle_6.jpg",
       "/assets/real/products/38682/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3025,7 +3025,7 @@
       "/assets/real/products/32317/angle_5.jpg",
       "/assets/real/products/32317/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3050,7 +3050,7 @@
       "/assets/real/products/12222/angle_3.jpg",
       "/assets/real/products/12222/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3077,7 +3077,7 @@
       "/assets/real/products/2623/angle_5.jpg",
       "/assets/real/products/2623/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3099,7 +3099,7 @@
     "images": [
       "/assets/real/products/4836/angle_1.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3124,7 +3124,7 @@
       "/assets/real/products/33061/angle_3.jpg",
       "/assets/real/products/33061/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3150,7 +3150,7 @@
       "/assets/real/products/29991/angle_4.png",
       "/assets/real/products/29991/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3176,7 +3176,7 @@
       "/assets/real/products/29226/angle_4.jpg",
       "/assets/real/products/29226/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3202,7 +3202,7 @@
       "/assets/real/products/31341/angle_4.png",
       "/assets/real/products/31341/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -3228,7 +3228,7 @@
       "/assets/real/products/36722/angle_4.jpg",
       "/assets/real/products/36722/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3254,7 +3254,7 @@
       "/assets/real/products/36563/angle_4.jpg",
       "/assets/real/products/36563/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3281,7 +3281,7 @@
       "/assets/real/products/24510/angle_5.jpg",
       "/assets/real/products/24510/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3309,7 +3309,7 @@
       "/assets/real/products/36627/angle_6.jpg",
       "/assets/real/products/36627/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -3335,7 +3335,7 @@
       "/assets/real/products/36629/angle_4.jpg",
       "/assets/real/products/36629/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3363,7 +3363,7 @@
       "/assets/real/products/36758/angle_6.jpg",
       "/assets/real/products/36758/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3388,7 +3388,7 @@
       "/assets/real/products/32702/angle_3.jpg",
       "/assets/real/products/32702/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3411,7 +3411,7 @@
       "/assets/real/products/34781/angle_1.png",
       "/assets/real/products/34781/angle_2.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3438,7 +3438,7 @@
       "/assets/real/products/32318/angle_5.jpg",
       "/assets/real/products/32318/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3463,7 +3463,7 @@
       "/assets/real/products/13056/angle_3.jpg",
       "/assets/real/products/13056/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3491,7 +3491,7 @@
       "/assets/real/products/36517/angle_6.jpg",
       "/assets/real/products/36517/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3518,7 +3518,7 @@
       "/assets/real/products/32358/angle_5.jpg",
       "/assets/real/products/32358/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3545,7 +3545,7 @@
       "/assets/real/products/37607/angle_5.webp",
       "/assets/real/products/37607/angle_6.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3573,7 +3573,7 @@
       "/assets/real/products/23175/angle_6.jpg",
       "/assets/real/products/23175/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3598,7 +3598,7 @@
       "/assets/real/products/13003/angle_3.webp",
       "/assets/real/products/13003/angle_4.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3626,7 +3626,7 @@
       "/assets/real/products/32971/angle_6.jpg",
       "/assets/real/products/32971/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3652,7 +3652,7 @@
       "/assets/real/products/37615/angle_4.webp",
       "/assets/real/products/37615/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3677,7 +3677,7 @@
       "/assets/real/products/38960/angle_3.jpg",
       "/assets/real/products/38960/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -3704,7 +3704,7 @@
       "/assets/real/products/35220/angle_5.jpg",
       "/assets/real/products/35220/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -3730,7 +3730,7 @@
       "/assets/real/products/29877/angle_4.png",
       "/assets/real/products/29877/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3755,7 +3755,7 @@
       "/assets/real/products/31063/angle_3.jpg",
       "/assets/real/products/31063/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3783,7 +3783,7 @@
       "/assets/real/products/38618/angle_6.png",
       "/assets/real/products/38618/angle_7.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3811,7 +3811,7 @@
       "/assets/real/products/33754/angle_6.jpg",
       "/assets/real/products/33754/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3836,7 +3836,7 @@
       "/assets/real/products/35300/angle_3.jpg",
       "/assets/real/products/35300/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3862,7 +3862,7 @@
       "/assets/real/products/29157/angle_4.jpg",
       "/assets/real/products/29157/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3889,7 +3889,7 @@
       "/assets/real/products/24615/angle_5.jpg",
       "/assets/real/products/24615/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3914,7 +3914,7 @@
       "/assets/real/products/35288/angle_3.jpg",
       "/assets/real/products/35288/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3939,7 +3939,7 @@
       "/assets/real/products/15180/angle_3.jpg",
       "/assets/real/products/15180/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3964,7 +3964,7 @@
       "/assets/real/products/9900/angle_3.jpg",
       "/assets/real/products/9900/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -3989,7 +3989,7 @@
       "/assets/real/products/36206/angle_3.jpg",
       "/assets/real/products/36206/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4016,7 +4016,7 @@
       "/assets/real/products/14222/angle_5.jpg",
       "/assets/real/products/14222/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4042,7 +4042,7 @@
       "/assets/real/products/32942/angle_4.png",
       "/assets/real/products/32942/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4069,7 +4069,7 @@
       "/assets/real/products/36593/angle_5.jpg",
       "/assets/real/products/36593/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4095,7 +4095,7 @@
       "/assets/real/products/29176/angle_4.jpg",
       "/assets/real/products/29176/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4120,7 +4120,7 @@
       "/assets/real/products/35964/angle_3.jpg",
       "/assets/real/products/35964/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4146,7 +4146,7 @@
       "/assets/real/products/36444/angle_4.jpg",
       "/assets/real/products/36444/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4173,7 +4173,7 @@
       "/assets/real/products/30656/angle_5.jpg",
       "/assets/real/products/30656/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4198,7 +4198,7 @@
       "/assets/real/products/14594/angle_3.jpg",
       "/assets/real/products/14594/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4225,7 +4225,7 @@
       "/assets/real/products/30658/angle_5.jpg",
       "/assets/real/products/30658/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4253,7 +4253,7 @@
       "/assets/real/products/37251/angle_6.jpg",
       "/assets/real/products/37251/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4282,7 +4282,7 @@
       "/assets/real/products/11586/angle_7.png",
       "/assets/real/products/11586/angle_8.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4309,7 +4309,7 @@
       "/assets/real/products/2476/angle_5.jpg",
       "/assets/real/products/2476/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4337,7 +4337,7 @@
       "/assets/real/products/32494/angle_6.jpg",
       "/assets/real/products/32494/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4363,7 +4363,7 @@
       "/assets/real/products/24144/angle_4.jpg",
       "/assets/real/products/24144/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4388,7 +4388,7 @@
       "/assets/real/products/36465/angle_3.jpg",
       "/assets/real/products/36465/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4414,7 +4414,7 @@
       "/assets/real/products/36436/angle_4.jpg",
       "/assets/real/products/36436/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4441,7 +4441,7 @@
       "/assets/real/products/36566/angle_5.jpg",
       "/assets/real/products/36566/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4468,7 +4468,7 @@
       "/assets/real/products/87/angle_5.jpg",
       "/assets/real/products/87/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4495,7 +4495,7 @@
       "/assets/real/products/32765/angle_5.jpg",
       "/assets/real/products/32765/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4522,7 +4522,7 @@
       "/assets/real/products/32766/angle_5.jpg",
       "/assets/real/products/32766/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4549,7 +4549,7 @@
       "/assets/real/products/32767/angle_5.jpg",
       "/assets/real/products/32767/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4573,7 +4573,7 @@
       "/assets/real/products/23332/angle_2.jpg",
       "/assets/real/products/23332/angle_3.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4600,7 +4600,7 @@
       "/assets/real/products/32454/angle_5.jpg",
       "/assets/real/products/32454/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4627,7 +4627,7 @@
       "/assets/real/products/14565/angle_5.jpg",
       "/assets/real/products/14565/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4651,7 +4651,7 @@
       "/assets/real/products/16841/angle_2.jpg",
       "/assets/real/products/16841/angle_3.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4678,7 +4678,7 @@
       "/assets/real/products/7420/angle_5.jpg",
       "/assets/real/products/7420/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4706,7 +4706,7 @@
       "/assets/real/products/17207/angle_6.jpg",
       "/assets/real/products/17207/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4733,7 +4733,7 @@
       "/assets/real/products/37592/angle_5.jpg",
       "/assets/real/products/37592/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4759,7 +4759,7 @@
       "/assets/real/products/36217/angle_4.jpg",
       "/assets/real/products/36217/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4786,7 +4786,7 @@
       "/assets/real/products/37594/angle_5.jpg",
       "/assets/real/products/37594/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4813,7 +4813,7 @@
       "/assets/real/products/37244/angle_5.jpg",
       "/assets/real/products/37244/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4843,7 +4843,7 @@
       "/assets/real/products/36893/angle_8.jpg",
       "/assets/real/products/36893/angle_9.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4870,7 +4870,7 @@
       "/assets/real/products/33662/angle_5.png",
       "/assets/real/products/33662/angle_6.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4896,7 +4896,7 @@
       "/assets/real/products/35751/angle_4.jpg",
       "/assets/real/products/35751/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4928,7 +4928,7 @@
       "/assets/real/products/37000/angle_10.jpg",
       "/assets/real/products/37000/angle_11.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4954,7 +4954,7 @@
       "/assets/real/products/10222/angle_4.webp",
       "/assets/real/products/10222/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -4979,7 +4979,7 @@
       "/assets/real/products/31057/angle_3.jpg",
       "/assets/real/products/31057/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5005,7 +5005,7 @@
       "/assets/real/products/22737/angle_4.webp",
       "/assets/real/products/22737/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5032,7 +5032,7 @@
       "/assets/real/products/33491/angle_5.jpg",
       "/assets/real/products/33491/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5058,7 +5058,7 @@
       "/assets/real/products/36692/angle_4.jpg",
       "/assets/real/products/36692/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5084,7 +5084,7 @@
       "/assets/real/products/36724/angle_4.jpg",
       "/assets/real/products/36724/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5111,7 +5111,7 @@
       "/assets/real/products/37110/angle_5.jpg",
       "/assets/real/products/37110/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5139,7 +5139,7 @@
       "/assets/real/products/20757/angle_6.jpg",
       "/assets/real/products/20757/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5166,7 +5166,7 @@
       "/assets/real/products/37209/angle_5.jpg",
       "/assets/real/products/37209/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5192,7 +5192,7 @@
       "/assets/real/products/38746/angle_4.webp",
       "/assets/real/products/38746/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5218,7 +5218,7 @@
       "/assets/real/products/38747/angle_4.webp",
       "/assets/real/products/38747/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5244,7 +5244,7 @@
       "/assets/real/products/7228/angle_4.webp",
       "/assets/real/products/7228/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5270,7 +5270,7 @@
       "/assets/real/products/22782/angle_4.jpg",
       "/assets/real/products/22782/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5295,7 +5295,7 @@
       "/assets/real/products/11715/angle_3.jpg",
       "/assets/real/products/11715/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5322,7 +5322,7 @@
       "/assets/real/products/27364/angle_5.jpg",
       "/assets/real/products/27364/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5347,7 +5347,7 @@
       "/assets/real/products/32644/angle_3.jpg",
       "/assets/real/products/32644/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5374,7 +5374,7 @@
       "/assets/real/products/8807/angle_5.jpg",
       "/assets/real/products/8807/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5403,7 +5403,7 @@
       "/assets/real/products/2859/angle_7.jpg",
       "/assets/real/products/2859/angle_8.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5429,7 +5429,7 @@
       "/assets/real/products/17580/angle_4.jpg",
       "/assets/real/products/17580/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5457,7 +5457,7 @@
       "/assets/real/products/14191/angle_6.jpg",
       "/assets/real/products/14191/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5485,7 +5485,7 @@
       "/assets/real/products/29361/angle_6.jpg",
       "/assets/real/products/29361/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5513,7 +5513,7 @@
       "/assets/real/products/29362/angle_6.jpg",
       "/assets/real/products/29362/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5541,7 +5541,7 @@
       "/assets/real/products/14195/angle_6.jpg",
       "/assets/real/products/14195/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5567,7 +5567,7 @@
       "/assets/real/products/30654/angle_4.jpg",
       "/assets/real/products/30654/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5591,7 +5591,7 @@
       "/assets/real/products/31544/angle_2.jpg",
       "/assets/real/products/31544/angle_3.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5618,7 +5618,7 @@
       "/assets/real/products/37084/angle_5.jpg",
       "/assets/real/products/37084/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5642,7 +5642,7 @@
       "/assets/real/products/37086/angle_2.jpg",
       "/assets/real/products/37086/angle_3.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5669,7 +5669,7 @@
       "/assets/real/products/37087/angle_5.jpg",
       "/assets/real/products/37087/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5696,7 +5696,7 @@
       "/assets/real/products/37092/angle_5.jpg",
       "/assets/real/products/37092/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5721,7 +5721,7 @@
       "/assets/real/products/35302/angle_3.jpg",
       "/assets/real/products/35302/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5748,7 +5748,7 @@
       "/assets/real/products/29575/angle_5.jpg",
       "/assets/real/products/29575/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5776,7 +5776,7 @@
       "/assets/real/products/14504/angle_6.jpg",
       "/assets/real/products/14504/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5803,7 +5803,7 @@
       "/assets/real/products/32777/angle_5.jpg",
       "/assets/real/products/32777/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5830,7 +5830,7 @@
       "/assets/real/products/36427/angle_5.jpg",
       "/assets/real/products/36427/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5858,7 +5858,7 @@
       "/assets/real/products/30418/angle_6.jpg",
       "/assets/real/products/30418/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5883,7 +5883,7 @@
       "/assets/real/products/35315/angle_3.jpg",
       "/assets/real/products/35315/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5910,7 +5910,7 @@
       "/assets/real/products/17204/angle_5.jpg",
       "/assets/real/products/17204/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5938,7 +5938,7 @@
       "/assets/real/products/23956/angle_6.jpg",
       "/assets/real/products/23956/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5964,7 +5964,7 @@
       "/assets/real/products/27604/angle_4.jpg",
       "/assets/real/products/27604/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -5990,7 +5990,7 @@
       "/assets/real/products/36056/angle_4.jpg",
       "/assets/real/products/36056/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6018,7 +6018,7 @@
       "/assets/real/products/29503/angle_6.jpg",
       "/assets/real/products/29503/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6044,7 +6044,7 @@
       "/assets/real/products/29986/angle_4.png",
       "/assets/real/products/29986/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6069,7 +6069,7 @@
       "/assets/real/products/13063/angle_3.webp",
       "/assets/real/products/13063/angle_4.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6092,7 +6092,7 @@
       "/assets/real/products/39400/angle_1.webp",
       "/assets/real/products/39400/angle_2.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6119,7 +6119,7 @@
       "/assets/real/products/32807/angle_5.jpg",
       "/assets/real/products/32807/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6146,7 +6146,7 @@
       "/assets/real/products/24461/angle_5.jpg",
       "/assets/real/products/24461/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6176,7 +6176,7 @@
       "/assets/real/products/30002/angle_8.jpg",
       "/assets/real/products/30002/angle_9.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6203,7 +6203,7 @@
       "/assets/real/products/23122/angle_5.jpg",
       "/assets/real/products/23122/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6228,7 +6228,7 @@
       "/assets/real/products/31059/angle_3.jpg",
       "/assets/real/products/31059/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6255,7 +6255,7 @@
       "/assets/real/products/20210/angle_5.jpg",
       "/assets/real/products/20210/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6280,7 +6280,7 @@
       "/assets/real/products/35319/angle_3.jpg",
       "/assets/real/products/35319/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6305,7 +6305,7 @@
       "/assets/real/products/31060/angle_3.jpg",
       "/assets/real/products/31060/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6332,7 +6332,7 @@
       "/assets/real/products/14460/angle_5.jpg",
       "/assets/real/products/14460/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6357,7 +6357,7 @@
       "/assets/real/products/25440/angle_3.png",
       "/assets/real/products/25440/angle_4.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6382,7 +6382,7 @@
       "/assets/real/products/11456/angle_3.jpg",
       "/assets/real/products/11456/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6408,7 +6408,7 @@
       "/assets/real/products/29187/angle_4.jpg",
       "/assets/real/products/29187/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6434,7 +6434,7 @@
       "/assets/real/products/21764/angle_4.png",
       "/assets/real/products/21764/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6461,7 +6461,7 @@
       "/assets/real/products/37256/angle_5.jpg",
       "/assets/real/products/37256/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6489,7 +6489,7 @@
       "/assets/real/products/36499/angle_6.jpg",
       "/assets/real/products/36499/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6516,7 +6516,7 @@
       "/assets/real/products/36468/angle_5.jpg",
       "/assets/real/products/36468/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6541,7 +6541,7 @@
       "/assets/real/products/35316/angle_3.jpg",
       "/assets/real/products/35316/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6569,7 +6569,7 @@
       "/assets/real/products/29396/angle_6.jpg",
       "/assets/real/products/29396/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6594,7 +6594,7 @@
       "/assets/real/products/16791/angle_3.jpg",
       "/assets/real/products/16791/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6621,7 +6621,7 @@
       "/assets/real/products/36218/angle_5.jpg",
       "/assets/real/products/36218/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6649,7 +6649,7 @@
       "/assets/real/products/37019/angle_6.jpg",
       "/assets/real/products/37019/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -6677,7 +6677,7 @@
       "/assets/real/products/36705/angle_6.jpg",
       "/assets/real/products/36705/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6703,7 +6703,7 @@
       "/assets/real/products/20289/angle_4.jpg",
       "/assets/real/products/20289/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6730,7 +6730,7 @@
       "/assets/real/products/31012/angle_5.jpg",
       "/assets/real/products/31012/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6757,7 +6757,7 @@
       "/assets/real/products/20709/angle_5.jpg",
       "/assets/real/products/20709/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6781,7 +6781,7 @@
       "/assets/real/products/20284/angle_2.jpg",
       "/assets/real/products/20284/angle_3.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6807,7 +6807,7 @@
       "/assets/real/products/36776/angle_4.jpg",
       "/assets/real/products/36776/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6833,7 +6833,7 @@
       "/assets/real/products/37387/angle_4.jpg",
       "/assets/real/products/37387/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6861,7 +6861,7 @@
       "/assets/real/products/22860/angle_6.jpg",
       "/assets/real/products/22860/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6888,7 +6888,7 @@
       "/assets/real/products/36748/angle_5.jpg",
       "/assets/real/products/36748/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6916,7 +6916,7 @@
       "/assets/real/products/20686/angle_6.jpg",
       "/assets/real/products/20686/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6943,7 +6943,7 @@
       "/assets/real/products/35825/angle_5.jpg",
       "/assets/real/products/35825/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6967,7 +6967,7 @@
       "/assets/real/products/14674/angle_2.jpg",
       "/assets/real/products/14674/angle_3.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -6995,7 +6995,7 @@
       "/assets/real/products/20692/angle_6.jpg",
       "/assets/real/products/20692/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -7023,7 +7023,7 @@
       "/assets/real/products/22844/angle_6.jpg",
       "/assets/real/products/22844/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -7048,7 +7048,7 @@
       "/assets/real/products/8253/angle_3.jpg",
       "/assets/real/products/8253/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -7074,7 +7074,7 @@
       "/assets/real/products/37376/angle_4.jpg",
       "/assets/real/products/37376/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -7100,7 +7100,7 @@
       "/assets/real/products/6658/angle_4.jpg",
       "/assets/real/products/6658/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7126,7 +7126,7 @@
       "/assets/real/products/23459/angle_4.jpg",
       "/assets/real/products/23459/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7153,7 +7153,7 @@
       "/assets/real/products/36581/angle_5.jpg",
       "/assets/real/products/36581/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7180,7 +7180,7 @@
       "/assets/real/products/21671/angle_5.jpg",
       "/assets/real/products/21671/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -7205,7 +7205,7 @@
       "/assets/real/products/21639/angle_3.jpg",
       "/assets/real/products/21639/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -7231,7 +7231,7 @@
       "/assets/real/products/29288/angle_4.jpg",
       "/assets/real/products/29288/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7258,7 +7258,7 @@
       "/assets/real/products/21675/angle_5.jpg",
       "/assets/real/products/21675/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -7286,7 +7286,7 @@
       "/assets/real/products/22700/angle_6.jpg",
       "/assets/real/products/22700/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -7313,7 +7313,7 @@
       "/assets/real/products/36365/angle_5.jpg",
       "/assets/real/products/36365/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7340,7 +7340,7 @@
       "/assets/real/products/33004/angle_5.webp",
       "/assets/real/products/33004/angle_6.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7368,7 +7368,7 @@
       "/assets/real/products/16753/angle_6.jpg",
       "/assets/real/products/16753/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7393,7 +7393,7 @@
       "/assets/real/products/33748/angle_3.jpg",
       "/assets/real/products/33748/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7419,7 +7419,7 @@
       "/assets/real/products/37560/angle_4.png",
       "/assets/real/products/37560/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7444,7 +7444,7 @@
       "/assets/real/products/24735/angle_3.jpg",
       "/assets/real/products/24735/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -7472,7 +7472,7 @@
       "/assets/real/products/7680/angle_6.jpg",
       "/assets/real/products/7680/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7499,7 +7499,7 @@
       "/assets/real/products/36216/angle_5.jpg",
       "/assets/real/products/36216/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7526,7 +7526,7 @@
       "/assets/real/products/32391/angle_5.jpg",
       "/assets/real/products/32391/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7553,7 +7553,7 @@
       "/assets/real/products/16748/angle_5.jpg",
       "/assets/real/products/16748/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7579,7 +7579,7 @@
       "/assets/real/products/33008/angle_4.png",
       "/assets/real/products/33008/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7606,7 +7606,7 @@
       "/assets/real/products/37245/angle_5.jpg",
       "/assets/real/products/37245/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7632,7 +7632,7 @@
       "/assets/real/products/14806/angle_4.jpg",
       "/assets/real/products/14806/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7660,7 +7660,7 @@
       "/assets/real/products/23544/angle_6.jpg",
       "/assets/real/products/23544/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7685,7 +7685,7 @@
       "/assets/real/products/31066/angle_3.jpg",
       "/assets/real/products/31066/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7714,7 +7714,7 @@
       "/assets/real/products/6652/angle_7.jpg",
       "/assets/real/products/6652/angle_8.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7740,7 +7740,7 @@
       "/assets/real/products/38749/angle_4.webp",
       "/assets/real/products/38749/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7763,7 +7763,7 @@
       "/assets/real/products/34657/angle_1.jpg",
       "/assets/real/products/34657/angle_2.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7790,7 +7790,7 @@
       "/assets/real/products/15234/angle_5.jpg",
       "/assets/real/products/15234/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7818,7 +7818,7 @@
       "/assets/real/products/36354/angle_6.jpg",
       "/assets/real/products/36354/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7843,7 +7843,7 @@
       "/assets/real/products/35651/angle_3.jpg",
       "/assets/real/products/35651/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -7870,7 +7870,7 @@
       "/assets/real/products/37089/angle_5.jpg",
       "/assets/real/products/37089/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7897,7 +7897,7 @@
       "/assets/real/products/8712/angle_5.jpg",
       "/assets/real/products/8712/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7925,7 +7925,7 @@
       "/assets/real/products/17708/angle_6.png",
       "/assets/real/products/17708/angle_7.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7953,7 +7953,7 @@
       "/assets/real/products/33804/angle_6.png",
       "/assets/real/products/33804/angle_7.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -7980,7 +7980,7 @@
       "/assets/real/products/37070/angle_5.jpg",
       "/assets/real/products/37070/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8006,7 +8006,7 @@
       "/assets/real/products/6607/angle_4.jpg",
       "/assets/real/products/6607/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8032,7 +8032,7 @@
       "/assets/real/products/38744/angle_4.webp",
       "/assets/real/products/38744/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8058,7 +8058,7 @@
       "/assets/real/products/38745/angle_4.webp",
       "/assets/real/products/38745/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8085,7 +8085,7 @@
       "/assets/real/products/30555/angle_5.jpg",
       "/assets/real/products/30555/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8110,7 +8110,7 @@
       "/assets/real/products/37601/angle_3.webp",
       "/assets/real/products/37601/angle_4.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8135,7 +8135,7 @@
       "/assets/real/products/37604/angle_3.webp",
       "/assets/real/products/37604/angle_4.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8169,7 +8169,7 @@
       "/assets/real/products/11736/angle_12.jpg",
       "/assets/real/products/11736/angle_13.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8194,7 +8194,7 @@
       "/assets/real/products/13448/angle_3.jpg",
       "/assets/real/products/13448/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8222,7 +8222,7 @@
       "/assets/real/products/14473/angle_6.jpg",
       "/assets/real/products/14473/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8250,7 +8250,7 @@
       "/assets/real/products/24138/angle_6.jpg",
       "/assets/real/products/24138/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8274,7 +8274,7 @@
       "/assets/real/products/21255/angle_2.jpg",
       "/assets/real/products/21255/angle_3.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8298,7 +8298,7 @@
       "/assets/real/products/13583/angle_2.jpg",
       "/assets/real/products/13583/angle_3.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8325,7 +8325,7 @@
       "/assets/real/products/27893/angle_5.png",
       "/assets/real/products/27893/angle_6.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8352,7 +8352,7 @@
       "/assets/real/products/30647/angle_5.jpg",
       "/assets/real/products/30647/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8379,7 +8379,7 @@
       "/assets/real/products/36344/angle_5.jpg",
       "/assets/real/products/36344/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8404,7 +8404,7 @@
       "/assets/real/products/34780/angle_3.png",
       "/assets/real/products/34780/angle_4.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8433,7 +8433,7 @@
       "/assets/real/products/36895/angle_7.png",
       "/assets/real/products/36895/angle_8.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8458,7 +8458,7 @@
       "/assets/real/products/14787/angle_3.jpg",
       "/assets/real/products/14787/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8483,7 +8483,7 @@
       "/assets/real/products/33284/angle_3.jpg",
       "/assets/real/products/33284/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8510,7 +8510,7 @@
       "/assets/real/products/36611/angle_5.jpg",
       "/assets/real/products/36611/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8538,7 +8538,7 @@
       "/assets/real/products/33478/angle_6.jpg",
       "/assets/real/products/33478/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8564,7 +8564,7 @@
       "/assets/real/products/29191/angle_4.png",
       "/assets/real/products/29191/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8590,7 +8590,7 @@
       "/assets/real/products/29224/angle_4.jpg",
       "/assets/real/products/29224/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8617,7 +8617,7 @@
       "/assets/real/products/36718/angle_5.jpg",
       "/assets/real/products/36718/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8644,7 +8644,7 @@
       "/assets/real/products/36624/angle_5.jpg",
       "/assets/real/products/36624/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8670,7 +8670,7 @@
       "/assets/real/products/29172/angle_4.jpg",
       "/assets/real/products/29172/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8697,7 +8697,7 @@
       "/assets/real/products/32468/angle_5.jpg",
       "/assets/real/products/32468/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8723,7 +8723,7 @@
       "/assets/real/products/29206/angle_4.jpg",
       "/assets/real/products/29206/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8750,7 +8750,7 @@
       "/assets/real/products/36441/angle_5.jpg",
       "/assets/real/products/36441/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8777,7 +8777,7 @@
       "/assets/real/products/32826/angle_5.jpg",
       "/assets/real/products/32826/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8804,7 +8804,7 @@
       "/assets/real/products/7389/angle_5.jpg",
       "/assets/real/products/7389/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -8830,7 +8830,7 @@
       "/assets/real/products/31136/angle_4.jpg",
       "/assets/real/products/31136/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -8856,7 +8856,7 @@
       "/assets/real/products/36023/angle_4.png",
       "/assets/real/products/36023/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -8882,7 +8882,7 @@
       "/assets/real/products/31138/angle_4.jpg",
       "/assets/real/products/31138/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -8910,7 +8910,7 @@
       "/assets/real/products/30115/angle_6.jpg",
       "/assets/real/products/30115/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -8935,7 +8935,7 @@
       "/assets/real/products/36323/angle_3.jpg",
       "/assets/real/products/36323/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -8961,7 +8961,7 @@
       "/assets/real/products/31143/angle_4.jpg",
       "/assets/real/products/31143/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -8987,7 +8987,7 @@
       "/assets/real/products/31145/angle_4.jpg",
       "/assets/real/products/31145/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -9012,7 +9012,7 @@
       "/assets/real/products/36330/angle_3.jpg",
       "/assets/real/products/36330/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -9038,7 +9038,7 @@
       "/assets/real/products/31147/angle_4.jpg",
       "/assets/real/products/31147/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -9064,7 +9064,7 @@
       "/assets/real/products/31149/angle_4.jpg",
       "/assets/real/products/31149/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -9090,7 +9090,7 @@
       "/assets/real/products/31157/angle_4.jpg",
       "/assets/real/products/31157/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -9116,7 +9116,7 @@
       "/assets/real/products/31158/angle_4.jpg",
       "/assets/real/products/31158/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -9142,7 +9142,7 @@
       "/assets/real/products/35609/angle_4.png",
       "/assets/real/products/35609/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -9167,7 +9167,7 @@
       "/assets/real/products/35320/angle_3.jpg",
       "/assets/real/products/35320/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -9192,7 +9192,7 @@
       "/assets/real/products/35321/angle_3.jpg",
       "/assets/real/products/35321/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -9218,7 +9218,7 @@
       "/assets/real/products/30437/angle_4.jpg",
       "/assets/real/products/30437/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9243,7 +9243,7 @@
       "/assets/real/products/26949/angle_3.jpg",
       "/assets/real/products/26949/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9269,7 +9269,7 @@
       "/assets/real/products/22247/angle_4.jpg",
       "/assets/real/products/22247/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9295,7 +9295,7 @@
       "/assets/real/products/14923/angle_4.jpg",
       "/assets/real/products/14923/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9323,7 +9323,7 @@
       "/assets/real/products/16172/angle_6.jpg",
       "/assets/real/products/16172/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9350,7 +9350,7 @@
       "/assets/real/products/12333/angle_5.jpg",
       "/assets/real/products/12333/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9377,7 +9377,7 @@
       "/assets/real/products/14841/angle_5.jpg",
       "/assets/real/products/14841/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9403,7 +9403,7 @@
       "/assets/real/products/14927/angle_4.jpg",
       "/assets/real/products/14927/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9430,7 +9430,7 @@
       "/assets/real/products/12335/angle_5.jpg",
       "/assets/real/products/12335/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9458,7 +9458,7 @@
       "/assets/real/products/14165/angle_6.jpg",
       "/assets/real/products/14165/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9481,7 +9481,7 @@
       "/assets/real/products/16950/angle_1.jpg",
       "/assets/real/products/16950/angle_2.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9508,7 +9508,7 @@
       "/assets/real/products/16183/angle_5.jpg",
       "/assets/real/products/16183/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9535,7 +9535,7 @@
       "/assets/real/products/12345/angle_5.jpg",
       "/assets/real/products/12345/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9562,7 +9562,7 @@
       "/assets/real/products/16188/angle_5.jpg",
       "/assets/real/products/16188/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9589,7 +9589,7 @@
       "/assets/real/products/14847/angle_5.jpg",
       "/assets/real/products/14847/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9616,7 +9616,7 @@
       "/assets/real/products/30467/angle_5.jpg",
       "/assets/real/products/30467/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9643,7 +9643,7 @@
       "/assets/real/products/22245/angle_5.jpg",
       "/assets/real/products/22245/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9668,7 +9668,7 @@
       "/assets/real/products/13576/angle_3.jpg",
       "/assets/real/products/13576/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9696,7 +9696,7 @@
       "/assets/real/products/14159/angle_6.jpg",
       "/assets/real/products/14159/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9721,7 +9721,7 @@
       "/assets/real/products/13009/angle_3.jpg",
       "/assets/real/products/13009/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9749,7 +9749,7 @@
       "/assets/real/products/12591/angle_6.jpg",
       "/assets/real/products/12591/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9777,7 +9777,7 @@
       "/assets/real/products/12560/angle_6.jpg",
       "/assets/real/products/12560/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9805,7 +9805,7 @@
       "/assets/real/products/12564/angle_6.jpg",
       "/assets/real/products/12564/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9831,7 +9831,7 @@
       "/assets/real/products/12441/angle_4.jpg",
       "/assets/real/products/12441/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9858,7 +9858,7 @@
       "/assets/real/products/31743/angle_5.jpg",
       "/assets/real/products/31743/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9883,7 +9883,7 @@
       "/assets/real/products/15423/angle_3.jpg",
       "/assets/real/products/15423/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9910,7 +9910,7 @@
       "/assets/real/products/39519/angle_5.jpg",
       "/assets/real/products/39519/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9936,7 +9936,7 @@
       "/assets/real/products/39397/angle_4.webp",
       "/assets/real/products/39397/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9958,7 +9958,7 @@
     "images": [
       "/assets/real/products/13157/angle_1.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -9986,7 +9986,7 @@
       "/assets/real/products/27111/angle_6.jpg",
       "/assets/real/products/27111/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10011,7 +10011,7 @@
       "/assets/real/products/33064/angle_3.jpg",
       "/assets/real/products/33064/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10037,7 +10037,7 @@
       "/assets/real/products/29164/angle_4.jpg",
       "/assets/real/products/29164/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10065,7 +10065,7 @@
       "/assets/real/products/24556/angle_6.jpg",
       "/assets/real/products/24556/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10092,7 +10092,7 @@
       "/assets/real/products/30066/angle_5.jpg",
       "/assets/real/products/30066/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10119,7 +10119,7 @@
       "/assets/real/products/37240/angle_5.jpg",
       "/assets/real/products/37240/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10145,7 +10145,7 @@
       "/assets/real/products/21209/angle_4.jpg",
       "/assets/real/products/21209/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10171,7 +10171,7 @@
       "/assets/real/products/8666/angle_4.jpg",
       "/assets/real/products/8666/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10197,7 +10197,7 @@
       "/assets/real/products/37243/angle_4.jpg",
       "/assets/real/products/37243/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10224,7 +10224,7 @@
       "/assets/real/products/29949/angle_5.png",
       "/assets/real/products/29949/angle_6.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10250,7 +10250,7 @@
       "/assets/real/products/29312/angle_4.webp",
       "/assets/real/products/29312/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10275,7 +10275,7 @@
       "/assets/real/products/35713/angle_3.jpg",
       "/assets/real/products/35713/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -10300,7 +10300,7 @@
       "/assets/real/products/10177/angle_3.webp",
       "/assets/real/products/10177/angle_4.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10328,7 +10328,7 @@
       "/assets/real/products/17382/angle_6.jpg",
       "/assets/real/products/17382/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10355,7 +10355,7 @@
       "/assets/real/products/21673/angle_5.jpg",
       "/assets/real/products/21673/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -10381,7 +10381,7 @@
       "/assets/real/products/37610/angle_4.webp",
       "/assets/real/products/37610/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10407,7 +10407,7 @@
       "/assets/real/products/37709/angle_4.jpg",
       "/assets/real/products/37709/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -10437,7 +10437,7 @@
       "/assets/real/products/24464/angle_8.jpg",
       "/assets/real/products/24464/angle_9.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10462,7 +10462,7 @@
       "/assets/real/products/35742/angle_3.jpg",
       "/assets/real/products/35742/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10489,7 +10489,7 @@
       "/assets/real/products/21620/angle_5.jpg",
       "/assets/real/products/21620/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": false,
     "sizes": [
       "S",
@@ -10515,7 +10515,7 @@
       "/assets/real/products/31542/angle_4.jpg",
       "/assets/real/products/31542/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10540,7 +10540,7 @@
       "/assets/real/products/33752/angle_3.jpg",
       "/assets/real/products/33752/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10566,7 +10566,7 @@
       "/assets/real/products/33757/angle_4.jpg",
       "/assets/real/products/33757/angle_5.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10594,7 +10594,7 @@
       "/assets/real/products/14785/angle_6.jpg",
       "/assets/real/products/14785/angle_7.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10622,7 +10622,7 @@
       "/assets/real/products/9283/angle_6.webp",
       "/assets/real/products/9283/angle_7.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10646,7 +10646,7 @@
       "/assets/real/products/6695/angle_2.jpg",
       "/assets/real/products/6695/angle_3.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10673,7 +10673,7 @@
       "/assets/real/products/15879/angle_5.jpg",
       "/assets/real/products/15879/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10700,7 +10700,7 @@
       "/assets/real/products/30600/angle_5.jpg",
       "/assets/real/products/30600/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10726,7 +10726,7 @@
       "/assets/real/products/29290/angle_4.webp",
       "/assets/real/products/29290/angle_5.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10752,7 +10752,7 @@
       "/assets/real/products/29159/angle_4.png",
       "/assets/real/products/29159/angle_5.png"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10776,7 +10776,7 @@
       "/assets/real/products/2829/angle_2.jpg",
       "/assets/real/products/2829/angle_3.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10801,7 +10801,7 @@
       "/assets/real/products/35278/angle_3.jpg",
       "/assets/real/products/35278/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10825,7 +10825,7 @@
       "/assets/real/products/13073/angle_2.webp",
       "/assets/real/products/13073/angle_3.webp"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10852,7 +10852,7 @@
       "/assets/real/products/36691/angle_5.jpg",
       "/assets/real/products/36691/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10877,7 +10877,7 @@
       "/assets/real/products/13017/angle_3.jpg",
       "/assets/real/products/13017/angle_4.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",
@@ -10904,7 +10904,7 @@
       "/assets/real/products/11710/angle_5.jpg",
       "/assets/real/products/11710/angle_6.jpg"
     ],
-    "delivery_display": "60 minutes",
+    "delivery_display": "30 minutes",
     "try_on_enabled": true,
     "sizes": [
       "S",

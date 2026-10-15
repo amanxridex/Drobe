@@ -23,7 +23,7 @@ export default function CouponModal() {
       code: 'DROBE150',
       discount: '₹150 OFF',
       minOrder: '₹399',
-      description: 'Instant discount on 60-min express deliveries',
+      description: 'Instant discount on 30-min express deliveries',
       tag: 'POPULAR'
     },
     {

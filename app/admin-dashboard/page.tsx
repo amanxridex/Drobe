@@ -3307,7 +3307,7 @@ export default function AdminDashboardPage() {
                   <div style={{ fontSize: '10.5px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Stored at Hub</div>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#fbbf24' }}>60 Mins</div>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#fbbf24' }}>30 Mins</div>
                   <div style={{ fontSize: '10.5px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Express Trial</div>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '10px', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>

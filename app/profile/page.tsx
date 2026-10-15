@@ -229,7 +229,7 @@ export default function ProfilePage() {
             </div>
 
             <h2 style={{ fontSize: 19, fontWeight: 800, color: '#ffffff', margin: 0, lineHeight: 1.25 }}>
-              Your 60-Minute Wardrobe
+              Your 30-Minute Wardrobe
             </h2>
             <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 6, lineHeight: 1.5 }}>
               Sign in with your mobile number to track live darkstore riders, doorstep try-ons, and unlock ₹250 Drobe Cash.
@@ -238,7 +238,7 @@ export default function ProfilePage() {
             {/* 3 Highlight Badges */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
               <span style={{ fontSize: 11, fontWeight: 700, color: '#38bdf8', background: '#132334', border: '1px solid #1e3a58', padding: '4px 8px', borderRadius: 8 }}>
-                ⚡ 60-Min Delivery
+                ⚡ 30-Min Delivery
               </span>
               <span style={{ fontSize: 11, fontWeight: 700, color: '#a78bfa', background: '#201b34', border: '1px solid #352b56', padding: '4px 8px', borderRadius: 8 }}>
                 👕 Doorstep Try-On
@@ -445,7 +445,7 @@ export default function ProfilePage() {
               ₹{user ? (user.drobeCash || 250) : 250}
             </div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
-              Auto-applies at checkout on 60-min orders
+              Auto-applies at checkout on 30-min orders
             </div>
           </div>
 
@@ -474,7 +474,7 @@ export default function ProfilePage() {
         </div>
 
         {/* ========================================================
-            4. ACTIVE 60-MIN ORDER HIGHLIGHT (If Any Exists)
+            4. ACTIVE 30-MIN ORDER HIGHLIGHT (If Any Exists)
             ======================================================== */}
         {ongoingOrder && (
           <div
@@ -564,7 +564,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: '#ffffff' }}>My Orders & Deliveries</div>
-                  <div style={{ fontSize: 11, color: '#888898' }}>Active 60-min orders, doorstep trials & receipts</div>
+                  <div style={{ fontSize: 11, color: '#888898' }}>Active 30-min orders, doorstep trials & receipts</div>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -597,7 +597,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: '#ffffff' }}>My Wishlist & Fits</div>
-                  <div style={{ fontSize: 11, color: '#888898' }}>{wishlist.length} saved item{wishlist.length === 1 ? '' : 's'} ready for 60-min trial</div>
+                  <div style={{ fontSize: 11, color: '#888898' }}>{wishlist.length} saved item{wishlist.length === 1 ? '' : 's'} ready for 30-min trial</div>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -808,7 +808,7 @@ export default function ProfilePage() {
             <span style={{ fontSize: 12, fontWeight: 800, color: '#ffffff', letterSpacing: '0.04em' }}>DROBE</span>
           </div>
           <p style={{ fontSize: 11, color: '#71717a', margin: 0 }}>
-            Ultra-Fast 60-Minute Fashion Delivery • v2.4.0
+            Ultra-Fast 30-Minute Fashion Delivery • v2.4.0
           </p>
           <p style={{ fontSize: 10, color: '#52525b', marginTop: 2 }}>
             Ahmedabad & Mumbai Darkstore Hubs
@@ -868,7 +868,7 @@ export default function ProfilePage() {
                         My Orders & Trials
                       </h3>
                       <p style={{ fontSize: 11, color: '#94a3b8', margin: '2px 0 0' }}>
-                        Track 60-minute express deliveries and doorstep trial history
+                        Track 30-minute express deliveries and doorstep trial history
                       </p>
                     </div>
                     <button
@@ -884,7 +884,7 @@ export default function ProfilePage() {
                       <div style={{ fontSize: 32, marginBottom: 8 }}>📦</div>
                       <div style={{ fontSize: 15, fontWeight: 700, color: '#ffffff' }}>No Active Orders Yet</div>
                       <p style={{ fontSize: 12, color: '#71717a', maxWidth: 260, margin: '6px auto 16px' }}>
-                        Browse trendy styles and experience 60-minute doorstep try-on!
+                        Browse trendy styles and experience 30-minute doorstep try-on!
                       </p>
                       <button
                         onClick={() => {
@@ -1228,11 +1228,11 @@ export default function ProfilePage() {
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 10 }}>
-                    {/* 1. 60-Min Delivery */}
+                    {/* 1. 30-Min Delivery */}
                     <div style={{ padding: '12px', background: '#1d1d29', borderRadius: 12, border: '1px solid #28283a' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                         <span style={{ fontSize: 16 }}>⚡</span>
-                        <span style={{ fontSize: 13, fontWeight: 800, color: '#00e676' }}>60-Minute Fast Delivery</span>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: '#00e676' }}>30-Minute Fast Delivery</span>
                       </div>
                       <p style={{ fontSize: 11, color: '#94a3b8', margin: 0, lineHeight: 1.5 }}>
                         Dispatched from our local Ahmedabad & Mumbai micro-fulfillment darkstores in under 7 minutes.

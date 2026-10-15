@@ -5,8 +5,8 @@ import DesktopWrapper from '@/components/DesktopWrapper';
 import SecurityShield from '@/components/SecurityShield';
 
 export const metadata: Metadata = {
-  title: 'DROBE | 60-Mins Fashion Delivery | Try Before You Buy',
-  description: 'Get fashion in 60-mins. Try before you buy with Drobe. No waits or regrets, just fire fits!',
+  title: 'DROBE | 30-Mins Fashion Delivery | Try Before You Buy',
+  description: 'Get fashion in 30-mins. Try before you buy with Drobe. No waits or regrets, just fire fits!',
   manifest: '/manifest.json',
   icons: {
     icon: [

@@ -77,8 +77,8 @@ export default function BrandPage() {
       category: matchingCatalogProds[0]?.category || 'Contemporary Fashion',
       profile_image: foundInManifest?.img || matchingCatalogProds[0]?.thumbnail || '/assets/real/brands/brand_0.webp',
       cover_image: matchingCatalogProds[0]?.images?.[0] || foundInManifest?.img || '/assets/real/lookbook_banner_2.webp',
-      about: `${brandDisplayName} brings signature silhouettes and premium styling directly from Ahmedabad Darkstore Hub #01 for instant 60-minute doorstep trial.`,
-      mission: `Crafting bespoke, contemporary fits delivered to your doorstep in 60 minutes with zero friction.`,
+      about: `${brandDisplayName} brings signature silhouettes and premium styling directly from Ahmedabad Darkstore Hub #01 for instant 30-minute doorstep trial.`,
+      mission: `Crafting bespoke, contemporary fits delivered to your doorstep in 30 minutes with zero friction.`,
       based_out_of: 'Ahmedabad Hub (SG Highway)',
       established_year: '2023',
       initialProducts: matchingCatalogProds
@@ -337,7 +337,7 @@ export default function BrandPage() {
             >
               <span style={{ color: '#00d26a', fontSize: 10 }}>⚡</span>
               <span style={{ color: '#ffffff', fontSize: 10.5, fontWeight: 700, letterSpacing: 0.3 }}>
-                60-MIN EXPRESS TRIAL
+                30-MIN EXPRESS TRIAL
               </span>
             </div>
           </div>
@@ -522,7 +522,7 @@ export default function BrandPage() {
               }}
             >
               <div style={{ background: '#1c1c24', padding: '8px', borderRadius: 10, textAlign: 'center' }}>
-                <div style={{ fontSize: 12, fontWeight: 800, color: '#00d26a' }}>60 Mins</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: '#00d26a' }}>30 Mins</div>
                 <div style={{ fontSize: 9.5, color: '#8e8e93', marginTop: 1 }}>Express Fitting</div>
               </div>
               <div style={{ background: '#1c1c24', padding: '8px', borderRadius: 10, textAlign: 'center' }}>

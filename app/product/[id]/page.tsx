@@ -543,7 +543,7 @@ export default function ProductDetailPage() {
                         borderRadius: 4
                       }}
                     >
-                      60 mins
+                      30 mins
                     </span>
                     <span style={{ fontSize: 16, fontWeight: 800, paddingBottom: 2 }}>{sz}</span>
                   </button>
@@ -648,7 +648,7 @@ export default function ProductDetailPage() {
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
             </svg>
             <span style={{ fontSize: 11, fontWeight: 700, color: '#ffffff', lineHeight: 1.2 }}>
-              60 Mins<br />Delivery
+              30 Mins<br />Delivery
             </span>
           </div>
 
@@ -710,7 +710,7 @@ export default function ProductDetailPage() {
 
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: '#00e676' }}>
-              60 mins delivery available
+              30 mins delivery available
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#ffffff', marginTop: 2 }}>
               Andheri East • 400093{' '}

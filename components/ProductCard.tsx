@@ -287,7 +287,7 @@ export default function ProductCard({
               lineHeight: 1
             }}
           >
-            {product.deliveryMinutes || 60} mins delivery
+            {product.deliveryMinutes === 60 || !product.deliveryMinutes ? 30 : product.deliveryMinutes} mins delivery
           </span>
         </div>
       </div>

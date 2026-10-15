@@ -75,7 +75,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -112,7 +112,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -148,7 +148,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -186,7 +186,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -225,7 +225,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -261,7 +261,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -294,7 +294,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -327,7 +327,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -364,7 +364,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -400,7 +400,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -435,7 +435,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -472,7 +472,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -505,7 +505,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -540,7 +540,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -577,7 +577,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -614,7 +614,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -652,7 +652,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -690,7 +690,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -728,7 +728,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -764,7 +764,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -800,7 +800,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -836,7 +836,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -873,7 +873,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -911,7 +911,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -947,7 +947,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -984,7 +984,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1021,7 +1021,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1060,7 +1060,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1097,7 +1097,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1136,7 +1136,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1175,7 +1175,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1211,7 +1211,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1248,7 +1248,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1287,7 +1287,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1324,7 +1324,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1361,7 +1361,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1398,7 +1398,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1434,7 +1434,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1471,7 +1471,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1508,7 +1508,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1545,7 +1545,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1582,7 +1582,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1619,7 +1619,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1656,7 +1656,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1693,7 +1693,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1730,7 +1730,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1767,7 +1767,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1804,7 +1804,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1841,7 +1841,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1878,7 +1878,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1915,7 +1915,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1952,7 +1952,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -1989,7 +1989,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2026,7 +2026,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2063,7 +2063,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2100,7 +2100,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2135,7 +2135,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2171,7 +2171,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2208,7 +2208,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2248,7 +2248,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2284,7 +2284,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2320,7 +2320,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2355,7 +2355,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2393,7 +2393,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2433,7 +2433,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2469,7 +2469,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2507,7 +2507,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2541,7 +2541,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2577,7 +2577,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2613,7 +2613,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2649,7 +2649,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2687,7 +2687,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2725,7 +2725,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2763,7 +2763,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2799,7 +2799,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2837,7 +2837,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2875,7 +2875,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2913,7 +2913,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2950,7 +2950,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -2986,7 +2986,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3022,7 +3022,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3055,7 +3055,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3088,7 +3088,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3126,7 +3126,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3164,7 +3164,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3200,7 +3200,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3236,7 +3236,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3273,7 +3273,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3311,7 +3311,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3349,7 +3349,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3387,7 +3387,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3425,7 +3425,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3462,7 +3462,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3501,7 +3501,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3539,7 +3539,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3577,7 +3577,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3615,7 +3615,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3652,7 +3652,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3689,7 +3689,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3726,7 +3726,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3762,7 +3762,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3798,7 +3798,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3834,7 +3834,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3870,7 +3870,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3906,7 +3906,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3944,7 +3944,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -3981,7 +3981,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4018,7 +4018,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4055,7 +4055,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4092,7 +4092,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4129,7 +4129,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4167,7 +4167,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4204,7 +4204,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4239,7 +4239,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4276,7 +4276,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4308,7 +4308,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4343,7 +4343,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4379,7 +4379,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4415,7 +4415,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4451,7 +4451,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4487,7 +4487,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4523,7 +4523,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4560,7 +4560,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4598,7 +4598,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4634,7 +4634,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4672,7 +4672,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4707,7 +4707,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4740,7 +4740,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4777,7 +4777,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4812,7 +4812,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4850,7 +4850,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4887,7 +4887,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4924,7 +4924,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4962,7 +4962,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -4997,7 +4997,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5035,7 +5035,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5071,7 +5071,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5106,7 +5106,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5143,7 +5143,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5179,7 +5179,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5214,7 +5214,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5252,7 +5252,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5290,7 +5290,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5325,7 +5325,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5361,7 +5361,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5398,7 +5398,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5433,7 +5433,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5468,7 +5468,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5503,7 +5503,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5538,7 +5538,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5575,7 +5575,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5611,7 +5611,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5648,7 +5648,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5684,7 +5684,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5719,7 +5719,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5755,7 +5755,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5792,7 +5792,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5827,7 +5827,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5864,7 +5864,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5902,7 +5902,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5941,7 +5941,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -5978,7 +5978,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6016,7 +6016,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6052,7 +6052,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6087,7 +6087,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6123,7 +6123,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6160,7 +6160,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6197,7 +6197,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6234,7 +6234,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6271,7 +6271,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6308,7 +6308,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6342,7 +6342,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6379,7 +6379,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6416,7 +6416,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6450,7 +6450,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6487,7 +6487,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6525,7 +6525,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6562,7 +6562,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6598,7 +6598,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6635,7 +6635,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6672,7 +6672,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6712,7 +6712,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6749,7 +6749,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6785,7 +6785,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6827,7 +6827,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6863,7 +6863,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6898,7 +6898,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6934,7 +6934,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -6971,7 +6971,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7007,7 +7007,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7043,7 +7043,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7080,7 +7080,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7118,7 +7118,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7155,7 +7155,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7191,7 +7191,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7227,7 +7227,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7263,7 +7263,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7299,7 +7299,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7334,7 +7334,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7371,7 +7371,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7406,7 +7406,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7443,7 +7443,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7482,7 +7482,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7518,7 +7518,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7556,7 +7556,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7594,7 +7594,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7632,7 +7632,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7670,7 +7670,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7706,7 +7706,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7740,7 +7740,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7777,7 +7777,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7811,7 +7811,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7848,7 +7848,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7885,7 +7885,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7920,7 +7920,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7957,7 +7957,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -7995,7 +7995,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8032,7 +8032,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8069,7 +8069,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8107,7 +8107,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8142,7 +8142,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8179,7 +8179,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8217,7 +8217,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8253,7 +8253,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8289,7 +8289,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8327,7 +8327,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8363,7 +8363,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8398,7 +8398,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8431,7 +8431,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8468,7 +8468,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8505,7 +8505,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8545,7 +8545,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8582,7 +8582,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8617,7 +8617,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8654,7 +8654,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8689,7 +8689,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8724,7 +8724,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8761,7 +8761,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8796,7 +8796,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8831,7 +8831,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8867,7 +8867,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8903,7 +8903,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8940,7 +8940,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -8978,7 +8978,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9015,7 +9015,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9050,7 +9050,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9088,7 +9088,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9123,7 +9123,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9160,7 +9160,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9198,7 +9198,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9236,7 +9236,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9272,7 +9272,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9309,7 +9309,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9346,7 +9346,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9380,7 +9380,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9416,7 +9416,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9452,7 +9452,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9490,7 +9490,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9527,7 +9527,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9565,7 +9565,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9602,7 +9602,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9636,7 +9636,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9674,7 +9674,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9712,7 +9712,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9747,7 +9747,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9783,7 +9783,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9819,7 +9819,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9855,7 +9855,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9892,7 +9892,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9929,7 +9929,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -9964,7 +9964,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10000,7 +10000,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10037,7 +10037,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10075,7 +10075,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10112,7 +10112,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10149,7 +10149,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10187,7 +10187,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10222,7 +10222,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10258,7 +10258,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10293,7 +10293,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10331,7 +10331,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10368,7 +10368,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10405,7 +10405,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10442,7 +10442,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10478,7 +10478,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10515,7 +10515,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10551,7 +10551,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10589,7 +10589,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10624,7 +10624,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10663,7 +10663,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10699,7 +10699,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10732,7 +10732,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10769,7 +10769,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10807,7 +10807,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10842,7 +10842,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10879,7 +10879,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10916,7 +10916,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10954,7 +10954,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -10992,7 +10992,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11029,7 +11029,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11065,7 +11065,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11101,7 +11101,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11137,7 +11137,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11174,7 +11174,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11209,7 +11209,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11244,7 +11244,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11288,7 +11288,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11323,7 +11323,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11361,7 +11361,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11399,7 +11399,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11433,7 +11433,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11467,7 +11467,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11504,7 +11504,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11541,7 +11541,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11578,7 +11578,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11613,7 +11613,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11652,7 +11652,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11687,7 +11687,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11722,7 +11722,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11759,7 +11759,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11797,7 +11797,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11833,7 +11833,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11869,7 +11869,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11906,7 +11906,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11943,7 +11943,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -11979,7 +11979,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12016,7 +12016,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12052,7 +12052,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12089,7 +12089,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12126,7 +12126,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12163,7 +12163,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12199,7 +12199,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12235,7 +12235,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12271,7 +12271,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12309,7 +12309,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12344,7 +12344,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12380,7 +12380,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12416,7 +12416,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12451,7 +12451,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12487,7 +12487,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12523,7 +12523,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12559,7 +12559,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12595,7 +12595,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12631,7 +12631,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12666,7 +12666,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12701,7 +12701,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12737,7 +12737,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12772,7 +12772,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12808,7 +12808,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12844,7 +12844,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12882,7 +12882,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12919,7 +12919,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12956,7 +12956,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -12992,7 +12992,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13029,7 +13029,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13067,7 +13067,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13100,7 +13100,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13137,7 +13137,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13174,7 +13174,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13211,7 +13211,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13248,7 +13248,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13285,7 +13285,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13322,7 +13322,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13357,7 +13357,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13395,7 +13395,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13430,7 +13430,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13468,7 +13468,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13506,7 +13506,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13544,7 +13544,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13580,7 +13580,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13617,7 +13617,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13652,7 +13652,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13689,7 +13689,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13725,7 +13725,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13757,7 +13757,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13795,7 +13795,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13830,7 +13830,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13866,7 +13866,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13904,7 +13904,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13941,7 +13941,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -13978,7 +13978,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14014,7 +14014,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14050,7 +14050,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14086,7 +14086,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14123,7 +14123,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14159,7 +14159,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14194,7 +14194,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14229,7 +14229,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14267,7 +14267,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14304,7 +14304,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14340,7 +14340,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14376,7 +14376,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14416,7 +14416,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14451,7 +14451,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14488,7 +14488,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14524,7 +14524,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14559,7 +14559,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14595,7 +14595,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14633,7 +14633,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14671,7 +14671,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14705,7 +14705,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14742,7 +14742,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14779,7 +14779,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14815,7 +14815,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14851,7 +14851,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14885,7 +14885,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14920,7 +14920,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14954,7 +14954,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -14991,7 +14991,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -15026,7 +15026,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"
@@ -15063,7 +15063,7 @@ export const PRODUCTS: Product[] = [
     ],
     "inStock": true,
     "tryAndBuyEligible": true,
-    "deliveryMinutes": 60,
+    "deliveryMinutes": 30,
     "deliveryLocation": "Shreepal Complex, Suren Rd, Mumbai",
     "promoTag": "Today's Best Price",
     "couponPromo": "Coupon: DROBEFESTIVE999"

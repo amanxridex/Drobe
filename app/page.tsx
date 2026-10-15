@@ -1766,7 +1766,7 @@ export default function HomePage() {
                             }}
                           >
                             <span style={{ color: '#00e5ff' }}>⚡</span>
-                            <span>{prod.deliveryText || '60 mins delivery'}</span>
+                            <span>{prod.deliveryText ? prod.deliveryText.replace(/60/g, '30') : '30 mins delivery'}</span>
                           </div>
                         </div>
                       </div>
@@ -1953,11 +1953,11 @@ export default function HomePage() {
         )}
 
         {/* ========================================================
-            ROW 10: TRENDING IN 60 MINS (Strictly 100% Current Gender)
+            ROW 10: TRENDING IN 30 MINS (Strictly 100% Current Gender)
             ======================================================== */}
         <section style={{ padding: '0 12px 16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 800, color: '#fff' }}>Trending In 60 Mins</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: '#fff' }}>Trending In 30 Mins</h2>
             <Link
               href="/categories"
               style={{

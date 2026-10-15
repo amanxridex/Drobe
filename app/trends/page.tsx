@@ -336,7 +336,7 @@ export default function TrendsPage() {
                   <span style={{ fontSize: 12, fontWeight: 900, color: '#38bdf8' }}>₹{linkedProduct.price}</span>
                   <span style={{ fontSize: 10, color: '#888', textDecoration: 'line-through' }}>₹{linkedProduct.originalPrice}</span>
                   <span style={{ fontSize: 9, fontWeight: 800, color: '#34d399', background: '#0f382c', padding: '1px 5px', borderRadius: 4 }}>
-                    60-MIN TRY & BUY
+                    30-MIN TRY & BUY
                   </span>
                 </div>
               </div>

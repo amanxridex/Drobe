@@ -62,7 +62,7 @@ export default function AuthModal() {
                 {step === 'phone' ? 'Login or Sign Up' : 'Enter 4-Digit OTP'}
               </h3>
               <p style={{ fontSize: 11, color: '#888' }}>
-                {step === 'phone' ? 'Get fashion delivered in 60 minutes' : `Sent to +91 ${phone}`}
+                {step === 'phone' ? 'Get fashion delivered in 30 minutes' : `Sent to +91 ${phone}`}
               </p>
             </div>
           </div>
