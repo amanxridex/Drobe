@@ -24,6 +24,7 @@ import LookbookCarousel from '@/components/LookbookCarousel';
 import INITIAL_LOOKBOOK_BANNERS from '@/data/lookbook_banners.json';
 import WideBannerCarousel from '@/components/WideBannerCarousel';
 import { TiltedGridHero } from '@/components/ui/tilted-grid-hero';
+import StackingCardsHero from '@/components/StackingCardsHero';
 
 export default function HomePage() {
   const { gender, wishlist, toggleWishlist, setIsCouponOpen } = useApp();
@@ -650,34 +651,10 @@ export default function HomePage() {
         </section>
 
         {/* ========================================================
-            ROW 4: 3D CURVED BRAND CAMPAIGNS (TiltedGridHero)
-            Cylindrical 3D stream: XKIND, The Souled Store, Bonkers Corner, Underrated Club, etc.
+            ROW 4: STACKING CARDS HERO BRAND CAMPAIGNS
+            Cards layer smoothly on top of one another (Salty Alpha, XKIND, etc.)
             ======================================================== */}
-        <section style={{ padding: '0 0 16px', position: 'relative', overflow: 'hidden' }}>
-          <TiltedGridHero
-            images={wideBrandBanners.map((banner) => ({
-              src: banner.img,
-              alt: banner.name,
-              href: banner.name ? `/brand/${slugify(banner.name)}` : (banner.deeplink || '/categories'),
-              title: banner.name
-            }))}
-            speed={4.2}
-            aspectRatio={2.4}
-            tileHeight={85}
-            curve={45}
-            fade={12}
-            gap={8}
-            axis={50}
-            onTileClick={(tile) => {
-              if (tile.href) router.push(tile.href);
-            }}
-            style={{
-              height: 175,
-              width: '100%',
-              backgroundColor: '#171717'
-            }}
-          />
-        </section>
+        <StackingCardsHero cards={wideBrandBanners} autoPlayInterval={3600} />
 
         {/* ========================================================
             GENDER SPECIFIC CURATED CONTENT
