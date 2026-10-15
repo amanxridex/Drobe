@@ -329,13 +329,13 @@ export default function StackingCardsHero({
             key={activeIndex}
             custom={direction}
             variants={{
-              // When moving forward: new card comes from the right and lands ON TOP
+              // When moving forward: new card comes from the right and lands cleanly ON TOP
               enter: (dir: 'forward' | 'backward') => ({
-                x: dir === 'forward' ? '104%' : '-104%',
+                x: dir === 'forward' ? '102%' : '-102%',
                 y: 0,
-                scale: 1.02,
-                rotate: dir === 'forward' ? 2 : -2,
-                opacity: 0.9,
+                scale: 1,
+                rotate: 0,
+                opacity: 1,
                 zIndex: 35
               }),
               center: {
@@ -347,21 +347,24 @@ export default function StackingCardsHero({
                 zIndex: 30,
                 transition: {
                   type: 'spring',
-                  stiffness: 290,
-                  damping: 27,
+                  stiffness: 280,
+                  damping: 28,
                   mass: 0.8
                 }
               },
-              // When leaving: top card slides smoothly to depth 1 or offscreen
+              // When leaving forward: top card remains completely centered (x: 0) and smoothly recedes to depth 1 with zero leftward slide
               exit: (dir: 'forward' | 'backward') => ({
-                x: dir === 'forward' ? '-10%' : '104%',
+                x: dir === 'forward' ? 0 : '102%',
                 y: dir === 'forward' ? 12 : 0,
                 scale: dir === 'forward' ? 0.94 : 1,
-                opacity: dir === 'forward' ? 0.85 : 0,
+                rotate: 0,
+                opacity: dir === 'forward' ? 1 : 0,
                 zIndex: 22,
                 transition: {
-                  duration: 0.32,
-                  ease: [0.25, 1, 0.5, 1]
+                  type: 'spring',
+                  stiffness: 280,
+                  damping: 28,
+                  mass: 0.8
                 }
               })
             }}
