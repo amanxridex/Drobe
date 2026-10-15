@@ -90,16 +90,68 @@ function calculateRealDistanceAndEta(destLat: number, destLng: number) {
 export default function OrderTrackingPage() {
   const params = useParams();
   const router = useRouter();
-  const { orders, updateDoorstepStatus, location: appLocation } = useApp();
+  const { orders, updateDoorstepStatus, location: appLocation, userCoords } = useApp();
 
   const orderId = (params?.id as string) || '';
 
   // Mode: 'tracking' (Live Map Dispatch View) | 'fitting' (6-Min Mirror Trial & Instant Refund)
   const [screenMode, setScreenMode] = useState<'tracking' | 'fitting'>('tracking');
 
-  // Customer Destination Coordinates (Default to SG Highway)
+  // Customer Destination Coordinates (Default to SG Highway or live detected GPS)
   const [userLocation, setUserLocation] = useState(AHMEDABAD_ZONES[0]);
   const [isUsingLiveGps, setIsUsingLiveGps] = useState(false);
+
+  // Sync with AppContext userCoords if available
+  useEffect(() => {
+    if (userCoords) {
+      setUserLocation({
+        id: 'real-user-gps',
+        name: 'Your Exact GPS Location',
+        lat: userCoords.lat,
+        lng: userCoords.lng,
+        address: appLocation || `GPS: ${userCoords.lat.toFixed(4)}, ${userCoords.lng.toFixed(4)}`
+      });
+      setIsUsingLiveGps(true);
+    }
+  }, [userCoords, appLocation]);
+
+  // Real OSRM Road Route Geometry & Metrics
+  const [realRoutePoints, setRealRoutePoints] = useState<[number, number][]>([]);
+  const [routeDistanceKm, setRouteDistanceKm] = useState<number>(0);
+  const [routeDurationMin, setRouteDurationMin] = useState<number>(0);
+  const [isLoadingRoute, setIsLoadingRoute] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const originLng = WAREHOUSE_COORDS.lng;
+    const originLat = WAREHOUSE_COORDS.lat;
+    const destLat = userLocation.lat;
+    const destLng = userLocation.lng;
+
+    setIsLoadingRoute(true);
+    // Real live OSRM driving route request
+    fetch(
+      `https://router.project-osrm.org/route/v1/driving/${originLng},${originLat};${destLng},${destLat}?overview=full&geometries=geojson`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && data?.code === 'Ok' && data.routes?.[0]) {
+          const coords = data.routes[0].geometry.coordinates as [number, number][];
+          setRealRoutePoints(coords);
+          setRouteDistanceKm(Math.round((data.routes[0].distance / 1000) * 10) / 10);
+          setRouteDurationMin(Math.round(data.routes[0].duration / 60) + 4);
+          setIsLoadingRoute(false);
+        }
+      })
+      .catch((err) => {
+        console.warn('OSRM live routing fallback:', err);
+        setIsLoadingRoute(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userLocation]);
 
   // Active Darkstore Trial Order
   const [activeDarkstoreOrder, setActiveDarkstoreOrder] = useState<TrialOrder | null>(null);
@@ -166,10 +218,72 @@ export default function OrderTrackingPage() {
     };
   }, [orderId]);
 
-  // Real Calculated Metrics
+  // Real Calculated Metrics & Projected Road Geometry
   const metrics = useMemo(() => {
     return calculateRealDistanceAndEta(userLocation.lat, userLocation.lng);
   }, [userLocation]);
+
+  const { pathString, originPoint, destPoint, riderPoint, riderHeading } = useMemo(() => {
+    if (realRoutePoints.length < 2) {
+      return {
+        pathString: 'M 100 240 L 160 240 Q 220 240 220 180 L 220 120 Q 220 80 270 80 L 400 80',
+        originPoint: { x: 100, y: 240 },
+        destPoint: { x: 400, y: 80 },
+        riderPoint: { x: 220, y: 150 },
+        riderHeading: 35
+      };
+    }
+
+    let minLng = Infinity, maxLng = -Infinity, minLat = Infinity, maxLat = -Infinity;
+    realRoutePoints.forEach(([lng, lat]) => {
+      if (lng < minLng) minLng = lng;
+      if (lng > maxLng) maxLng = lng;
+      if (lat < minLat) minLat = lat;
+      if (lat > maxLat) maxLat = lat;
+    });
+
+    const latSpan = (maxLat - minLat) || 0.01;
+    const lngSpan = (maxLng - minLng) || 0.01;
+    minLat -= latSpan * 0.15;
+    maxLat += latSpan * 0.15;
+    minLng -= lngSpan * 0.15;
+    maxLng += lngSpan * 0.15;
+
+    const width = 500;
+    const height = 320;
+
+    const project = (lng: number, lat: number) => {
+      const x = Math.round(((lng - minLng) / (maxLng - minLng)) * width);
+      const y = Math.round(height - ((lat - minLat) / (maxLat - minLat)) * height);
+      return { x, y };
+    };
+
+    const points = realRoutePoints.map(([lng, lat]) => project(lng, lat));
+    const pathString = points.reduce((acc, pt, idx) => `${acc} ${idx === 0 ? 'M' : 'L'} ${pt.x} ${pt.y}`, '');
+
+    const originPoint = points[0];
+    const destPoint = points[points.length - 1];
+
+    const riderIdx = Math.min(
+      points.length - 1,
+      Math.floor(riderProgress * (points.length - 1))
+    );
+    const riderPoint = points[riderIdx] || points[0];
+
+    const nextIdx = Math.min(points.length - 1, riderIdx + 1);
+    const nextPt = points[nextIdx] || riderPoint;
+    const dx = nextPt.x - riderPoint.x;
+    const dy = nextPt.y - riderPoint.y;
+    const riderHeading = Math.round((Math.atan2(dy, dx) * 180) / Math.PI);
+
+    return {
+      pathString,
+      originPoint,
+      destPoint,
+      riderPoint,
+      riderHeading
+    };
+  }, [realRoutePoints, riderProgress]);
 
   // Live GPS geolocation trigger
   const handleRequestGps = () => {
@@ -529,35 +643,37 @@ export default function OrderTrackingPage() {
               <path d="M 220 0 L 220 320" stroke="#1f1f28" strokeWidth="8" fill="none" />
               <path d="M 360 0 L 360 320" stroke="#1f1f28" strokeWidth="7" fill="none" />
 
-              {/* Arterial Highway / Express Route from Warehouse to Destination */}
+              {/* Real Road Route from Darkstore Warehouse to User Destination */}
               <path
                 id="deliveryRoute"
-                d="M 120 220 L 170 220 Q 220 220 220 170 L 220 110 Q 220 70 270 70 L 390 70"
+                d={pathString}
                 stroke="#2b2b38"
                 strokeWidth="10"
                 strokeLinecap="round"
+                strokeLinejoin="round"
                 fill="none"
               />
 
               {/* Active Route Colored Line with subtle progress */}
               <path
-                d="M 120 220 L 170 220 Q 220 220 220 170 L 220 110 Q 220 70 270 70 L 390 70"
-                stroke="#ffffff"
+                d={pathString}
+                stroke="#38bdf8"
                 strokeWidth="4"
                 strokeDasharray="6 4"
                 strokeLinecap="round"
+                strokeLinejoin="round"
                 fill="none"
                 opacity="0.9"
               />
 
               {/* 1. Origin: Ahmedabad Warehouse Marker (23.1033664, 72.6043396) */}
-              <g transform="translate(120, 220)">
+              <g transform={`translate(${originPoint.x}, ${originPoint.y})`}>
                 <circle r="14" fill="#181822" stroke="#3b3b4d" strokeWidth="2.5" />
                 <rect x="-6" y="-6" width="12" height="12" rx="2" fill="#d4f938" />
               </g>
 
-              {/* 2. Destination: User Delivery Pin (Orange-Red with Glow as in Screenshot) */}
-              <g transform="translate(390, 70)">
+              {/* 2. Destination: User Delivery Pin (Orange-Red with Glow) */}
+              <g transform={`translate(${destPoint.x}, ${destPoint.y})`}>
                 {/* Outer Glow Halo */}
                 <circle r="22" fill="#ff6b4a" opacity="0.25" filter="url(#destGlow)" />
                 {/* Main Destination Pin */}
@@ -567,17 +683,17 @@ export default function OrderTrackingPage() {
               </g>
             </svg>
 
-            {/* Dynamic Moving Rider Vehicle Marker along Route */}
+            {/* Dynamic Moving Rider Vehicle Marker along Real Road Route */}
             <motion.div
               style={{
                 position: 'absolute',
-                left: `${(120 + riderProgress * (390 - 120)) / 500 * 100}%`,
-                top: `${(220 - riderProgress * (220 - 70)) / 320 * 100}%`,
+                left: `${(riderPoint.x / 500) * 100}%`,
+                top: `${(riderPoint.y / 320) * 100}%`,
                 transform: 'translate(-50%, -50%)',
                 zIndex: 10
               }}
             >
-              {/* Floating ETA Pill (like "4h Away" in reference screenshot) */}
+              {/* Floating ETA Pill */}
               <div
                 style={{
                   position: 'absolute',
@@ -595,10 +711,10 @@ export default function OrderTrackingPage() {
                   boxShadow: '0 4px 10px rgba(0,0,0,0.5)'
                 }}
               >
-                ⚡ {metrics.etaMinutes}m Away
+                ⚡ {routeDurationMin || metrics.etaMinutes}m Away
               </div>
 
-              {/* Dark Vehicle / Navigation Arrow Button (Exact as screenshot) */}
+              {/* Dark Vehicle / Navigation Arrow Button rotated to road heading */}
               <div
                 style={{
                   width: 38,
@@ -611,7 +727,8 @@ export default function OrderTrackingPage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#ffffff',
-                  transform: 'rotate(45deg)'
+                  transform: `rotate(${riderHeading + 45}deg)`,
+                  transition: 'transform 0.4s ease'
                 }}
               >
                 <Navigation size={18} fill="#ffffff" />
@@ -852,11 +969,16 @@ export default function OrderTrackingPage() {
                   <div style={{ display: 'flex', gap: 20 }}>
                     <div>
                       <div style={{ fontSize: 10.5, color: '#71717a', fontWeight: 600 }}>Real Distance</div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#ffffff', marginTop: 1 }}>{metrics.roadDistanceKm} Km</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#ffffff', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span>{routeDistanceKm || metrics.roadDistanceKm} Km</span>
+                        <span style={{ fontSize: 9, background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '1px 5px', borderRadius: 4, fontWeight: 800 }}>LIVE ROUTE</span>
+                      </div>
                     </div>
                     <div>
                       <div style={{ fontSize: 10.5, color: '#71717a', fontWeight: 600 }}>Est. Time</div>
-                      <div style={{ fontSize: 13, fontWeight: 800, color: '#d4f938', marginTop: 1 }}>{metrics.etaMinutes} Mins</div>
+                      <div style={{ fontSize: 13, fontWeight: 800, color: '#d4f938', marginTop: 1 }}>
+                        {routeDurationMin || metrics.etaMinutes} Mins
+                      </div>
                     </div>
                   </div>
                 </div>

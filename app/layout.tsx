@@ -1,13 +1,30 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { AppProvider } from '@/context/AppContext';
 import DesktopWrapper from '@/components/DesktopWrapper';
 import SecurityShield from '@/components/SecurityShield';
+import SplashScreen from '@/components/SplashScreen';
+
+export const viewport: Viewport = {
+  themeColor: '#000000',
+  width: 'device-width',
+  initialScale: 1.0,
+  maximumScale: 1.0,
+  userScalable: false,
+  viewportFit: 'cover',
+  interactiveWidget: 'resizes-content'
+};
 
 export const metadata: Metadata = {
   title: 'DROBE | 30-Mins Fashion Delivery | Try Before You Buy',
   description: 'Get fashion in 30-mins. Try before you buy with Drobe. No waits or regrets, just fire fits!',
   manifest: '/manifest.json',
+  applicationName: 'DROBE',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'DROBE'
+  },
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -71,6 +88,13 @@ export default function RootLayout({
                 if (window.visualViewport) {
                   window.visualViewport.addEventListener('resize', updateAppHeight);
                 }
+
+                // Register PWA service worker
+                if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js').catch(function() {});
+                  });
+                }
               })();
             `
           }}
@@ -79,6 +103,7 @@ export default function RootLayout({
       <body>
         <SecurityShield />
         <AppProvider>
+          <SplashScreen />
           <DesktopWrapper>{children}</DesktopWrapper>
         </AppProvider>
       </body>

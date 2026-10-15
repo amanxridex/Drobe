@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { cart, addToCart, wishlist, toggleWishlist } = useApp();
+  const { cart, addToCart, wishlist, toggleWishlist, deliveryMinutes, location } = useApp();
 
   const productId = params?.id as string;
   const [liveProduct, setLiveProduct] = useState<Product | null>(null);
@@ -62,9 +62,9 @@ export default function ProductDetailPage() {
     sizes: [darkstoreProduct.volume || 'M', 'L', 'XL'],
     inStock: darkstoreProduct.inwardUnits > 0 || darkstoreProduct.inventory > 0,
     tryAndBuyEligible: true,
-    extraDiscountBadge: darkstoreProduct.sku ? `SKU: ${darkstoreProduct.sku}` : '30-MIN EXPRESS',
-    deliveryMinutes: 30,
-    deliveryLocation: 'Ahmedabad (30-Min Zone)',
+    extraDiscountBadge: darkstoreProduct.sku ? `SKU: ${darkstoreProduct.sku}` : `${deliveryMinutes}M EXPRESS`,
+    deliveryMinutes: deliveryMinutes || 24,
+    deliveryLocation: location ? `${location.split(',')[0]} (${deliveryMinutes}m Zone)` : 'Ahmedabad Central Zone',
     promoTag: `Stored at ${darkstoreProduct.warehouseLocation ? darkstoreProduct.warehouseLocation.code : 'Ahmedabad Darkstore Hub'}`
   } : null;
 

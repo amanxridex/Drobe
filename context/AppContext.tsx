@@ -36,11 +36,63 @@ export interface UserSession {
   token?: string;
 }
 
+export interface GeoCoordinates {
+  lat: number;
+  lng: number;
+  accuracy?: number;
+}
+
+export const CENTRAL_WAREHOUSE = {
+  name: 'Ahmedabad Central Darkstore Hub #01',
+  code: 'AMD-HUB-01',
+  address: 'Shivam Bungalows 1, Koteshwar / Motera, Ahmedabad',
+  lat: 23.1033664,
+  lng: 72.6043396
+};
+
+/**
+ * Calculates real driving distance and delivery ETA between the Central Darkstore Warehouse and user coordinates
+ */
+export function calculateRealDistanceAndEta(destLat: number, destLng: number) {
+  const R = 6371; // Earth radius in km
+  const dLat = (destLat - CENTRAL_WAREHOUSE.lat) * (Math.PI / 180);
+  const dLng = (destLng - CENTRAL_WAREHOUSE.lng) * (Math.PI / 180);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(CENTRAL_WAREHOUSE.lat * (Math.PI / 180)) *
+    Math.cos(destLat * (Math.PI / 180)) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const straightKm = R * c;
+
+  // Real urban road winding multiplier (~28% street curves)
+  const roadKm = Math.round((straightKm * 1.28) * 10) / 10;
+
+  // Base runner dispatch pack time (5 min) + scooter transit at 24 km/h
+  // Kept between 10m to 35m for local express zone
+  const minutes = Math.max(10, Math.min(38, Math.round(5 + (roadKm / 24) * 60)));
+
+  return {
+    roadDistanceKm: roadKm,
+    deliveryMinutes: minutes
+  };
+}
+
 interface AppContextType {
   gender: 'men' | 'women';
   setGender: (g: 'men' | 'women') => void;
   location: string;
   setLocation: (loc: string) => void;
+  setLocationWithCoords: (address: string, coords?: GeoCoordinates) => void;
+  userCoords: GeoCoordinates | null;
+  setUserCoords: React.Dispatch<React.SetStateAction<GeoCoordinates | null>>;
+  deliveryMinutes: number;
+  deliveryDistanceKm: number;
+  isLocating: boolean;
+  locationError: string | null;
+  requestExactLocation: () => Promise<{ success: boolean; address?: string; coords?: GeoCoordinates; minutes?: number; error?: string }>;
   isLocationOpen: boolean;
   setIsLocationOpen: (open: boolean) => void;
   isAuthOpen: boolean;
@@ -90,7 +142,171 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch (e) {}
   };
 
-  const [location, setLocation] = useState<string>('Shreepal Complex, Suren Rd, Mumbai');
+  const [location, setLocationState] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('drobe_user_location');
+        if (saved) return saved;
+      } catch (e) {}
+    }
+    return 'Koteshwar / Motera, Ahmedabad';
+  });
+
+  const [userCoords, setUserCoords] = useState<GeoCoordinates | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('drobe_user_coords');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return { lat: 23.1100, lng: 72.5920 };
+  });
+
+  const [deliveryMinutes, setDeliveryMinutes] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('drobe_delivery_minutes');
+        if (saved) return parseInt(saved, 10);
+      } catch (e) {}
+    }
+    return 14;
+  });
+
+  const [deliveryDistanceKm, setDeliveryDistanceKm] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('drobe_delivery_distance');
+        if (saved) return parseFloat(saved);
+      } catch (e) {}
+    }
+    return 2.1;
+  });
+
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  const setLocation = (loc: string) => {
+    setLocationState(loc);
+    try {
+      localStorage.setItem('drobe_user_location', loc);
+    } catch (e) {}
+  };
+
+  const setLocationWithCoords = (address: string, coords?: GeoCoordinates) => {
+    setLocation(address);
+    if (coords) {
+      setUserCoords(coords);
+      const eta = calculateRealDistanceAndEta(coords.lat, coords.lng);
+      setDeliveryMinutes(eta.deliveryMinutes);
+      setDeliveryDistanceKm(eta.roadDistanceKm);
+      try {
+        localStorage.setItem('drobe_user_coords', JSON.stringify(coords));
+        localStorage.setItem('drobe_delivery_minutes', eta.deliveryMinutes.toString());
+        localStorage.setItem('drobe_delivery_distance', eta.roadDistanceKm.toString());
+      } catch (e) {}
+    }
+  };
+
+  const requestExactLocation = async (): Promise<{
+    success: boolean;
+    address?: string;
+    coords?: GeoCoordinates;
+    minutes?: number;
+    error?: string;
+  }> => {
+    if (typeof window === 'undefined' || !('geolocation' in navigator)) {
+      const err = 'GPS location is not supported on this device/browser.';
+      setLocationError(err);
+      return { success: false, error: err };
+    }
+
+    setIsLocating(true);
+    setLocationError(null);
+
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const coords: GeoCoordinates = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            accuracy: Math.round(pos.coords.accuracy)
+          };
+
+          const eta = calculateRealDistanceAndEta(coords.lat, coords.lng);
+          let detectedAddress = `${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
+
+          try {
+            // Real OpenStreetMap Nominatim reverse geocode
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${coords.lat}&lon=${coords.lng}&addressdetails=1`,
+              {
+                headers: { 'Accept-Language': 'en' }
+              }
+            );
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.address) {
+                const a = data.address;
+                const road = a.road || a.pedestrian || a.suburb || a.neighbourhood || a.residential || '';
+                const area = a.city_district || a.suburb || a.locality || a.neighbourhood || '';
+                const city = a.city || a.town || a.village || a.state_district || 'Ahmedabad';
+                const pincode = a.postcode ? ` - ${a.postcode}` : '';
+
+                if (road && area && road !== area) {
+                  detectedAddress = `${road}, ${area}, ${city}${pincode}`;
+                } else if (road) {
+                  detectedAddress = `${road}, ${city}${pincode}`;
+                } else if (area) {
+                  detectedAddress = `${area}, ${city}${pincode}`;
+                } else if (data.name) {
+                  detectedAddress = `${data.name}, ${city}${pincode}`;
+                } else {
+                  detectedAddress = `${city}${pincode}`;
+                }
+              }
+            }
+          } catch (e) {
+            console.warn('Reverse geocode fetch warning:', e);
+          }
+
+          setLocationState(detectedAddress);
+          setUserCoords(coords);
+          setDeliveryMinutes(eta.deliveryMinutes);
+          setDeliveryDistanceKm(eta.roadDistanceKm);
+          setIsLocating(false);
+
+          try {
+            localStorage.setItem('drobe_user_location', detectedAddress);
+            localStorage.setItem('drobe_user_coords', JSON.stringify(coords));
+            localStorage.setItem('drobe_delivery_minutes', eta.deliveryMinutes.toString());
+            localStorage.setItem('drobe_delivery_distance', eta.roadDistanceKm.toString());
+          } catch (e) {}
+
+          resolve({
+            success: true,
+            address: detectedAddress,
+            coords,
+            minutes: eta.deliveryMinutes
+          });
+        },
+        (err) => {
+          setIsLocating(false);
+          let msg = 'Could not access GPS location.';
+          if (err.code === 1) msg = 'Location permission was denied. Please allow location in your browser/device settings.';
+          else if (err.code === 2) msg = 'GPS position is currently unavailable.';
+          else if (err.code === 3) msg = 'Location request timed out.';
+          setLocationError(msg);
+          resolve({ success: false, error: msg });
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 60000
+        }
+      );
+    });
+  };
+
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isCouponOpen, setIsCouponOpen] = useState(false);
@@ -528,6 +744,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setGender,
         location,
         setLocation,
+        setLocationWithCoords,
+        userCoords,
+        setUserCoords,
+        deliveryMinutes,
+        deliveryDistanceKm,
+        isLocating,
+        locationError,
+        requestExactLocation,
         isLocationOpen,
         setIsLocationOpen,
         isAuthOpen,

@@ -1,12 +1,13 @@
 {
-  "name": "DROBE",
+  "name": "DROBE — 30-Min Doorstep Fashion",
   "short_name": "DROBE",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#000000",
   "theme_color": "#000000",
-  "description": "Get fashion in 30-mins. Try before you buy with Drobe. No waits or regrets, just fire fits!",
-  "orientation": "portrait-primary",
+  "description": "30-minute doorstep fashion delivery & 6-minute mirror trial before you buy. Real express routes from Ahmedabad Central Hub #01.",
+  "orientation": "portrait",
+  "categories": ["shopping", "lifestyle", "fashion"],
   "prefer_related_applications": false,
   "icons": [
     {

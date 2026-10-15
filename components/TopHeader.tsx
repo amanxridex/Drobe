@@ -7,7 +7,7 @@ import { useApp } from '@/context/AppContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function TopHeader() {
-  const { gender, setGender, location, setIsLocationOpen, setIsAuthOpen, wishlist, user } = useApp();
+  const { gender, setGender, location, setIsLocationOpen, setIsAuthOpen, wishlist, user, deliveryMinutes, deliveryDistanceKm, isLocating } = useApp();
   const router = useRouter();
 
   const searchPlaceholders = [
@@ -35,12 +35,14 @@ export default function TopHeader() {
         zIndex: 50
       }}
     >
-      {/* Row 1: 60 minutes, Location, Wishlist, Profile */}
+      {/* Row 1: Real Calculated Minutes, Exact GPS Location, Wishlist, Profile */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        {/* Left: 60 Minutes Delivery & Location dropdown */}
+        {/* Left: Dynamic Delivery Time & Real Exact Location dropdown */}
         <div
           onClick={() => setIsLocationOpen(true)}
           style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
+          role="button"
+          aria-label="Change delivery location"
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span
@@ -50,10 +52,28 @@ export default function TopHeader() {
                 fontWeight: 900,
                 letterSpacing: -0.3,
                 fontFamily: 'Satoshi, sans-serif',
-                transition: 'color 0.25s ease'
+                transition: 'color 0.25s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5
               }}
             >
-              30 minutes
+              <span>⚡</span>
+              <span>{deliveryMinutes} MINS</span>
+            </span>
+            <span
+              style={{
+                fontSize: 9.5,
+                fontWeight: 800,
+                background: 'rgba(56, 189, 248, 0.15)',
+                color: '#38bdf8',
+                border: '1px solid rgba(56, 189, 248, 0.3)',
+                padding: '1px 6px',
+                borderRadius: 6,
+                letterSpacing: '0.04em'
+              }}
+            >
+              {deliveryDistanceKm} KM
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 1 }}>
@@ -61,14 +81,14 @@ export default function TopHeader() {
               style={{
                 color: '#cccccc',
                 fontSize: 12,
-                fontWeight: 500,
-                maxWidth: 150,
+                fontWeight: 600,
+                maxWidth: 160,
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
               }}
             >
-              {location.includes('Shreepal') ? 'Shreepal Complex, Sur...' : location}
+              {isLocating ? 'Detecting GPS...' : location}
             </span>
             <img src="/assets/icons/chev-down.svg" alt="" style={{ width: 10, height: 10, opacity: 0.8 }} />
           </div>

@@ -4,58 +4,70 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 
 export default function LocationModal() {
-  const { isLocationOpen, setIsLocationOpen, location, setLocation } = useApp();
+  const {
+    isLocationOpen,
+    setIsLocationOpen,
+    location,
+    setLocation,
+    setLocationWithCoords,
+    userCoords,
+    deliveryMinutes,
+    deliveryDistanceKm,
+    isLocating,
+    locationError,
+    requestExactLocation
+  } = useApp();
+
   const [pincode, setPincode] = useState('');
   const [showAddressInput, setShowAddressInput] = useState(false);
   const [newAddress, setNewAddress] = useState('');
-  const [showHubs, setShowHubs] = useState(false);
-  const [detectingGps, setDetectingGps] = useState(false);
+  const [showHubs, setShowHubs] = useState(true);
+  const [gpsStatus, setGpsStatus] = useState<string | null>(null);
 
   if (!isLocationOpen) return null;
 
   const popularLocations = [
-    { name: 'Shreepal Complex, Suren Rd, Mumbai', area: 'Andheri East, Mumbai - 400093', eta: '30 mins' },
-    { name: 'Bandra Linking Road, Mumbai', area: 'Bandra West, Mumbai - 400050', eta: '30 mins' },
-    { name: 'Juhu Tara Road, Mumbai', area: 'Juhu, Mumbai - 400049', eta: '30 mins' },
-    { name: 'Koramangala 4th Block, Bangalore', area: 'Koramangala, Bangalore - 560034', eta: '30 mins' },
-    { name: 'Indiranagar 100ft Road, Bangalore', area: 'Indiranagar, Bangalore - 560038', eta: '30 mins' },
-    { name: 'Vesu Main Road, Surat', area: 'Vesu, Surat - 395007', eta: '30 mins' }
+    { name: 'Koteshwar / Motera, Ahmedabad', area: 'Shivam Bungalows 1, Koteshwar Rd - 380005', eta: '12 mins', lat: 23.1100, lng: 72.5920 },
+    { name: 'SG Highway (Iskcon), Ahmedabad', area: 'Shaligram Plus, SG Highway - 380054', eta: '18 mins', lat: 23.0280, lng: 72.5070 },
+    { name: 'Bodakdev (Sindhu Bhavan Rd), Ahmedabad', area: 'Sunrise Park, Bodakdev - 380054', eta: '20 mins', lat: 23.0450, lng: 72.5180 },
+    { name: 'Prahlad Nagar, Ahmedabad', area: 'Dev Aurum, Anandnagar Rd - 380015', eta: '22 mins', lat: 23.0120, lng: 72.5100 },
+    { name: 'Navrangpura / CG Road, Ahmedabad', area: 'Shivalik Plaza, CG Road - 380009', eta: '16 mins', lat: 23.0360, lng: 72.5610 },
+    { name: 'Vastrapur (IIM Road), Ahmedabad', area: 'Near IIM Campus, Vastrapur - 380015', eta: '19 mins', lat: 23.0340, lng: 72.5310 },
+    { name: 'Bandra West, Mumbai', area: 'Linking Road, Mumbai - 400050', eta: '30 mins', lat: 19.0596, lng: 72.8295 },
+    { name: 'Indiranagar 100ft Road, Bangalore', area: 'Indiranagar, Bangalore - 560038', eta: '30 mins', lat: 12.9784, lng: 77.6408 }
   ];
 
-  const handleSetDeliveryLocation = () => {
-    setDetectingGps(true);
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        () => {
-          setLocation('Andheri East, Mumbai (Current GPS)');
-          setDetectingGps(false);
-          setIsLocationOpen(false);
-        },
-        () => {
-          setLocation('Shreepal Complex, Suren Rd, Mumbai');
-          setDetectingGps(false);
-          setIsLocationOpen(false);
-        },
-        { timeout: 3500 }
-      );
+  const handleSetDeliveryLocation = async () => {
+    setGpsStatus('Requesting device GPS coordinates...');
+    const result = await requestExactLocation();
+    if (result.success) {
+      setGpsStatus(`✓ Exact location detected! ETA: ${result.minutes}m`);
+      setTimeout(() => {
+        setIsLocationOpen(false);
+      }, 700);
     } else {
-      setLocation('Shreepal Complex, Suren Rd, Mumbai');
-      setDetectingGps(false);
-      setIsLocationOpen(false);
+      setGpsStatus(result.error || 'Could not access GPS');
     }
+  };
+
+  const handleSelectPopular = (loc: typeof popularLocations[0]) => {
+    setLocationWithCoords(loc.name, { lat: loc.lat, lng: loc.lng });
+    setIsLocationOpen(false);
   };
 
   const handleContinuePincode = (e: React.FormEvent) => {
     e.preventDefault();
     if (pincode.length === 6) {
-      if (pincode === '400093') {
-        setLocation('Shreepal Complex, Mumbai - 400093');
+      if (pincode === '380005') {
+        setLocationWithCoords('Koteshwar / Motera, Ahmedabad - 380005', { lat: 23.1100, lng: 72.5920 });
+      } else if (pincode === '380054') {
+        setLocationWithCoords('Bodakdev / SG Highway, Ahmedabad - 380054', { lat: 23.0450, lng: 72.5180 });
+      } else if (pincode === '380015') {
+        setLocationWithCoords('Prahlad Nagar / Vastrapur, Ahmedabad - 380015', { lat: 23.0120, lng: 72.5100 });
       } else if (pincode === '400050') {
-        setLocation('Bandra West, Mumbai - 400050');
-      } else if (pincode === '560034') {
-        setLocation('Koramangala, Bangalore - 560034');
+        setLocationWithCoords('Bandra West, Mumbai - 400050', { lat: 19.0596, lng: 72.8295 });
       } else {
-        setLocation(`Mumbai Area - ${pincode}`);
+        setLocation(`Ahmedabad Delivery Zone - ${pincode}`);
       }
       setIsLocationOpen(false);
     }
@@ -128,13 +140,13 @@ export default function LocationModal() {
           Select Location
         </h3>
 
-        {/* Primary Action Button: "Set delivery location" */}
+        {/* Primary Action Button: "Detect Exact GPS Location" */}
         <button
           onClick={handleSetDeliveryLocation}
-          disabled={detectingGps}
+          disabled={isLocating}
           style={{
             width: '100%',
-            background: '#5865f2',
+            background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
             borderRadius: 16,
             padding: '14px 18px',
             display: 'flex',
@@ -144,28 +156,39 @@ export default function LocationModal() {
             color: '#ffffff',
             cursor: 'pointer',
             boxSizing: 'border-box',
-            transition: 'opacity 0.2s ease, transform 0.1s ease',
-            opacity: detectingGps ? 0.7 : 1
+            boxShadow: '0 4px 18px rgba(37, 99, 235, 0.4)',
+            transition: 'all 0.2s ease',
+            opacity: isLocating ? 0.75 : 1
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {/* Paper Airplane / Navigation pointer icon */}
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#ffffff"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
             >
-              <path d="m22 2-7 20-4-9-9-4Z" />
-              <path d="M22 2 11 13" />
-            </svg>
-            <span style={{ fontSize: 15, fontWeight: 600, color: '#ffffff' }}>
-              {detectingGps ? 'Detecting coordinates...' : 'Set delivery location'}
-            </span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="22" y1="12" x2="18" y2="12"></line>
+                <line x1="6" y1="12" x2="2" y2="12"></line>
+                <line x1="12" y1="6" x2="12" y2="2"></line>
+                <line x1="12" y1="22" x2="12" y2="18"></line>
+              </svg>
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: 14.5, fontWeight: 800, color: '#ffffff' }}>
+                {isLocating ? 'Detecting Exact GPS...' : 'Detect Exact GPS Location'}
+              </div>
+              <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.8)', marginTop: 2 }}>
+                {gpsStatus || (locationError ? locationError : 'Real-time road routing & express ETA calculation')}
+              </div>
+            </div>
           </div>
 
           <svg
@@ -181,6 +204,39 @@ export default function LocationModal() {
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>
+
+        {/* Current Coordinates & Delivery Info Pill */}
+        {userCoords && (
+          <div
+            style={{
+              marginTop: 10,
+              background: '#1a1a24',
+              border: '1px solid #2a2a38',
+              borderRadius: 14,
+              padding: '10px 14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 14 }}>📍</span>
+              <div>
+                <div style={{ fontSize: 11.5, fontWeight: 700, color: '#ffffff' }}>
+                  Lat: {userCoords.lat.toFixed(4)}, Lng: {userCoords.lng.toFixed(4)}
+                  {userCoords.accuracy ? ` (±${userCoords.accuracy}m)` : ''}
+                </div>
+                <div style={{ fontSize: 10.5, color: '#9ca3af', marginTop: 1 }}>
+                  From Ahmedabad Central Hub #01 ({deliveryDistanceKm} km road distance)
+                </div>
+              </div>
+            </div>
+
+            <div style={{ background: 'rgba(56, 189, 248, 0.15)', border: '1px solid rgba(56, 189, 248, 0.3)', borderRadius: 8, padding: '3px 8px', fontSize: 11, fontWeight: 900, color: '#38bdf8' }}>
+              ⚡ {deliveryMinutes}m ETA
+            </div>
+          </div>
+        )}
 
         {/* Secondary Action Button: "Add new address" */}
         <button
@@ -439,8 +495,7 @@ export default function LocationModal() {
                 <div
                   key={loc.name}
                   onClick={() => {
-                    setLocation(loc.name);
-                    setIsLocationOpen(false);
+                    handleSelectPopular(loc);
                   }}
                   style={{
                     background: isSelected ? 'rgba(88, 101, 242, 0.15)' : '#1e1e25',

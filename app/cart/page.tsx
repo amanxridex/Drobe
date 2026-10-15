@@ -22,7 +22,8 @@ export default function CartPage() {
     createOrder,
     location,
     user,
-    setIsAuthOpen
+    setIsAuthOpen,
+    deliveryMinutes
   } = useApp();
 
   // If visitor is unauthenticated, prompt them with the Auth modal to sign in or create an account
@@ -118,7 +119,7 @@ export default function CartPage() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(56,189,248,0.1)', padding: '4px 10px', borderRadius: 20 }}>
           <span style={{ fontSize: 12 }}>⚡</span>
-          <span style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8' }}>30 Mins</span>
+          <span style={{ fontSize: 11, fontWeight: 800, color: '#38bdf8' }}>{deliveryMinutes} Mins</span>
         </div>
       </header>
 
