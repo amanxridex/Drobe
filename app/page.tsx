@@ -87,6 +87,20 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
 
+  // Dynamic discover brands fetched from CMS backend / platform-changes
+  const [discoverBrandsData, setDiscoverBrandsData] = useState(DISCOVER_BRANDS_DATA);
+
+  useEffect(() => {
+    fetch('/api/discover-brands')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && data?.data) {
+          setDiscoverBrandsData(data.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const menLookbookCards = bannersData.men?.length ? bannersData.men : INITIAL_LOOKBOOK_BANNERS.men;
   const womenLookbookCards = bannersData.women?.length ? bannersData.women : INITIAL_LOOKBOOK_BANNERS.women;
   const lookbookCards = gender === 'women' ? womenLookbookCards : menLookbookCards;
@@ -260,7 +274,8 @@ export default function HomePage() {
   const wideBrandBanners = gender === 'women' ? womenWideBrandBanners : menWideBrandBanners;
 
   // Discover Brands Filter
-  const activeBrandSlideTiles = DISCOVER_BRANDS_DATA.slides[currentBrandSlide] || [];
+  const brandSlides = discoverBrandsData?.slides || [];
+  const activeBrandSlideTiles = brandSlides[currentBrandSlide] || [];
   const filteredBrandTiles = selectedBrandCategory === 'all'
     ? activeBrandSlideTiles
     : (activeBrandSlideTiles.filter((t: any) => t.categories && t.categories.includes(selectedBrandCategory)).length > 0
@@ -740,7 +755,7 @@ export default function HomePage() {
                 </button>
 
                 {/* Category Pills from manifest */}
-                {DISCOVER_BRANDS_DATA.categories.slice(0, 10).map((cat) => {
+                {(discoverBrandsData?.categories || []).slice(0, 12).map((cat) => {
                   const isSelected = selectedBrandCategory === cat.id;
                   return (
                     <button
@@ -811,9 +826,9 @@ export default function HomePage() {
                 )}
 
                 {/* Right Floating Arrow */}
-                {currentBrandSlide < 15 && (
+                {currentBrandSlide < (brandSlides.length - 1) && (
                   <button
-                    onClick={() => setCurrentBrandSlide(prev => Math.min(15, prev + 1))}
+                    onClick={() => setCurrentBrandSlide(prev => Math.min(brandSlides.length - 1, prev + 1))}
                     style={{
                       position: 'absolute',
                       right: 2,
@@ -931,7 +946,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Pagination Indicator Dots (16 dots matching Drobe) */}
+              {/* Pagination Indicator Dots */}
               <div
                 style={{
                   display: 'flex',
@@ -941,7 +956,7 @@ export default function HomePage() {
                   marginTop: 14
                 }}
               >
-                {Array.from({ length: 16 }).map((_, dotIdx) => {
+                {Array.from({ length: brandSlides.length || 1 }).map((_, dotIdx) => {
                   const isActive = dotIdx === currentBrandSlide;
                   return (
                     <div

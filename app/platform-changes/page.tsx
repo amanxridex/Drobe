@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import LookbookCarousel, { LookbookItem } from '@/components/LookbookCarousel';
 import INITIAL_LOOKBOOK_BANNERS from '@/data/lookbook_banners.json';
+import DiscoverBrandsEditor from '@/components/admin/DiscoverBrandsEditor';
 
 // Curated list of top in-app brands with direct deep-links
 const CURATED_BRANDS = {
@@ -43,6 +44,7 @@ const CATEGORY_LINKS = [
 ];
 
 export default function PlatformChangesPage() {
+  const [studioTab, setStudioTab] = useState<'discover-brands' | 'lookbook-banners'>('discover-brands');
   const [activeGender, setActiveGender] = useState<'men' | 'women'>('men');
   const [banners, setBanners] = useState<{ men: LookbookItem[]; women: LookbookItem[] }>(INITIAL_LOOKBOOK_BANNERS);
   const [loading, setLoading] = useState(true);
@@ -216,16 +218,68 @@ export default function PlatformChangesPage() {
           </div>
           <div>
             <h1 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: '#fff', letterSpacing: -0.3 }}>
-              Top Card Banners Studio
+              {studioTab === 'discover-brands' ? 'Discover Brands Studio (4x3 Grid)' : 'Top Card Lookbook Studio'}
             </h1>
             <p style={{ margin: 0, fontSize: 12, color: '#8b949e' }}>
-              Platform Changes & Live Hero Lookbook Management (/platform-changes)
+              {studioTab === 'discover-brands'
+                ? 'Manage brand tiles, ordering (Show First), categories & 1-click DB sync (/platform-changes)'
+                : 'Hero lookbook banner management for Men & Women (/platform-changes)'}
             </p>
           </div>
         </div>
 
+        {/* Studio Primary Navigation Tabs */}
+        <div
+          style={{
+            display: 'flex',
+            background: '#12151e',
+            padding: 4,
+            borderRadius: 10,
+            border: '1px solid #232838'
+          }}
+        >
+          <button
+            onClick={() => setStudioTab('discover-brands')}
+            style={{
+              padding: '7px 16px',
+              borderRadius: 8,
+              background: studioTab === 'discover-brands' ? 'linear-gradient(135deg, #10b981, #059669)' : 'transparent',
+              color: studioTab === 'discover-brands' ? '#ffffff' : '#94a3b8',
+              fontWeight: 800,
+              fontSize: 13,
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <span>🏷️</span> Discover Brands (4x3 Grid)
+          </button>
+          <button
+            onClick={() => setStudioTab('lookbook-banners')}
+            style={{
+              padding: '7px 16px',
+              borderRadius: 8,
+              background: studioTab === 'lookbook-banners' ? 'linear-gradient(135deg, #6678FF, #ff5768)' : 'transparent',
+              color: studioTab === 'lookbook-banners' ? '#ffffff' : '#94a3b8',
+              fontWeight: 800,
+              fontSize: 13,
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <span>🖼️</span> Top Lookbook Banners
+          </button>
+        </div>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {saveStatus && (
+          {saveStatus && studioTab === 'lookbook-banners' && (
             <span style={{ fontSize: 13, fontWeight: 700, color: saveStatus.startsWith('✅') ? '#4ade80' : '#f87171' }}>
               {saveStatus}
             </span>
@@ -251,46 +305,55 @@ export default function PlatformChangesPage() {
             <span>👁️</span> Live App
           </Link>
 
-          <button
-            onClick={handleReset}
-            style={{
-              padding: '8px 14px',
-              borderRadius: 8,
-              background: '#1a1d24',
-              color: '#cbd5e1',
-              fontSize: 13,
-              fontWeight: 600,
-              border: '1px solid #2a2e39',
-              cursor: 'pointer'
-            }}
-          >
-            Reset
-          </button>
+          {studioTab === 'lookbook-banners' && (
+            <>
+              <button
+                onClick={handleReset}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: 8,
+                  background: '#1a1d24',
+                  color: '#cbd5e1',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  border: '1px solid #2a2e39',
+                  cursor: 'pointer'
+                }}
+              >
+                Reset
+              </button>
 
-          <button
-            onClick={handlePublish}
-            disabled={saving}
-            style={{
-              padding: '8px 20px',
-              borderRadius: 8,
-              background: 'linear-gradient(135deg, #6678FF, #00d2ff)',
-              color: '#fff',
-              fontSize: 13,
-              fontWeight: 800,
-              border: 'none',
-              cursor: saving ? 'not-allowed' : 'pointer',
-              boxShadow: '0 4px 14px rgba(102, 120, 255, 0.4)',
-              transition: 'all 0.2s ease',
-              opacity: saving ? 0.7 : 1
-            }}
-          >
-            {saving ? 'Publishing...' : '💾 Save & Publish'}
-          </button>
+              <button
+                onClick={handlePublish}
+                disabled={saving}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: 8,
+                  background: 'linear-gradient(135deg, #6678FF, #00d2ff)',
+                  color: '#fff',
+                  fontSize: 13,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: saving ? 'not-allowed' : 'pointer',
+                  boxShadow: '0 4px 14px rgba(102, 120, 255, 0.4)',
+                  transition: 'all 0.2s ease',
+                  opacity: saving ? 0.7 : 1
+                }}
+              >
+                {saving ? 'Publishing...' : '💾 Save & Publish'}
+              </button>
+            </>
+          )}
         </div>
       </header>
 
-      {/* Main Studio Body */}
-      <div style={{ display: 'flex', maxWidth: 1440, margin: '0 auto', padding: '24px', gap: 28, boxSizing: 'border-box' }}>
+      {/* Discover Brands Studio Tab */}
+      {studioTab === 'discover-brands' ? (
+        <DiscoverBrandsEditor />
+      ) : (
+        <>
+          {/* Main Studio Body for Lookbook Banners */}
+          <div style={{ display: 'flex', maxWidth: 1440, margin: '0 auto', padding: '24px', gap: 28, boxSizing: 'border-box' }}>
         {/* Left Column: Management & List */}
         <div style={{ flex: 1, minWidth: 0 }}>
           {/* Gender Selector Bar */}
@@ -921,6 +984,8 @@ export default function PlatformChangesPage() {
             </form>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );
