@@ -306,3 +306,73 @@ div[data-nextjs-dialog-overlay],
   display: none !important;
 }
 
+/* ==========================================================
+   CONTENT PROTECTION & ANTI-SCRAPING / ANTI-DOWNLOAD SYSTEM
+   Prevents text selection, image drag/drop, context menu,
+   saving via extensions/shortcuts, and mobile long-press callouts.
+   ========================================================== */
+
+*, *::before, *::after {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-drag: none !important;
+}
+
+/* Exempt legitimate editable inputs so users can still type and interact */
+input,
+textarea,
+select,
+[contenteditable="true"],
+input *,
+textarea * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  pointer-events: auto !important;
+}
+
+/* Image & Media hardening:
+   - pointer-events: none stops right-click & long-press directly targeting <img>
+   - user-drag / touch-callout disabled across all browsers
+   - selection invisible
+*/
+img,
+picture,
+svg,
+video,
+canvas {
+  pointer-events: none !important;
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* Make selection highlight completely invisible everywhere outside inputs */
+:not(input):not(textarea)::selection {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+:not(input):not(textarea)::-moz-selection {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+/* Hide everything when printing / print-scraping */
+@media print {
+  html, body {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
+

@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { AppProvider } from '@/context/AppContext';
 import DesktopWrapper from '@/components/DesktopWrapper';
+import SecurityShield from '@/components/SecurityShield';
 
 export const metadata: Metadata = {
   title: 'DROBE | 60-Mins Fashion Delivery | Try Before You Buy',
@@ -32,6 +33,31 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
+                // Immediate pre-hydration guard against context menu, dragging, shortcuts & scraping
+                try {
+                  window.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; }, true);
+                  document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; }, true);
+                  window.addEventListener('dragstart', function(e) { e.preventDefault(); return false; }, true);
+                  document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; }, true);
+                  window.addEventListener('selectstart', function(e) {
+                    var t = e.target;
+                    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return true;
+                    e.preventDefault(); return false;
+                  }, true);
+                  window.addEventListener('keydown', function(e) {
+                    var isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+                    var cmdOrCtrl = isMac ? e.metaKey : e.ctrlKey;
+                    if (
+                      (cmdOrCtrl && (e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P' || e.key === 'u' || e.key === 'U')) ||
+                      e.key === 'F12' ||
+                      (cmdOrCtrl && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c'))
+                    ) {
+                      e.preventDefault();
+                      return false;
+                    }
+                  }, true);
+                } catch(err) {}
+
                 function updateAppHeight() {
                   if (window.innerWidth < 550) {
                     var vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
@@ -51,6 +77,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <SecurityShield />
         <AppProvider>
           <DesktopWrapper>{children}</DesktopWrapper>
         </AppProvider>
@@ -58,3 +85,4 @@ export default function RootLayout({
     </html>
   );
 }
+
