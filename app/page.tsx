@@ -30,7 +30,6 @@ export default function HomePage() {
   const { gender, wishlist, toggleWishlist, setIsCouponOpen } = useApp();
   const router = useRouter();
 
-  const [showGuaranteeBanner, setShowGuaranteeBanner] = useState(true);
   const [categorySlideIndex, setCategorySlideIndex] = useState(0);
   const [isReferralOpen, setIsReferralOpen] = useState(false);
   const [copiedReferral, setCopiedReferral] = useState(false);
@@ -1770,70 +1769,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-
-      {/* ========================================================
-          EXACT FLOATING RIDER GUARANTEE PILL
-          "We bet ₹250 this reaches you in time"
-          Directly from Drobe's CDN
-          ======================================================== */}
-      <AnimatePresence>
-        {showGuaranteeBanner && (
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: [0, -3, 0], opacity: 1 }}
-            exit={{ y: 40, opacity: 0 }}
-            transition={{
-              y: { repeat: Infinity, duration: 2.8, ease: 'easeInOut' },
-              opacity: { duration: 0.3 }
-            }}
-            style={{
-              position: 'absolute',
-              bottom: 66,
-              left: 10,
-              right: 10,
-              zIndex: 40,
-              cursor: 'pointer',
-              borderRadius: 14,
-              overflow: 'hidden',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
-              display: 'flex',
-              alignItems: 'center'
-            }}
-            onClick={() => alert('⚡ DROBE 60-Minute Guarantee: If your fashion fit takes longer than 60 mins to reach your door, ₹250 is instantly credited to your Drobe Wallet!')}
-          >
-            <img
-              src="/assets/real/late_delivery_floater.webp"
-              alt="We bet ₹250 this reaches you in time"
-              style={{ width: '100%', height: 'auto', display: 'block' }}
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/assets/exact/rider_guarantee_pill.webp';
-              }}
-            />
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowGuaranteeBanner(false);
-              }}
-              style={{
-                position: 'absolute',
-                right: 6,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'transparent',
-                border: 'none',
-                color: '#ffffff',
-                cursor: 'pointer',
-                padding: 6,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <img src="/assets/icons/cross_close.svg" alt="Close" style={{ width: 14, height: 14 }} />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* ========================================================
           AUTHENTIC REFERRAL BOTTOM SHEET (₹500 + TOTE BAG)
