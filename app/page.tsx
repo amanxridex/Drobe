@@ -20,12 +20,12 @@ import DISCOVER_BRANDS_DATA from '@/data/discover_brands_manifest.json';
 import AUTHENTIC_HOME_WIDGETS from '@/data/authentic_home_widgets.json';
 import { getDarkstoreProducts, DarkstoreProduct, createCustomerOrder, syncDarkstoreWithSupabase } from '@/app/lib/darkstoreData';
 import { slugify } from '@/app/lib/supabaseClient';
+import LookbookCarousel from '@/components/LookbookCarousel';
 
 export default function HomePage() {
   const { gender, wishlist, toggleWishlist, setIsCouponOpen } = useApp();
   const router = useRouter();
 
-  const [activeSlide, setActiveSlide] = useState(0);
   const [showGuaranteeBanner, setShowGuaranteeBanner] = useState(true);
   const [categorySlideIndex, setCategorySlideIndex] = useState(0);
   const [isReferralOpen, setIsReferralOpen] = useState(false);
@@ -157,25 +157,13 @@ export default function HomePage() {
 
   const lookbookCards = gender === 'women' ? womenLookbookCards : menLookbookCards;
 
-  // Reset slide index on gender switch
+  // Reset category slide index on gender switch
   useEffect(() => {
-    setActiveSlide(0);
     setCategorySlideIndex(0);
     if (categoryScrollRef.current) {
       categoryScrollRef.current.scrollLeft = 0;
     }
   }, [gender]);
-
-  // Auto-advance Lookbook carousel every 3.8s
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % lookbookCards.length);
-    }, 3800);
-    return () => clearInterval(timer);
-  }, [lookbookCards.length]);
-
-  const prevSlideIndex = (activeSlide - 1 + lookbookCards.length) % lookbookCards.length;
-  const nextSlideIndex = (activeSlide + 1) % lookbookCards.length;
 
   // 5 Main Hero Category Cards
   const womenCategories = [
@@ -497,142 +485,9 @@ export default function HomePage() {
 
         {/* ========================================================
             SECTION 3: LOOKBOOK CAROUSEL (MEN vs WOMEN 1:1)
+            District & Swiggy ultra-smooth native gesture slider
             ======================================================== */}
-        <section
-          style={{
-            width: '100%',
-            background: '#171717',
-            position: 'relative',
-            overflow: 'hidden'
-          }}
-        >
-          <div
-            style={{
-              padding: 0,
-              position: 'relative',
-              overflow: 'hidden',
-              width: '100%'
-            }}
-          >
-            <div
-              style={{
-                position: 'relative',
-                width: '100%',
-                height: 462,
-                overflow: 'hidden',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 2
-              }}
-            >
-              {/* Horizontal Track Centering the Active Card with Natural Peeks */}
-              <motion.div
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.25}
-                onDragEnd={(_, info) => {
-                  if (info.offset.x < -35) {
-                    setActiveSlide(nextSlideIndex);
-                  } else if (info.offset.x > 35) {
-                    setActiveSlide(prevSlideIndex);
-                  }
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  cursor: 'grab'
-                }}
-              >
-                {/* Left Peek Card */}
-                <div
-                  onClick={() => setActiveSlide(prevSlideIndex)}
-                  style={{
-                    width: 340,
-                    height: 454,
-                    borderRadius: 20,
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <img
-                    src={lookbookCards[prevSlideIndex].img}
-                    alt=""
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                  />
-                </div>
-
-                {/* Center Active Card */}
-                <motion.div
-                  key={`${gender}-${activeSlide}`}
-                  initial={{ opacity: 0.9 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.25 }}
-                  onClick={() => router.push(lookbookCards[activeSlide].route)}
-                  style={{
-                    width: 340,
-                    height: 454,
-                    borderRadius: 20,
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                    boxShadow: '0 10px 28px rgba(0, 0, 0, 0.5)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <img
-                    src={lookbookCards[activeSlide].img}
-                    alt=""
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                  />
-                </motion.div>
-
-                {/* Right Peek Card */}
-                <div
-                  onClick={() => setActiveSlide(nextSlideIndex)}
-                  style={{
-                    width: 340,
-                    height: 454,
-                    borderRadius: 20,
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <img
-                    src={lookbookCards[nextSlideIndex].img}
-                    alt=""
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                  />
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Authentic Home Page End Curve from Drobe */}
-            <div
-              style={{
-                width: '100%',
-                position: 'relative',
-                marginTop: -42,
-                zIndex: 1,
-                pointerEvents: 'none'
-              }}
-            >
-              <img
-                src="/assets/images/hp_end_curve_dark.webp"
-                alt=""
-                style={{
-                  width: '100%',
-                  display: 'block',
-                  objectFit: 'cover'
-                }}
-              />
-            </div>
-          </div>
-        </section>
+        <LookbookCarousel items={lookbookCards} gender={gender} />
 
         {/* ========================================================
             AUTHENTIC CATEGORY GRID CAROUSEL (4x2 Grids, 5 Pages)
