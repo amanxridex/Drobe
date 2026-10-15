@@ -452,7 +452,7 @@ export default function BrandPage() {
                 <span>•</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ color: '#ffffff', fontWeight: 700 }}>{products.length}</span>
-                  <span>Live Styles in DB</span>
+                  <span>Products on Drobe</span>
                 </div>
               </div>
 
