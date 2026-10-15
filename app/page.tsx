@@ -22,6 +22,7 @@ import { getDarkstoreProducts, DarkstoreProduct, createCustomerOrder, syncDarkst
 import { slugify } from '@/app/lib/supabaseClient';
 import LookbookCarousel from '@/components/LookbookCarousel';
 import INITIAL_LOOKBOOK_BANNERS from '@/data/lookbook_banners.json';
+import { TiltedGridHero } from '@/components/ui/tilted-grid-hero';
 
 export default function HomePage() {
   const { gender, wishlist, toggleWishlist, setIsCouponOpen } = useApp();
@@ -633,49 +634,32 @@ export default function HomePage() {
         </section>
 
         {/* ========================================================
-            ROW 4: BRAND WIDE BANNERS RAIL (Row 2547)
-            XKIND "STRAIGHT FORWARD", The Souled Store "WEAR IT LOUD", Underrated Club, etc.
+            ROW 4: 3D CURVED BRAND CAMPAIGNS (TiltedGridHero)
+            3D Cylindrical stream: XKIND, The Souled Store, Bonkers Corner, etc.
             ======================================================== */}
-        <section style={{ padding: '0 0 16px' }}>
-          <div
-            style={{
-              display: 'flex',
-              gap: 12,
-              overflowX: 'auto',
-              padding: '0 12px',
-              scrollbarWidth: 'none',
-              scrollSnapType: 'x mandatory',
-              WebkitOverflowScrolling: 'touch'
+        <section style={{ padding: '0 0 16px', position: 'relative' }}>
+          <TiltedGridHero
+            images={wideBrandBanners.map((banner) => ({
+              src: banner.img,
+              alt: banner.name,
+              href: banner.name ? `/brand/${slugify(banner.name)}` : (banner.deeplink || '/categories'),
+              title: banner.name
+            }))}
+            speed={4.5}
+            aspectRatio={2.3}
+            tileHeight={76}
+            curve={65}
+            fade={10}
+            gap={6}
+            onTileClick={(tile) => {
+              if (tile.href) router.push(tile.href);
             }}
-          >
-            {wideBrandBanners.map((banner, idx) => (
-              <div
-                key={idx}
-                onClick={() => router.push(banner.name ? `/brand/${slugify(banner.name)}` : (banner.deeplink || '/categories'))}
-                style={{
-                  flexShrink: 0,
-                  width: 'calc(100% - 46px)',
-                  maxWidth: 346,
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                  cursor: 'pointer',
-                  scrollSnapAlign: 'start',
-                  boxShadow: '0 4px 18px rgba(0, 0, 0, 0.4)',
-                  position: 'relative'
-                }}
-              >
-                <img
-                  src={banner.img}
-                  alt={banner.name}
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                    display: 'block'
-                  }}
-                />
-              </div>
-            ))}
-          </div>
+            style={{
+              height: 165,
+              width: '100%',
+              backgroundColor: '#171717'
+            }}
+          />
         </section>
 
         {/* ========================================================

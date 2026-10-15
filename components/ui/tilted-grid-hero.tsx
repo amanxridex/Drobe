@@ -90,6 +90,8 @@ export type TiltedGridImage = {
   src: string;
   /** Only used if you drop the decorative treatment; the band is aria-hidden. */
   alt?: string;
+  href?: string;
+  title?: string;
 };
 
 export type TiltedGridHeroProps = {
@@ -121,6 +123,8 @@ export type TiltedGridHeroProps = {
   curve?: number;
   /** Width of the fade at each end, as a percentage of the hero's width. @default 12 */
   fade?: number;
+  /** Optional click handler when a user taps a tile */
+  onTileClick?: (image: TiltedGridImage) => void;
   /** Content rendered above the band. */
   children?: React.ReactNode;
   className?: string;
@@ -135,6 +139,7 @@ export function TiltedGridHero({
   axis = 56,
   curve = 80,
   fade = 12,
+  onTileClick,
   children,
   className,
   ...props
@@ -227,7 +232,6 @@ export function TiltedGridHero({
       <style>{css}</style>
 
       <div
-        aria-hidden
         className="pointer-events-none absolute inset-0 transition-opacity duration-500"
         style={{
           opacity: layout ? 1 : 0,
@@ -244,10 +248,15 @@ export function TiltedGridHero({
           // back, so this numbers tiles in the order they come on.
           const first = columns - 1 - t;
           const img = images[(shown[t] ?? first) % Math.max(images.length, 1)];
+          const isInteractive = Boolean(onTileClick || img?.href);
+
           return (
             <div
               key={t}
               className={cn(tile, "absolute")}
+              onClick={() => {
+                if (img && onTileClick) onTileClick(img);
+              }}
               style={{
                 left: `calc(50% - ${u(aspectRatio / 2)})`,
                 top: `calc(${axis}% - ${u(0.5)})`,
@@ -256,6 +265,8 @@ export function TiltedGridHero({
                 transformStyle: "preserve-3d",
                 // Tile t starts t tiles along the loop.
                 animation: `${orbit} ${duration}s linear ${-t * speed}s infinite`,
+                cursor: isInteractive ? 'pointer' : 'default',
+                pointerEvents: isInteractive ? 'auto' : 'none',
               }}
               onAnimationIteration={(e) => {
                 // elapsedTime counts whole loops, missed events included.
@@ -269,12 +280,13 @@ export function TiltedGridHero({
               {Array.from({ length: SLICES }, (_, k) => (
                 <div
                   key={k}
-                  className={cn(
-                    "absolute top-0 overflow-hidden bg-muted",
-                    k === 0 && "rounded-l-lg",
-                    k === SLICES - 1 && "rounded-r-lg",
-                  )}
+                  className="absolute top-0 overflow-hidden"
                   style={{
+                    backgroundColor: '#1c1c22',
+                    borderTopLeftRadius: k === 0 ? 14 : 0,
+                    borderBottomLeftRadius: k === 0 ? 14 : 0,
+                    borderTopRightRadius: k === SLICES - 1 ? 14 : 0,
+                    borderBottomRightRadius: k === SLICES - 1 ? 14 : 0,
                     // Every strip starts at the tile's centre and is turned
                     // round the axis to its own place on the arc.
                     left: u((aspectRatio - share) / 2),
