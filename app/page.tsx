@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
@@ -36,6 +36,29 @@ export default function HomePage() {
   const [selectedBrandCategory, setSelectedBrandCategory] = useState('all');
   const [currentBrandSlide, setCurrentBrandSlide] = useState(0);
   const categoryScrollRef = useRef<HTMLDivElement>(null);
+  const brandScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBrandSlide = (slideIndex: number) => {
+    if (brandScrollRef.current) {
+      const slideWidth = brandScrollRef.current.offsetWidth;
+      brandScrollRef.current.scrollTo({
+        left: slideIndex * slideWidth,
+        behavior: 'smooth'
+      });
+    }
+    setCurrentBrandSlide(slideIndex);
+  };
+
+  const handleBrandScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const scrollLeft = e.currentTarget.scrollLeft;
+    const width = e.currentTarget.offsetWidth;
+    if (width > 0) {
+      const newSlide = Math.round(scrollLeft / width);
+      if (newSlide !== currentBrandSlide) {
+        setCurrentBrandSlide(newSlide);
+      }
+    }
+  };
 
   // Live Darkstore products inwarded & shelved at Ahmedabad Central Hub
   const [darkstoreProducts, setDarkstoreProducts] = useState<DarkstoreProduct[]>([]);
@@ -273,14 +296,19 @@ export default function HomePage() {
   }));
   const wideBrandBanners = gender === 'women' ? womenWideBrandBanners : menWideBrandBanners;
 
-  // Discover Brands Filter
+  // Discover Brands Filter & Multi-Slide Partitioning
   const brandSlides = discoverBrandsData?.slides || [];
-  const activeBrandSlideTiles = brandSlides[currentBrandSlide] || [];
-  const filteredBrandTiles = selectedBrandCategory === 'all'
-    ? activeBrandSlideTiles
-    : (activeBrandSlideTiles.filter((t: any) => t.categories && t.categories.includes(selectedBrandCategory)).length > 0
-        ? activeBrandSlideTiles.filter((t: any) => t.categories && t.categories.includes(selectedBrandCategory))
-        : activeBrandSlideTiles);
+  const displayBrandSlides = useMemo(() => {
+    if (selectedBrandCategory === 'all') return brandSlides;
+    const allTiles = brandSlides.flat().filter(Boolean);
+    const filtered = allTiles.filter((t: any) => t.categories && t.categories.includes(selectedBrandCategory));
+    if (filtered.length === 0) return brandSlides;
+    const chunked: any[][] = [];
+    for (let i = 0; i < filtered.length; i += 12) {
+      chunked.push(filtered.slice(i, i + 12));
+    }
+    return chunked;
+  }, [brandSlides, selectedBrandCategory]);
 
   // Curated Brand Showcases (SNITCH, TIGC, Bear House)
   const snitchSection = (MEN_CURATED_SECTIONS as any[]).find((s: any) => s.id === '2966');
@@ -706,7 +734,10 @@ export default function HomePage() {
               >
                 {/* All Pill */}
                 <button
-                  onClick={() => setSelectedBrandCategory('all')}
+                  onClick={() => {
+                    setSelectedBrandCategory('all');
+                    scrollToBrandSlide(0);
+                  }}
                   style={{
                     flexShrink: 0,
                     display: 'flex',
@@ -736,7 +767,10 @@ export default function HomePage() {
                   return (
                     <button
                       key={cat.id}
-                      onClick={() => setSelectedBrandCategory(cat.id)}
+                      onClick={() => {
+                        setSelectedBrandCategory(cat.id);
+                        scrollToBrandSlide(0);
+                      }}
                       style={{
                         flexShrink: 0,
                         display: 'flex',
@@ -769,21 +803,21 @@ export default function HomePage() {
                 })}
               </div>
 
-              {/* 4x3 Brand Tiles Grid with Floating Left & Right Arrows */}
-              <div style={{ position: 'relative', padding: '0 12px' }}>
+              {/* 4x3 Brand Tiles Horizontal Swipe Track with Floating Left & Right Arrows */}
+              <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
                 {/* Left Floating Arrow */}
                 {currentBrandSlide > 0 && (
                   <button
-                    onClick={() => setCurrentBrandSlide(prev => Math.max(0, prev - 1))}
+                    onClick={() => scrollToBrandSlide(Math.max(0, currentBrandSlide - 1))}
                     style={{
                       position: 'absolute',
                       left: 2,
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      width: 30,
-                      height: 30,
+                      width: 32,
+                      height: 32,
                       borderRadius: '50%',
-                      background: 'rgba(20, 20, 26, 0.85)',
+                      background: 'rgba(20, 20, 26, 0.88)',
                       backdropFilter: 'blur(6px)',
                       border: '1px solid #363642',
                       color: '#ffffff',
@@ -791,8 +825,8 @@ export default function HomePage() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      zIndex: 6,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                      zIndex: 10,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.6)'
                     }}
                   >
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -802,18 +836,18 @@ export default function HomePage() {
                 )}
 
                 {/* Right Floating Arrow */}
-                {currentBrandSlide < (brandSlides.length - 1) && (
+                {currentBrandSlide < (displayBrandSlides.length - 1) && (
                   <button
-                    onClick={() => setCurrentBrandSlide(prev => Math.min(brandSlides.length - 1, prev + 1))}
+                    onClick={() => scrollToBrandSlide(Math.min(displayBrandSlides.length - 1, currentBrandSlide + 1))}
                     style={{
                       position: 'absolute',
                       right: 2,
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      width: 30,
-                      height: 30,
+                      width: 32,
+                      height: 32,
                       borderRadius: '50%',
-                      background: 'rgba(20, 20, 26, 0.85)',
+                      background: 'rgba(20, 20, 26, 0.88)',
                       backdropFilter: 'blur(6px)',
                       border: '1px solid #363642',
                       color: '#ffffff',
@@ -821,8 +855,8 @@ export default function HomePage() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      zIndex: 6,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                      zIndex: 10,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.6)'
                     }}
                   >
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -831,92 +865,147 @@ export default function HomePage() {
                   </button>
                 )}
 
+                {/* Native Horizontal Scroll-Snap Container */}
                 <div
+                  ref={brandScrollRef}
+                  onScroll={handleBrandScroll}
                   style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(4, 1fr)',
-                    gap: 8
+                    display: 'flex',
+                    overflowX: 'auto',
+                    scrollSnapType: 'x mandatory',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                    WebkitOverflowScrolling: 'touch',
+                    width: '100%',
+                    touchAction: 'pan-y'
                   }}
                 >
-                  {filteredBrandTiles.map((tile: any, idx: number) => (
+                  {displayBrandSlides.map((slideTiles: any[], slideIdx: number) => (
                     <div
-                      key={idx}
-                      onClick={() => router.push(tile.name ? `/brand/${slugify(tile.name)}` : (tile.deeplink || '/categories'))}
+                      key={slideIdx}
                       style={{
-                        background: '#ffffff',
-                        borderRadius: 14,
+                        flex: '0 0 100%',
+                        minWidth: '100%',
                         width: '100%',
-                        aspectRatio: '1 / 1.08',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                        cursor: 'pointer',
-                        transition: 'transform 0.15s ease'
+                        scrollSnapAlign: 'start',
+                        scrollSnapStop: 'always',
+                        boxSizing: 'border-box',
+                        padding: '0 12px'
                       }}
                     >
-                      {/* Badge Ribbon if present */}
-                      {tile.badge === 'NEW' && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            height: 14,
-                            background: '#581c87',
-                            color: '#ffffff',
-                            fontSize: 8.5,
-                            fontWeight: 900,
-                            letterSpacing: 0.5,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 2,
-                            borderTopLeftRadius: 14,
-                            borderTopRightRadius: 14
-                          }}
-                        >
-                          NEW
-                        </div>
-                      )}
-                      {tile.badge === 'ETHNIC' && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            height: 14,
-                            background: '#991b1c',
-                            color: '#ffffff',
-                            fontSize: 8.5,
-                            fontWeight: 900,
-                            letterSpacing: 0.5,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 2,
-                            borderTopLeftRadius: 14,
-                            borderTopRightRadius: 14
-                          }}
-                        >
-                          ETHNIC
-                        </div>
-                      )}
-
-                      <img
-                        src={tile.img}
-                        alt={tile.name}
+                      <div
                         style={{
-                          maxWidth: '78%',
-                          maxHeight: '66%',
-                          objectFit: 'contain',
-                          marginTop: tile.badge ? 8 : 0
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(4, 1fr)',
+                          gap: 8
                         }}
-                      />
+                      >
+                        {slideTiles.map((tile: any, idx: number) => (
+                          <div
+                            key={tile.id || `${slideIdx}-${idx}`}
+                            onClick={() => router.push(tile.name ? `/brand/${slugify(tile.name)}` : (tile.deeplink || '/categories'))}
+                            style={{
+                              background: '#ffffff',
+                              borderRadius: 14,
+                              width: '100%',
+                              aspectRatio: '1 / 1.08',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              position: 'relative',
+                              overflow: 'hidden',
+                              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                              cursor: 'pointer',
+                              transition: 'transform 0.15s ease'
+                            }}
+                          >
+                            {/* Badge Ribbon if present */}
+                            {tile.badge === 'NEW' && (
+                              <div
+                                style={{
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  height: 14,
+                                  background: '#581c87',
+                                  color: '#ffffff',
+                                  fontSize: 8.5,
+                                  fontWeight: 900,
+                                  letterSpacing: 0.5,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  zIndex: 2,
+                                  borderTopLeftRadius: 14,
+                                  borderTopRightRadius: 14
+                                }}
+                              >
+                                NEW
+                              </div>
+                            )}
+                            {tile.badge === 'ETHNIC' && (
+                              <div
+                                style={{
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  height: 14,
+                                  background: '#991b1c',
+                                  color: '#ffffff',
+                                  fontSize: 8.5,
+                                  fontWeight: 900,
+                                  letterSpacing: 0.5,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  zIndex: 2,
+                                  borderTopLeftRadius: 14,
+                                  borderTopRightRadius: 14
+                                }}
+                              >
+                                ETHNIC
+                              </div>
+                            )}
+                            {tile.badge && tile.badge !== 'NEW' && tile.badge !== 'ETHNIC' && (
+                              <div
+                                style={{
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  height: 14,
+                                  background: '#1f2937',
+                                  color: '#ffffff',
+                                  fontSize: 8.5,
+                                  fontWeight: 900,
+                                  letterSpacing: 0.5,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  zIndex: 2,
+                                  borderTopLeftRadius: 14,
+                                  borderTopRightRadius: 14
+                                }}
+                              >
+                                {tile.badge}
+                              </div>
+                            )}
+
+                            <img
+                              src={tile.img}
+                              alt={tile.name || 'Brand'}
+                              style={{
+                                maxWidth: '78%',
+                                maxHeight: '66%',
+                                objectFit: 'contain',
+                                marginTop: tile.badge ? 8 : 0
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -932,12 +1021,12 @@ export default function HomePage() {
                   marginTop: 14
                 }}
               >
-                {Array.from({ length: brandSlides.length || 1 }).map((_, dotIdx) => {
+                {Array.from({ length: displayBrandSlides.length || 1 }).map((_, dotIdx) => {
                   const isActive = dotIdx === currentBrandSlide;
                   return (
                     <div
                       key={dotIdx}
-                      onClick={() => setCurrentBrandSlide(dotIdx)}
+                      onClick={() => scrollToBrandSlide(dotIdx)}
                       style={{
                         width: isActive ? 18 : 5,
                         height: 5,
