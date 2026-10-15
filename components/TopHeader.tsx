@@ -35,7 +35,7 @@ export default function TopHeader() {
         zIndex: 50
       }}
     >
-      {/* Row 1: 60 minutes, Location, Try-On Badge, Wishlist, Profile */}
+      {/* Row 1: 60 minutes, Location, Wishlist, Profile */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         {/* Left: 60 Minutes Delivery & Location dropdown */}
         <div
@@ -74,24 +74,8 @@ export default function TopHeader() {
           </div>
         </div>
 
-        {/* Right Actions: Try-On Badge, Wishlist, Profile */}
+        {/* Right Actions: Wishlist, Profile */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {/* Try On! Badge (Official Drobe image) */}
-          <Link
-            href="/try_on"
-            style={{
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              cursor: 'pointer'
-            }}
-          >
-            <img
-              src="/assets/images/home_try_on_figma_4x.png"
-              alt="Try On!"
-              style={{ height: 32, width: 'auto', objectFit: 'contain' }}
-            />
-          </Link>
 
           {/* Wishlist Heart Icon */}
           <button

@@ -9,11 +9,6 @@
       "name": "Referral & Earn",
       "img": "/assets/real/500R&EFLAT.png",
       "action": "referral"
-    },
-    {
-      "name": "Virtual Try On",
-      "img": "/assets/real/home_sections/coupon_carousel_vto.png",
-      "action": "vto"
     }
   ],
   "iconicLooks": [

@@ -1421,62 +1421,24 @@ export default function HomePage() {
             )}
 
             {/* ========================================================
-                COUPON & PROMO CAROUSEL (coupon_carousel)
-                Referral & Earn ₹500 Flat Tote Bag Banner + Virtual Try On Banner
+                REFERRAL & EARN PROMO BANNER
                 ======================================================== */}
-            <section style={{ padding: '0 0 18px' }}>
+            <section style={{ padding: '0 12px 18px' }}>
               <div
+                onClick={() => setIsReferralOpen(true)}
                 style={{
-                  display: 'flex',
-                  gap: 12,
-                  overflowX: 'auto',
-                  padding: '0 12px',
-                  scrollbarWidth: 'none',
-                  scrollSnapType: 'x mandatory',
-                  WebkitOverflowScrolling: 'touch'
+                  width: '100%',
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.45)'
                 }}
               >
-                {/* Slide 0: Referral & Earn ₹500 Tote Bag Banner */}
-                <div
-                  onClick={() => setIsReferralOpen(true)}
-                  style={{
-                    flexShrink: 0,
-                    width: 'calc(100% - 32px)',
-                    maxWidth: 346,
-                    borderRadius: 16,
-                    overflow: 'hidden',
-                    cursor: 'pointer',
-                    scrollSnapAlign: 'start',
-                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.45)'
-                  }}
-                >
-                  <img
-                    src="/assets/real/500R&EFLAT.png"
-                    alt="Invite your friends - Earn ₹500 + Tote Bag"
-                    style={{ width: '100%', height: 'auto', display: 'block' }}
-                  />
-                </div>
-
-                {/* Slide 1: Virtual Try On Banner */}
-                <div
-                  onClick={() => router.push('/trends')}
-                  style={{
-                    flexShrink: 0,
-                    width: 'calc(100% - 32px)',
-                    maxWidth: 346,
-                    borderRadius: 16,
-                    overflow: 'hidden',
-                    cursor: 'pointer',
-                    scrollSnapAlign: 'start',
-                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.45)'
-                  }}
-                >
-                  <img
-                    src="/assets/real/home_sections/coupon_carousel_vto.png"
-                    alt="Virtual Try On"
-                    style={{ width: '100%', height: 'auto', display: 'block' }}
-                  />
-                </div>
+                <img
+                  src="/assets/real/500R&EFLAT.png"
+                  alt="Invite your friends - Earn ₹500 + Tote Bag"
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
               </div>
             </section>
 

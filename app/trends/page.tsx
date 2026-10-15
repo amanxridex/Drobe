@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import BottomNav from '@/components/BottomNav';
@@ -191,35 +190,6 @@ export default function TrendsPage() {
               {isLiked ? 'Liked' : currentReel.likes}
             </span>
           </button>
-
-          {/* Try On */}
-          <Link
-            href={`/try_on?product=${linkedProduct.id}`}
-            style={{
-              textDecoration: 'none',
-              color: '#fff',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 4
-            }}
-          >
-            <div
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: '50%',
-                background: 'rgba(0,0,0,0.6)',
-                backdropFilter: 'blur(8px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <img src="/assets/icons/create_tryon_dark.svg" alt="Try On" style={{ width: 20, height: 20 }} />
-            </div>
-            <span style={{ fontSize: 11, fontWeight: 700 }}>Try-On</span>
-          </Link>
 
           {/* Share */}
           <button

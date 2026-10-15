@@ -13,7 +13,6 @@ export default function ProfilePage() {
   const menuItems = [
     { label: 'My Orders & Trials', icon: '/assets/icons/box_ver2.svg', href: '/cart' },
     { label: 'Saved Addresses', icon: '/assets/icons/pin_marker_outline_v3.svg', action: () => setIsLocationOpen(true) },
-    { label: 'AI Try-On Saved Fits', icon: '/assets/icons/create_tryon_dark.svg', href: '/try_on' },
     { label: 'Doorstep Refund Bank Account', icon: '/assets/icons/bank.svg', action: () => alert('Instant Refund: Bank account / UPI verified for 10-min doorstep refunds.') },
     { label: 'Notification Settings', icon: '/assets/icons/bell.svg', action: () => alert('WhatsApp & SMS order status notifications are active.') },
     { label: '7-Days Return Policy', icon: '/assets/icons/7_days_return.svg', action: () => alert('Drobe 7-Days Easy Return Policy: Return within 7 days for a 100% full refund.') },

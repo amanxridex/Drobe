@@ -362,33 +362,6 @@ export default function ProductDetailPage() {
             EXTRA ₹999 OFF
           </div>
 
-          {/* Bottom-Left: [⛶] TRY ON Pill Badge */}
-          <Link
-            href={`/try_on?product=${product.id}`}
-            style={{
-              position: 'absolute',
-              bottom: 14,
-              left: 14,
-              background: 'rgba(0, 0, 0, 0.65)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              padding: '5px 12px',
-              borderRadius: 14,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              textDecoration: 'none',
-              zIndex: 2
-            }}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
-            </svg>
-            <span style={{ color: '#5D71F9', fontSize: 11, fontWeight: 800, letterSpacing: '0.04em' }}>
-              TRY ON
-            </span>
-          </Link>
 
           {/* Bottom-Right: Stacked Floating Action Buttons (Heart & Share) */}
           <div
