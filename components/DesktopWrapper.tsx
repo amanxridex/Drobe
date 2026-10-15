@@ -40,7 +40,7 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
     };
   }, []);
 
-  if (pathname?.startsWith('/admin-dashboard') || pathname?.startsWith('/order-portal')) {
+  if (pathname?.startsWith('/admin-dashboard') || pathname?.startsWith('/order-portal') || pathname?.startsWith('/platform-changes')) {
     return (
       <div
         id="admin-desktop-root"

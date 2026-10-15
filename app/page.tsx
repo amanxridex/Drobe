@@ -21,6 +21,7 @@ import AUTHENTIC_HOME_WIDGETS from '@/data/authentic_home_widgets.json';
 import { getDarkstoreProducts, DarkstoreProduct, createCustomerOrder, syncDarkstoreWithSupabase } from '@/app/lib/darkstoreData';
 import { slugify } from '@/app/lib/supabaseClient';
 import LookbookCarousel from '@/components/LookbookCarousel';
+import INITIAL_LOOKBOOK_BANNERS from '@/data/lookbook_banners.json';
 
 export default function HomePage() {
   const { gender, wishlist, toggleWishlist, setIsCouponOpen } = useApp();
@@ -70,91 +71,22 @@ export default function HomePage() {
     return () => window.removeEventListener('storage', loadDarkstore);
   }, []);
 
-  // Exact authentic lookbook banners downloaded from Drobe's ImageKit CDN
-  const menLookbookCards = [
-    {
-      id: 'banana-club',
-      title: 'Banana Club',
-      img: '/assets/real/lookbook_banner_2.webp',
-      route: '/product/29393'
-    },
-    {
-      id: 'fkn-casanova',
-      title: 'F/KN Casanova',
-      img: '/assets/real/lookbook_banner_1.webp',
-      route: '/product/36440'
-    },
-    {
-      id: 'powerlook',
-      title: 'Powerlook',
-      img: '/assets/real/lookbook_banner_4.webp',
-      route: '/product/37600'
-    },
-    {
-      id: 'on3mile',
-      title: 'On3Mile',
-      img: '/assets/real/lookbook_banner_9.webp',
-      route: '/product/31561'
-    },
-    {
-      id: 'brand-spotlight',
-      title: 'Brand Spotlight',
-      img: '/assets/real/lookbook_banner_6.webp',
-      route: '/product/12671'
-    }
-  ];
+  // Dynamic lookbook banners fetched from CMS backend / platform-changes
+  const [bannersData, setBannersData] = useState(INITIAL_LOOKBOOK_BANNERS);
 
-  const womenLookbookCards = [
-    {
-      id: 'dandiya-drops',
-      title: 'Dandiya Drops',
-      img: '/assets/real/lookbook_women_1_dandiya.webp',
-      route: '/collection/ethnic'
-    },
-    {
-      id: 'desi-baddie',
-      title: 'Desi Baddie',
-      img: '/assets/real/lookbook_women_2_desibaddie.webp',
-      route: '/collection/ethnic'
-    },
-    {
-      id: 'chkokko',
-      title: 'Chkokko',
-      img: '/assets/real/lookbook_women_3_chkokko.webp',
-      route: '/collection/top'
-    },
-    {
-      id: 'souled-store',
-      title: 'The Souled Store',
-      img: '/assets/real/lookbook_women_4_souledstore.webp',
-      route: '/collection/dresses'
-    },
-    {
-      id: 'pink-fort',
-      title: 'Pink Fort',
-      img: '/assets/real/lookbook_women_5_pinkfort.webp',
-      route: '/collection/ethnic'
-    },
-    {
-      id: 'nee',
-      title: 'नी New Collection',
-      img: '/assets/real/lookbook_women_6_nee.webp',
-      route: '/collection/ethnic'
-    },
-    {
-      id: 'tequila',
-      title: 'Tequila',
-      img: '/assets/real/lookbook_women_7_tequila.webp',
-      route: '/collection/dresses'
-    },
-    {
-      id: 'tilt',
-      title: 'Tilt Bamboo',
-      img: '/assets/real/lookbook_women_8_tilt.webp',
-      route: '/collection/bottom'
-    }
-  ];
+  useEffect(() => {
+    fetch('/api/banners')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && data?.banners) {
+          setBannersData(data.banners);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
+  const menLookbookCards = bannersData.men?.length ? bannersData.men : INITIAL_LOOKBOOK_BANNERS.men;
+  const womenLookbookCards = bannersData.women?.length ? bannersData.women : INITIAL_LOOKBOOK_BANNERS.women;
   const lookbookCards = gender === 'women' ? womenLookbookCards : menLookbookCards;
 
   // Reset category slide index on gender switch
