@@ -660,7 +660,7 @@ export default function ProductDetailPage() {
             marginTop: 18
           }}
         >
-          {/* Card 1: TRY 'n BUY */}
+          {/* Card 1: Physical Try-On */}
           <div
             style={{
               background: '#1a1a20',
@@ -678,11 +678,11 @@ export default function ProductDetailPage() {
               <path d="M12 2a3 3 0 0 0-3 3c0 1.25.75 2.3 1.83 2.75L2 14.5A2 2 0 0 0 3.5 17h17a2 2 0 0 0 1.5-2.5l-8.83-6.75A3 3 0 0 0 12 2z" />
             </svg>
             <span style={{ fontSize: 11, fontWeight: 700, color: '#ffffff', lineHeight: 1.2 }}>
-              TRY<br />&apos;n BUY
+              Physical<br />Try-On
             </span>
           </div>
 
-          {/* Card 2: 7 Day Return */}
+          {/* Card 2: Instant Return */}
           <div
             style={{
               background: '#1a1a20',
@@ -701,11 +701,11 @@ export default function ProductDetailPage() {
               <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
             </svg>
             <span style={{ fontSize: 11, fontWeight: 700, color: '#ffffff', lineHeight: 1.2 }}>
-              7 Day<br />Return
+              Instant<br />Return
             </span>
           </div>
 
-          {/* Card 3: Cash on Delivery */}
+          {/* Card 3: 60 Mins Delivery */}
           <div
             style={{
               background: '#1a1a20',
@@ -720,12 +720,10 @@ export default function ProductDetailPage() {
             }}
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5D71F9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="6" width="20" height="12" rx="2" />
-              <circle cx="12" cy="12" r="2" />
-              <path d="M6 12h.01M18 12h.01" />
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
             </svg>
             <span style={{ fontSize: 11, fontWeight: 700, color: '#ffffff', lineHeight: 1.2 }}>
-              Cash on<br />Delivery
+              60 Mins<br />Delivery
             </span>
           </div>
 
