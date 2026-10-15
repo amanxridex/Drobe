@@ -5,27 +5,26 @@ import Link from 'next/link';
 import styles from './order-portal.module.css';
 import {
   getTrialOrders,
-  getDarkstoreRunners,
+  getDarkstoreRiders,
   getDarkstoreProducts,
   pickerPackOrder,
-  assignRunnerToOrder,
-  handoverOrderToRunner,
+  assignRiderToOrder,
+  handoverOrderToRider,
   updateTrialOrderStatus,
-  createCustomerOrder,
   getOrderDeliveryOtp,
   generateShiftReportCsv,
   AHMEDABAD_WAREHOUSE,
   TrialOrder,
-  DarkstoreRunner,
+  DarkstoreRider,
   syncDarkstoreWithSupabase
 } from '../lib/darkstoreData';
 import { subscribeToRealtimeOrders } from '../lib/supabaseClient';
 
 export default function OrderPortalPage() {
   const [orders, setOrders] = useState<TrialOrder[]>([]);
-  const [runners, setRunners] = useState<DarkstoreRunner[]>([]);
+  const [riders, setRiders] = useState<DarkstoreRider[]>([]);
   const [isSupabaseLive, setIsSupabaseLive] = useState<boolean>(true);
-  const [selectedRunners, setSelectedRunners] = useState<Record<string, string>>({});
+  const [selectedRiders, setSelectedRiders] = useState<Record<string, string>>({});
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
@@ -113,8 +112,8 @@ export default function OrderPortalPage() {
   const refreshOrders = () => {
     const list = getTrialOrders();
     setOrders(list);
-    const rList = getDarkstoreRunners();
-    setRunners(rList);
+    const rList = getDarkstoreRiders();
+    setRiders(rList);
   };
 
   useEffect(() => {
@@ -167,78 +166,29 @@ export default function OrderPortalPage() {
     };
   }, []);
 
-  // Quick order simulation to demonstrate instant inflow & diversion
-  const handleSimulateIncomingOrder = () => {
-    const prods = getDarkstoreProducts();
-    const targetProd = prods.find(p => p.isLive) || prods[0] || {
-      id: 'prod-dr-01',
-      name: 'Bomber Drop shoulder',
-      sku: 'DR1',
-      brandId: 'brand-chanel-01',
-      brandName: 'CHANEL',
-      price: '₹1200',
-      warehouseLocation: { code: 'AMD-RA02-S3-B04' }
-    };
-
-    const customers = [
-      { name: 'Kavya Trivedi', phone: '+91 98251 77201', address: '402, Shivalik Highstreet, Keshavbaug, Vastrapur, Ahmedabad', landmark: 'Near Mansi Circle', dist: '2.8 km' },
-      { name: 'Sameer Parikh', phone: '+91 97120 33419', address: 'B-12, Orchid Elegance, South Bopal, Ahmedabad', landmark: 'Opp. Bopal Lake', dist: '4.6 km' },
-      { name: 'Meera Chokshi', phone: '+91 98790 99420', address: 'Penthouse 9, Dev Aurum, Prahlad Nagar, Ahmedabad', landmark: 'Near Anandnagar Road', dist: '1.9 km' },
-      { name: 'Yashwardhan Shah', phone: '+91 99040 11244', address: 'Flat 801, Godrej Garden City, Jagatpur, Ahmedabad', landmark: 'Near Nirma University', dist: '3.4 km' }
-    ];
-
-    const pick = customers[Math.floor(Math.random() * customers.length)];
-    const shelfCode = targetProd.warehouseLocation?.code || 'AMD-RA02-S3-B04';
-
-    const newOrd = createCustomerOrder({
-      productId: targetProd.id,
-      productName: targetProd.name,
-      productSku: targetProd.sku || 'DR1',
-      brandId: targetProd.brandId,
-      brandName: targetProd.brandName,
-      price: targetProd.price,
-      size: 'M',
-      customerName: pick.name,
-      customerPhone: pick.phone,
-      customerAddress: pick.address,
-      landmark: pick.landmark,
-      shelfLocation: shelfCode
-    });
-
-    refreshOrders();
-    playAlertChime();
-    setIncomingAlert({
-      orderNumber: newOrd.orderNumber,
-      customer: newOrd.customerName,
-      product: newOrd.productName,
-      shelf: shelfCode,
-      time: 'Just Now'
-    });
-  };
-
   // Actions
   const handlePickerPack = (orderId: string) => {
     pickerPackOrder(orderId);
     refreshOrders();
   };
 
-  const handleSelectRunner = (orderId: string, runnerId: string) => {
-    setSelectedRunners(prev => ({ ...prev, [orderId]: runnerId }));
+  const handleSelectRider = (orderId: string, riderId: string) => {
+    setSelectedRiders(prev => ({ ...prev, [orderId]: riderId }));
   };
 
-  const handleAssignRunner = (orderId: string) => {
-    const runnerId = selectedRunners[orderId] || runners[0]?.id || 'run-01';
-    assignRunnerToOrder(orderId, runnerId);
+  const handleAssignRider = (orderId: string) => {
+    const riderId = selectedRiders[orderId] || riders[0]?.id || 'run-01';
+    assignRiderToOrder(orderId, riderId);
     refreshOrders();
   };
 
-  const handleHandoverToRunner = (orderId: string) => {
-    handoverOrderToRunner(orderId);
+  const handleHandoverToRider = (orderId: string) => {
+    handoverOrderToRider(orderId);
     refreshOrders();
   };
 
   const handleReachedDoorstep = (orderId: string) => {
-    updateTrialOrderStatus(orderId, 'Doorstep Fitting (Runner Waiting Outside)');
+    updateTrialOrderStatus(orderId, 'Doorstep Fitting (Delivery Partner Waiting Outside)');
     refreshOrders();
   };
 
@@ -248,7 +198,7 @@ export default function OrderPortalPage() {
   };
 
   const handleCustomerReturned = (orderId: string) => {
-    updateTrialOrderStatus(orderId, 'Returned on Spot (Runner Heading to Hub)', 'Size / fit did not suit at doorstep');
+    updateTrialOrderStatus(orderId, 'Returned on Spot (Delivery Partner Heading to Hub)', 'Size / fit did not suit at doorstep');
     refreshOrders();
   };
 
@@ -259,19 +209,19 @@ export default function OrderPortalPage() {
 
   // Counts
   const countAwaitingPicker = orders.filter(o => o.status === 'Order Received (Awaiting Picker)').length;
-  const countPackedReady = orders.filter(o => o.status === 'Picked & Packed in Trial Bag' || o.status === 'Runner Assigned (Ready for Handover)').length;
+  const countPackedReady = orders.filter(o => o.status === 'Picked & Packed in Trial Bag' || o.status.includes('Assigned (Ready for Handover)')).length;
   const countInTransit = orders.filter(o => o.status === 'Out for 30-Min Delivery').length;
-  const countDoorstep = orders.filter(o => o.status === 'Doorstep Fitting (Runner Waiting Outside)').length;
+  const countDoorstep = orders.filter(o => o.status.includes('Doorstep Fitting')).length;
   const countKept = orders.filter(o => o.status === 'Kept on Spot (Purchased)').length;
-  const countReturned = orders.filter(o => o.status === 'Returned on Spot (Runner Heading to Hub)' || o.status === 'Restocked to Warehouse Shelf').length;
+  const countReturned = orders.filter(o => o.status.includes('Returned on Spot') || o.status === 'Restocked to Warehouse Shelf').length;
 
   // Filter
   const filteredOrders = orders.filter(ord => {
     if (activeFilter === 'awaiting_picker') return ord.status === 'Order Received (Awaiting Picker)';
-    if (activeFilter === 'packed_ready') return ord.status === 'Picked & Packed in Trial Bag' || ord.status === 'Runner Assigned (Ready for Handover)';
+    if (activeFilter === 'packed_ready') return ord.status === 'Picked & Packed in Trial Bag' || ord.status.includes('Assigned (Ready for Handover)');
     if (activeFilter === 'transit') return ord.status === 'Out for 30-Min Delivery';
-    if (activeFilter === 'doorstep') return ord.status === 'Doorstep Fitting (Runner Waiting Outside)';
-    if (activeFilter === 'completed') return ord.status === 'Kept on Spot (Purchased)' || ord.status === 'Returned on Spot (Runner Heading to Hub)' || ord.status === 'Restocked to Warehouse Shelf';
+    if (activeFilter === 'doorstep') return ord.status.includes('Doorstep Fitting');
+    if (activeFilter === 'completed') return ord.status === 'Kept on Spot (Purchased)' || ord.status.includes('Returned on Spot') || ord.status === 'Restocked to Warehouse Shelf';
     return true;
   }).filter(ord => {
     if (!searchQuery) return true;
@@ -335,15 +285,6 @@ export default function OrderPortalPage() {
             <span>Export Shift (CSV)</span>
           </button>
 
-          <button 
-            className={styles.simulateBtn}
-            onClick={handleSimulateIncomingOrder}
-            title="Simulate customer placing 30-min trial order"
-          >
-            <span>⚡</span>
-            <span>Simulate Live Incoming Order</span>
-          </button>
-
           <Link href="/delivery-partner" className={`${styles.navLinkBtn} ${styles.navLinkHighlight}`}>
             <span>🚴</span>
             <span>Delivery Partner App</span>
@@ -403,7 +344,7 @@ export default function OrderPortalPage() {
           <div className={styles.metricContent}>
             <span className={styles.metricLabel}>Ready for Handover</span>
             <span className={styles.metricVal}>{countPackedReady}</span>
-            <span className={styles.metricSub}>Assign runner & dispatch</span>
+            <span className={styles.metricSub}>Assign partner & dispatch</span>
           </div>
         </div>
 
@@ -425,7 +366,7 @@ export default function OrderPortalPage() {
           <div className={styles.metricContent}>
             <span className={styles.metricLabel}>Doorstep Fitting</span>
             <span className={styles.metricVal}>{countDoorstep}</span>
-            <span className={styles.metricSub}>Runner waiting outside</span>
+            <span className={styles.metricSub}>Delivery partner waiting outside</span>
           </div>
         </div>
 
@@ -608,24 +549,24 @@ export default function OrderPortalPage() {
           </div>
         </div>
 
-        {/* Column 2: Picked & Packed -> Ready for Runner Assignment & Handover */}
+        {/* Column 2: Picked & Packed -> Ready for Delivery Partner Assignment & Handover */}
         <div className={styles.columnCard}>
           <div className={styles.columnHeader}>
             <div className={styles.columnTitleGroup}>
               <span className={styles.columnIndicator} style={{ background: '#f59e0b', boxShadow: '0 0 8px #f59e0b' }}></span>
-              <h3 className={styles.colTitle}>2. Packed: Executive Handover</h3>
+              <h3 className={styles.colTitle}>2. Packed: Partner Handover</h3>
             </div>
-            <span className={styles.colCount}>{getOrdersByCol(s => s === 'Picked & Packed in Trial Bag' || s === 'Runner Assigned (Ready for Handover)').length}</span>
+            <span className={styles.colCount}>{getOrdersByCol(s => s === 'Picked & Packed in Trial Bag' || s.includes('Assigned (Ready for Handover)')).length}</span>
           </div>
 
           <div className={styles.columnList}>
-            {getOrdersByCol(s => s === 'Picked & Packed in Trial Bag' || s === 'Runner Assigned (Ready for Handover)').length === 0 ? (
+            {getOrdersByCol(s => s === 'Picked & Packed in Trial Bag' || s.includes('Assigned (Ready for Handover)')).length === 0 ? (
               <div className={styles.emptyState}>
                 <span>🛵</span>
                 <span>No bags waiting for handover</span>
               </div>
             ) : (
-              getOrdersByCol(s => s === 'Picked & Packed in Trial Bag' || s === 'Runner Assigned (Ready for Handover)').map(order => (
+              getOrdersByCol(s => s === 'Picked & Packed in Trial Bag' || s.includes('Assigned (Ready for Handover)')).map(order => (
                 <div key={order.id} className={`${styles.orderItem} ${styles.orderItemPicked}`}>
                   <div className={styles.orderCardTop}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -669,18 +610,18 @@ export default function OrderPortalPage() {
                     <div className={styles.customerAddressLine}>{order.customerAddress}</div>
                   </div>
 
-                  {/* Runner Assignment Flow */}
+                  {/* Delivery Partner Assignment Flow */}
                   <div className={styles.runnerAssignBox}>
                     <div className={styles.assignTitle}>
-                      {order.status === 'Runner Assigned (Ready for Handover)' ? 'ASSIGNED DELIVERY PARTNER:' : 'SELECT DELIVERY PARTNER FOR HANDOVER:'}
+                      {order.status.includes('Assigned (Ready for Handover)') ? 'ASSIGNED DELIVERY PARTNER:' : 'SELECT DELIVERY PARTNER FOR HANDOVER:'}
                     </div>
 
                     <select 
                       className={styles.runnerSelect}
-                      value={selectedRunners[order.id] || (order.riderName ? runners.find(r => r.name === order.riderName)?.id : runners[0]?.id)}
-                      onChange={e => handleSelectRunner(order.id, e.target.value)}
+                      value={selectedRiders[order.id] || (order.riderName ? riders.find(r => r.name === order.riderName)?.id : riders[0]?.id)}
+                      onChange={e => handleSelectRider(order.id, e.target.value)}
                     >
-                      {runners.map(r => (
+                      {riders.map(r => (
                         <option key={r.id} value={r.id}>
                           {r.name} · {r.vehicle} ({r.batteryOrFuel} • ⭐ {r.rating})
                         </option>
@@ -691,7 +632,7 @@ export default function OrderPortalPage() {
                       {order.status === 'Picked & Packed in Trial Bag' ? (
                         <button 
                           className={styles.actionBtnWarning}
-                          onClick={() => handleAssignRunner(order.id)}
+                          onClick={() => handleAssignRider(order.id)}
                         >
                           <span>🤝</span>
                           <span>Assign Partner</span>
@@ -699,7 +640,7 @@ export default function OrderPortalPage() {
                       ) : (
                         <button 
                           className={styles.actionBtnSuccess}
-                          onClick={() => handleHandoverToRunner(order.id)}
+                          onClick={() => handleHandoverToRider(order.id)}
                         >
                           <span>🚀</span>
                           <span>Mark Handed Over & Start 30-Min Run</span>
@@ -727,7 +668,7 @@ export default function OrderPortalPage() {
             {getOrdersByCol(s => s === 'Out for 30-Min Delivery').length === 0 ? (
               <div className={styles.emptyState}>
                 <span>⚡</span>
-                <span>No runners currently on road</span>
+                <span>No delivery partners currently on road</span>
               </div>
             ) : (
               getOrdersByCol(s => s === 'Out for 30-Min Delivery').map(order => (
@@ -742,7 +683,7 @@ export default function OrderPortalPage() {
                   <div className={styles.assignedRunnerInfo}>
                     <div>
                       <div className={styles.runnerNameText}>
-                        <span>🛵</span> {order.riderName || 'Express Runner'}
+                        <span>🛵</span> {order.riderName || 'Delivery Partner'}
                       </div>
                       <div className={styles.runnerVehicleText}>{order.riderVehicle || 'Electric EV'}</div>
                     </div>
@@ -789,22 +730,22 @@ export default function OrderPortalPage() {
               <span className={styles.columnIndicator} style={{ background: '#8b5cf6', boxShadow: '0 0 8px #8b5cf6' }}></span>
               <h3 className={styles.colTitle}>4. Doorstep Fitting & Outcome</h3>
             </div>
-            <span className={styles.colCount}>{getOrdersByCol(s => s === 'Doorstep Fitting (Runner Waiting Outside)' || s === 'Returned on Spot (Runner Heading to Hub)').length}</span>
+            <span className={styles.colCount}>{getOrdersByCol(s => s.includes('Doorstep Fitting') || s.includes('Returned on Spot')).length}</span>
           </div>
 
           <div className={styles.columnList}>
-            {getOrdersByCol(s => s === 'Doorstep Fitting (Runner Waiting Outside)' || s === 'Returned on Spot (Runner Heading to Hub)').length === 0 ? (
+            {getOrdersByCol(s => s.includes('Doorstep Fitting') || s.includes('Returned on Spot')).length === 0 ? (
               <div className={styles.emptyState}>
                 <span>🚪</span>
                 <span>No active doorstep trials in progress</span>
               </div>
             ) : (
-              getOrdersByCol(s => s === 'Doorstep Fitting (Runner Waiting Outside)' || s === 'Returned on Spot (Runner Heading to Hub)').map(order => (
+              getOrdersByCol(s => s.includes('Doorstep Fitting') || s.includes('Returned on Spot')).map(order => (
                 <div key={order.id} className={`${styles.orderItem} ${order.status.includes('Returned') ? styles.orderItemPicked : styles.orderItemDoorstep}`}>
                   <div className={styles.orderCardTop}>
                     <span className={styles.orderNumTag}>{order.orderNumber}</span>
                     <span className={styles.timerRow}>
-                      {order.status === 'Doorstep Fitting (Runner Waiting Outside)' ? (
+                      {order.status.includes('Doorstep Fitting') ? (
                         <span>⏱️ 15-Min Fitting Underway</span>
                       ) : (
                         <span style={{ color: '#f87171' }}>↩️ Returning to Hub</span>
@@ -815,7 +756,7 @@ export default function OrderPortalPage() {
                   <div className={styles.assignedRunnerInfo}>
                     <div>
                       <div className={styles.runnerNameText}>
-                        <span>🛵</span> {order.riderName || 'Meet Dave'}
+                        <span>🛵</span> {order.riderName || 'Delivery Partner'}
                       </div>
                       <div className={styles.runnerVehicleText}>Waiting outside customer apartment</div>
                     </div>
@@ -834,7 +775,7 @@ export default function OrderPortalPage() {
                     </div>
                   </div>
 
-                  {order.status === 'Doorstep Fitting (Runner Waiting Outside)' ? (
+                  {order.status.includes('Doorstep Fitting') ? (
                     <div className={styles.actionBtnRow}>
                       <button 
                         className={styles.actionBtnSuccess}
@@ -980,7 +921,7 @@ export default function OrderPortalPage() {
       <footer className={styles.portalFooter}>
         <div className={styles.fleetOnlinePill}>
           <span className={styles.pulseDot}></span>
-          <span>Ahmedabad Express Fleet: {runners.length} active runners stationed at Shivam Bungalows 1, Koteshwar Road</span>
+          <span>Ahmedabad Express Fleet: {riders.length} active delivery partners stationed at SG Highway Hub</span>
         </div>
         <div>
           <span>Drobe Darkstore OS v2.4 · Instant 30-Min Fulfillment & Live Try-on System</span>

@@ -26,7 +26,7 @@ export default function DeliveryPartnerApp() {
   const [activeTab, setActiveTab] = useState<'fetch' | 'runs' | 'stats'>('fetch');
   const [runners, setRunners] = useState<DarkstoreRunner[]>([]);
   const [currentRunner, setCurrentRunner] = useState<DarkstoreRunner | null>(null);
-  const [orderInput, setOrderInput] = useState<string>('DRB-9842');
+  const [orderInput, setOrderInput] = useState<string>('');
   const [activeOrder, setActiveOrder] = useState<TrialOrder | null>(null);
   const [allOrders, setAllOrders] = useState<TrialOrder[]>([]);
   const [doorstepTimer, setDoorstepTimer] = useState<number>(14 * 60 + 22); // 14 mins 22 secs
@@ -60,7 +60,10 @@ export default function DeliveryPartnerApp() {
       const oList = getTrialOrders() || [];
       setAllOrders(oList);
 
-      if (orderInput && orderInput.trim()) {
+      if (!orderInput && oList.length > 0) {
+        setOrderInput(oList[0].orderNumber || oList[0].id);
+        setActiveOrder(oList[0]);
+      } else if (orderInput && orderInput.trim()) {
         const match = getOrderByNumber(orderInput);
         setActiveOrder(match);
       }
@@ -239,7 +242,7 @@ export default function DeliveryPartnerApp() {
       <div className={styles.riderAppRoot} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#ffffff' }}>
         <div style={{ color: '#64748b', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span>🛵</span>
-          <span>Loading Ahmedabad Runner Portal...</span>
+          <span>Loading Ahmedabad Delivery Partner Portal...</span>
         </div>
       </div>
     );
@@ -249,20 +252,22 @@ export default function DeliveryPartnerApp() {
   const runnerRuns = (allOrders || []).filter(o => 
     o && 
     o.status !== 'Restocked to Warehouse Shelf' && 
-    (o.riderName === currentRunner?.name || (o.status || '').includes('Picked') || (o.status || '').includes('Runner Assigned'))
+    (o.riderName === currentRunner?.name || (o.status || '').includes('Picked') || (o.status || '').includes('Assigned'))
   );
 
   // Safe variables for activeOrder
-  const custName = activeOrder?.customerName || 'Aarav Parekh';
-  const custPhone = activeOrder?.customerPhone || '+91 98250 88123';
-  const cleanPhone = custPhone.replace(/[^0-9]/g, '') || '9825088123';
-  const custAddress = activeOrder?.customerAddress || 'B-702, Shaligram Plus, Opp. Iskcon Temple, SG Highway, Ahmedabad';
+  const custName = activeOrder?.customerName || 'Shopper';
+  const custPhone = activeOrder?.customerPhone || '';
+  const cleanPhone = custPhone.replace(/[^0-9]/g, '');
+  const custAddress = activeOrder?.customerAddress || 'Ahmedabad';
   const prodName = activeOrder?.productName || 'Garment Piece';
   const prodSize = activeOrder?.size || 'M';
-  const runnerName = currentRunner?.name || 'Drobe Runner';
+  const runnerName = currentRunner?.name || 'Drobe Delivery Partner';
 
-  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello ${custName}! I am ${runnerName} from Drobe arriving with your 30-minute trial bag for ${prodName} (${prodSize}).`)}`;
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(custAddress)}`;
+  const whatsappUrl = cleanPhone
+    ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello ${custName}! I am ${runnerName} from Drobe arriving with your 30-minute trial bag for ${prodName} (${prodSize}).`)}`
+    : '#';
+  const mapsUrl = custAddress ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(custAddress)}` : '#';
 
   return (
     <div className={styles.riderAppRoot}>
@@ -270,7 +275,7 @@ export default function DeliveryPartnerApp() {
       <header className={styles.riderHeader}>
         <div className={styles.topBarRow}>
           <div className={styles.riderLogoRow}>
-            <span className={styles.riderBadge}>DROBE RUNNER</span>
+            <span className={styles.riderBadge}>DROBE DELIVERY PARTNER</span>
             <span className={styles.appTitle}>Ahmedabad Express</span>
             <span className={styles.riderBadge} style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0' }}>
               ● {isSupabaseLive ? 'Supabase Synced' : 'Offline'}
@@ -495,15 +500,15 @@ export default function DeliveryPartnerApp() {
                   </div>
                 </div>
 
-                {/* Doorstep Fitting Live 15-Min Timer (Active when runner reaches customer) */}
-                {activeOrder.status === 'Doorstep Fitting (Runner Waiting Outside)' && (
+                {/* Doorstep Fitting Live 15-Min Timer (Active when delivery partner reaches customer) */}
+                {((activeOrder.status || '').includes('Doorstep Fitting')) && (
                   <div className={styles.doorstepTimerCard}>
                     <div style={{ fontSize: '11px', textTransform: 'uppercase', color: '#c4b5fd', fontWeight: 700 }}>
                       ⏱️ DOORSTEP FITTING TIMER ACTIVE
                     </div>
                     <div className={styles.timerClockVal}>{formatTimer(doorstepTimer)}</div>
                     <div className={styles.timerInstruction}>
-                      Client is trying clothes inside apartment. Runner is waiting outside with trial bag.
+                      Client is trying clothes inside apartment. Delivery partner is waiting outside with trial bag.
                     </div>
                   </div>
                 )}
@@ -533,7 +538,7 @@ export default function DeliveryPartnerApp() {
                   )}
 
                   {/* Step 3: Doorstep Fitting Outcome */}
-                  {activeOrder.status === 'Doorstep Fitting (Runner Waiting Outside)' && (
+                  {((activeOrder.status || '').includes('Doorstep Fitting')) && (
                     <div className={styles.actionButtonDualRow}>
                       <button 
                         className={`${styles.bigActionButton} ${styles.btnSuccess}`}
@@ -554,7 +559,7 @@ export default function DeliveryPartnerApp() {
                   )}
 
                   {/* Step 4: Restock on return */}
-                  {activeOrder.status === 'Returned on Spot (Runner Heading to Hub)' && (
+                  {((activeOrder.status || '').includes('Returned on Spot')) && (
                     <button 
                       className={`${styles.bigActionButton} ${styles.btnPrimary}`}
                       style={{ background: '#d97706' }}
@@ -685,10 +690,10 @@ export default function DeliveryPartnerApp() {
               </a>
             </div>
 
-            {/* Runner Profile Switcher for Testing */}
+            {/* Rider Profile Switcher for Testing */}
             <div style={{ background: '#ffffff', padding: '14px', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(15,23,42,0.04)' }}>
               <div style={{ fontSize: '11px', fontWeight: 700, color: '#b45309', textTransform: 'uppercase', marginBottom: '8px' }}>
-                SWITCH RUNNER PROFILE (DEMO):
+                SWITCH RIDER PROFILE:
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {(runners || []).map(r => (

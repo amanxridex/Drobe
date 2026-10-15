@@ -66,20 +66,42 @@ type ActiveSheetType =
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, logoutUser, wishlist } = useApp();
+  const { user, logoutUser, wishlist, setIsAuthOpen } = useApp();
 
   // Active Bottom Sheet Modal
   const [activeSheet, setActiveSheet] = useState<ActiveSheetType>(null);
 
   // User Identity Data
   const [userData, setUserData] = useState({
-    name: user?.name || 'Aman Mishra',
-    email: 'aman@example.com',
-    phone: user?.phone || '+91 98250 88123',
-    username: '@amanmishra',
+    name: user?.name || (user ? 'Shopper' : 'Guest Shopper'),
+    email: user ? `${(user.phone || '').replace(/[^0-9]/g, '').slice(-10)}@drobe.in` : '',
+    phone: user?.phone || '',
+    username: user?.name ? `@${user.name.toLowerCase().replace(/\s+/g, '')}` : '@guest',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
     hubZone: 'Ahmedabad Hub #01 (SG Highway)'
   });
+
+  useEffect(() => {
+    if (user) {
+      setUserData({
+        name: user.name || 'Shopper',
+        email: `${(user.phone || 'shopper').replace(/[^0-9]/g, '').slice(-10)}@drobe.in`,
+        phone: user.phone || '',
+        username: user.name ? `@${user.name.toLowerCase().replace(/\s+/g, '')}` : '@shopper',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+        hubZone: 'Ahmedabad Hub #01 (SG Highway)'
+      });
+    } else {
+      setUserData({
+        name: 'Guest Shopper',
+        email: '',
+        phone: '',
+        username: '@guest',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+        hubZone: 'Ahmedabad Hub #01 (SG Highway)'
+      });
+    }
+  }, [user]);
 
   // Toggles State
   const [toggles, setToggles] = useState({
@@ -91,36 +113,49 @@ export default function ProfilePage() {
   // Language
   const [selectedLanguage, setSelectedLanguage] = useState('English (IN)');
 
-  // Saved Delivery Addresses
-  const [addresses, setAddresses] = useState([
-    {
-      id: 'addr-1',
-      tag: 'Home',
-      recipient: 'Aman Mishra',
-      line1: 'B-702, Shaligram Plus, Opp. Iskcon Temple',
-      line2: 'SG Highway, Ahmedabad, Gujarat',
-      pincode: '380015',
-      phone: '+91 98250 88123',
-      isDefault: true
-    },
-    {
-      id: 'addr-2',
-      tag: 'Work',
-      recipient: 'Aman Mishra',
-      line1: 'Floor 4, Commerce House 5, Anand Nagar Rd',
-      line2: 'Prahlad Nagar, Ahmedabad, Gujarat',
-      pincode: '380051',
-      phone: '+91 98250 88123',
-      isDefault: false
-    }
-  ]);
+  // Saved Delivery Addresses (hydrated from localStorage)
+  const [addresses, setAddresses] = useState<Array<{
+    id: string;
+    tag: string;
+    recipient: string;
+    line1: string;
+    line2?: string;
+    pincode: string;
+    phone: string;
+    isDefault?: boolean;
+  }>>([]);
 
-  // Saved Payments & UPI
-  const [upiId] = useState('aman@okhdfcbank');
-  const [savedCards] = useState([
-    { id: 'card-1', bank: 'HDFC Bank', type: 'Visa', last4: '4028', expiry: '08/29' },
-    { id: 'card-2', bank: 'ICICI Bank', type: 'Mastercard', last4: '9102', expiry: '11/28' }
-  ]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('drobe_user_addresses');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) setAddresses(parsed);
+      }
+    } catch {}
+  }, []);
+
+  // Saved Payments & UPI (hydrated from localStorage)
+  const [upiId, setUpiId] = useState<string>('');
+  const [savedCards, setSavedCards] = useState<Array<{
+    id: string;
+    bank: string;
+    type: string;
+    last4: string;
+    expiry: string;
+  }>>([]);
+
+  useEffect(() => {
+    try {
+      const rawUpi = localStorage.getItem('drobe_user_upi');
+      if (rawUpi) setUpiId(rawUpi);
+      const rawCards = localStorage.getItem('drobe_user_cards');
+      if (rawCards) {
+        const parsed = JSON.parse(rawCards);
+        if (Array.isArray(parsed)) setSavedCards(parsed);
+      }
+    } catch {}
+  }, []);
 
   // Fashion Preferences
   const [fashionPrefs, setFashionPrefs] = useState({
@@ -142,17 +177,26 @@ export default function ProfilePage() {
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  // Trial Orders
+  // Trial Orders (Only real orders for active user)
   const [trialOrders, setTrialOrders] = useState<TrialOrder[]>([]);
 
   useEffect(() => {
     try {
       const orders = getTrialOrders();
-      if (orders && orders.length > 0) {
-        setTrialOrders(orders);
+      if (Array.isArray(orders)) {
+        if (user && user.phone) {
+          const cleanPhone = user.phone.replace(/[^0-9]/g, '').slice(-10);
+          const filtered = orders.filter(o => 
+            (o.customerPhone && o.customerPhone.replace(/[^0-9]/g, '').includes(cleanPhone)) ||
+            (user.name && o.customerName?.toLowerCase() === user.name.toLowerCase())
+          );
+          setTrialOrders(filtered);
+        } else {
+          setTrialOrders([]);
+        }
       }
     } catch {}
-  }, []);
+  }, [user]);
 
   const handleLogout = () => {
     logoutUser();
@@ -319,12 +363,41 @@ export default function ProfilePage() {
             <div style={{ fontSize: 18, fontWeight: 800, color: UI.textPrimary, letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {userData.name}
             </div>
-            <div style={{ fontSize: 13, color: UI.textSecondary, marginTop: 2 }}>
-              {userData.phone}
-            </div>
-            <div style={{ fontSize: 12, color: UI.textMuted, marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {userData.email}
-            </div>
+            {userData.phone ? (
+              <div style={{ fontSize: 13, color: UI.textSecondary, marginTop: 2 }}>
+                {userData.phone}
+              </div>
+            ) : null}
+            {userData.email ? (
+              <div style={{ fontSize: 12, color: UI.textMuted, marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {userData.email}
+              </div>
+            ) : null}
+
+            {!user && (
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.96 }}
+                onClick={() => setIsAuthOpen(true)}
+                style={{
+                  marginTop: 8,
+                  background: '#ffffff',
+                  color: '#000000',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '6px 12px',
+                  fontSize: 11.5,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5
+                }}
+              >
+                <Smartphone size={12} />
+                <span>Sign In / Register</span>
+              </motion.button>
+            )}
           </div>
         </div>
 
@@ -357,7 +430,7 @@ export default function ProfilePage() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 11, fontWeight: 800, background: '#ffffff', color: '#000000', padding: '2px 8px', borderRadius: 10 }}>
-                  {trialOrders.length || 1} Active
+                  {trialOrders.length} {trialOrders.length === 1 ? 'Order' : 'Orders'}
                 </span>
                 <ChevronRight size={16} color={UI.textMuted} />
               </div>
@@ -655,7 +728,7 @@ export default function ProfilePage() {
                 onClick={() => {
                   const next = !toggles.smsAlerts;
                   setToggles({ ...toggles, smsAlerts: next });
-                  showToast(`Runner alerts ${next ? 'Enabled' : 'Disabled'}`);
+                  showToast(`Delivery partner alerts ${next ? 'Enabled' : 'Disabled'}`);
                 }}
                 style={{
                   width: 48,
@@ -1051,26 +1124,28 @@ export default function ProfilePage() {
 
                   {orderTab === 'all' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      {trialOrders.map(o => (
-                        <div key={o.id} style={{ background: '#181818', border: '1px solid #262626', borderRadius: 14, padding: 14 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                            <span style={{ fontSize: 12, fontWeight: 800, color: '#ffffff' }}>{o.orderNumber || o.id}</span>
-                            <span style={{ fontSize: 11, color: UI.textMuted }}>{o.dispatchedAt || 'Today'}</span>
+                      {trialOrders.length === 0 ? (
+                        <div style={{
+                          background: '#141414',
+                          border: '1px dashed #282828',
+                          borderRadius: 14,
+                          padding: '32px 20px',
+                          textAlign: 'center'
+                        }}>
+                          <Package size={36} color="#666666" style={{ margin: '0 auto 12px' }} />
+                          <div style={{ fontSize: 15, fontWeight: 700, color: '#ffffff', marginBottom: 4 }}>
+                            No Orders Yet
                           </div>
-                          <div style={{ fontSize: 13.5, fontWeight: 700 }}>{o.status}</div>
-                          <div style={{ fontSize: 12, color: UI.textSecondary, margin: '2px 0 10px 0' }}>
-                            {o.brandName} • {o.productName} ({o.size}) • {o.price}
-                          </div>
-                          <motion.button
-                            type="button"
-                            whileTap={{ scale: 0.96 }}
+                          <p style={{ fontSize: 12.5, color: UI.textSecondary, margin: '0 0 16px', lineHeight: 1.5 }}>
+                            You have not placed any orders yet. Discover fresh drop releases and try items at your doorstep in 30 minutes!
+                          </p>
+                          <button
                             onClick={() => {
                               setActiveSheet(null);
-                              router.push(`/order/${o.id}`);
+                              router.push('/');
                             }}
                             style={{
-                              width: '100%',
-                              padding: '10px 0',
+                              padding: '10px 20px',
                               borderRadius: 10,
                               background: '#ffffff',
                               color: '#000000',
@@ -1080,26 +1155,80 @@ export default function ProfilePage() {
                               cursor: 'pointer'
                             }}
                           >
-                            Live 30-Min GPS Tracking
-                          </motion.button>
+                            Explore Catalog
+                          </button>
                         </div>
-                      ))}
+                      ) : (
+                        trialOrders.map(o => (
+                          <div key={o.id} style={{ background: '#181818', border: '1px solid #262626', borderRadius: 14, padding: 14 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                              <span style={{ fontSize: 12, fontWeight: 800, color: '#ffffff' }}>{o.orderNumber || o.id}</span>
+                              <span style={{ fontSize: 11, color: UI.textMuted }}>{o.dispatchedAt || 'Today'}</span>
+                            </div>
+                            <div style={{ fontSize: 13.5, fontWeight: 700 }}>{o.status}</div>
+                            <div style={{ fontSize: 12, color: UI.textSecondary, margin: '2px 0 10px 0' }}>
+                              {o.brandName} • {o.productName} ({o.size}) • {o.price}
+                            </div>
+                            <motion.button
+                              type="button"
+                              whileTap={{ scale: 0.96 }}
+                              onClick={() => {
+                                setActiveSheet(null);
+                                router.push(`/order/${o.id}`);
+                              }}
+                              style={{
+                                width: '100%',
+                                padding: '10px 0',
+                                borderRadius: 10,
+                                background: '#ffffff',
+                                color: '#000000',
+                                fontSize: 12.5,
+                                fontWeight: 800,
+                                border: 'none',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Live 30-Min GPS Tracking
+                            </motion.button>
+                          </div>
+                        ))
+                      )}
                     </div>
                   )}
 
                   {orderTab === 'returns' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      <div style={{ background: '#181818', border: '1px solid #262626', borderRadius: 14, padding: 14 }}>
-                        <div style={{ fontSize: 11, fontWeight: 800, color: '#ffffff', textTransform: 'uppercase' }}>
-                          ✓ Instant Doorstep Refund Settled
+                      {trialOrders.filter(o => (o.status || '').toLowerCase().includes('return')).length === 0 ? (
+                        <div style={{
+                          background: '#141414',
+                          border: '1px dashed #282828',
+                          borderRadius: 14,
+                          padding: '32px 20px',
+                          textAlign: 'center'
+                        }}>
+                          <RotateCcw size={36} color="#666666" style={{ margin: '0 auto 12px' }} />
+                          <div style={{ fontSize: 15, fontWeight: 700, color: '#ffffff', marginBottom: 4 }}>
+                            No Doorstep Returns
+                          </div>
+                          <p style={{ fontSize: 12.5, color: UI.textSecondary, margin: 0, lineHeight: 1.5 }}>
+                            Items handed back to the delivery partner during the 6-minute fitting trial will appear here with instant UPI refund status.
+                          </p>
                         </div>
-                        <div style={{ fontSize: 13.5, fontWeight: 700, marginTop: 4 }}>
-                          Order #DRB-9842 (Mark Leute Heavy Hoodie)
-                        </div>
-                        <div style={{ fontSize: 12, color: UI.textSecondary, marginTop: 2 }}>
-                          Returned during 6-min fitting. ₹1,499 credited instantly via UPI to {upiId}.
-                        </div>
-                      </div>
+                      ) : (
+                        trialOrders.filter(o => (o.status || '').toLowerCase().includes('return')).map(o => (
+                          <div key={o.id} style={{ background: '#181818', border: '1px solid #262626', borderRadius: 14, padding: 14 }}>
+                            <div style={{ fontSize: 11, fontWeight: 800, color: '#ffffff', textTransform: 'uppercase' }}>
+                              ✓ Instant Doorstep Refund Settled
+                            </div>
+                            <div style={{ fontSize: 13.5, fontWeight: 700, marginTop: 4 }}>
+                              Order {o.orderNumber || o.id} ({o.productName})
+                            </div>
+                            <div style={{ fontSize: 12, color: UI.textSecondary, marginTop: 2 }}>
+                              Returned during 6-min fitting. {o.price} credited instantly via UPI to {upiId}.
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                   )}
                 </div>
@@ -1122,31 +1251,49 @@ export default function ProfilePage() {
                     <div style={{ fontSize: 11, fontWeight: 800, color: UI.textMuted, textTransform: 'uppercase', marginBottom: 4 }}>
                       Instant Doorstep Refund VPA
                     </div>
-                    <div style={{ fontSize: 14, fontWeight: 700 }}>{upiId}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700 }}>{upiId || 'No UPI ID linked'}</div>
                     <p style={{ fontSize: 12, color: UI.textSecondary, margin: '4px 0 10px 0' }}>
                       Refunds are credited instantly to this UPI address when items are returned during the 6-min fitting trial.
                     </p>
-                    <button
-                      onClick={() => showToast('UPI VPA verified and active')}
-                      style={{ padding: '6px 14px', borderRadius: 8, background: '#ffffff', border: 'none', color: '#000000', fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}
-                    >
-                      Verified Active
-                    </button>
+                    {upiId ? (
+                      <button
+                        onClick={() => showToast('UPI VPA verified and active')}
+                        style={{ padding: '6px 14px', borderRadius: 8, background: '#ffffff', border: 'none', color: '#000000', fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        Verified Active
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setActiveSheet('editProfile');
+                          showToast('Enter your UPI ID below');
+                        }}
+                        style={{ padding: '6px 14px', borderRadius: 8, background: '#262626', border: 'none', color: '#ffffff', fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        + Add UPI VPA
+                      </button>
+                    )}
                   </div>
 
                   <div style={{ background: '#181818', border: '1px solid #262626', borderRadius: 14, padding: 14, marginBottom: 14 }}>
                     <div style={{ fontSize: 11, fontWeight: 800, color: UI.textMuted, textTransform: 'uppercase', marginBottom: 8 }}>
                       Saved Cards
                     </div>
-                    {savedCards.map(c => (
-                      <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                        <div>
-                          <div style={{ fontSize: 13.5, fontWeight: 700 }}>{c.bank} {c.type} •••• {c.last4}</div>
-                          <div style={{ fontSize: 11, color: UI.textSecondary }}>Expires {c.expiry}</div>
-                        </div>
-                        <span style={{ fontSize: 11, color: '#ffffff', fontWeight: 700 }}>Tokenized ✓</span>
+                    {savedCards.length === 0 ? (
+                      <div style={{ fontSize: 12.5, color: UI.textSecondary, padding: '8px 0' }}>
+                        No saved cards yet. Cards added during checkout will appear here for 1-tap secure tokenized payment.
                       </div>
-                    ))}
+                    ) : (
+                      savedCards.map(c => (
+                        <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                          <div>
+                            <div style={{ fontSize: 13.5, fontWeight: 700 }}>{c.bank} {c.type} •••• {c.last4}</div>
+                            <div style={{ fontSize: 11, color: UI.textSecondary }}>Expires {c.expiry}</div>
+                          </div>
+                          <span style={{ fontSize: 11, color: '#ffffff', fontWeight: 700 }}>Tokenized ✓</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}
@@ -1323,26 +1470,47 @@ export default function ProfilePage() {
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 18 }}>
-                    {addresses.map(addr => (
-                      <div key={addr.id} style={{ background: '#181818', border: addr.isDefault ? '1.5px solid #ffffff' : '1px solid #262626', borderRadius: 14, padding: 14 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                          <span style={{ fontSize: 11, fontWeight: 800, background: '#262626', color: '#ffffff', padding: '2px 8px', borderRadius: 6 }}>
-                            {addr.tag}
-                          </span>
-                          {addr.isDefault && (
-                            <span style={{ fontSize: 11, fontWeight: 700, color: '#ffffff' }}>Default ✓</span>
-                          )}
+                    {addresses.length === 0 ? (
+                      <div style={{
+                        background: '#141414',
+                        border: '1px dashed #282828',
+                        borderRadius: 14,
+                        padding: '28px 16px',
+                        textAlign: 'center'
+                      }}>
+                        <MapPin size={32} color="#666666" style={{ margin: '0 auto 10px' }} />
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#ffffff', marginBottom: 4 }}>
+                          No Saved Addresses
                         </div>
-                        <div style={{ fontSize: 13.5, fontWeight: 700 }}>{addr.recipient}</div>
-                        <div style={{ fontSize: 12, color: UI.textSecondary, marginTop: 2 }}>{addr.line1}, {addr.line2} - {addr.pincode}</div>
+                        <p style={{ fontSize: 12, color: UI.textSecondary, margin: 0 }}>
+                          Save your delivery address for 30-minute doorstep drops and 6-minute fitting trials.
+                        </p>
                       </div>
-                    ))}
+                    ) : (
+                      addresses.map(addr => (
+                        <div key={addr.id} style={{ background: '#181818', border: addr.isDefault ? '1.5px solid #ffffff' : '1px solid #262626', borderRadius: 14, padding: 14 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                            <span style={{ fontSize: 11, fontWeight: 800, background: '#262626', color: '#ffffff', padding: '2px 8px', borderRadius: 6 }}>
+                              {addr.tag}
+                            </span>
+                            {addr.isDefault && (
+                              <span style={{ fontSize: 11, fontWeight: 700, color: '#ffffff' }}>Default ✓</span>
+                            )}
+                          </div>
+                          <div style={{ fontSize: 13.5, fontWeight: 700 }}>{addr.recipient}</div>
+                          <div style={{ fontSize: 12, color: UI.textSecondary, marginTop: 2 }}>{addr.line1}, {addr.line2} - {addr.pincode}</div>
+                        </div>
+                      ))
+                    )}
                   </div>
 
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.97 }}
-                    onClick={() => showToast('Address selection updated')}
+                    onClick={() => {
+                      setActiveSheet('editProfile');
+                      showToast('Update address in profile details');
+                    }}
                     style={{
                       width: '100%',
                       padding: '13px 0',
@@ -1413,8 +1581,8 @@ export default function ProfilePage() {
                   {/* FAQs */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {[
-                      { q: 'How does 30-minute delivery work?', a: 'Dispatched directly from Ahmedabad Central Darkstore to your door via express EV runners.' },
-                      { q: 'What is the 6-minute doorstep trial?', a: 'The runner waits 6 minutes while you try on your fits. Keep what fits and return what does not.' },
+                      { q: 'How does 30-minute delivery work?', a: 'Dispatched directly from Ahmedabad Central Darkstore to your door via express delivery partners.' },
+                      { q: 'What is the 6-minute doorstep trial?', a: 'The delivery partner waits 6 minutes while you try on your fits. Keep what fits and return what does not.' },
                       { q: 'How do instant doorstep refunds work?', a: 'Returned items are scanned on the spot, triggering immediate UPI credit to your verified VPA.' }
                     ].map((f, i) => (
                       <div key={i} style={{ background: '#181818', border: '1px solid #262626', borderRadius: 12, padding: 12 }}>

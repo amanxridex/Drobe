@@ -78,21 +78,89 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isCouponOpen, setIsCouponOpen] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState<string | null>('DROBEFESTIVE999');
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   
-  // Default cart preloaded with authentic item
-  const [cart, setCart] = useState<CartItem[]>([
-    {
-      product: PRODUCTS[0],
-      size: 'L',
-      quantity: 1,
-      trialMode: 'tryAndBuy'
+  // Real live cart initialized empty (no fake preloaded bags)
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('drobe_cart_live');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
     }
-  ]);
+    return [];
+  });
 
-  const [wishlist, setWishlist] = useState<string[]>([PRODUCTS[1].id]);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [user, setUser] = useState<{ name: string; phone: string; drobeCash: number; knotCash: number } | null>(null);
+  // Real live wishlist initialized empty
+  const [wishlist, setWishlist] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('drobe_wishlist_live');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return [];
+  });
+
+  const [orders, setOrders] = useState<Order[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('drobe_user_orders_live');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return [];
+  });
+
+  const [user, setUser] = useState<{ name: string; phone: string; drobeCash: number; knotCash: number } | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('drobe_user_session');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return null;
+  });
+
+  // Persist cart to localStorage on change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('drobe_cart_live', JSON.stringify(cart));
+      } catch (e) {}
+    }
+  }, [cart]);
+
+  // Persist wishlist to localStorage on change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('drobe_wishlist_live', JSON.stringify(wishlist));
+      } catch (e) {}
+    }
+  }, [wishlist]);
+
+  // Persist orders to localStorage on change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('drobe_user_orders_live', JSON.stringify(orders));
+      } catch (e) {}
+    }
+  }, [orders]);
+
+  // Persist user session to localStorage on change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        if (user) {
+          localStorage.setItem('drobe_user_session', JSON.stringify(user));
+        } else {
+          localStorage.removeItem('drobe_user_session');
+        }
+      } catch (e) {}
+    }
+  }, [user]);
 
   const addToCart = (product: Product, size: string, trialMode: 'tryAndBuy' | 'standard' = 'tryAndBuy') => {
     setCart((prev) => {

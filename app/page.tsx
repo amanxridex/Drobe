@@ -27,7 +27,7 @@ import { TiltedGridHero } from '@/components/ui/tilted-grid-hero';
 import StackingCardsHero from '@/components/StackingCardsHero';
 
 export default function HomePage() {
-  const { gender, wishlist, toggleWishlist, setIsCouponOpen } = useApp();
+  const { gender, wishlist, toggleWishlist, setIsCouponOpen, user, location } = useApp();
   const router = useRouter();
 
   const [categorySlideIndex, setCategorySlideIndex] = useState(0);
@@ -74,10 +74,10 @@ export default function HomePage() {
       brandName: p.brandName,
       price: p.price,
       size: 'M',
-      customerName: 'Aarav Parekh',
-      customerPhone: '+91 98250 88123',
-      customerAddress: 'B-702, Shaligram Plus, Opp. Iskcon Temple, SG Highway, Ahmedabad',
-      landmark: 'Opp. Iskcon Temple',
+      customerName: user?.name || (user ? 'Verified Shopper' : 'Shopper'),
+      customerPhone: user?.phone || '',
+      customerAddress: location ? `${location}, Ahmedabad` : 'Ahmedabad',
+      landmark: 'Near Doorstep Location',
       shelfLocation: p.warehouseLocation?.code || 'AMD-RA02-S3-B04'
     });
     setTrialOrderToast({ orderNumber: ord.orderNumber, product: ord.productName });

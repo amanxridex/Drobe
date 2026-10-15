@@ -23,6 +23,7 @@ import {
   Clock, 
   MapPin, 
   Box, 
+  Package,
   ShieldCheck, 
   RotateCcw, 
   Crosshair, 
@@ -72,7 +73,7 @@ function calculateRealDistanceAndEta(destLat: number, destLng: number) {
   // Ahmedabad city street winding factor (~32% road distance overhead)
   const roadDistanceKm = Math.round((straightLineKm * 1.32) * 10) / 10;
 
-  // Average runner scooter speed in Ahmedabad: 26 km/h + 3 min pack buffer
+  // Average rider scooter speed in Ahmedabad: 26 km/h + 3 min pack buffer
   const etaMinutes = Math.max(10, Math.min(30, Math.round((roadDistanceKm / 26) * 60 + 3)));
 
   // Target clock arrival time
@@ -107,8 +108,8 @@ export default function OrderTrackingPage() {
   // 6-minute Doorstep Trial Countdown (360 seconds)
   const [secondsLeft, setSecondsLeft] = useState(360);
 
-  // Animated Runner Progress (0% to 100% along the path)
-  const [runnerProgress, setRunnerProgress] = useState(0.42);
+  // Animated Rider Progress (0% to 100% along the path)
+  const [riderProgress, setRiderProgress] = useState(0.42);
 
   // Toast Feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -118,7 +119,7 @@ export default function OrderTrackingPage() {
   };
 
   // In-memory order from AppContext
-  const contextOrder = orders.find((o) => o.id === orderId) || orders[0];
+  const contextOrder = orders.find((o) => o.id === orderId);
 
   const loadDarkstoreOrder = () => {
     try {
@@ -132,7 +133,7 @@ export default function OrderTrackingPage() {
           o.orderNumber === `#${orderId}` ||
           o.id.includes(orderId) ||
           (orderId && o.id.endsWith(orderId))
-      ) || allOrders[0];
+      );
 
       if (matched) {
         setActiveDarkstoreOrder(matched);
@@ -145,9 +146,9 @@ export default function OrderTrackingPage() {
   useEffect(() => {
     loadDarkstoreOrder();
 
-    // Subtle runner transit progression
-    const runnerInterval = setInterval(() => {
-      setRunnerProgress(prev => (prev >= 0.95 ? 0.95 : prev + 0.005));
+    // Subtle rider transit progression
+    const riderInterval = setInterval(() => {
+      setRiderProgress(prev => (prev >= 0.95 ? 0.95 : prev + 0.005));
     }, 3000);
 
     // 1-second interval for 6-minute doorstep trial timer
@@ -159,7 +160,7 @@ export default function OrderTrackingPage() {
     window.addEventListener('storage', handleSync);
 
     return () => {
-      clearInterval(runnerInterval);
+      clearInterval(riderInterval);
       clearInterval(trialTimer);
       window.removeEventListener('storage', handleSync);
     };
@@ -226,32 +227,7 @@ export default function OrderTrackingPage() {
         idx
       }));
     } else {
-      return [
-        {
-          id: '37127',
-          name: 'Men Colorblocked Cable-Knit Polo Sweater',
-          brand: 'The Souled Store',
-          size: 'M',
-          price: 1715,
-          priceFormatted: '₹1,715',
-          thumbnail: '/assets/real/products/37127/angle_1.jpg',
-          shelfLocation: 'AMD-RA01-S1-B01',
-          status: localItemStatus[0] || 'pending',
-          idx: 0
-        },
-        {
-          id: '37162',
-          name: 'Black Jersey T-Shirt Men Casual Fit',
-          brand: 'SNITCH',
-          size: 'L',
-          price: 799,
-          priceFormatted: '₹799',
-          thumbnail: '/assets/real/products/37162/angle_1.jpg',
-          shelfLocation: 'AMD-RA01-S2-B02',
-          status: localItemStatus[1] || 'pending',
-          idx: 1
-        }
-      ];
+      return [];
     }
   }, [activeDarkstoreOrder, contextOrder, localItemStatus]);
 
@@ -283,10 +259,90 @@ export default function OrderTrackingPage() {
     }
   };
 
-  const bookingId = activeDarkstoreOrder?.orderNumber || (contextOrder ? `#DRB-${contextOrder.id}` : '#H314315796');
-  const customerName = activeDarkstoreOrder?.customerName || 'Aarav Parekh';
-  const customerAddress = userLocation.address;
-  const runnerName = activeDarkstoreOrder?.riderName || 'Khalid Omor';
+  if (items.length === 0) {
+    return (
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          background: '#0a0a0c',
+          color: '#ffffff',
+          padding: '24px 20px',
+          textAlign: 'center',
+          fontFamily: FONT_FAMILY
+        }}
+      >
+        <div
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: 24,
+            background: '#141418',
+            border: '1px solid #22222a',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 20
+          }}
+        >
+          <Package size={36} color="#888899" />
+        </div>
+
+        <h1 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.02em' }}>
+          Order Not Found
+        </h1>
+
+        <p style={{ fontSize: 13.5, color: '#888899', maxWidth: 320, lineHeight: 1.55, margin: '0 0 28px' }}>
+          No active delivery found for this order. Check your live orders in your profile or explore our catalog!
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 300 }}>
+          <button
+            onClick={() => router.push('/')}
+            style={{
+              width: '100%',
+              padding: '14px 0',
+              borderRadius: 14,
+              background: '#ffffff',
+              color: '#000000',
+              fontSize: 14,
+              fontWeight: 800,
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            Explore Catalog
+          </button>
+
+          <button
+            onClick={() => router.push('/profile')}
+            style={{
+              width: '100%',
+              padding: '13px 0',
+              borderRadius: 14,
+              background: '#141418',
+              border: '1px solid #22222a',
+              color: '#ffffff',
+              fontSize: 13.5,
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
+            View Profile
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const bookingId = activeDarkstoreOrder?.orderNumber || (contextOrder ? `#DRB-${contextOrder.id}` : (orderId ? `#DRB-${orderId}` : ''));
+  const customerName = activeDarkstoreOrder?.customerName || 'Shopper';
+  const customerAddress = activeDarkstoreOrder?.customerAddress || userLocation.address;
+  const deliveryPartnerName = activeDarkstoreOrder?.riderName || 'Express Delivery Partner';
 
   return (
     <div
@@ -360,7 +416,7 @@ export default function OrderTrackingPage() {
         >
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', animation: 'pulse 1.5s infinite' }} />
           <span style={{ fontSize: 10.5, fontWeight: 700, color: '#fff', letterSpacing: '0.04em' }}>
-            30-MIN RUNNER
+            30-MIN DELIVERY
           </span>
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#1c1c24' }} />
         </div>
@@ -511,12 +567,12 @@ export default function OrderTrackingPage() {
               </g>
             </svg>
 
-            {/* Dynamic Moving Runner Vehicle Marker along Route */}
+            {/* Dynamic Moving Rider Vehicle Marker along Route */}
             <motion.div
               style={{
                 position: 'absolute',
-                left: `${(120 + runnerProgress * (390 - 120)) / 500 * 100}%`,
-                top: `${(220 - runnerProgress * (220 - 70)) / 320 * 100}%`,
+                left: `${(120 + riderProgress * (390 - 120)) / 500 * 100}%`,
+                top: `${(220 - riderProgress * (220 - 70)) / 320 * 100}%`,
                 transform: 'translate(-50%, -50%)',
                 zIndex: 10
               }}
@@ -840,7 +896,7 @@ export default function OrderTrackingPage() {
                 </div>
               </div>
 
-              {/* Bottom Runner Courier Row with Call & Chat buttons */}
+              {/* Bottom Delivery Partner Courier Row with Call & Chat buttons */}
               <div
                 style={{
                   display: 'flex',
@@ -856,15 +912,15 @@ export default function OrderTrackingPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <img
                     src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80"
-                    alt={runnerName}
+                    alt={deliveryPartnerName}
                     style={{ width: 42, height: 42, borderRadius: '50%', objectFit: 'cover' }}
                   />
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#ffffff' }}>
-                      {runnerName}
+                      {deliveryPartnerName}
                     </div>
                     <div style={{ fontSize: 11, color: '#8e8e93', marginTop: 1 }}>
-                      Ahmedabad Darkstore Courier • 4.9 ★
+                      Ahmedabad Express Delivery Partner • 4.9 ★
                     </div>
                   </div>
                 </div>
@@ -887,7 +943,7 @@ export default function OrderTrackingPage() {
                       textDecoration: 'none',
                       boxShadow: '0 4px 12px rgba(249, 115, 22, 0.4)'
                     }}
-                    title="Call Runner"
+                    title="Call Delivery Partner"
                   >
                     <Phone size={18} fill="#ffffff" />
                   </motion.a>
@@ -911,7 +967,7 @@ export default function OrderTrackingPage() {
                       textDecoration: 'none',
                       boxShadow: '0 4px 12px rgba(255, 255, 255, 0.25)'
                     }}
-                    title="WhatsApp Runner"
+                    title="WhatsApp Delivery Partner"
                   >
                     <MessageSquare size={18} fill="#000000" />
                   </motion.a>
@@ -941,7 +997,7 @@ export default function OrderTrackingPage() {
                   outline: 'none'
                 }}
               >
-                <span>Runner Arrived? Start 6-Min Mirror Trial & Decision</span>
+                <span>Delivery Partner Arrived? Start 6-Min Mirror Trial & Decision</span>
               </motion.button>
             </div>
           </div>
@@ -1042,7 +1098,7 @@ export default function OrderTrackingPage() {
             <p style={{ fontSize: 12, color: '#8e8e93', margin: '4px 0 0 0' }}>
               {isOvertime
                 ? `Overtime surcharge: ₹${overtimeFee} (billed at ₹2/min beyond 6 minutes)`
-                : 'Take your time in your own mirror with your shoes. Runner waits outside.'}
+                : 'Take your time in your own mirror with your shoes. Delivery partner waits outside.'}
             </p>
           </div>
 
@@ -1133,7 +1189,7 @@ export default function OrderTrackingPage() {
           >
             <ShieldCheck size={24} color="#22c55e" style={{ flexShrink: 0 }} />
             <div style={{ fontSize: 11.5, color: '#a1a1aa', lineHeight: 1.45 }}>
-              <strong style={{ color: '#ffffff' }}>Instant UPI Refund:</strong> When the runner returns the sealed trial bag to Ahmedabad Darkstore Hub, unkept items are scanned and refunded instantly to your verified UPI VPA.
+              <strong style={{ color: '#ffffff' }}>Instant UPI Refund:</strong> When the delivery partner returns the sealed trial bag to Ahmedabad Darkstore Hub, unkept items are scanned and refunded instantly to your verified UPI VPA.
             </div>
           </div>
         </div>

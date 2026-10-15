@@ -238,14 +238,18 @@ export interface InboundStockShipment {
 export type DoorstepFittingStatus = 
   | 'Order Received (Awaiting Picker)'
   | 'Picked & Packed in Trial Bag'
-  | 'Runner Assigned (Ready for Handover)'
+  | 'Delivery Partner Assigned (Ready for Handover)'
   | 'Out for 30-Min Delivery'
-  | 'Doorstep Fitting (Runner Waiting Outside)'
+  | 'Doorstep Fitting (Delivery Partner Waiting Outside)'
   | 'Kept on Spot (Purchased)'
-  | 'Returned on Spot (Runner Heading to Hub)'
-  | 'Restocked to Warehouse Shelf';
+  | 'Returned on Spot (Delivery Partner Heading to Hub)'
+  | 'Restocked to Warehouse Shelf'
+  // Backward-compatibility aliases
+  | 'Runner Assigned (Ready for Handover)'
+  | 'Doorstep Fitting (Runner Waiting Outside)'
+  | 'Returned on Spot (Runner Heading to Hub)';
 
-export interface DarkstoreRunner {
+export interface DarkstoreRider {
   id: string;
   name: string;
   phone: string;
@@ -255,6 +259,8 @@ export interface DarkstoreRunner {
   rating: number;
   batteryOrFuel: string;
 }
+
+export type DarkstoreRunner = DarkstoreRider;
 
 export interface TrialOrderItem {
   productId: string;
@@ -296,6 +302,7 @@ export interface TrialOrder {
   status: DoorstepFittingStatus;
   doorstepTimerMinutesLeft?: number;
   runnerWaitElapsedMinutes?: number;
+  riderWaitElapsedMinutes?: number;
   returnReason?: string;
   instantRefundStatus?: string;
   notes?: string;
@@ -325,7 +332,7 @@ const KEY_BRANDS = 'drobe_darkstore_brands_v2';
 const KEY_PRODUCTS = 'drobe_darkstore_products_v2';
 const KEY_INBOUNDS = 'drobe_darkstore_inbounds_v2';
 const KEY_ORDERS = 'drobe_darkstore_orders_v2';
-const KEY_RUNNERS = 'drobe_darkstore_runners_v2';
+const KEY_RUNNERS = 'drobe_darkstore_riders_v2';
 const KEY_LEGACY_BRAND = 'drobe_brand_profile_v1';
 
 // Initial Brands (Populated live from Supabase & Brand Onboarding)
@@ -337,59 +344,9 @@ const INITIAL_PRODUCTS: DarkstoreProduct[] = [];
 // Initial Inbound Shipments (Populated live from Supabase & Brand Dispatches)
 const INITIAL_INBOUNDS: InboundStockShipment[] = [];
 
-// Ahmedabad Darkstore Express Runner Fleet (Active Runners)
-export const AHMEDABAD_RUNNERS_POOL: DarkstoreRunner[] = [
-  {
-    id: 'run-01',
-    name: 'Meet Dave',
-    phone: '+91 98250 88123',
-    vehicle: 'Ather 450X EV (GJ-01-MW-9021)',
-    currentStatus: 'Waiting at Doorstep',
-    deliveriesToday: 9,
-    rating: 4.95,
-    batteryOrFuel: '82%'
-  },
-  {
-    id: 'run-02',
-    name: 'Jay Suthar',
-    phone: '+91 97120 44912',
-    vehicle: 'Ola S1 Pro (GJ-01-ET-3304)',
-    currentStatus: 'Out on 30-Min Delivery',
-    deliveriesToday: 7,
-    rating: 4.9,
-    batteryOrFuel: '74%'
-  },
-  {
-    id: 'run-03',
-    name: 'Karan Shah',
-    phone: '+91 98790 12049',
-    vehicle: 'TVS iQube EV (GJ-01-KB-1122)',
-    currentStatus: 'Available at Hub',
-    deliveriesToday: 11,
-    rating: 4.88,
-    batteryOrFuel: '95%'
-  },
-  {
-    id: 'run-04',
-    name: 'Aarav Patel',
-    phone: '+91 98240 55102',
-    vehicle: 'Honda Activa 6G (GJ-01-PQ-5581)',
-    currentStatus: 'Available at Hub',
-    deliveriesToday: 6,
-    rating: 4.92,
-    batteryOrFuel: 'Full Tank'
-  },
-  {
-    id: 'run-05',
-    name: 'Hardik Vaghela',
-    phone: '+91 99040 22319',
-    vehicle: 'Bajaj Chetak EV (GJ-01-RZ-8742)',
-    currentStatus: 'Available at Hub',
-    deliveriesToday: 8,
-    rating: 4.85,
-    batteryOrFuel: '90%'
-  }
-];
+// Real Live Delivery Partner Fleet (Populated live from Supabase or registered riders)
+export const AHMEDABAD_RIDERS_POOL: DarkstoreRider[] = [];
+export const AHMEDABAD_RUNNERS_POOL = AHMEDABAD_RIDERS_POOL;
 
 // Real 30-Minute Doorstep Trial & Instant Return Orders (Loaded live from Supabase)
 const INITIAL_ORDERS: TrialOrder[] = [];
@@ -1117,6 +1074,7 @@ export function getDarkstoreRunners(): DarkstoreRunner[] {
   } catch {}
   return AHMEDABAD_RUNNERS_POOL;
 }
+export const getDarkstoreRiders = getDarkstoreRunners;
 
 // Create new 30-minute doorstep trial order from Customer App / Platform
 export function createCustomerOrder(data: {
@@ -1212,10 +1170,10 @@ export function createCustomerOrder(data: {
   const newOrder: TrialOrder = {
     id: data.id || `ord-30m-${Date.now()}`,
     orderNumber: data.orderNumber || `#DRB-${nextNumber}`,
-    customerName: data.customerName || 'Aarav Parekh',
-    customerPhone: data.customerPhone || '+91 98250 88123',
-    customerAddress: data.customerAddress || 'B-702, Shaligram Plus, Opp. Iskcon Temple, SG Highway, Ahmedabad',
-    landmark: data.landmark || 'Opp. Iskcon Temple',
+    customerName: data.customerName || 'Shopper',
+    customerPhone: data.customerPhone || '',
+    customerAddress: data.customerAddress || 'Ahmedabad',
+    landmark: data.landmark || 'Near Doorstep Location',
     distanceKm: '2.4 km',
     productId: primaryItem.productId,
     productName: displayTitle,
@@ -1368,7 +1326,7 @@ export function recordDoorstepDecision(
         refundStatus,
         instantRefundStatus,
         notes: hasReturned 
-          ? `Customer kept ${keptItems.length} item(s) (₹${keptAmount}) and handed back ${returnedItems.length} item(s) (₹${grossRefundAmount}) to runner.${overtimeFee > 0 ? ` 6-min window exceeded by ${overtimeMinutes} min (-₹${overtimeFee} surcharge applied).` : ''} Net instant refund of ₹${netRefundAmount} will credit on warehouse check-in.`
+          ? `Customer kept ${keptItems.length} item(s) (₹${keptAmount}) and handed back ${returnedItems.length} item(s) (₹${grossRefundAmount}) to delivery partner.${overtimeFee > 0 ? ` 6-min window exceeded by ${overtimeMinutes} min (-₹${overtimeFee} surcharge applied).` : ''} Net instant refund of ₹${netRefundAmount} will credit on warehouse check-in.`
           : `All ${keptItems.length} item(s) kept on spot (₹${keptAmount}). Advance payment retained in full.`
       };
 
@@ -1502,7 +1460,7 @@ export function handoverOrderToRunner(orderId: string): TrialOrder | null {
         handedOverAt: 'Just Now',
         dispatchedAt: 'Just Now (0 mins elapsed)',
         doorstepTimerMinutesLeft: 12,
-        notes: `Handed over to ${ord.riderName || 'delivery partner'}. Runner has started bike en route to customer. 30-Min SLA timer active!`
+        notes: `Handed over to ${ord.riderName || 'delivery partner'}. Delivery partner has started bike en route to customer. 30-Min SLA timer active!`
       };
       updatedOrder = u;
       return u;
@@ -1534,6 +1492,9 @@ export function handoverOrderToRunner(orderId: string): TrialOrder | null {
   return updatedOrder;
 }
 
+export const assignRiderToOrder = assignRunnerToOrder;
+export const handoverOrderToRider = handoverOrderToRunner;
+
 // Delivery Partner App: Auto-fetch order details by order number
 export function getOrderByNumber(orderNumber: string): TrialOrder | null {
   const orders = getTrialOrders();
@@ -1563,25 +1524,25 @@ export function updateTrialOrderStatus(
         notes = 'New 30-min trial order received! Darkstore picker alert triggered at Shivam Bungalows 1, Koteshwar Road.';
       } else if (newStatus === 'Picked & Packed in Trial Bag') {
         notes = `Item retrieved from shelf ${ord.shelfLocation} and packed into Drobe Signature Trial Bag.`;
-      } else if (newStatus === 'Runner Assigned (Ready for Handover)') {
-        notes = `Delivery runner ${ord.riderName || 'assigned'} is ready at hub dispatch bay for order handover.`;
+      } else if (newStatus.includes('Assigned')) {
+        notes = `Delivery partner ${ord.riderName || 'assigned'} is ready at hub dispatch bay for order handover.`;
       } else if (newStatus === 'Out for 30-Min Delivery') {
-        notes = `Handed to runner ${ord.riderName || 'delivery partner'}. Runner riding en route to customer address in Ahmedabad (30-min SLA active).`;
+        notes = `Handed to delivery partner ${ord.riderName || 'assigned'}. Rider en route to customer address in Ahmedabad (30-min SLA active).`;
         timerLeft = 12;
       } else if (newStatus === 'Kept on Spot (Purchased)') {
         notes = 'Client completed doorstep fitting. Loved the piece & kept it on the spot! Payment finalized & queued into brand settlement.';
         timerLeft = 0;
-      } else if (newStatus === 'Returned on Spot (Runner Heading to Hub)') {
-        notes = 'Client tried on at door, handed unchosen item back to runner instantly. Runner is riding straight back to Ahmedabad Darkstore Hub.';
+      } else if (newStatus.includes('Returned on Spot')) {
+        notes = 'Client tried on at door, handed unchosen item back to delivery partner instantly. Delivery partner is riding straight back to Ahmedabad Darkstore Hub.';
         timerLeft = 0;
         instantRefundStatus = `Instant refund initiated for ${ord.price}`;
       } else if (newStatus === 'Restocked to Warehouse Shelf') {
-        notes = `Runner reached Ahmedabad Darkstore Hub. Item inspected & restocked to shelf ${ord.shelfLocation}. Full refund credited to client UPI.`;
+        notes = `Delivery partner reached Ahmedabad Darkstore Hub. Item inspected & restocked to shelf ${ord.shelfLocation}. Full refund credited to client UPI.`;
         timerLeft = 0;
         instantRefundStatus = `${ord.price} Refunded Instantly to Client UPI`;
-      } else if (newStatus === 'Doorstep Fitting (Runner Waiting Outside)') {
-        notes = 'Runner is waiting outside the doorstep while customer tries outfits (10-15 min window).';
-        timerLeft = timerLeft || 12;
+      } else if (newStatus.includes('Doorstep Fitting')) {
+        notes = 'Delivery partner is waiting outside the doorstep while customer tries outfits (6 min window).';
+        timerLeft = timerLeft || 6;
       }
 
       const u: TrialOrder = {
@@ -2202,347 +2163,29 @@ export interface DrobeAIShopperReport {
   modelUsed: string;
 }
 
-export const INITIAL_USER_PROFILES: DrobeUserProfile[] = [
-  {
-    id: 'usr_aman_01',
-    name: 'Aman Mishra',
-    email: 'aman@example.com',
-    phone: '+91 98250 88123',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-    city: 'Ahmedabad',
-    hubZone: 'Ahmedabad Darkstore Hub #01 (SG Highway)',
-    topSize: 'L',
-    bottomSize: '32',
-    footwearSize: 'UK 9',
-    preferredFit: 'Relaxed',
-    preferredStyles: ['Streetwear', 'Casual', 'Minimal', 'Oversized'],
-    favouriteBrands: ['SNITCH', 'The Souled Store', 'Tilt', 'Mark Leute'],
-    savedAddresses: [
-      {
-        id: 'addr-1',
-        tag: 'Home',
-        recipient: 'Aman Mishra',
-        line1: 'B-702, Shaligram Plus, Opp. Iskcon Temple',
-        line2: 'SG Highway, Ahmedabad, Gujarat',
-        pincode: '380015',
-        isDefault: true
-      }
-    ],
-    upiId: 'aman@okhdfcbank',
-    totalOrdersCount: 4,
-    totalSpentInr: 12890,
-    doorstepTrialsCount: 4,
-    keptRatioPercentage: 100,
-    currentStatus: 'Active Browsing',
-    currentScreen: 'Viewing Mark Leute Hoodie',
-    deviceInfo: 'iPhone 16 Pro · iOS 18.2',
-    lastActiveAt: 'Just now',
-    createdAt: 'Oct 01, 2026',
-    dropoffRisk: 'Low',
-    funnelDropoffStage: 'Cart Review',
-    lastHesitationReason: 'Checking shoulder drop sizing on Heavy Oversized Hoodie',
-    cartItemCount: 2,
-    cartTotalInr: 4398,
-    dwellSeconds: 94
-  },
-  {
-    id: 'usr_pooja_02',
-    name: 'Pooja Shah',
-    email: 'pooja.shah@gmail.com',
-    phone: '+91 98792 33410',
-    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
-    city: 'Ahmedabad',
-    hubZone: 'Bopal Darkstore Express Zone',
-    topSize: 'M',
-    bottomSize: '28',
-    footwearSize: 'UK 6',
-    preferredFit: 'Regular',
-    preferredStyles: ['Minimal', 'Casual', 'Athleisure'],
-    favouriteBrands: ['Tilt', 'Mark Leute', 'Bluorng'],
-    savedAddresses: [
-      {
-        id: 'addr-2',
-        tag: 'Home',
-        recipient: 'Pooja Shah',
-        line1: 'Villa 14, Sun City, Bopal',
-        line2: 'Ahmedabad, Gujarat',
-        pincode: '380058',
-        isDefault: true
-      }
-    ],
-    upiId: 'pooja@axisbank',
-    totalOrdersCount: 3,
-    totalSpentInr: 8400,
-    doorstepTrialsCount: 3,
-    keptRatioPercentage: 100,
-    currentStatus: 'In Doorstep Trial',
-    currentScreen: '6-Minute Doorstep Fitting Window',
-    deviceInfo: 'OnePlus 12 · Android 14',
-    lastActiveAt: '2 mins ago',
-    createdAt: 'Oct 04, 2026',
-    dropoffRisk: 'Low',
-    funnelDropoffStage: 'Doorstep Window',
-    lastHesitationReason: 'Active 6-minute fitting trial in Bopal · Runner waiting outside',
-    cartItemCount: 1,
-    cartTotalInr: 4200,
-    dwellSeconds: 210
-  },
-  {
-    id: 'usr_harshil_03',
-    name: 'Harshil Patel',
-    email: 'harshil.p@outlook.com',
-    phone: '+91 97120 44912',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-    city: 'Ahmedabad',
-    hubZone: 'Motera & Koteshwar Express Hub',
-    topSize: 'XL',
-    bottomSize: '34',
-    footwearSize: 'UK 10',
-    preferredFit: 'Oversized',
-    preferredStyles: ['Streetwear', 'Oversized', 'Drop Shoulder'],
-    favouriteBrands: ['SNITCH', 'Huemn', 'VegNonVeg'],
-    savedAddresses: [
-      {
-        id: 'addr-3',
-        tag: 'Work',
-        recipient: 'Harshil Patel',
-        line1: 'Floor 3, Westgate Business Bay, SG Highway',
-        line2: 'Ahmedabad, Gujarat',
-        pincode: '380054',
-        isDefault: true
-      }
-    ],
-    upiId: 'harshil@okaxis',
-    totalOrdersCount: 5,
-    totalSpentInr: 15200,
-    doorstepTrialsCount: 6,
-    keptRatioPercentage: 83,
-    currentStatus: 'Active Browsing',
-    currentScreen: 'Catalog Category Filter: Outerwear',
-    deviceInfo: 'Samsung Galaxy S24 Ultra',
-    lastActiveAt: '12 mins ago',
-    createdAt: 'Sep 28, 2026',
-    dropoffRisk: 'High',
-    funnelDropoffStage: 'Payment Gateway',
-    lastHesitationReason: 'Checkout Back-Out: Paused at UPI confirmation screen for ₹3,498 cart for 180s without OTP',
-    cartItemCount: 2,
-    cartTotalInr: 3498,
-    dwellSeconds: 180
-  },
-  {
-    id: 'usr_tanya_04',
-    name: 'Tanya Joshi',
-    email: 'tanya.j@icloud.com',
-    phone: '+91 99041 55201',
-    avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80',
-    city: 'Ahmedabad',
-    hubZone: 'Satellite & Vastrapur Hub #02',
-    topSize: 'S',
-    bottomSize: '26',
-    footwearSize: 'UK 5',
-    preferredFit: 'Slim',
-    preferredStyles: ['Minimal', 'Contemporary', 'Streetwear'],
-    favouriteBrands: ['The Souled Store', 'Tilt'],
-    savedAddresses: [],
-    upiId: 'tanyaj@paytm',
-    totalOrdersCount: 2,
-    totalSpentInr: 6500,
-    doorstepTrialsCount: 2,
-    keptRatioPercentage: 100,
-    currentStatus: 'Offline',
-    currentScreen: 'Home Feed',
-    deviceInfo: 'iPhone 15 · iOS 18.1',
-    lastActiveAt: '2 hours ago',
-    createdAt: 'Oct 08, 2026',
-    dropoffRisk: 'Medium',
-    funnelDropoffStage: 'Product View',
-    lastHesitationReason: 'Doorstep Timer Anxiety: Spent 90s reading 6-minute fitting rules and overtime fee structure',
-    cartItemCount: 1,
-    cartTotalInr: 1999,
-    dwellSeconds: 95
-  },
-  {
-    id: 'usr_dhruv_05',
-    name: 'Dhruv Mehta',
-    email: 'dhruv99@yahoo.com',
-    phone: '+91 98980 77144',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
-    city: 'Ahmedabad',
-    hubZone: 'Prahlad Nagar Express Zone',
-    topSize: 'M',
-    bottomSize: '30',
-    footwearSize: 'UK 8',
-    preferredFit: 'Relaxed',
-    preferredStyles: ['Casual', 'Streetwear'],
-    favouriteBrands: ['Mark Leute', 'SNITCH'],
-    savedAddresses: [],
-    upiId: 'dhruv@icici',
-    totalOrdersCount: 1,
-    totalSpentInr: 4200,
-    doorstepTrialsCount: 2,
-    keptRatioPercentage: 50,
-    currentStatus: 'Offline',
-    currentScreen: 'Past Orders Screen',
-    deviceInfo: 'Google Pixel 9 Pro',
-    lastActiveAt: '5 hours ago',
-    createdAt: 'Oct 10, 2026',
-    dropoffRisk: 'Immediate Dropoff',
-    funnelDropoffStage: 'Product View',
-    lastHesitationReason: 'Size Out of Stock: Looked for UK 8 in footwear at Ahmedabad Hub, found 0 units, exited app',
-    cartItemCount: 0,
-    cartTotalInr: 0,
-    dwellSeconds: 40
-  }
-];
+// Known mock customer & activity IDs to purge on sight
+const MOCK_USER_IDS = new Set(['usr_aman_01', 'usr_pooja_02', 'usr_harshil_03', 'usr_tanya_04', 'usr_dhruv_05']);
+const MOCK_ACTIVITY_IDS = new Set(['act-001', 'act-002', 'act-003', 'act-004', 'act-005', 'act-006']);
 
-export const INITIAL_USER_ACTIVITIES: DrobeUserActivity[] = [
-  {
-    id: 'act-001',
-    userId: 'usr_harshil_03',
-    userName: 'Harshil Patel',
-    activityType: 'CHECKOUT_BACKOUT',
-    title: '⚠️ Abandoned Cart at UPI Payment Gateway (₹3,498)',
-    details: { cartTotal: '₹3,498', items: '2 Fits', dwellTime: '180s', step: 'UPI Intent' },
-    screen: 'UPI Payment Gateway',
-    device: 'Samsung Galaxy S24 Ultra',
-    timestamp: 'Just now',
-    isDropoffSignal: true,
-    hesitationReason: 'User paused on GPay/PhonePe screen for 3 minutes without confirming UPI PIN.',
-    dropoffStage: 'Checkout / UPI',
-    dwellSeconds: 180,
-    aiRiskScore: 92
-  },
-  {
-    id: 'act-002',
-    userId: 'usr_dhruv_05',
-    userName: 'Dhruv Mehta',
-    activityType: 'SIZE_UNAVAILABLE',
-    title: '⚠️ Out of Stock Bounce: Attempted to Select UK 8 Sneaker',
-    details: { brand: 'VegNonVeg', sizeRequested: 'UK 8', stockStatus: '0 pcs in Hub' },
-    screen: 'Product Detail Sizing Selector',
-    device: 'Google Pixel 9 Pro',
-    timestamp: '3 mins ago',
-    isDropoffSignal: true,
-    hesitationReason: 'Size UK 8 has 0 inward units in Ahmedabad Hub. User tapped out-of-stock size and exited app.',
-    dropoffStage: 'Product Detail',
-    dwellSeconds: 40,
-    aiRiskScore: 85
-  },
-  {
-    id: 'act-003',
-    userId: 'usr_tanya_04',
-    userName: 'Tanya Joshi',
-    activityType: 'DOORSTEP_TIMER_ANXIETY',
-    title: '⚡ Hesitation on 6-Min Doorstep Window Terms & Overtime Surcharge',
-    details: { section: '6-Min Doorstep Fitting Terms', overtimeFee: '₹2/min', dwell: '95s' },
-    screen: 'Checkout Doorstep Agreement',
-    device: 'iPhone 15',
-    timestamp: '7 mins ago',
-    isDropoffSignal: true,
-    hesitationReason: 'Customer read through doorstep trial overtime fees 3 times without proceeding to address confirmation.',
-    dropoffStage: 'Cart',
-    dwellSeconds: 95,
-    aiRiskScore: 68
-  },
-  {
-    id: 'act-004',
-    userId: 'usr_aman_01',
-    userName: 'Aman Mishra',
-    activityType: 'PRODUCT_CLICK',
-    title: 'Viewing Mark Leute Heavy Oversized Hoodie (Size L)',
-    details: { brand: 'Mark Leute', sku: 'DR1', price: '₹2,899', size: 'L' },
-    screen: 'Product Detail',
-    device: 'iPhone 16 Pro',
-    timestamp: '10 mins ago',
-    isDropoffSignal: false,
-    dropoffStage: 'Product Detail',
-    dwellSeconds: 94,
-    aiRiskScore: 20
-  },
-  {
-    id: 'act-005',
-    userId: 'usr_pooja_02',
-    userName: 'Pooja Shah',
-    activityType: 'DOORSTEP_TRIAL_START',
-    title: '6-Minute Doorstep Fitting Window Started in Bopal',
-    details: { orderNumber: '#DRB-9843', runner: 'Jay Suthar', item: 'Sculpted Wool Overcoat' },
-    screen: 'Live Doorstep Trial',
-    device: 'OnePlus 12',
-    timestamp: '14 mins ago',
-    isDropoffSignal: false,
-    dropoffStage: 'Doorstep Fitting',
-    dwellSeconds: 210,
-    aiRiskScore: 10
-  },
-  {
-    id: 'act-006',
-    userId: 'usr_harshil_03',
-    userName: 'Harshil Patel',
-    activityType: 'PRICE_HESITATION',
-    title: '⚡ Inspected Drobe 5% Platform Markup & Wholesale Pricing Breakdown',
-    details: { basePrice: '₹1,900', customerPrice: '₹1,999', markup: '+₹99 (4.83%)' },
-    screen: 'Price Transparency Drawer',
-    device: 'Samsung Galaxy S24 Ultra',
-    timestamp: '18 mins ago',
-    isDropoffSignal: true,
-    hesitationReason: 'Expanded wholesale markup pill and spent 120s reading fee structure before adding to bag.',
-    dropoffStage: 'Product Detail',
-    dwellSeconds: 120,
-    aiRiskScore: 75
-  }
-];
+export const INITIAL_USER_PROFILES: DrobeUserProfile[] = [];
+export const INITIAL_USER_ACTIVITIES: DrobeUserActivity[] = [];
 
 export const INITIAL_AI_REPORT: DrobeAIShopperReport = {
   id: 'rep-init-01',
   timestamp: 'Just now',
-  executiveSummary: 'Live analysis of Ahmedabad Darkstore traffic shows strong purchase interest, but distinct drop-off friction at the final payment gateway and specific out-of-stock shoe sizes. Harshil Patel represents an immediate drop-off risk at the UPI gateway (₹3,498 cart abandoned), while Dhruv Mehta exited after encountering an out-of-stock UK 8 sneaker size. Doorstep trial fitting retention in Bopal & SG Highway remains stellar at 87% with zero friction.',
-  dropoffRootCauses: [
-    {
-      user: 'Harshil Patel',
-      stage: 'Payment Gateway (UPI)',
-      trigger: 'Abandoned ₹3,498 cart after 180s dwell time on UPI intent screen without submitting PIN.',
-      riskLevel: 'Critical'
-    },
-    {
-      user: 'Dhruv Mehta',
-      stage: 'Product Detail',
-      trigger: 'Zero inward units available for Footwear Size UK 8 in darkstore rack AMD-RC01. User immediately bounced.',
-      riskLevel: 'High'
-    },
-    {
-      user: 'Tanya Joshi',
-      stage: 'Cart & Doorstep Terms',
-      trigger: 'Dwell time exceeded 95s reviewing 6-minute fitting rules and ₹2/min overtime surcharge.',
-      riskLevel: 'Medium'
-    }
-  ],
-  recommendedActions: [
-    {
-      target: 'Harshil Patel',
-      action: 'Send instant WhatsApp nudge with 1-click ₹150 trial credit to clear UPI hesitation and dispatch order.',
-      impact: 'Immediate recovery of ₹3,498 high-intent outerwear cart.'
-    },
-    {
-      target: 'Darkstore Inwarding Ops (Koteshwar Hub)',
-      action: 'Fast-track consignment inwarding for Size UK 8 / EU 42 on Rack C-01 to capture repeat sneaker demand.',
-      impact: 'Prevents estimated ₹8,400 weekly revenue loss from out-of-stock bounces.'
-    },
-    {
-      target: 'Doorstep Fitting Agreement UI',
-      action: 'Highlight reassurance: "Runner waits comfortably outside. Return unchosen items instantly with zero return fee."',
-      impact: 'Reduces doorstep timer anxiety by ~35%.'
-    }
-  ],
+  executiveSummary: 'Awaiting real shopper activity. Live customer telemetry and drop-off insights will be generated as shoppers browse and checkout.',
+  dropoffRootCauses: [],
+  recommendedActions: [],
   shopperIntentBreakdown: {
-    highIntentCount: 2,
-    atRiskDropoffCount: 2,
-    windowShoppersCount: 1,
-    highIntentPct: 40,
-    atRiskPct: 40
+    highIntentCount: 0,
+    atRiskDropoffCount: 0,
+    windowShoppersCount: 0,
+    highIntentPct: 0,
+    atRiskPct: 0
   },
-  liveTrafficCount: 5,
-  activeDoorstepTrials: 1,
-  modelUsed: 'Gemini 1.5 Flash (Ahmedabad Shopper Behavioral Engine)'
+  liveTrafficCount: 0,
+  activeDoorstepTrials: 0,
+  modelUsed: 'NVIDIA NIM meta/muse-glimmer-30b'
 };
 
 export function getUserProfiles(): DrobeUserProfile[] {
@@ -2550,8 +2193,14 @@ export function getUserProfiles(): DrobeUserProfile[] {
   try {
     const raw = localStorage.getItem('drobe_user_profiles');
     if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      const parsed: DrobeUserProfile[] = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        const filtered = parsed.filter(u => !MOCK_USER_IDS.has(u.id) && u.email !== 'aman@example.com');
+        if (filtered.length !== parsed.length) {
+          localStorage.setItem('drobe_user_profiles', JSON.stringify(filtered));
+        }
+        return filtered;
+      }
     }
   } catch {}
   return INITIAL_USER_PROFILES;
@@ -2560,7 +2209,8 @@ export function getUserProfiles(): DrobeUserProfile[] {
 export function saveUserProfiles(users: DrobeUserProfile[]): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem('drobe_user_profiles', JSON.stringify(users));
+    const filtered = users.filter(u => !MOCK_USER_IDS.has(u.id) && u.email !== 'aman@example.com');
+    localStorage.setItem('drobe_user_profiles', JSON.stringify(filtered));
     window.dispatchEvent(new Event('storage'));
   } catch {}
 }
@@ -2570,8 +2220,14 @@ export function getUserActivities(): DrobeUserActivity[] {
   try {
     const raw = localStorage.getItem('drobe_user_activities');
     if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      const parsed: DrobeUserActivity[] = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        const filtered = parsed.filter(a => !MOCK_ACTIVITY_IDS.has(a.id) && !MOCK_USER_IDS.has(a.userId));
+        if (filtered.length !== parsed.length) {
+          localStorage.setItem('drobe_user_activities', JSON.stringify(filtered));
+        }
+        return filtered;
+      }
     }
   } catch {}
   return INITIAL_USER_ACTIVITIES;
@@ -2580,7 +2236,8 @@ export function getUserActivities(): DrobeUserActivity[] {
 export function saveUserActivities(acts: DrobeUserActivity[]): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem('drobe_user_activities', JSON.stringify(acts));
+    const filtered = acts.filter(a => !MOCK_ACTIVITY_IDS.has(a.id) && !MOCK_USER_IDS.has(a.userId));
+    localStorage.setItem('drobe_user_activities', JSON.stringify(filtered));
     window.dispatchEvent(new Event('storage'));
   } catch {}
 }
@@ -2716,7 +2373,8 @@ export interface DrobeMarginLedgerEntry {
   customerPaidMrp: number;
   baseWholesaleCostB: number;
   drobeMarkupEarned: number;
-  runnerDeliveryFee: number;
+  riderDeliveryFee?: number;
+  runnerDeliveryFee?: number;
   paymentGatewayFee: number;
   netProfitInr: number;
   createdAt: string;
@@ -2777,141 +2435,29 @@ export interface DrobeRefundRecord {
   createdAt: string;
 }
 
-export const INITIAL_WHOLESALE_SETTLEMENTS: DrobeWholesaleSettlement[] = [
-  {
-    id: 'settl-01',
-    settlementReference: 'SETTL-DRB-2026-0041',
-    brandId: 'br_mark_leute',
-    brandName: 'Mark Leute',
-    category: 'Outerwear',
-    keptUnitsCount: 12,
-    baseWholesalePayoutDue: 22200,
-    drobeRetainedMarkupInr: 10788,
-    grossGmvInr: 32988,
-    bankUtrRef: 'NEFT-HDFC-9912038412',
-    status: 'Disbursed',
-    notes: 'Weekly batch settlement #41 · Consignment kept units',
-    createdAt: 'Today, 11:30 AM'
-  },
-  {
-    id: 'settl-02',
-    settlementReference: 'SETTL-DRB-2026-0042',
-    brandId: 'br_underrated_club',
-    brandName: 'Underrated Club',
-    category: 'Tops & Tees',
-    keptUnitsCount: 18,
-    baseWholesalePayoutDue: 15300,
-    drobeRetainedMarkupInr: 8982,
-    grossGmvInr: 24282,
-    bankUtrRef: 'IMPS-AXIS-8812903120',
-    status: 'Disbursed',
-    notes: 'Weekly batch settlement #42 · High kept ratio (91%)',
-    createdAt: 'Today, 02:15 PM'
-  }
-];
-
-export const INITIAL_MARGIN_LEDGER: DrobeMarginLedgerEntry[] = [
-  {
-    id: 'ledg-01',
-    orderId: 'ord-30m-102',
-    productId: 'prod_uc_tee_02',
-    sku: 'DR2',
-    brandId: 'br_underrated_club',
-    customerPaidMrp: 1499,
-    baseWholesaleCostB: 850,
-    drobeMarkupEarned: 649,
-    runnerDeliveryFee: 45,
-    paymentGatewayFee: 22,
-    netProfitInr: 582,
-    createdAt: 'Today, 01:20 PM'
-  },
-  {
-    id: 'ledg-02',
-    orderId: 'ord-30m-101',
-    productId: 'prod_ml_hoodie_01',
-    sku: 'DR1',
-    brandId: 'br_mark_leute',
-    customerPaidMrp: 2899,
-    baseWholesaleCostB: 1850,
-    drobeMarkupEarned: 1049,
-    runnerDeliveryFee: 45,
-    paymentGatewayFee: 43,
-    netProfitInr: 961,
-    createdAt: 'Today, 12:45 PM'
-  }
-];
-
-export const INITIAL_HESITATION_LOGS: DrobeHesitationLog[] = [
-  {
-    id: 'hes-01',
-    userId: 'usr_harshil_03',
-    userName: 'Harshil Patel',
-    frictionType: 'CHECKOUT_BACKOUT',
-    funnelStage: 'Payment Gateway (UPI)',
-    hesitationNarrative: 'Abandoned ₹3,498 cart after 180s dwell time on UPI intent screen without submitting PIN.',
-    cartTotalInr: 3498,
-    cartItemsCount: 2,
-    dwellSeconds: 180,
-    aiRiskScore: 92,
-    createdAt: 'Just now'
-  },
-  {
-    id: 'hes-02',
-    userId: 'usr_dhruv_05',
-    userName: 'Dhruv Mehta',
-    frictionType: 'SIZE_UNAVAILABLE',
-    funnelStage: 'Product Detail Sizing',
-    hesitationNarrative: 'Zero inward units available for Footwear Size UK 8 in darkstore rack AMD-RC01. User immediately bounced.',
-    cartTotalInr: 4499,
-    cartItemsCount: 1,
-    dwellSeconds: 40,
-    aiRiskScore: 84,
-    createdAt: '3 mins ago'
-  },
-  {
-    id: 'hes-03',
-    userId: 'usr_tanya_04',
-    userName: 'Tanya Joshi',
-    frictionType: 'DOORSTEP_TIMER_ANXIETY',
-    funnelStage: 'Cart & Doorstep Terms',
-    hesitationNarrative: 'Dwell time exceeded 95s reviewing 6-minute fitting rules and ₹2/min overtime surcharge.',
-    cartTotalInr: 2199,
-    cartItemsCount: 1,
-    dwellSeconds: 95,
-    aiRiskScore: 68,
-    createdAt: '7 mins ago'
-  }
-];
-
-export const INITIAL_RECOVERY_INTERVENTIONS: DrobeRecoveryIntervention[] = [
-  {
-    id: 'rec-01',
-    userId: 'usr_harshil_03',
-    customerName: 'Harshil Patel',
-    customerPhone: '+91 97120 44912',
-    triggerReason: 'UPI PIN Prompt Abandonment (₹3,498 cart)',
-    channel: 'WhatsApp',
-    trialCreditInr: 150,
-    couponCode: 'DROBE150',
-    status: 'Sent',
-    revenueRecoveredInr: 0,
-    createdAt: 'Just now'
-  }
-];
+export const INITIAL_WHOLESALE_SETTLEMENTS: DrobeWholesaleSettlement[] = [];
+export const INITIAL_MARGIN_LEDGER: DrobeMarginLedgerEntry[] = [];
+export const INITIAL_HESITATION_LOGS: DrobeHesitationLog[] = [];
+export const INITIAL_RECOVERY_INTERVENTIONS: DrobeRecoveryIntervention[] = [];
 
 export const INITIAL_DARKSTORE_METRICS: DrobeDarkstoreMetrics = {
   id: 'met-01',
   warehouseId: 'AMD-DARKSTORE-01',
   dateBucket: new Date().toISOString().split('T')[0],
-  totalOrdersReceived: 48,
-  slaCompliancePercentage: 98,
-  avgPickerSeconds: 165,
-  avgDeliveryMinutes: 22,
-  totalUnitsInwarded: 120,
-  totalUnitsKept: 42,
-  totalUnitsReturned: 6,
-  keptRatioPercentage: 87
+  totalOrdersReceived: 0,
+  slaCompliancePercentage: 100,
+  avgPickerSeconds: 0,
+  avgDeliveryMinutes: 0,
+  totalUnitsInwarded: 0,
+  totalUnitsKept: 0,
+  totalUnitsReturned: 0,
+  keptRatioPercentage: 0
 };
+
+const MOCK_SETTLEMENT_IDS = new Set(['settl-01', 'settl-02']);
+const MOCK_LEDGER_IDS = new Set(['ledg-01', 'ledg-02']);
+const MOCK_HESITATION_IDS = new Set(['hes-01', 'hes-02', 'hes-03']);
+const MOCK_RECOVERY_IDS = new Set(['rec-01']);
 
 export function getWholesaleSettlements(): DrobeWholesaleSettlement[] {
   if (typeof window === 'undefined') return INITIAL_WHOLESALE_SETTLEMENTS;
@@ -2919,7 +2465,13 @@ export function getWholesaleSettlements(): DrobeWholesaleSettlement[] {
     const raw = localStorage.getItem('drobe_wholesale_settlements');
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed)) {
+        const clean = parsed.filter((s: DrobeWholesaleSettlement) => !MOCK_SETTLEMENT_IDS.has(s.id));
+        if (clean.length !== parsed.length) {
+          saveWholesaleSettlements(clean);
+        }
+        return clean;
+      }
     }
   } catch {}
   return INITIAL_WHOLESALE_SETTLEMENTS;
@@ -2939,7 +2491,13 @@ export function getMarginLedger(): DrobeMarginLedgerEntry[] {
     const raw = localStorage.getItem('drobe_margin_ledger');
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed)) {
+        const clean = parsed.filter((l: DrobeMarginLedgerEntry) => !MOCK_LEDGER_IDS.has(l.id));
+        if (clean.length !== parsed.length) {
+          saveMarginLedger(clean);
+        }
+        return clean;
+      }
     }
   } catch {}
   return INITIAL_MARGIN_LEDGER;
@@ -2959,7 +2517,13 @@ export function getHesitationLogs(): DrobeHesitationLog[] {
     const raw = localStorage.getItem('drobe_hesitation_logs');
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed)) {
+        const clean = parsed.filter((h: DrobeHesitationLog) => !MOCK_HESITATION_IDS.has(h.id));
+        if (clean.length !== parsed.length) {
+          saveHesitationLogs(clean);
+        }
+        return clean;
+      }
     }
   } catch {}
   return INITIAL_HESITATION_LOGS;
@@ -2979,7 +2543,13 @@ export function getRecoveryInterventions(): DrobeRecoveryIntervention[] {
     const raw = localStorage.getItem('drobe_recovery_interventions');
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed)) {
+        const clean = parsed.filter((r: DrobeRecoveryIntervention) => !MOCK_RECOVERY_IDS.has(r.id));
+        if (clean.length !== parsed.length) {
+          saveRecoveryInterventions(clean);
+        }
+        return clean;
+      }
     }
   } catch {}
   return INITIAL_RECOVERY_INTERVENTIONS;

@@ -896,7 +896,7 @@ export default function BrandProfileView({
               </p>
 
               <div style={{ background: '#ffffff', borderRadius: '12px', padding: '10px 12px', border: '1px solid #e0f2fe', marginBottom: '12px', fontSize: '11px', color: '#334155' }}>
-                <strong>Consignment Protocol:</strong> Your creations are stored securely on assigned racks at our Ahmedabad darkstore. When a client orders in Ahmedabad, our runner delivers in 30 minutes and waits right outside the door while the customer tries the outfits on the spot. Customer keeps what they want, and hands unpurchased garments back instantly to the runner, which return straight back to your warehouse shelf with an instant refund to the client.
+                <strong>Consignment Protocol:</strong> Your creations are stored securely on assigned racks at our Ahmedabad darkstore. When a client orders in Ahmedabad, our delivery partner delivers in 30 minutes and waits right outside the door while the customer tries the outfits on the spot. Customer keeps what they want, and hands unpurchased garments back instantly to the delivery partner, which return straight back to your warehouse shelf with an instant refund to the client.
               </div>
 
               {isBrandApproved ? (
@@ -1033,23 +1033,23 @@ export default function BrandProfileView({
                   DOORSTEP FITTING & INSTANT RETURN RADAR
                 </span>
                 <span style={{ fontSize: '11px', color: '#7e22ce', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  <Zap size={12} /> 30-Min Runner Model
+                  <Zap size={12} /> 30-Min Delivery Partner Fleet
                 </span>
               </div>
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px 0' }}>
-                Live Doorstep Fittings & Instant Returns
+                Live Doorstep Fittings &amp; Instant Returns
               </h3>
               <p style={{ fontSize: '11px', color: '#6b21a8', margin: 0, lineHeight: 1.45 }}>
-                Riders pick your creations directly from your assigned warehouse shelf and deliver within 30 minutes. The runner waits right outside the customer&apos;s door for 10-15 minutes while they try on. Customer keeps what they want, and hands back the rest instantly to the runner, who rides straight back to restock your shelf.
+                Delivery partners pick your creations directly from your assigned warehouse shelf and deliver within 30 minutes. The delivery partner waits right outside the customer&apos;s door for 6 minutes while they try on. Customer keeps what they want, and hands back the rest instantly to the delivery partner, who returns straight back to restock your shelf.
               </p>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {trialOrders.map((ord) => {
-                const isDoorstepFitting = ord.status === 'Doorstep Fitting (Runner Waiting Outside)';
+                const isDoorstepFitting = (ord.status || '').includes('Doorstep Fitting');
                 const isOut = ord.status === 'Out for 30-Min Delivery';
                 const isKept = ord.status === 'Kept on Spot (Purchased)';
-                const isRunnerReturning = ord.status === 'Returned on Spot (Runner Heading to Hub)';
+                const isRunnerReturning = (ord.status || '').includes('Returned on Spot');
                 const isRestocked = ord.status === 'Restocked to Warehouse Shelf';
 
                 return (
@@ -1060,7 +1060,7 @@ export default function BrandProfileView({
                       </span>
                       {isDoorstepFitting ? (
                         <span style={{ fontSize: '10px', fontWeight: 700, color: '#7e22ce', backgroundColor: '#f3e8ff', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          <Clock size={10} /> Runner Waiting Outside ({ord.doorstepTimerMinutesLeft || 7}m fitting window)
+                          <Clock size={10} /> Delivery Partner Waiting Outside ({ord.doorstepTimerMinutesLeft || 6}m fitting window)
                         </span>
                       ) : isOut ? (
                         <span style={{ fontSize: '10px', fontWeight: 700, color: '#b45309', backgroundColor: '#fef3c7', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -1103,7 +1103,7 @@ export default function BrandProfileView({
 
                     <div style={{ fontSize: '10.5px', color: '#94a3b8', borderTop: '1px solid #f1f5f9', paddingTop: '6px', marginTop: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div><strong>Client:</strong> {ord.customerName} ({ord.distanceKm} from hub)</div>
-                      <div style={{ color: '#0284c7', fontWeight: 600 }}>Runner: {ord.riderName}</div>
+                      <div style={{ color: '#0284c7', fontWeight: 600 }}>Delivery Partner: {ord.riderName}</div>
                     </div>
                   </div>
                 );

@@ -20,7 +20,8 @@ export default function CartPage() {
     discountAmount,
     cartTotal,
     createOrder,
-    location
+    location,
+    user
   } = useApp();
 
   const rawSubtotal = cart.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
@@ -63,10 +64,10 @@ export default function CartPage() {
         orderNumber: `#${order.id}`,
         items: orderItems,
         advancePaidAmount: cartTotal,
-        customerName: 'Aarav Parekh',
-        customerPhone: '+91 98250 88123',
-        customerAddress: `${location || 'B-702, Shaligram Plus, Opp. Iskcon Temple, SG Highway'}, Ahmedabad`,
-        landmark: 'Opp. Iskcon Temple',
+        customerName: user?.name || (user ? 'Verified Shopper' : 'Shopper'),
+        customerPhone: user?.phone || '',
+        customerAddress: location ? `${location}, Ahmedabad` : 'Ahmedabad',
+        landmark: 'Near Doorstep Location',
         paymentMethod: 'UPI (GPay / PhonePe)',
         paymentUpiRef: upiTxRef
       });

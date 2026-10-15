@@ -533,7 +533,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
   const brandsAwaitingCount = brands.filter(b => (b.totalProductsCount || 0) === 0).length;
   const pendingInwardsCount = products.filter(p => p.inwardStatus !== 'Inwarded & Live').length;
   const liveSkusCount = products.filter(p => p.isLive).length;
-  const activeTrialsCount = trialOrders.filter(o => o.status === 'Out for 30-Min Delivery' || o.status === 'Doorstep Fitting (Runner Waiting Outside)').length;
+  const activeTrialsCount = trialOrders.filter(o => o.status === 'Out for 30-Min Delivery' || o.status.includes('Doorstep Fitting')).length;
 
   // Customer Telemetry Counts
   const onlineUsersCount = userProfiles.filter(u => u.currentStatus === 'Active Browsing' || u.currentStatus === 'In Doorstep Trial').length;
@@ -542,8 +542,8 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
 
   // Order & Return Telemetry Counts
   const orderCountActive = trialOrders.filter(o => o.status === 'Out for 30-Min Delivery').length;
-  const orderCountDoorstep = trialOrders.filter(o => o.status === 'Doorstep Fitting (Runner Waiting Outside)').length;
-  const orderCountReturning = trialOrders.filter(o => o.status === 'Returned on Spot (Runner Heading to Hub)').length;
+  const orderCountDoorstep = trialOrders.filter(o => o.status.includes('Doorstep Fitting')).length;
+  const orderCountReturning = trialOrders.filter(o => o.status.includes('Returned on Spot')).length;
   const orderCountKept = trialOrders.filter(o => o.status === 'Kept on Spot (Purchased)').length;
   const orderCountRestocked = trialOrders.filter(o => o.status === 'Restocked to Warehouse Shelf').length;
 
@@ -864,132 +864,6 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
     }
   };
 
-  const handleSimulateUserActivity = () => {
-    if (userProfiles.length === 0) return;
-    const randomUser = userProfiles[Math.floor(Math.random() * userProfiles.length)];
-    const sampleActions: Array<{
-      type: 'PRODUCT_CLICK' | 'WISHLIST_ADD' | 'PAGE_VIEW' | 'PROFILE_EDIT' | 'CHECKOUT_BACKOUT' | 'SIZE_UNAVAILABLE' | 'PRICE_HESITATION';
-      title: string;
-      details: Record<string, any>;
-      screen: string;
-      isDropoffSignal?: boolean;
-      hesitationReason?: string;
-      dropoffStage?: 'Product Detail' | 'Catalog' | 'Cart' | 'Checkout / UPI' | 'Doorstep Fitting' | 'Return Initiated';
-      funnelStage?: 'Product View' | 'Cart Review' | 'Payment Gateway' | 'Doorstep Window';
-      dwellSeconds?: number;
-      aiRiskScore?: number;
-    }> = [
-      {
-        type: 'CHECKOUT_BACKOUT',
-        title: `Hesitated on UPI PIN Entry & Backed Out of Cart (₹3,498)`,
-        details: { cartTotal: '₹3,498', gateway: 'Google Pay UPI', dwell: '180s', dropoff: 'Payment Screen' },
-        screen: 'UPI Payment Intent',
-        isDropoffSignal: true,
-        hesitationReason: 'Abandoned ₹3,498 cart after 180s dwell time on UPI intent screen without submitting PIN.',
-        dropoffStage: 'Checkout / UPI',
-        funnelStage: 'Payment Gateway',
-        dwellSeconds: 180,
-        aiRiskScore: 92
-      },
-      {
-        type: 'SIZE_UNAVAILABLE',
-        title: `Out of Stock Bounce: Footwear Size UK 8 (0 units on shelf)`,
-        details: { sku: 'DR-SNK-08', sizeRequested: 'UK 8', rackLocation: 'AMD-RC01' },
-        screen: 'Product Detail',
-        isDropoffSignal: true,
-        hesitationReason: 'Zero inward units available for Footwear Size UK 8 in darkstore rack AMD-RC01. User immediately bounced.',
-        dropoffStage: 'Product Detail',
-        funnelStage: 'Product View',
-        dwellSeconds: 15,
-        aiRiskScore: 84
-      },
-      {
-        type: 'PRICE_HESITATION',
-        title: 'Inspected Wholesale Pricing Transparency Markup Drawer for 120s',
-        details: { baseWholesale: '₹850', drobePrice: '₹1,499', dwell: '120s' },
-        screen: 'Price Transparency Drawer',
-        isDropoffSignal: true,
-        hesitationReason: 'Expanded wholesale markup pill and spent 120s reading fee structure before adding to bag.',
-        dropoffStage: 'Product Detail',
-        funnelStage: 'Product View',
-        dwellSeconds: 120,
-        aiRiskScore: 75
-      },
-      {
-        type: 'PRODUCT_CLICK',
-        title: `Viewing ${products[0]?.name || 'Acid Washed Boxy Tee'} (Size ${randomUser.topSize})`,
-        details: { sku: products[0]?.sku || 'DR3', brand: products[0]?.brandName || 'Underrated Club', price: products[0]?.price || '₹1,499', size: randomUser.topSize },
-        screen: 'Product Detail',
-        dropoffStage: 'Product Detail',
-        funnelStage: 'Product View'
-      },
-      {
-        type: 'WISHLIST_ADD',
-        title: `Saved ${products[1]?.name || 'Minimal Linen Overshirt'} to Wishlist`,
-        details: { brand: products[1]?.brandName || 'Nova Studios', price: products[1]?.price || '₹2,199' },
-        screen: 'Brand Lookbook',
-        dropoffStage: 'Catalog',
-        funnelStage: 'Product View'
-      },
-      {
-        type: 'PAGE_VIEW',
-        title: 'Explored Trending Streetwear Category for Ahmedabad Hub',
-        details: { category: 'Streetwear', activeFilters: ['Drop Shoulder', 'Heavyweight'] },
-        screen: 'Category Feed',
-        dropoffStage: 'Catalog',
-        funnelStage: 'Product View'
-      }
-    ];
-
-    const chosen = sampleActions[Math.floor(Math.random() * sampleActions.length)];
-    const newAct = logUserActivity({
-      userId: randomUser.id,
-      userName: randomUser.name,
-      activityType: chosen.type as any,
-      title: chosen.title,
-      details: chosen.details,
-      screen: chosen.screen,
-      device: randomUser.deviceInfo,
-      isDropoffSignal: chosen.isDropoffSignal,
-      hesitationReason: chosen.hesitationReason,
-      dropoffStage: chosen.dropoffStage,
-      dwellSeconds: chosen.dwellSeconds,
-      aiRiskScore: chosen.aiRiskScore
-    });
-
-    setUserActivities(prev => [newAct, ...prev].slice(0, 60));
-
-    const updatedProfiles: DrobeUserProfile[] = userProfiles.map(u => {
-      if (u.id === randomUser.id) {
-        return {
-          ...u,
-          currentStatus: 'Active Browsing' as const,
-          currentScreen: chosen.title,
-          lastActiveAt: 'Just now',
-          dropoffRisk: chosen.isDropoffSignal ? (chosen.aiRiskScore && chosen.aiRiskScore > 85 ? 'Immediate Dropoff' : 'High') : u.dropoffRisk,
-          lastHesitationReason: chosen.hesitationReason || u.lastHesitationReason,
-          funnelDropoffStage: chosen.funnelStage || u.funnelDropoffStage
-        };
-      }
-      return u;
-    });
-    setUserProfiles(updatedProfiles);
-    saveUserProfiles(updatedProfiles);
-
-    try {
-      supabaseUpsertUserProfile({
-        id: randomUser.id,
-        currentStatus: 'Active Browsing',
-        currentScreen: chosen.title,
-        dropoffRisk: chosen.isDropoffSignal ? (chosen.aiRiskScore && chosen.aiRiskScore > 85 ? 'Immediate Dropoff' : 'High') : randomUser.dropoffRisk,
-        lastHesitationReason: chosen.hesitationReason || randomUser.lastHesitationReason,
-        funnelDropoffStage: chosen.funnelStage || randomUser.funnelDropoffStage
-      }).catch(() => {});
-    } catch {}
-
-    triggerToast(`⚡ Live Activity Broadcast: ${randomUser.name} · ${chosen.title}`);
-  };
-
   // Handlers
   const handleApproveBrand = (brandId: string, brandName: string) => {
     const res = adminApproveBrand(brandId);
@@ -1090,8 +964,8 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
       loadAllData();
       if (newStatus === 'Kept on Spot (Purchased)') {
         triggerToast(`🎉 Order ${res.orderNumber} kept on spot! Payment confirmed & credited to ${res.brandName} payout.`);
-      } else if (newStatus === 'Returned on Spot (Runner Heading to Hub)') {
-        triggerToast(`↩ Customer returned items to runner at door. Runner riding straight back to Ahmedabad Hub!`);
+      } else if (newStatus.includes('Returned on Spot')) {
+        triggerToast(`↩ Customer returned items to delivery partner at door. Rider riding straight back to Ahmedabad Hub!`);
       } else if (newStatus === 'Restocked to Warehouse Shelf') {
         triggerToast(`✓ Restocked to shelf ${res.shelfLocation}! Client refunded instantly via UPI.`);
       } else {
@@ -1168,8 +1042,8 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
 
   const filteredTrialOrders = trialOrders.filter(ord => {
     if (ordersFilter === 'active') return ord.status === 'Out for 30-Min Delivery';
-    if (ordersFilter === 'doorstep') return ord.status === 'Doorstep Fitting (Runner Waiting Outside)';
-    if (ordersFilter === 'returning') return ord.status === 'Returned on Spot (Runner Heading to Hub)';
+    if (ordersFilter === 'doorstep') return ord.status.includes('Doorstep Fitting');
+    if (ordersFilter === 'returning') return ord.status.includes('Returned on Spot');
     if (ordersFilter === 'kept') return ord.status === 'Kept on Spot (Purchased)';
     if (ordersFilter === 'restocked') return ord.status === 'Restocked to Warehouse Shelf';
     return true;
@@ -1532,7 +1406,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
 
             <div className={styles.telemetryTag}>
               <Activity size={13} color="#16a34a" />
-              <span>18 Runners Active · Koteshwar</span>
+              <span>18 Delivery Partners Active · SG Highway</span>
             </div>
           </div>
         </header>
@@ -1586,7 +1460,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                 <div className={styles.kpiVal} style={{ color: '#7e22ce' }}>
                   {activeTrialsCount}
                 </div>
-                <div className={styles.kpiSub}>Runner waiting at door · On-spot return</div>
+                <div className={styles.kpiSub}>Delivery partner waiting at door · On-spot return</div>
               </div>
               <div className={styles.kpiIconWrap} style={{ background: '#f3e8ff', color: '#7e22ce' }}>
                 <Truck size={22} />
@@ -1945,7 +1819,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                     Ahmedabad Darkstore SKU Inventory & Barcode Station
                   </h3>
                   <p className={styles.sectionDesc}>
-                    Live physical stock stationed on SG Highway darkstore racks. Manage sequential SKUs (DR1, DR2...), print thermal barcodes for runner bags, and adjust shelf stock in real-time.
+                    Live physical stock stationed on SG Highway darkstore racks. Manage sequential SKUs (DR1, DR2...), print thermal barcodes for delivery partner bags, and adjust shelf stock in real-time.
                   </p>
                 </div>
 
@@ -2363,7 +2237,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                       Ahmedabad Central Darkstore Floor Plan & Shelf Matrix
                     </h3>
                     <p className={styles.sectionDesc}>
-                      Visual matrix of designated racks at SG Highway Hub. Darkstore runners can pinpoint exact shelves for 30-minute rapid pick-and-pack.
+                      Visual matrix of designated racks at SG Highway Hub. Darkstore pickers and delivery partners can pinpoint exact shelves for 30-minute rapid pick-and-pack.
                     </p>
                   </div>
                 </div>
@@ -2663,10 +2537,10 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
               {filteredTrialOrders.length > 0 ? (
                 <div className={styles.trialGrid}>
                   {filteredTrialOrders.map((ord) => {
-                    const isDoorstepFitting = ord.status === 'Doorstep Fitting (Runner Waiting Outside)';
+                    const isDoorstepFitting = ord.status.includes('Doorstep Fitting');
                     const isOut = ord.status === 'Out for 30-Min Delivery';
                     const isKept = ord.status === 'Kept on Spot (Purchased)';
-                    const isRunnerHeadingBack = ord.status === 'Returned on Spot (Runner Heading to Hub)';
+                    const isRiderHeadingBack = ord.status.includes('Returned on Spot');
                     const isRestocked = ord.status === 'Restocked to Warehouse Shelf';
 
                     const matchedProduct = products.find(p => p.id === ord.productId || p.sku === ord.productSku);
@@ -2687,7 +2561,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
 
                           {isDoorstepFitting ? (
                             <span className={`${styles.statusChip} ${styles.statusTrial}`}>
-                              <Clock size={11} /> Runner Waiting Outside ({ord.doorstepTimerMinutesLeft || 7}m)
+                              <Clock size={11} /> Partner Waiting Outside ({ord.doorstepTimerMinutesLeft || 7}m)
                             </span>
                           ) : isOut ? (
                             <span className={`${styles.statusChip} ${styles.statusTransit}`}>
@@ -2697,7 +2571,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                             <span className={`${styles.statusChip} ${styles.statusLive}`}>
                               <CheckCircle2 size={11} /> Kept on Spot (Purchased)
                             </span>
-                          ) : isRunnerHeadingBack ? (
+                          ) : isRiderHeadingBack ? (
                             <span className={`${styles.statusChip} ${styles.statusPending}`}>
                               <RotateCcw size={11} /> Return In-Transit
                             </span>
@@ -2816,21 +2690,21 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                             ? '#ecfdf5' 
                             : isKept 
                             ? '#f0fdf4' 
-                            : isRunnerHeadingBack 
+                            : isRiderHeadingBack 
                             ? '#faf5ff' 
                             : '#eff6ff',
                           color: isRestocked 
                             ? '#047857' 
                             : isKept 
                             ? '#15803d' 
-                            : isRunnerHeadingBack 
+                            : isRiderHeadingBack 
                             ? '#7e22ce' 
                             : '#1d4ed8',
                           border: isRestocked 
                             ? '1px solid #a7f3d0' 
                             : isKept 
                             ? '1px solid #bbf7d0' 
-                            : isRunnerHeadingBack 
+                            : isRiderHeadingBack 
                             ? '1px solid #e9d5ff' 
                             : '1px solid #bfdbfe'
                         }}>
@@ -2844,7 +2718,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                               <Check size={13} />
                               <span>✓ Stock Kept Deducted · Purchase finalized in Supabase DB</span>
                             </>
-                          ) : isRunnerHeadingBack ? (
+                          ) : isRiderHeadingBack ? (
                             <>
                               <RotateCcw size={13} />
                               <span>↩ Return In-Transit · Sealed in tamper bag, awaiting hub shelf restock</span>
@@ -2852,16 +2726,16 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                           ) : (
                             <>
                               <AlertCircle size={13} />
-                              <span>⚠️ Stock Deducted (-1 Unit) · Physically leaves warehouse with runner</span>
+                              <span>⚠️ Stock Deducted (-1 Unit) · Physically leaves warehouse with delivery partner</span>
                             </>
                           )}
                         </div>
 
-                        {/* Customer & Runner Details */}
+                        {/* Customer & Delivery Partner Details */}
                         <div style={{ fontSize: '11.5px', color: '#64748b', marginBottom: '12px', lineHeight: 1.5 }}>
                           <div><strong>Client:</strong> {ord.customerName} ({ord.customerPhone || '+91 98250 88123'})</div>
                           <div style={{ color: '#475569', fontSize: '11px' }}>{ord.customerAddress}</div>
-                          <div style={{ marginTop: '4px' }}><strong>Runner:</strong> {ord.riderName || 'Meet Dave'} ({ord.riderVehicle || 'Ather 450X'})</div>
+                          <div style={{ marginTop: '4px' }}><strong>Delivery Partner:</strong> {ord.riderName || 'Meet Dave'} ({ord.riderVehicle || 'Ather 450X'})</div>
                         </div>
 
                         {/* Refund status badge */}
@@ -2919,25 +2793,25 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
 
                               <button
                                 type="button"
-                                onClick={() => handleOrderAction(ord.id, 'Returned on Spot (Runner Heading to Hub)')}
+                                onClick={() => handleOrderAction(ord.id, 'Returned on Spot (Delivery Partner Heading to Hub)')}
                                 className={styles.btnDanger}
                                 style={{ flex: 1, justifyContent: 'center', fontSize: '11px' }}
-                                title="Handed back to runner at doorstep"
+                                title="Handed back to delivery partner at doorstep"
                               >
-                                <RotateCcw size={12} /> Return to Runner
+                                <RotateCcw size={12} /> Return to Partner
                               </button>
                             </div>
                           )}
 
-                          {/* If runner is heading back, direct 1-click restock & instant refund */}
-                          {isRunnerHeadingBack && (
+                          {/* If delivery partner is heading back, direct 1-click restock & instant refund */}
+                          {isRiderHeadingBack && (
                             <button
                               type="button"
-                              onClick={() => handleMarkReturned(ord.id, ord.returnReason || 'Doorstep return', 'Runner reached hub dispatch bay')}
+                              onClick={() => handleMarkReturned(ord.id, ord.returnReason || 'Doorstep return', 'Delivery partner reached hub dispatch bay')}
                               className={styles.btnPrimary}
                               style={{ width: '100%', justifyContent: 'center', fontSize: '11.5px', fontWeight: 800, background: '#059669', borderColor: '#047857' }}
                             >
-                              <CheckCircle2 size={13} /> Runner Reached Hub · Restock &amp; Refund ₹{ord.refundAmount || ord.price} Instantly
+                              <CheckCircle2 size={13} /> Partner Reached Hub · Restock &amp; Refund ₹{ord.refundAmount || ord.price} Instantly
                             </button>
                           )}
 
@@ -3528,17 +3402,6 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
 
                     <button
                       type="button"
-                      onClick={handleSimulateUserActivity}
-                      className={styles.btnSecondary}
-                      style={{ padding: '7px 12px', fontSize: '11.5px', gap: '6px', background: '#eff6ff', borderColor: '#bfdbfe', color: '#1d4ed8', fontWeight: 700 }}
-                      title="Simulate live shopper action broadcasted via Supabase Realtime"
-                    >
-                      <Radio size={14} color="#2563eb" />
-                      <span>Simulate Live Shopper Action</span>
-                    </button>
-
-                    <button
-                      type="button"
                       onClick={handleExportUsersCsv}
                       className={styles.btnSecondary}
                       style={{ padding: '7px 12px', fontSize: '11.5px', gap: '6px', fontWeight: 700 }}
@@ -3592,7 +3455,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                       {doorstepUsersCount}
                     </div>
                     <div style={{ fontSize: '11px', color: '#7e22ce', fontWeight: 600, marginTop: '2px' }}>
-                      6-min fitting trial with runner outside
+                      6-min fitting trial with delivery partner waiting outside
                     </div>
                   </div>
 
@@ -6213,7 +6076,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                                 {ord.productName} ({ord.price})
                               </div>
                               <div style={{ fontSize: '10px', color: '#64748b' }}>
-                                Shelf: <code>{ord.shelfLocation}</code> · Runner: {ord.riderName || 'Pending'}
+                                Shelf: <code>{ord.shelfLocation}</code> · Rider: {ord.riderName || 'Pending'}
                               </div>
                             </div>
 
