@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { BrandProfile } from './types';
+import { BrandProfile, mapDbBrandToBrandProfile } from './types';
 import { EMPTY_BRAND_PROFILE } from './jihiData';
 import { registerBrandApplication } from '../lib/darkstoreData';
+import { supabaseFetchBrandById, supabaseFetchBrandProducts } from '../lib/supabaseClient';
 import BrandStartScreen from './BrandStartScreen';
 import OnboardingFlow from './OnboardingFlow';
 import BrandProfileView from './BrandProfileView';
@@ -21,9 +22,38 @@ export default function BrandDashboardPage() {
     try {
       const urlParams = new URLSearchParams(window.location.search);
       const viewParam = urlParams.get('view');
-      if (viewParam === 'filing' || viewParam === 'onboarding') {
+      const onboardParam = urlParams.get('onboard') || urlParams.get('onboarding');
+      const brandParam = urlParams.get('brand') || urlParams.get('id');
+      const editParam = urlParams.get('edit');
+
+      // 1. Direct Onboarding Link Support (e.g. /brand-dashboard?onboard=true)
+      if (onboardParam === 'true' || onboardParam === '1' || viewParam === 'filing' || viewParam === 'onboarding') {
         setActiveView('filing');
-      } else if (viewParam === 'profile') {
+        return;
+      }
+
+      // 2. Direct Brand Link Support (e.g. /brand-dashboard?brand=underrated-club)
+      if (brandParam) {
+        supabaseFetchBrandById(brandParam).then(async (dbBrand) => {
+          if (dbBrand) {
+            const dbProducts = await supabaseFetchBrandProducts(brandParam, dbBrand.name);
+            const mapped = mapDbBrandToBrandProfile(dbBrand, dbProducts || []);
+            setBrand(mapped);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
+            } catch {}
+            setActiveView('profile');
+            if (editParam === 'true') {
+              setOpenEditOnProfile(true);
+            }
+          }
+        }).catch((err) => {
+          console.warn('Failed to load brand from Supabase:', err);
+        });
+        return;
+      }
+
+      if (viewParam === 'profile') {
         setActiveView('profile');
       }
 
@@ -149,6 +179,14 @@ export default function BrandDashboardPage() {
           }}
           onResetBrand={handleResetBrand}
           onLoginSuccess={handleLoginSuccess}
+          onSelectBrand={(loadedBrand) => {
+            setBrand(loadedBrand);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(loadedBrand));
+            } catch {}
+            setActiveView('profile');
+            triggerToast(`Welcome to ${loadedBrand.name} Partner Dashboard`);
+          }}
         />
       )}
 

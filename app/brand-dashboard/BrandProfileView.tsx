@@ -59,7 +59,12 @@ import {
   syncDarkstoreWithSupabase,
   saveDarkstoreProducts
 } from '../lib/darkstoreData';
-import { subscribeToRealtimeOrders, supabaseUploadMedia } from '../lib/supabaseClient';
+import { 
+  subscribeToRealtimeOrders, 
+  supabaseUploadMedia,
+  supabaseUpsertBrand,
+  supabaseUpsertProduct
+} from '../lib/supabaseClient';
 import EditBrandProfileSheet from './EditBrandProfileSheet';
 import AddBankAccountModal from './AddBankAccountModal';
 import styles from './brand-dashboard.module.css';
@@ -202,6 +207,18 @@ export default function BrandProfileView({
         localStorage.setItem('drobe_brand_profile_v1', JSON.stringify(updatedBrand));
       } catch {}
     }
+
+    // Direct Supabase sync
+    try {
+      supabaseUpsertBrand({
+        ...updatedBrand,
+        id: updatedBrand.id || 'brand-active-01',
+        bankAccount: account
+      });
+    } catch (err) {
+      console.warn('Failed to sync bank details to Supabase:', err);
+    }
+
     if (onToast) {
       onToast(`Bank account updated: ${account.bankName} (•••• ${account.accountNumber.slice(-4)})`);
     }
@@ -417,7 +434,31 @@ export default function BrandProfileView({
         };
         saveDarkstoreProducts(darkstoreProds);
       }
-    } catch {}
+
+      // Direct Supabase drobe_products sync
+      const prodId = productToSave.id || `${brand.id || 'brand'}-prod-${Date.now()}`;
+      supabaseUpsertProduct({
+        id: prodId,
+        sku: productToSave.sku || `DR-${prodId.slice(-4)}`,
+        name: productToSave.name,
+        brandId: brand.id || 'brand-active-01',
+        brandName: brand.name || 'Your Brand',
+        category: brand.category || 'Apparel',
+        price: productToSave.price?.startsWith('₹') ? productToSave.price : `₹${productToSave.price || '999'}`,
+        volume: productToSave.volume || 'M',
+        inventory: Number(productToSave.inventory) || 20,
+        inwardUnits: 0,
+        unitsInTrial: 0,
+        unitsSold: 0,
+        tagline: productToSave.tagline || '',
+        description: productToSave.description || '',
+        images: finalImages,
+        inwardStatus: productToSave.inwardStatus || 'Pending Stock Dispatch',
+        isLive: productToSave.isLive ?? true
+      });
+    } catch (err) {
+      console.warn('Failed to sync product to Supabase:', err);
+    }
 
     if (onToast) {
       onToast(

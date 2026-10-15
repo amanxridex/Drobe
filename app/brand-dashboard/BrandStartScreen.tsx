@@ -2,8 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Lock, Mail, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { BrandProfile } from './types';
+import { 
+  X, 
+  Lock, 
+  Mail, 
+  Eye, 
+  EyeOff, 
+  AlertCircle,
+  Search,
+  Building2,
+  Sparkles,
+  ArrowRight,
+  Loader2,
+  CheckCircle2
+} from 'lucide-react';
+import { BrandProfile, mapDbBrandToBrandProfile } from './types';
+import { supabaseFetchBrands, supabaseFetchBrandById, supabaseFetchBrandProducts } from '../lib/supabaseClient';
 import styles from './brand-dashboard.module.css';
 
 interface BrandStartScreenProps {
@@ -13,6 +27,7 @@ interface BrandStartScreenProps {
   onEditLiveBrand?: () => void;
   onResetBrand?: () => void;
   onLoginSuccess?: (email: string) => void;
+  onSelectBrand?: (brand: BrandProfile) => void;
 }
 
 const CAROUSEL_SLIDES = [
@@ -45,14 +60,20 @@ export default function BrandStartScreen({
   onViewLiveDashboard,
   onEditLiveBrand,
   onResetBrand,
-  onLoginSuccess
+  onLoginSuccess,
+  onSelectBrand
 }: BrandStartScreenProps) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [modalTab, setModalTab] = useState<'login' | 'claim'>('claim');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [allBrands, setAllBrands] = useState<BrandProfile[]>([]);
+  const [isLoadingBrands, setIsLoadingBrands] = useState(false);
+  const [isOpeningBrand, setIsOpeningBrand] = useState(false);
 
   // Auto-advance carousel smoothly every 5 seconds
   useEffect(() => {
@@ -60,6 +81,20 @@ export default function BrandStartScreen({
       setActiveSlide((prev) => (prev + 1) % CAROUSEL_SLIDES.length);
     }, 5000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Fetch live brands from Supabase
+  useEffect(() => {
+    setIsLoadingBrands(true);
+    supabaseFetchBrands().then((brandsList) => {
+      if (brandsList && brandsList.length > 0) {
+        setAllBrands(brandsList.map(b => mapDbBrandToBrandProfile(b, b.products)));
+      }
+    }).catch((err) => {
+      console.warn('Failed to load brands from Supabase:', err);
+    }).finally(() => {
+      setIsLoadingBrands(false);
+    });
   }, []);
 
   const isApprovedOrPublished = (brand.status === 'Published' || brand.status === 'Approved') && Boolean(brand.name?.trim());
@@ -81,6 +116,18 @@ export default function BrandStartScreen({
       return;
     }
 
+    // Check if matching email exists in Supabase brands
+    const matchedBrand = allBrands.find(b => 
+      (b.email && b.email.toLowerCase().trim() === emailTrimmed.toLowerCase()) ||
+      (b.inquiriesEmail && b.inquiriesEmail.toLowerCase().trim() === emailTrimmed.toLowerCase())
+    );
+
+    if (matchedBrand && onSelectBrand) {
+      onSelectBrand(matchedBrand);
+      setShowLoginModal(false);
+      return;
+    }
+
     if (onLoginSuccess) {
       onLoginSuccess(emailTrimmed);
     } else {
@@ -88,6 +135,35 @@ export default function BrandStartScreen({
     }
     setShowLoginModal(false);
   };
+
+  const handleSelectSearchedBrand = async (b: BrandProfile) => {
+    setIsOpeningBrand(true);
+    try {
+      const fullBrand = await supabaseFetchBrandById(b.id || b.name);
+      const prods = await supabaseFetchBrandProducts(b.id || b.name, b.name);
+      const mapped = mapDbBrandToBrandProfile(fullBrand || b, prods || []);
+      if (onSelectBrand) {
+        onSelectBrand(mapped);
+      }
+      setShowLoginModal(false);
+    } catch {
+      if (onSelectBrand) {
+        onSelectBrand(b);
+      }
+      setShowLoginModal(false);
+    } finally {
+      setIsOpeningBrand(false);
+    }
+  };
+
+  const filteredBrands = searchQuery.trim().length === 0
+    ? allBrands.slice(0, 15)
+    : allBrands.filter(b => 
+        b.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        b.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        b.basedOutOf?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        b.founderName?.toLowerCase().includes(searchQuery.toLowerCase())
+      ).slice(0, 20);
 
   const slide = CAROUSEL_SLIDES[activeSlide] || CAROUSEL_SLIDES[0];
 
@@ -374,15 +450,18 @@ export default function BrandStartScreen({
                 onClick={onStartOnboarding}
                 className={styles.screen1BtnPrimary}
               >
-                Get Started
+                Start Brand Onboarding →
               </button>
 
               <button
                 type="button"
-                onClick={() => setShowLoginModal(true)}
+                onClick={() => {
+                  setModalTab('claim');
+                  setShowLoginModal(true);
+                }}
                 className={styles.screen1BtnSecondary}
               >
-                Log In
+                Find &amp; Claim Your Brand
               </button>
             </>
           )}
@@ -394,20 +473,22 @@ export default function BrandStartScreen({
         </div>
       </div>
 
-      {/* 4. PARTNER LOG IN MODAL (Clean Crisp White Sheet) */}
+      {/* 4. PARTNER LOG IN & BRAND CLAIM MODAL */}
       {showLoginModal && (
         <div className={styles.loginModalOverlay}>
           <div className={styles.loginModalSheet}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
               <div>
                 <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2563eb', fontWeight: 800 }}>
                   PARTNER PORTAL
                 </span>
-                <h3 style={{ fontSize: '22px', fontWeight: 800, color: '#0b132b', margin: '4px 0 2px 0', letterSpacing: '-0.02em', fontFamily: 'var(--brand-display-font)' }}>
-                  Log In to Brand Portal
+                <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#0b132b', margin: '3px 0 2px 0', letterSpacing: '-0.02em', fontFamily: 'var(--brand-display-font)' }}>
+                  {modalTab === 'claim' ? 'Find & Claim Your Brand' : 'Sign In to Brand Portal'}
                 </h3>
-                <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
-                  Sign in with your email and password to access your brand store.
+                <p style={{ fontSize: '12.5px', color: '#64748b', margin: 0 }}>
+                  {modalTab === 'claim' 
+                    ? 'Search among 189 live verified partner brands on Drobe to access your portal.'
+                    : 'Sign in with your email and password to access your brand store.'}
                 </p>
               </div>
               <button
@@ -423,6 +504,62 @@ export default function BrandStartScreen({
               </button>
             </div>
 
+            {/* Modal Tab Switcher */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '6px',
+              marginBottom: '16px',
+              background: '#f1f5f9',
+              padding: '4px',
+              borderRadius: '10px'
+            }}>
+              <button
+                type="button"
+                onClick={() => setModalTab('claim')}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: modalTab === 'claim' ? '#ffffff' : 'transparent',
+                  color: modalTab === 'claim' ? '#2563eb' : '#64748b',
+                  fontWeight: modalTab === 'claim' ? 700 : 500,
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  boxShadow: modalTab === 'claim' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Search size={13} />
+                <span>Find Brand ({allBrands.length || 189})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalTab('login')}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: modalTab === 'login' ? '#ffffff' : 'transparent',
+                  color: modalTab === 'login' ? '#2563eb' : '#64748b',
+                  fontWeight: modalTab === 'login' ? 700 : 500,
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  boxShadow: modalTab === 'login' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Lock size={13} />
+                <span>Password Sign In</span>
+              </button>
+            </div>
+
             {loginError && (
               <div className={styles.loginErrorBanner}>
                 <AlertCircle size={15} />
@@ -430,72 +567,210 @@ export default function BrandStartScreen({
               </div>
             )}
 
-            <form onSubmit={handleLoginSubmit}>
-              <div style={{ marginBottom: '14px' }}>
-                <label className={styles.loginInputLabel}>
-                  Brand Email
-                </label>
-                <div style={{ position: 'relative' }}>
+            {/* TAB 1: CLAIM / SEARCH LIVE BRANDS FROM SUPABASE */}
+            {modalTab === 'claim' && (
+              <div>
+                <div style={{ position: 'relative', marginBottom: '12px' }}>
                   <input
-                    type="email"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    placeholder="founder@yourbrand.com"
-                    required
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search your brand name (e.g. Underrated Club, Jihi...)"
                     className={styles.loginInputField}
+                    style={{ paddingLeft: '38px', fontSize: '13px' }}
+                    autoFocus
                   />
-                  <Mail size={16} color="#94a3b8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8' }}
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
                 </div>
-              </div>
 
-              <div style={{ marginBottom: '20px' }}>
-                <label className={styles.loginInputLabel}>
-                  Password
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    required
-                    className={styles.loginInputField}
-                    style={{ paddingRight: '44px' }}
-                  />
-                  <Lock size={16} color="#94a3b8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+                {isLoadingBrands ? (
+                  <div style={{ padding: '30px', textAlign: 'center', color: '#64748b', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                    <span>Loading verified brands from Supabase...</span>
+                  </div>
+                ) : (
+                  <div style={{ maxHeight: '250px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px', paddingRight: '4px' }}>
+                    {filteredBrands.map((b) => (
+                      <div
+                        key={b.id || b.name}
+                        onClick={() => handleSelectSearchedBrand(b)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '10px 12px',
+                          borderRadius: '10px',
+                          border: '1px solid #f1f5f9',
+                          background: '#ffffff',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = '#ffffff')}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                          {b.profileImage ? (
+                            <img
+                              src={b.profileImage}
+                              alt={b.name}
+                              style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }}
+                            />
+                          ) : (
+                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb', fontWeight: 800, fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              {b.name.slice(0, 1).toUpperCase()}
+                            </div>
+                          )}
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {b.name}
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#64748b' }}>
+                              {b.category} · {b.basedOutOf || 'India'}
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          disabled={isOpeningBrand}
+                          style={{
+                            fontSize: '11.5px',
+                            fontWeight: 700,
+                            padding: '6px 10px',
+                            borderRadius: '7px',
+                            border: 'none',
+                            background: '#2563eb',
+                            color: '#ffffff',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            flexShrink: 0
+                          }}
+                        >
+                          <span>Open</span>
+                          <ArrowRight size={12} />
+                        </button>
+                      </div>
+                    ))}
+
+                    {filteredBrands.length === 0 && (
+                      <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '12.5px' }}>
+                        No brand found matching &ldquo;{searchQuery}&rdquo;.
+                        <div style={{ marginTop: '8px' }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowLoginModal(false);
+                              onStartOnboarding();
+                            }}
+                            className={styles.getStartedLinkBtn}
+                          >
+                            + Start New Brand Application
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div style={{ marginTop: '14px', textAlign: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '10px' }}>
+                  <span style={{ fontSize: '12px', color: '#64748b' }}>
+                    Brand not listed yet?{' '}
+                  </span>
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={styles.eyeToggleButton}
+                    onClick={() => {
+                      setShowLoginModal(false);
+                      onStartOnboarding();
+                    }}
+                    className={styles.getStartedLinkBtn}
+                    style={{ fontSize: '12px' }}
                   >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    Start Brand Onboarding
                   </button>
                 </div>
               </div>
+            )}
 
-              <button
-                type="submit"
-                className={styles.loginSubmitBtn}
-              >
-                Log In
-              </button>
+            {/* TAB 2: EMAIL & PASSWORD SIGN IN */}
+            {modalTab === 'login' && (
+              <form onSubmit={handleLoginSubmit}>
+                <div style={{ marginBottom: '14px' }}>
+                  <label className={styles.loginInputLabel}>
+                    Brand Email
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="email"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      placeholder="founder@yourbrand.com"
+                      required
+                      className={styles.loginInputField}
+                    />
+                    <Mail size={16} color="#94a3b8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+                  </div>
+                </div>
 
-              <div style={{ marginTop: '14px', textAlign: 'center' }}>
-                <span style={{ fontSize: '13px', color: '#64748b' }}>
-                  New to Drobe?{' '}
-                </span>
+                <div style={{ marginBottom: '20px' }}>
+                  <label className={styles.loginInputLabel}>
+                    Password
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="Enter your password"
+                      required
+                      className={styles.loginInputField}
+                      style={{ paddingRight: '44px' }}
+                    />
+                    <Lock size={16} color="#94a3b8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className={styles.eyeToggleButton}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+
                 <button
-                  type="button"
-                  onClick={() => {
-                    setShowLoginModal(false);
-                    onStartOnboarding();
-                  }}
-                  className={styles.getStartedLinkBtn}
+                  type="submit"
+                  className={styles.loginSubmitBtn}
                 >
-                  Get Started
+                  Log In
                 </button>
-              </div>
-            </form>
+
+                <div style={{ marginTop: '14px', textAlign: 'center' }}>
+                  <span style={{ fontSize: '13px', color: '#64748b' }}>
+                    New to Drobe?{' '}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowLoginModal(false);
+                      onStartOnboarding();
+                    }}
+                    className={styles.getStartedLinkBtn}
+                  >
+                    Start Onboarding
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

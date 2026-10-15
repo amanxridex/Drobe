@@ -708,12 +708,21 @@ export function registerBrandApplication(brand: any): DarkstoreBrand {
           markupAmount: pricing.markupAmount,
           markupPercentage: pricing.markupPercentage
         };
+        try { supabaseUpsertProduct(updatedProducts[existingPIdx]); } catch {}
       } else {
         updatedProducts.push(newProd);
+        try { supabaseUpsertProduct(newProd); } catch {}
       }
     });
 
     saveDarkstoreProducts(updatedProducts);
+  }
+
+  // Live Supabase Sync: Persist brand directly to drobe_brands
+  try {
+    supabaseUpsertBrand(darkstoreBrand);
+  } catch (err) {
+    console.warn('Error syncing brand to Supabase:', err);
   }
 
   // Also sync legacy brand
@@ -1017,6 +1026,13 @@ export function brandDispatchStock({
 
   const updatedShipments = [newShipment, ...shipments];
   saveInboundShipments(updatedShipments);
+
+  // Live Supabase Sync: Persist consignment to drobe_inbound_shipments
+  try {
+    supabaseUpsertShipment(newShipment);
+  } catch (err) {
+    console.warn('Error syncing shipment to Supabase:', err);
+  }
 
   // Update product inward status to 'Stock In Transit to Ahmedabad'
   const products = getDarkstoreProducts();

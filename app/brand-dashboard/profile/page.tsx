@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { BrandProfile } from '../types';
+import { BrandProfile, mapDbBrandToBrandProfile } from '../types';
 import { EMPTY_BRAND_PROFILE } from '../jihiData';
 import { registerBrandApplication } from '../../lib/darkstoreData';
+import { supabaseFetchBrandById, supabaseFetchBrandProducts } from '../../lib/supabaseClient';
 import BrandProfileView from '../BrandProfileView';
 
 const STORAGE_KEY = 'drobe_brand_profile_v1';
@@ -15,19 +16,48 @@ export default function StandaloneProfilePage() {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed: BrandProfile = JSON.parse(saved);
-        if (parsed.name?.trim()) {
-          setBrand(parsed);
-          return;
-        }
+      const urlParams = new URLSearchParams(window.location.search);
+      const brandParam = urlParams.get('brand') || urlParams.get('id');
+
+      if (brandParam) {
+        supabaseFetchBrandById(brandParam).then(async (dbBrand) => {
+          if (dbBrand) {
+            const dbProducts = await supabaseFetchBrandProducts(brandParam, dbBrand.name);
+            const mapped = mapDbBrandToBrandProfile(dbBrand, dbProducts || []);
+            setBrand(mapped);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(mapped));
+            } catch {}
+          } else {
+            fallbackLocal();
+          }
+        }).catch(() => {
+          fallbackLocal();
+        });
+        return;
       }
+
+      fallbackLocal();
     } catch {
-      // Local storage read error
+      fallbackLocal();
     }
-    // If no brand exists, send to brand onboarding
-    router.replace('/brand-dashboard');
+
+    function fallbackLocal() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed: BrandProfile = JSON.parse(saved);
+          if (parsed.name?.trim()) {
+            setBrand(parsed);
+            return;
+          }
+        }
+      } catch {
+        // Local storage read error
+      }
+      // If no brand exists, send to brand onboarding
+      router.replace('/brand-dashboard?onboard=true');
+    }
   }, [router]);
 
   if (!brand) {
