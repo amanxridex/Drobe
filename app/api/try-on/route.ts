@@ -75,6 +75,61 @@ export async function POST(req: Request) {
     }
 
     // =========================================================================
+    // 2. HUGGING FACE ZEROGPU (yisol/IDM-VTON) - 100% FREE CLOUD GPU
+    // =========================================================================
+    const hfToken = process.env.HF_TOKEN;
+    if (hfToken) {
+      try {
+        // yisol/IDM-VTON space runs on Hugging Face ZeroGPU (NVIDIA A10G)
+        const spaceUrl = 'https://yisol-idm-vton.hf.space/call/tryon';
+        const initRes = await fetch(spaceUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${hfToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            data: [
+              { background: { path: userImage, url: userImage }, layers: [], composite: null },
+              { path: garmentImage, url: garmentImage },
+              `${garmentTitle}. ${garmentDescription}`,
+              true,  // auto-mask
+              false, // crop
+              25,    // steps
+              42     // seed
+            ]
+          }),
+          signal: AbortSignal.timeout(8000)
+        });
+
+        if (initRes.ok) {
+          const initData = await initRes.json();
+          if (initData.event_id) {
+            const eventRes = await fetch(`https://yisol-idm-vton.hf.space/call/tryon/${initData.event_id}`, {
+              headers: { 'Authorization': `Bearer ${hfToken}` },
+              signal: AbortSignal.timeout(18000)
+            });
+            if (eventRes.ok) {
+              const text = await eventRes.text();
+              const match = text.match(/https:\/\/[^"\s]+\.(png|jpg|webp)/i);
+              if (match && match[0]) {
+                return NextResponse.json({
+                  success: true,
+                  fittedImage: match[0],
+                  modelUsed: 'HuggingFace ZeroGPU (yisol/IDM-VTON)',
+                  latencyMs: Date.now() - startTime,
+                  poseDetected: true
+                });
+              }
+            }
+          }
+        }
+      } catch (hfErr) {
+        console.warn('Hugging Face ZeroGPU IDM-VTON busy or timed out, switching to immediate fallback:', hfErr);
+      }
+    }
+
+    // =========================================================================
     // 2. SERVERLESS REPLICATE (yisol/idm-vton)
     // =========================================================================
     if (replicateToken) {
