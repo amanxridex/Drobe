@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { redis } from '@/lib/redis';
+import { supabaseCheckDbHealth } from '@/app/lib/supabaseClient';
 
 export async function GET() {
   const startTime = Date.now();
@@ -19,17 +20,34 @@ export async function GET() {
     redisPing = `degraded: ${err?.message || 'timeout'}`;
   }
 
+  // Check Supabase Database Telemetry
+  const dbHealth = await supabaseCheckDbHealth();
+
   const memoryUsage = process.memoryUsage ? process.memoryUsage() : null;
 
   return NextResponse.json({
     status: 'healthy',
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
-    latencyMs: Date.now() - startTime,
+    totalLatencyMs: Date.now() - startTime,
     hub: process.env.NEXT_PUBLIC_DROBE_HUB_ID || 'AMD-DARKSTORE-01',
     darkstore: 'Ahmedabad Shivam Bungalows 1, Koteshwar Road',
     deliveryPromise: '30-Min Doorstep Trial',
+    database: {
+      provider: 'Supabase PostgreSQL (Darkstore Matrix)',
+      status: dbHealth.status,
+      configured: dbHealth.configured,
+      latencyMs: dbHealth.latencyMs,
+      error: dbHealth.error || null,
+      optimizations: [
+        'Foreign Key B-Tree Indexes',
+        'Partial Indexes on Active Trials (status != completed)',
+        'Composite Indexes on (status, created_at DESC)',
+        'Atomic Row-Locking Stock Mutators (FOR UPDATE)'
+      ]
+    },
     caching: {
+      provider: 'Upstash Redis / In-Memory Edge Cache',
       mode: redis.getMode(),
       status: redisPing,
       upstashConfigured: redis.isConfigured()

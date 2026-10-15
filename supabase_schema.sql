@@ -243,8 +243,10 @@ DROP TRIGGER IF EXISTS trigger_drobe_orders_updated ON drobe_trial_orders;
 CREATE TRIGGER trigger_drobe_orders_updated BEFORE UPDATE ON drobe_trial_orders FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ==============================================================================
--- 10. INDEXES FOR LIGHTNING FAST AUTO-FETCH & LIVE DISPATCH
+-- 10. INDEXES & QUERY PERFORMANCE (Per Supabase Postgres Best Practices)
 -- ==============================================================================
+
+-- A. Primary & Lookup Indexes
 CREATE INDEX IF NOT EXISTS idx_orders_number ON drobe_trial_orders(order_number);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON drobe_trial_orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_customer_phone ON drobe_trial_orders(customer_phone);
@@ -252,6 +254,164 @@ CREATE INDEX IF NOT EXISTS idx_products_sku ON drobe_products(sku);
 CREATE INDEX IF NOT EXISTS idx_products_brand ON drobe_products(brand_id);
 CREATE INDEX IF NOT EXISTS idx_shelves_code ON drobe_warehouse_shelves(code);
 CREATE INDEX IF NOT EXISTS idx_runners_id ON drobe_runners(id);
+
+-- B. Foreign Key Indexes (Rule: schema-foreign-key-indexes.md - 10-100x faster JOINs & cascades)
+CREATE INDEX IF NOT EXISTS idx_shelves_warehouse_id ON drobe_warehouse_shelves(warehouse_id);
+CREATE INDEX IF NOT EXISTS idx_shipments_brand_id ON drobe_inbound_shipments(brand_id);
+CREATE INDEX IF NOT EXISTS idx_shipments_warehouse_id ON drobe_inbound_shipments(warehouse_id);
+CREATE INDEX IF NOT EXISTS idx_orders_warehouse_id ON drobe_trial_orders(warehouse_id);
+CREATE INDEX IF NOT EXISTS idx_orders_runner_id ON drobe_trial_orders(runner_id);
+CREATE INDEX IF NOT EXISTS idx_orders_brand_id ON drobe_trial_orders(brand_id);
+CREATE INDEX IF NOT EXISTS idx_orders_product_id ON drobe_trial_orders(product_id);
+CREATE INDEX IF NOT EXISTS idx_order_events_order_id ON drobe_order_events(order_id);
+
+-- C. Composite & Sorting Indexes (Rule: query-composite-indexes.md)
+CREATE INDEX IF NOT EXISTS idx_orders_status_created_at ON drobe_trial_orders(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_customer_created_at ON drobe_trial_orders(customer_phone, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_products_brand_status ON drobe_products(brand_id, inward_status);
+CREATE INDEX IF NOT EXISTS idx_products_category_live ON drobe_products(category, is_live);
+CREATE INDEX IF NOT EXISTS idx_brands_status_created_at ON drobe_brands(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_runners_status ON drobe_runners(current_status);
+
+-- D. Partial Indexes for High-Velocity Subsets (Rule: query-partial-indexes.md - 95% smaller index)
+CREATE INDEX IF NOT EXISTS idx_orders_active_trials 
+ON drobe_trial_orders(id, runner_id, status) 
+WHERE status NOT IN ('Completed & Kept', 'Cancelled', 'Returned & Refunded');
+
+CREATE INDEX IF NOT EXISTS idx_products_live_catalog 
+ON drobe_products(id, brand_id, category, price) 
+WHERE is_live = TRUE;
+
+-- ==============================================================================
+-- 10.1. ATOMIC STOCK CONCURRENCY RPC FUNCTIONS (Row-Level Locking FOR UPDATE)
+-- ==============================================================================
+
+-- 1. Atomic Stock Deduction when trial order is placed or runner dispatched
+CREATE OR REPLACE FUNCTION drobe_deduct_product_stock(
+    p_product_id VARCHAR,
+    p_qty INT DEFAULT 1
+)
+RETURNS TABLE (
+    new_inward_units INT,
+    new_units_in_trial INT,
+    new_units_sold INT
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_id VARCHAR;
+BEGIN
+    -- Acquire exclusive row lock to prevent race conditions during flash drops
+    SELECT id INTO v_id 
+    FROM drobe_products 
+    WHERE (id = p_product_id OR sku = p_product_id)
+    FOR UPDATE;
+
+    IF NOT FOUND THEN
+        RETURN;
+    END IF;
+
+    UPDATE drobe_products
+    SET 
+        inward_units = GREATEST(0, COALESCE(inward_units, 0) - p_qty),
+        units_in_trial = COALESCE(units_in_trial, 0) + p_qty,
+        updated_at = NOW()
+    WHERE id = v_id
+    RETURNING inward_units, units_in_trial, units_sold
+    INTO new_inward_units, new_units_in_trial, new_units_sold;
+
+    RETURN NEXT;
+END;
+$$;
+
+-- 2. Atomic Restock when trial item is returned to darkstore shelf
+CREATE OR REPLACE FUNCTION drobe_restock_product_stock(
+    p_product_id VARCHAR,
+    p_qty INT DEFAULT 1,
+    p_from_sold BOOLEAN DEFAULT FALSE
+)
+RETURNS TABLE (
+    new_inward_units INT,
+    new_units_in_trial INT,
+    new_units_sold INT
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_id VARCHAR;
+BEGIN
+    SELECT id INTO v_id 
+    FROM drobe_products 
+    WHERE (id = p_product_id OR sku = p_product_id)
+    FOR UPDATE;
+
+    IF NOT FOUND THEN
+        RETURN;
+    END IF;
+
+    IF p_from_sold THEN
+        UPDATE drobe_products
+        SET 
+            inward_units = COALESCE(inward_units, 0) + p_qty,
+            units_sold = GREATEST(0, COALESCE(units_sold, 0) - p_qty),
+            updated_at = NOW()
+        WHERE id = v_id
+        RETURNING inward_units, units_in_trial, units_sold
+        INTO new_inward_units, new_units_in_trial, new_units_sold;
+    ELSE
+        UPDATE drobe_products
+        SET 
+            inward_units = COALESCE(inward_units, 0) + p_qty,
+            units_in_trial = GREATEST(0, COALESCE(units_in_trial, 0) - p_qty),
+            updated_at = NOW()
+        WHERE id = v_id
+        RETURNING inward_units, units_in_trial, units_sold
+        INTO new_inward_units, new_units_in_trial, new_units_sold;
+    END IF;
+
+    RETURN NEXT;
+END;
+$$;
+
+-- 3. Atomic Confirmation when customer decides to keep and purchase item
+CREATE OR REPLACE FUNCTION drobe_confirm_sold_stock(
+    p_product_id VARCHAR,
+    p_qty INT DEFAULT 1
+)
+RETURNS TABLE (
+    new_inward_units INT,
+    new_units_in_trial INT,
+    new_units_sold INT
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_id VARCHAR;
+BEGIN
+    SELECT id INTO v_id 
+    FROM drobe_products 
+    WHERE (id = p_product_id OR sku = p_product_id)
+    FOR UPDATE;
+
+    IF NOT FOUND THEN
+        RETURN;
+    END IF;
+
+    UPDATE drobe_products
+    SET 
+        units_in_trial = GREATEST(0, COALESCE(units_in_trial, 0) - p_qty),
+        units_sold = COALESCE(units_sold, 0) + p_qty,
+        updated_at = NOW()
+    WHERE id = v_id
+    RETURNING inward_units, units_in_trial, units_sold
+    INTO new_inward_units, new_units_in_trial, new_units_sold;
+
+    RETURN NEXT;
+END;
+$$;
 
 -- ==============================================================================
 -- 11. ENABLE REALTIME BROADCASTING ON SUPABASE

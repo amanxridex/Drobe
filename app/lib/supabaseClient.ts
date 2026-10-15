@@ -519,105 +519,117 @@ export async function supabaseConfirmSoldStock(
   }
 }
 
-// Fetch all live products from Supabase
+// Fetch all live products from Supabase (Optimized with Redis/Memory Cache-Aside)
 export async function supabaseFetchProducts(): Promise<DarkstoreProduct[] | null> {
-  if (!supabase) return null;
-  try {
-    const { data, error } = await supabase
-      .from('drobe_products')
-      .select('*')
-      .order('sku_serial', { ascending: true });
+  return cacheRemember(
+    CACHE_KEYS.ACTIVE_PRODUCTS_ALL,
+    CACHE_TTL.SHORT, // 120 seconds TTL
+    async () => {
+      if (!supabase) return null;
+      try {
+        const { data, error } = await supabase
+          .from('drobe_products')
+          .select('*')
+          .order('sku_serial', { ascending: true });
 
-    if (error) return null;
+        if (error) return null;
 
-    return (data || []).map((row: any): DarkstoreProduct => ({
-      id: row.id,
-      sku: row.sku,
-      skuSerial: row.sku_serial,
-      name: row.name || row.title,
-      brandId: row.brand_id,
-      brandName: row.brand_name,
-      category: row.category,
-      subCategory: row.sub_category,
-      price: row.price,
-      originalPrice: Number(row.original_price) || undefined,
-      brandBasePrice: Number(row.brand_base_price) || undefined,
-      markupAmount: Number(row.markup_amount) || undefined,
-      markupPercentage: Number(row.markup_percentage) || undefined,
-      discountPercentage: Number(row.discount_percentage) || undefined,
-      volume: row.volume || (Array.isArray(row.sizes) ? row.sizes.join(', ') : 'M'),
-      sizes: Array.isArray(row.sizes) ? row.sizes : [],
-      thumbnail: row.thumbnail || (Array.isArray(row.images) ? row.images[0] : ''),
-      fabric: row.fabric,
-      fit: row.fit,
-      gender: row.gender,
-      inventory: row.declared_inventory || 40,
-      inwardUnits: row.inward_units || 0,
-      unitsInTrial: row.units_in_trial || 0,
-      unitsSold: row.units_sold || 0,
-      tagline: row.tagline,
-      description: row.description,
-      images: Array.isArray(row.images) ? row.images : (row.thumbnail ? [row.thumbnail] : []),
-      inwardStatus: row.inward_status || 'Inwarded & Live',
-      warehouseLocation: row.shelf_details || (row.shelf_code ? { code: row.shelf_code, zone: '', rack: '', shelf: '', bin: '', hubName: 'Ahmedabad Hub' } : undefined),
-      isLive: Boolean(row.is_live)
-    }));
-  } catch {
-    return null;
-  }
+        return (data || []).map((row: any): DarkstoreProduct => ({
+          id: row.id,
+          sku: row.sku,
+          skuSerial: row.sku_serial,
+          name: row.name || row.title,
+          brandId: row.brand_id,
+          brandName: row.brand_name,
+          category: row.category,
+          subCategory: row.sub_category,
+          price: row.price,
+          originalPrice: Number(row.original_price) || undefined,
+          brandBasePrice: Number(row.brand_base_price) || undefined,
+          markupAmount: Number(row.markup_amount) || undefined,
+          markupPercentage: Number(row.markup_percentage) || undefined,
+          discountPercentage: Number(row.discount_percentage) || undefined,
+          volume: row.volume || (Array.isArray(row.sizes) ? row.sizes.join(', ') : 'M'),
+          sizes: Array.isArray(row.sizes) ? row.sizes : [],
+          thumbnail: row.thumbnail || (Array.isArray(row.images) ? row.images[0] : ''),
+          fabric: row.fabric,
+          fit: row.fit,
+          gender: row.gender,
+          inventory: row.declared_inventory || 40,
+          inwardUnits: row.inward_units || 0,
+          unitsInTrial: row.units_in_trial || 0,
+          unitsSold: row.units_sold || 0,
+          tagline: row.tagline,
+          description: row.description,
+          images: Array.isArray(row.images) ? row.images : (row.thumbnail ? [row.thumbnail] : []),
+          inwardStatus: row.inward_status || 'Inwarded & Live',
+          warehouseLocation: row.shelf_details || (row.shelf_code ? { code: row.shelf_code, zone: '', rack: '', shelf: '', bin: '', hubName: 'Ahmedabad Hub' } : undefined),
+          isLive: Boolean(row.is_live)
+        }));
+      } catch {
+        return null;
+      }
+    }
+  );
 }
 
-// Fetch all brands from Supabase
+// Fetch all brands from Supabase (Optimized with Redis/Memory Cache-Aside)
 export async function supabaseFetchBrands(): Promise<DarkstoreBrand[] | null> {
-  if (!supabase) return null;
-  try {
-    const { data, error } = await supabase
-      .from('drobe_brands')
-      .select('*')
-      .order('created_at', { ascending: false });
+  return cacheRemember(
+    'drobe:cache:brands:all',
+    CACHE_TTL.MEDIUM, // 300 seconds TTL
+    async () => {
+      if (!supabase) return null;
+      try {
+        const { data, error } = await supabase
+          .from('drobe_brands')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-    if (error) return null;
+        if (error) return null;
 
-    return (data || []).map((row: any): DarkstoreBrand => ({
-      id: row.id,
-      name: row.name,
-      tagline: row.tagline || '',
-      category: row.category || 'Male & Female',
-      founderName: row.founder_name || '',
-      founderRole: row.founder_role || 'Founder',
-      founderBio: row.founder_bio || '',
-      founderQuote: row.founder_quote || '',
-      about: row.about || '',
-      mission: row.mission || '',
-      values: Array.isArray(row.values) ? row.values : [],
-      website: row.website || '',
-      instagram: row.instagram || '',
-      inquiriesEmail: row.inquiries_email || '',
-      email: row.email || '',
-      phone: row.phone || '',
-      basedOutOf: row.based_out_of || 'Ahmedabad',
-      establishedYear: row.established_year || '',
-      status: row.status,
-      profileImage: row.profile_image,
-      coverImage: row.cover_image,
-      appliedDate: row.applied_date ? new Date(row.applied_date).toLocaleDateString() : 'Just Now',
-      approvedDate: row.approved_date ? new Date(row.approved_date).toLocaleDateString() : undefined,
-      totalProductsCount: row.total_products_count || 0,
-      inwardedUnitsCount: row.inwarded_units_count || 0,
-      bankAccount: {
-        accountHolderName: row.bank_account_holder || '',
-        bankName: row.bank_name || '',
-        accountNumber: row.bank_account_number || '',
-        ifscCode: row.bank_ifsc || '',
-        accountType: row.bank_account_type || 'Current',
-        isVerified: Boolean(row.bank_is_verified)
-      },
-      products: row.dossier_data?.products || [],
-      dossierData: row.dossier_data || null
-    }));
-  } catch {
-    return null;
-  }
+        return (data || []).map((row: any): DarkstoreBrand => ({
+          id: row.id,
+          name: row.name,
+          tagline: row.tagline || '',
+          category: row.category || 'Male & Female',
+          founderName: row.founder_name || '',
+          founderRole: row.founder_role || 'Founder',
+          founderBio: row.founder_bio || '',
+          founderQuote: row.founder_quote || '',
+          about: row.about || '',
+          mission: row.mission || '',
+          values: Array.isArray(row.values) ? row.values : [],
+          website: row.website || '',
+          instagram: row.instagram || '',
+          inquiriesEmail: row.inquiries_email || '',
+          email: row.email || '',
+          phone: row.phone || '',
+          basedOutOf: row.based_out_of || 'Ahmedabad',
+          establishedYear: row.established_year || '',
+          status: row.status,
+          profileImage: row.profile_image,
+          coverImage: row.cover_image,
+          appliedDate: row.applied_date ? new Date(row.applied_date).toLocaleDateString() : 'Just Now',
+          approvedDate: row.approved_date ? new Date(row.approved_date).toLocaleDateString() : undefined,
+          totalProductsCount: row.total_products_count || 0,
+          inwardedUnitsCount: row.inwarded_units_count || 0,
+          bankAccount: {
+            accountHolderName: row.bank_account_holder || '',
+            bankName: row.bank_name || '',
+            accountNumber: row.bank_account_number || '',
+            ifscCode: row.bank_ifsc || '',
+            accountType: row.bank_account_type || 'Current',
+            isVerified: Boolean(row.bank_is_verified)
+          },
+          products: row.dossier_data?.products || [],
+          dossierData: row.dossier_data || null
+        }));
+      } catch {
+        return null;
+      }
+    }
+  );
 }
 
 // Fetch all brands with their exact live products from drobe_products for Admin Panel
@@ -735,6 +747,15 @@ export async function supabaseUpsertBrand(brand: DarkstoreBrand | any): Promise<
         dossier_data: brand,
         updated_at: new Date().toISOString()
       });
+
+    if (!error) {
+      await Promise.allSettled([
+        invalidateCacheKey('drobe:cache:brands:all'),
+        brand.id ? invalidateBrandCache(brand.id) : Promise.resolve(),
+        brand.name ? invalidateBrandCache(brand.name) : Promise.resolve()
+      ]);
+    }
+
     return !error;
   } catch {
     return false;
@@ -773,6 +794,14 @@ export async function supabaseUpsertProduct(product: DarkstoreProduct): Promise<
         is_live: Boolean(product.isLive),
         updated_at: new Date().toISOString()
       });
+
+    if (!error) {
+      await Promise.allSettled([
+        invalidateCacheKey(CACHE_KEYS.ACTIVE_PRODUCTS_ALL),
+        product.brandId ? invalidateBrandCache(product.brandId) : Promise.resolve()
+      ]);
+    }
+
     return !error;
   } catch {
     return false;
@@ -1132,5 +1161,53 @@ export async function supabaseFetchStorefrontCategories(gender?: string): Promis
   });
 }
 
+// Live Supabase Database Health & Latency Verification
+export async function supabaseCheckDbHealth(): Promise<{
+  configured: boolean;
+  status: 'connected' | 'not_configured' | 'degraded';
+  latencyMs: number;
+  error?: string;
+}> {
+  if (!isSupabaseConfigured() || !supabase) {
+    return {
+      configured: false,
+      status: 'not_configured',
+      latencyMs: 0
+    };
+  }
+
+  const start = Date.now();
+  try {
+    const { data, error } = await supabase
+      .from('drobe_warehouses')
+      .select('id')
+      .limit(1);
+
+    const latency = Date.now() - start;
+    if (error) {
+      return {
+        configured: true,
+        status: 'degraded',
+        latencyMs: latency,
+        error: error.message
+      };
+    }
+
+    return {
+      configured: true,
+      status: 'connected',
+      latencyMs: latency
+    };
+  } catch (err: any) {
+    return {
+      configured: true,
+      status: 'degraded',
+      latencyMs: Date.now() - start,
+      error: err?.message || 'Database timeout'
+    };
+  }
+}
+
 export { invalidateBrandCache, invalidateCacheKey };
+
 
