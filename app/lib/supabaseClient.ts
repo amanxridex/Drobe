@@ -1055,7 +1055,15 @@ export async function supabaseFetchBrandProducts(brandIdOrSlug: string, brandNam
       .select('*')
       .eq('is_live', true);
 
-    query = query.or(`brand_id.eq.${slug},brand_id.eq.${stripped},brand_name.ilike.%${cleanBrandName}%`);
+    const orClauses: string[] = [
+      `brand_id.eq.${slug}`,
+      `brand_id.eq.${stripped}`
+    ];
+    if (cleanBrandName && cleanBrandName.length >= 2) {
+      orClauses.push(`brand_name.ilike.%${cleanBrandName}%`);
+    }
+
+    query = query.or(orClauses.join(','));
     query = query.order('sku_serial', { ascending: true });
 
     const { data, error } = await query;
@@ -1063,7 +1071,24 @@ export async function supabaseFetchBrandProducts(brandIdOrSlug: string, brandNam
       return null;
     }
 
-    return data.map(mapDbProductToStorefrontProduct);
+    // STRICT BRAND ISOLATION: Double check returned items so other brand items NEVER leak in
+    const strictlyFiltered = data.filter(item => {
+      const itemBrandId = (item.brand_id || '').toLowerCase().trim();
+      const itemBrandName = (item.brand_name || '').toLowerCase().trim();
+      const itemBrandSlug = slugify(itemBrandName);
+
+      if (itemBrandId && (itemBrandId === slug || itemBrandId === stripped)) return true;
+      if (itemBrandSlug && (itemBrandSlug === slug || itemBrandSlug === stripped)) return true;
+      if (cleanBrandName.length >= 2 && itemBrandName.length >= 2) {
+        if (itemBrandName === cleanBrandName.toLowerCase()) return true;
+        if (itemBrandName.includes(cleanBrandName.toLowerCase()) || cleanBrandName.toLowerCase().includes(itemBrandName)) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    return strictlyFiltered.map(mapDbProductToStorefrontProduct);
   } catch (err) {
     console.warn('Supabase fetch brand products exception:', err);
     return null;

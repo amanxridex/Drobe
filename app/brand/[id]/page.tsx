@@ -15,6 +15,28 @@ import BottomNav from '@/components/BottomNav';
 import ProductCard from '@/components/ProductCard';
 import { motion, AnimatePresence } from 'framer-motion';
 
+function isProductFromBrand(
+  productBrand: string | undefined,
+  brandSlug: string,
+  strippedBrandName: string,
+  brandDisplayName?: string
+): boolean {
+  if (!productBrand) return false;
+  const pb = productBrand.trim().toLowerCase();
+  if (!pb) return false;
+  const pbSlug = slugify(pb);
+  const targetStripped = strippedBrandName.trim().toLowerCase();
+  const targetName = (brandDisplayName || '').trim().toLowerCase();
+
+  if (pbSlug === brandSlug || pbSlug === slugify(strippedBrandName)) return true;
+  if (targetStripped && pb === targetStripped) return true;
+  if (targetName && targetName.length >= 2) {
+    if (pb === targetName) return true;
+    if (pb.includes(targetName) || targetName.includes(pb)) return true;
+  }
+  return false;
+}
+
 export default function BrandPage() {
   const params = useParams();
   const router = useRouter();
@@ -107,21 +129,31 @@ export default function BrandPage() {
             setBrandData(fallbackBrand);
           }
 
-          if (dbProducts && dbProducts.length > 0) {
-            setProducts(dbProducts);
+          const targetDisplayName = dbBrand?.name || fallbackBrand.name;
+          const strictlyBrandIsolated = (dbProducts || []).filter(p =>
+            isProductFromBrand(p.brand, brandSlug, strippedBrandName, targetDisplayName)
+          );
+
+          if (strictlyBrandIsolated.length > 0) {
+            setProducts(strictlyBrandIsolated);
           } else if (fallbackBrand.initialProducts && fallbackBrand.initialProducts.length > 0) {
-            setProducts(fallbackBrand.initialProducts);
+            const fallbackIsolated = fallbackBrand.initialProducts.filter(p =>
+              isProductFromBrand(p.brand, brandSlug, strippedBrandName, targetDisplayName)
+            );
+            setProducts(fallbackIsolated);
           } else {
-            // General catalog fallback if this specific brand doesn't have tagged items yet
-            const generalFallback = PRODUCTS.slice(0, 8);
-            setProducts(generalFallback);
+            // STRICT BRAND ISOLATION: Never show products of other brands!
+            setProducts([]);
           }
         }
       } catch (err) {
         console.warn('Error loading brand live data:', err);
         if (isMounted) {
           setBrandData(fallbackBrand);
-          setProducts(fallbackBrand.initialProducts.length > 0 ? fallbackBrand.initialProducts : PRODUCTS.slice(0, 8));
+          const fallbackIsolated = (fallbackBrand.initialProducts || []).filter(p =>
+            isProductFromBrand(p.brand, brandSlug, strippedBrandName, fallbackBrand.name)
+          );
+          setProducts(fallbackIsolated);
         }
       } finally {
         if (isMounted) {
@@ -135,7 +167,7 @@ export default function BrandPage() {
     return () => {
       isMounted = false;
     };
-  }, [rawBrandId, fallbackBrand]);
+  }, [rawBrandId, fallbackBrand, brandSlug, strippedBrandName]);
 
   const activeBrand = brandData || fallbackBrand;
 
@@ -449,11 +481,15 @@ export default function BrandPage() {
                   </svg>
                   <span>{activeBrand.based_out_of || 'Ahmedabad Hub #01'}</span>
                 </div>
-                <span>•</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ color: '#ffffff', fontWeight: 700 }}>{products.length}</span>
-                  <span>Products on Drobe</span>
-                </div>
+                {products.length > 0 && (
+                  <>
+                    <span>•</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ color: '#ffffff', fontWeight: 700 }}>{products.length}</span>
+                      <span>{products.length === 1 ? 'Product' : 'Products'}</span>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Story / About Accordion */}
@@ -539,93 +575,95 @@ export default function BrandPage() {
         </div>
 
         {/* ========================================================
-            3. CATEGORY PILLS & SORTING BAR
+            3. CATEGORY PILLS & SORTING BAR (Only shown when products exist)
             ======================================================== */}
-        <div
-          style={{
-            position: 'sticky',
-            top: 57,
-            zIndex: 35,
-            background: '#121214',
-            borderBottom: '1px solid #1f1f25',
-            padding: '10px 16px'
-          }}
-        >
-          {/* Category Filter Chips */}
+        {products.length > 0 && (
           <div
             style={{
-              display: 'flex',
-              gap: 8,
-              overflowX: 'auto',
-              scrollbarWidth: 'none',
-              paddingBottom: 4
+              position: 'sticky',
+              top: 57,
+              zIndex: 35,
+              background: '#121214',
+              borderBottom: '1px solid #1f1f25',
+              padding: '10px 16px'
             }}
           >
-            {availableCategories.map(cat => {
-              const isSelected = selectedCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
+            {/* Category Filter Chips */}
+            <div
+              style={{
+                display: 'flex',
+                gap: 8,
+                overflowX: 'auto',
+                scrollbarWidth: 'none',
+                paddingBottom: 4
+              }}
+            >
+              {availableCategories.map(cat => {
+                const isSelected = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: 20,
+                      border: isSelected ? '1px solid #ffffff' : '1px solid #2b2b36',
+                      background: isSelected ? '#ffffff' : '#1c1d24',
+                      color: isSelected ? '#000000' : '#a1a1aa',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Sub Bar: Items Count + Sort */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginTop: 8,
+                paddingTop: 8,
+                borderTop: '1px solid #1b1b20'
+              }}
+            >
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#8e8e93' }}>
+                Showing {filteredProducts.length} items
+              </span>
+
+              {/* Sort Toggle */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 11, color: '#71717a' }}>Sort:</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
                   style={{
-                    padding: '6px 14px',
-                    borderRadius: 20,
-                    border: isSelected ? '1px solid #ffffff' : '1px solid #2b2b36',
-                    background: isSelected ? '#ffffff' : '#1c1d24',
-                    color: isSelected ? '#000000' : '#a1a1aa',
-                    fontSize: 12,
-                    fontWeight: 700,
+                    background: '#1a1a22',
+                    color: '#ffffff',
+                    border: '1px solid #2e2f3d',
+                    borderRadius: 8,
+                    fontSize: 11.5,
+                    padding: '3px 8px',
+                    fontWeight: 600,
                     cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    transition: 'all 0.15s ease'
+                    outline: 'none'
                   }}
                 >
-                  {cat}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Sub Bar: Items Count + Sort */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginTop: 8,
-              paddingTop: 8,
-              borderTop: '1px solid #1b1b20'
-            }}
-          >
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#8e8e93' }}>
-              Showing {filteredProducts.length} items
-            </span>
-
-            {/* Sort Toggle */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ fontSize: 11, color: '#71717a' }}>Sort:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                style={{
-                  background: '#1a1a22',
-                  color: '#ffffff',
-                  border: '1px solid #2e2f3d',
-                  borderRadius: 8,
-                  fontSize: 11.5,
-                  padding: '3px 8px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  outline: 'none'
-                }}
-              >
-                <option value="popular">Popular</option>
-                <option value="low">Price: Low to High</option>
-                <option value="high">Price: High to Low</option>
-              </select>
+                  <option value="popular">Popular</option>
+                  <option value="low">Price: Low to High</option>
+                  <option value="high">Price: High to Low</option>
+                </select>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* ========================================================
             4. LIVE PRODUCT GRID (Authentic Drobe Luxury ProductCard)
@@ -683,29 +721,50 @@ export default function BrandPage() {
                 marginTop: 20
               }}
             >
-              <div style={{ fontSize: 32, marginBottom: 8 }}>✨</div>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>📦</div>
               <h3 style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0 }}>
-                New Drops Coming Soon
+                {products.length === 0 ? 'New Drops Coming Soon' : 'No items found'}
               </h3>
               <p style={{ fontSize: 12, color: '#8e8e93', marginTop: 4, maxWidth: 280, marginInline: 'auto' }}>
-                {activeBrand.name} inventory is being inwarded and shelved at Ahmedabad Darkstore Hub.
+                {products.length === 0
+                  ? `${activeBrand.name} inventory is being inwarded and shelved at Ahmedabad Darkstore Hub.`
+                  : `No products match the selected filter for ${activeBrand.name}.`}
               </p>
-              <button
-                onClick={() => setSelectedCategory('All')}
-                style={{
-                  marginTop: 16,
-                  padding: '8px 18px',
-                  borderRadius: 10,
-                  background: '#ffffff',
-                  color: '#000',
-                  fontWeight: 800,
-                  fontSize: 12,
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                View All Brand Items
-              </button>
+              {products.length > 0 ? (
+                <button
+                  onClick={() => setSelectedCategory('All')}
+                  style={{
+                    marginTop: 16,
+                    padding: '8px 18px',
+                    borderRadius: 10,
+                    background: '#ffffff',
+                    color: '#000',
+                    fontWeight: 800,
+                    fontSize: 12,
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  View All {activeBrand.name} Items
+                </button>
+              ) : (
+                <button
+                  onClick={() => router.push('/categories')}
+                  style={{
+                    marginTop: 16,
+                    padding: '8px 18px',
+                    borderRadius: 10,
+                    background: '#ffffff',
+                    color: '#000',
+                    fontWeight: 800,
+                    fontSize: 12,
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Explore Other Brands
+                </button>
+              )}
             </div>
           )}
         </div>
