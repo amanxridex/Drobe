@@ -37,7 +37,11 @@ import {
   Wallet,
   Receipt,
   TrendingUp,
-  ArrowDownRight
+  ArrowDownRight,
+  Users,
+  Smartphone,
+  Radio,
+  ShoppingBag
 } from 'lucide-react';
 import { 
   AHMEDABAD_WAREHOUSE,
@@ -62,23 +66,41 @@ import {
   syncDarkstoreWithSupabase,
   calculateDrobeMarkupPricing,
   getProductPricingInfo,
-  DrobeMarkupPricing
+  DrobeMarkupPricing,
+  DrobeUserProfile,
+  DrobeUserActivity,
+  getUserProfiles,
+  getUserActivities,
+  saveUserProfiles,
+  logUserActivity
 } from '../lib/darkstoreData';
 import { 
   subscribeToRealtimeOrders, 
   supabaseFetchAdminBrandsWithProducts, 
   supabaseFetchOrders,
+  supabaseFetchUserProfiles,
+  supabaseFetchUserActivities,
+  subscribeToRealtimeUserProfiles,
+  subscribeToRealtimeUserActivities,
+  supabaseUpsertUserProfile,
   slugify 
 } from '../lib/supabaseClient';
 import styles from './admin.module.css';
 
 export default function AdminDashboardPage() {
-  const [activeTab, setActiveTab] = useState<'inwarding' | 'inventory' | 'shelves' | 'trials' | 'approvals' | 'settlement'>('inwarding');
+  const [activeTab, setActiveTab] = useState<'inwarding' | 'inventory' | 'shelves' | 'trials' | 'approvals' | 'settlement' | 'users'>('inwarding');
   const [brands, setBrands] = useState<DarkstoreBrand[]>([]);
   const [products, setProducts] = useState<DarkstoreProduct[]>([]);
   const [inbounds, setInbounds] = useState<InboundStockShipment[]>([]);
   const [trialOrders, setTrialOrders] = useState<TrialOrder[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Customer User Profiles & Realtime Telemetry State
+  const [userProfiles, setUserProfiles] = useState<DrobeUserProfile[]>([]);
+  const [userActivities, setUserActivities] = useState<DrobeUserActivity[]>([]);
+  const [usersFilter, setUsersFilter] = useState<'all' | 'online' | 'trial' | 'offline'>('all');
+  const [usersSearch, setUsersSearch] = useState<string>('');
+  const [selectedCustomerModal, setSelectedCustomerModal] = useState<DrobeUserProfile | null>(null);
 
   // Wholesale Settlement & Margin Ledger State
   const [settlementSearch, setSettlementSearch] = useState<string>('');
@@ -156,11 +178,18 @@ export default function AdminDashboardPage() {
     setInbounds(getInboundShipments());
     setTrialOrders(getTrialOrders());
 
-    // 2. Query live Supabase DB for all partner brands, catalog creations, and live orders
+    const localUsers = getUserProfiles();
+    const localActs = getUserActivities();
+    if (localUsers.length > 0) setUserProfiles(localUsers);
+    if (localActs.length > 0) setUserActivities(localActs);
+
+    // 2. Query live Supabase DB for all partner brands, catalog creations, live orders, users & activities
     try {
-      const [dbData, dbOrders] = await Promise.all([
+      const [dbData, dbOrders, dbUsers, dbActs] = await Promise.all([
         supabaseFetchAdminBrandsWithProducts(),
-        supabaseFetchOrders()
+        supabaseFetchOrders(),
+        supabaseFetchUserProfiles(),
+        supabaseFetchUserActivities(50)
       ]);
       if (dbData && dbData.brands && dbData.products) {
         setBrands(dbData.brands);
@@ -168,6 +197,12 @@ export default function AdminDashboardPage() {
       }
       if (dbOrders && dbOrders.length > 0) {
         setTrialOrders(dbOrders);
+      }
+      if (dbUsers && dbUsers.length > 0) {
+        setUserProfiles(dbUsers);
+      }
+      if (dbActs && dbActs.length > 0) {
+        setUserActivities(dbActs);
       }
     } catch (err) {
       console.warn('Live fetch from Supabase failed, using cached data:', err);
@@ -187,8 +222,30 @@ export default function AdminDashboardPage() {
       }
     } catch {}
 
-    const unsubRealtime = subscribeToRealtimeOrders(() => {
+    const unsubRealtimeOrders = subscribeToRealtimeOrders(() => {
       syncDarkstoreWithSupabase().then(() => loadAllData());
+    });
+
+    const unsubRealtimeProfiles = subscribeToRealtimeUserProfiles((newProfile) => {
+      supabaseFetchUserProfiles().then((up) => {
+        if (up && up.length > 0) setUserProfiles(up);
+      });
+    });
+
+    const unsubRealtimeActivities = subscribeToRealtimeUserActivities((newAct) => {
+      if (newAct) {
+        setUserActivities(prev => [{
+          id: newAct.id || `act-${Date.now()}`,
+          userId: newAct.user_id,
+          userName: newAct.user_name,
+          activityType: newAct.activity_type,
+          title: newAct.title,
+          details: newAct.details || {},
+          screen: newAct.screen,
+          device: newAct.device,
+          timestamp: 'Just now'
+        }, ...prev].slice(0, 50));
+      }
     });
 
     const handleStorageChange = () => {
@@ -203,7 +260,9 @@ export default function AdminDashboardPage() {
     window.addEventListener('storage', handleStorageChange);
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      if (unsubRealtime) unsubRealtime();
+      if (unsubRealtimeOrders) unsubRealtimeOrders();
+      if (unsubRealtimeProfiles) unsubRealtimeProfiles();
+      if (unsubRealtimeActivities) unsubRealtimeActivities();
     };
   }, []);
 
@@ -215,6 +274,11 @@ export default function AdminDashboardPage() {
   const pendingInwardsCount = products.filter(p => p.inwardStatus !== 'Inwarded & Live').length;
   const liveSkusCount = products.filter(p => p.isLive).length;
   const activeTrialsCount = trialOrders.filter(o => o.status === 'Out for 30-Min Delivery' || o.status === 'Doorstep Fitting (Runner Waiting Outside)').length;
+
+  // Customer Telemetry Counts
+  const onlineUsersCount = userProfiles.filter(u => u.currentStatus === 'Active Browsing' || u.currentStatus === 'In Doorstep Trial').length;
+  const doorstepUsersCount = userProfiles.filter(u => u.currentStatus === 'In Doorstep Trial').length;
+  const totalRegisteredUsers = userProfiles.length;
 
   // Order & Return Telemetry Counts
   const orderCountActive = trialOrders.filter(o => o.status === 'Out for 30-Min Delivery').length;
@@ -471,6 +535,138 @@ export default function AdminDashboardPage() {
     setPayoutNotes('');
   };
 
+  const handleExportUsersCsv = () => {
+    try {
+      const headers = [
+        'ID',
+        'Customer Name',
+        'Email',
+        'Phone',
+        'City',
+        'Hub Zone',
+        'Top Size',
+        'Bottom Size',
+        'Footwear Size',
+        'Preferred Fit',
+        'Total Orders',
+        'Total Spent (INR)',
+        'Doorstep Trials',
+        'Kept Ratio %',
+        'Current Status',
+        'Current Screen',
+        'Device',
+        'Last Active'
+      ];
+
+      const rows = userProfiles.map(u => [
+        `"${u.id}"`,
+        `"${u.name}"`,
+        `"${u.email}"`,
+        `"${u.phone}"`,
+        `"${u.city}"`,
+        `"${u.hubZone}"`,
+        `"${u.topSize}"`,
+        `"${u.bottomSize}"`,
+        `"${u.footwearSize}"`,
+        `"${u.preferredFit}"`,
+        u.totalOrdersCount,
+        u.totalSpentInr,
+        u.doorstepTrialsCount,
+        u.keptRatioPercentage,
+        `"${u.currentStatus}"`,
+        `"${u.currentScreen}"`,
+        `"${u.deviceInfo}"`,
+        `"${u.lastActiveAt}"`
+      ].join(','));
+
+      const csvContent = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `DROBE_Customer_Directory_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      triggerToast('✓ Exported Customer Directory to CSV');
+    } catch {
+      triggerToast('Failed to export customer directory');
+    }
+  };
+
+  const handleSimulateUserActivity = () => {
+    if (userProfiles.length === 0) return;
+    const randomUser = userProfiles[Math.floor(Math.random() * userProfiles.length)];
+    const sampleActions: Array<{
+      type: 'PRODUCT_CLICK' | 'WISHLIST_ADD' | 'PAGE_VIEW' | 'PROFILE_EDIT';
+      title: string;
+      details: Record<string, any>;
+      screen: string;
+    }> = [
+      {
+        type: 'PRODUCT_CLICK',
+        title: `Viewing ${products[0]?.name || 'Acid Washed Boxy Tee'} (Size ${randomUser.topSize})`,
+        details: { sku: products[0]?.sku || 'DR3', brand: products[0]?.brandName || 'Underrated Club', price: products[0]?.price || '₹1,499', size: randomUser.topSize },
+        screen: 'Product Detail'
+      },
+      {
+        type: 'WISHLIST_ADD',
+        title: `Saved ${products[1]?.name || 'Minimal Linen Overshirt'} to Wishlist`,
+        details: { brand: products[1]?.brandName || 'Nova Studios', price: products[1]?.price || '₹2,199' },
+        screen: 'Brand Lookbook'
+      },
+      {
+        type: 'PAGE_VIEW',
+        title: 'Explored Trending Streetwear Category for Ahmedabad Hub',
+        details: { category: 'Streetwear', activeFilters: ['Drop Shoulder', 'Heavyweight'] },
+        screen: 'Category Feed'
+      },
+      {
+        type: 'PROFILE_EDIT',
+        title: `Updated Preferred Fit to ${randomUser.preferredFit} & Sizing Matrix`,
+        details: { preferredFit: randomUser.preferredFit, footwearSize: randomUser.footwearSize },
+        screen: 'Fashion Preferences'
+      }
+    ];
+
+    const chosen = sampleActions[Math.floor(Math.random() * sampleActions.length)];
+    const newAct = logUserActivity({
+      userId: randomUser.id,
+      userName: randomUser.name,
+      activityType: chosen.type,
+      title: chosen.title,
+      details: chosen.details,
+      screen: chosen.screen,
+      device: randomUser.deviceInfo
+    });
+
+    setUserActivities(prev => [newAct, ...prev].slice(0, 50));
+
+    const updatedProfiles = userProfiles.map(u => {
+      if (u.id === randomUser.id) {
+        return {
+          ...u,
+          currentStatus: 'Active Browsing' as const,
+          currentScreen: chosen.title,
+          lastActiveAt: 'Just now'
+        };
+      }
+      return u;
+    });
+    setUserProfiles(updatedProfiles);
+    saveUserProfiles(updatedProfiles);
+
+    try {
+      supabaseUpsertUserProfile({
+        id: randomUser.id,
+        currentStatus: 'Active Browsing',
+        currentScreen: chosen.title
+      }).catch(() => {});
+    } catch {}
+
+    triggerToast(`⚡ Live Activity Broadcast: ${randomUser.name} · ${chosen.title}`);
+  };
+
   // Handlers
   const handleApproveBrand = (brandId: string, brandName: string) => {
     const res = adminApproveBrand(brandId);
@@ -670,6 +866,29 @@ export default function AdminDashboardPage() {
     );
   });
 
+  const filteredUserProfiles = userProfiles.filter(u => {
+    if (usersFilter === 'online') return u.currentStatus === 'Active Browsing' || u.currentStatus === 'In Doorstep Trial';
+    if (usersFilter === 'trial') return u.currentStatus === 'In Doorstep Trial';
+    if (usersFilter === 'offline') return u.currentStatus === 'Offline';
+    return true;
+  }).filter(u => {
+    const q = (usersSearch || searchQuery).toLowerCase().trim();
+    if (!q) return true;
+    return (
+      (u.name && u.name.toLowerCase().includes(q)) ||
+      (u.email && u.email.toLowerCase().includes(q)) ||
+      (u.phone && u.phone.toLowerCase().includes(q)) ||
+      (u.city && u.city.toLowerCase().includes(q)) ||
+      (u.hubZone && u.hubZone.toLowerCase().includes(q)) ||
+      (u.currentScreen && u.currentScreen.toLowerCase().includes(q)) ||
+      (u.topSize && u.topSize.toLowerCase().includes(q)) ||
+      (u.bottomSize && u.bottomSize.toLowerCase().includes(q)) ||
+      (u.preferredFit && u.preferredFit.toLowerCase().includes(q)) ||
+      (Array.isArray(u.preferredStyles) && u.preferredStyles.some(s => s.toLowerCase().includes(q))) ||
+      (Array.isArray(u.favouriteBrands) && u.favouriteBrands.some(b => b.toLowerCase().includes(q)))
+    );
+  });
+
   return (
     <div className={styles.adminLayout}>
       {/* 1. DESKTOP LEFT SIDEBAR NAVIGATION */}
@@ -784,6 +1003,29 @@ export default function AdminDashboardPage() {
           </button>
 
           <div className={styles.sidebarSectionTitle} style={{ marginTop: '12px' }}>
+            Customer Telemetry
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('users')}
+            className={`${styles.sidebarNavItem} ${activeTab === 'users' ? styles.sidebarNavItemActive : ''}`}
+          >
+            <div className={styles.navItemLeft}>
+              <Users size={16} />
+              <span>Customers & Live Activity</span>
+            </div>
+            {onlineUsersCount > 0 ? (
+              <span className={`${styles.badgePill} ${styles.badgeGreen}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }}></span>
+                {onlineUsersCount} online
+              </span>
+            ) : (
+              <span className={`${styles.badgePill} ${styles.badgeBlue}`}>{totalRegisteredUsers}</span>
+            )}
+          </button>
+
+          <div className={styles.sidebarSectionTitle} style={{ marginTop: '12px' }}>
             External Hub Portals
           </div>
 
@@ -855,6 +1097,7 @@ export default function AdminDashboardPage() {
                 {activeTab === 'shelves' && 'Ahmedabad Warehouse Floor Plan & Rack Matrix'}
                 {activeTab === 'trials' && 'Doorstep Fitting & Instant Return Room'}
                 {activeTab === 'settlement' && 'Brand Wholesale Settlement & Margin Ledger'}
+                {activeTab === 'users' && 'Shopper Profiles & Real-time Live Activity Telemetry'}
               </h2>
               <div className={styles.topbarBreadcrumb}>
                 <span>Ahmedabad Darkstore Hub #01</span>
@@ -862,6 +1105,7 @@ export default function AdminDashboardPage() {
                 <span style={{ color: '#0f172a', fontWeight: 600 }}>
                   {activeTab === 'trials' ? 'Doorstep Fittings & Returns' : 
                    activeTab === 'settlement' ? 'Wholesale & Margin Ledger' :
+                   activeTab === 'users' ? 'Customers & Live Activity' :
                    (activeTab.charAt(0).toUpperCase() + activeTab.slice(1))}
                 </span>
               </div>
@@ -2868,6 +3112,432 @@ export default function AdminDashboardPage() {
               </div>
             </div>
           )}
+
+          {/* TAB 7: CUSTOMER PROFILES & REAL-TIME LIVE ACTIVITY TELEMETRY */}
+          {activeTab === 'users' && (
+            <div>
+              {/* Header Ribbon & Control Bar */}
+              <div className={styles.sectionCard} style={{ marginBottom: '16px' }}>
+                <div className={styles.sectionHeader} style={{ flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className={styles.hubStatusLiveDot} />
+                      <h3 className={styles.sectionTitle} style={{ margin: 0 }}>
+                        <Users size={18} color="#0284c7" />
+                        Customer Intelligence & Live Activity Telemetry
+                      </h3>
+                      <span style={{ fontSize: '10.5px', background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '2px 8px', borderRadius: '12px', fontWeight: 800 }}>
+                        Live Supabase Sync
+                      </span>
+                    </div>
+                    <p className={styles.sectionDesc} style={{ marginTop: '4px' }}>
+                      Real-time database monitor of registered shoppers on DROBE, sizing profiles, doorstep trial conversion metrics, live screen presence, and real-time activity stream.
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={handleSimulateUserActivity}
+                      className={styles.btnSecondary}
+                      style={{ padding: '7px 12px', fontSize: '11.5px', gap: '6px', background: '#eff6ff', borderColor: '#bfdbfe', color: '#1d4ed8', fontWeight: 700 }}
+                      title="Simulate live shopper action broadcasted via Supabase Realtime"
+                    >
+                      <Radio size={14} color="#2563eb" />
+                      <span>Simulate Live Shopper Action</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleExportUsersCsv}
+                      className={styles.btnSecondary}
+                      style={{ padding: '7px 12px', fontSize: '11.5px', gap: '6px', fontWeight: 700 }}
+                    >
+                      <Download size={14} />
+                      <span>Export Shoppers CSV</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 4 Dedicated Telemetry KPI Cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '12px', marginTop: '16px' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px 14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
+                        Total Registered Shoppers
+                      </span>
+                      <Users size={16} color="#0284c7" />
+                    </div>
+                    <div style={{ fontSize: '24px', fontWeight: 900, color: '#0f172a', marginTop: '4px' }}>
+                      {totalRegisteredUsers}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#0284c7', fontWeight: 600, marginTop: '2px' }}>
+                      Ahmedabad Hub Network
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '12px 14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '11px', color: '#166534', fontWeight: 700, textTransform: 'uppercase' }}>
+                        Active Online Now
+                      </span>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
+                    </div>
+                    <div style={{ fontSize: '24px', fontWeight: 900, color: '#15803d', marginTop: '4px' }}>
+                      {onlineUsersCount}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#166534', fontWeight: 600, marginTop: '2px' }}>
+                      Browsing catalog or in fitting
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: '12px', padding: '12px 14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '11px', color: '#6b21a8', fontWeight: 700, textTransform: 'uppercase' }}>
+                        In Doorstep Trial Window
+                      </span>
+                      <Truck size={16} color="#9333ea" />
+                    </div>
+                    <div style={{ fontSize: '24px', fontWeight: 900, color: '#7e22ce', marginTop: '4px' }}>
+                      {doorstepUsersCount}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#7e22ce', fontWeight: 600, marginTop: '2px' }}>
+                      6-min fitting trial with runner outside
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '12px 14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '11px', color: '#92400e', fontWeight: 700, textTransform: 'uppercase' }}>
+                        Platform Kept Ratio
+                      </span>
+                      <TrendingUp size={16} color="#d97706" />
+                    </div>
+                    <div style={{ fontSize: '24px', fontWeight: 900, color: '#b45309', marginTop: '4px' }}>
+                      {(userProfiles.reduce((acc, u) => acc + (u.keptRatioPercentage || 0), 0) / (userProfiles.length || 1)).toFixed(0)}%
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#b45309', fontWeight: 600, marginTop: '2px' }}>
+                      ₹{userProfiles.reduce((acc, u) => acc + (u.totalSpentInr || 0), 0).toLocaleString('en-IN')} cumulative spend
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Two-Column Split Layout: Shoppers Directory Table (Left) + Live Telemetry Stream (Right) */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.8fr) minmax(360px, 1.2fr)', gap: '16px', alignItems: 'start' }}>
+                {/* LEFT: Customer Profiles Directory */}
+                <div className={styles.sectionCard} style={{ margin: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+                    {/* Filter Pills */}
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => setUsersFilter('all')}
+                        className={`${styles.filterBtn} ${usersFilter === 'all' ? styles.filterBtnActive : ''}`}
+                        style={{ padding: '5px 10px', fontSize: '11.5px' }}
+                      >
+                        All Shoppers ({userProfiles.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setUsersFilter('online')}
+                        className={`${styles.filterBtn} ${usersFilter === 'online' ? styles.filterBtnActive : ''}`}
+                        style={{ padding: '5px 10px', fontSize: '11.5px' }}
+                      >
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
+                        Online Now ({onlineUsersCount})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setUsersFilter('trial')}
+                        className={`${styles.filterBtn} ${usersFilter === 'trial' ? styles.filterBtnActive : ''}`}
+                        style={{ padding: '5px 10px', fontSize: '11.5px' }}
+                      >
+                        In Fitting Trial ({doorstepUsersCount})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setUsersFilter('offline')}
+                        className={`${styles.filterBtn} ${usersFilter === 'offline' ? styles.filterBtnActive : ''}`}
+                        style={{ padding: '5px 10px', fontSize: '11.5px' }}
+                      >
+                        Offline ({userProfiles.filter(u => u.currentStatus === 'Offline').length})
+                      </button>
+                    </div>
+
+                    {/* Filter Search Input */}
+                    <div style={{ position: 'relative', width: '240px' }}>
+                      <Search size={13} color="#94a3b8" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="text"
+                        value={usersSearch}
+                        onChange={(e) => setUsersSearch(e.target.value)}
+                        placeholder="Search name, phone, size..."
+                        style={{
+                          width: '100%',
+                          padding: '6px 10px 6px 30px',
+                          borderRadius: '8px',
+                          border: '1px solid #cbd5e1',
+                          fontSize: '11.5px',
+                          outline: 'none',
+                          background: '#f8fafc'
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Customer Profiles Directory Table */}
+                  <div style={{ overflowX: 'auto' }}>
+                    <table className={styles.lightTable}>
+                      <thead>
+                        <tr>
+                          <th>Shopper Profile</th>
+                          <th>Fashion Sizing</th>
+                          <th>Style &amp; Brands</th>
+                          <th>Live Status &amp; Screen</th>
+                          <th>Spend &amp; Kept Ratio</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredUserProfiles.map((u) => {
+                          const isOnline = u.currentStatus === 'Active Browsing';
+                          const isInTrial = u.currentStatus === 'In Doorstep Trial';
+
+                          return (
+                            <tr key={u.id}>
+                              <td>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                  {u.avatar ? (
+                                    <img
+                                      src={u.avatar}
+                                      alt={u.name}
+                                      style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid #cbd5e1' }}
+                                    />
+                                  ) : (
+                                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>
+                                      {u.name.slice(0, 1)}
+                                    </div>
+                                  )}
+                                  <div>
+                                    <div style={{ fontWeight: 800, fontSize: '13px', color: '#0f172a' }}>
+                                      {u.name}
+                                    </div>
+                                    <div style={{ fontSize: '10.5px', color: '#64748b' }}>
+                                      {u.phone} · <span style={{ color: '#0284c7' }}>{u.email}</span>
+                                    </div>
+                                    <div style={{ fontSize: '9.5px', color: '#94a3b8', marginTop: '2px' }}>
+                                      📍 {u.hubZone}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                                  <div style={{ display: 'flex', gap: '4px' }}>
+                                    <span style={{ fontSize: '9.5px', fontWeight: 800, background: '#eff6ff', color: '#1e40af', padding: '1px 6px', borderRadius: '4px', border: '1px solid #bfdbfe' }}>
+                                      Top: {u.topSize}
+                                    </span>
+                                    <span style={{ fontSize: '9.5px', fontWeight: 800, background: '#f5f3ff', color: '#6b21a8', padding: '1px 6px', borderRadius: '4px', border: '1px solid #ddd6fe' }}>
+                                      Bottom: {u.bottomSize}
+                                    </span>
+                                  </div>
+                                  <div style={{ display: 'flex', gap: '4px' }}>
+                                    <span style={{ fontSize: '9px', fontWeight: 700, background: '#f1f5f9', color: '#475569', padding: '1px 5px', borderRadius: '4px' }}>
+                                      Shoes: {u.footwearSize}
+                                    </span>
+                                    <span style={{ fontSize: '9px', fontWeight: 700, background: '#fef3c7', color: '#92400e', padding: '1px 5px', borderRadius: '4px' }}>
+                                      Fit: {u.preferredFit}
+                                    </span>
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '170px' }}>
+                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px' }}>
+                                    {(u.preferredStyles || []).slice(0, 2).map((s, idx) => (
+                                      <span key={idx} style={{ fontSize: '9px', fontWeight: 700, background: '#f1f5f9', color: '#334155', padding: '1px 5px', borderRadius: '3px' }}>
+                                        {s}
+                                      </span>
+                                    ))}
+                                    {(u.preferredStyles || []).length > 2 && (
+                                      <span style={{ fontSize: '9px', color: '#64748b' }}>
+                                        +{(u.preferredStyles || []).length - 2}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div style={{ fontSize: '9.5px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    Brands: {(u.favouriteBrands || []).join(', ') || 'Various'}
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td>
+                                <div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    {isOnline ? (
+                                      <span className={`${styles.statusChip} ${styles.statusLive}`} style={{ padding: '2px 7px', fontSize: '10px' }}>
+                                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+                                        Active Browsing
+                                      </span>
+                                    ) : isInTrial ? (
+                                      <span style={{ background: '#faf5ff', color: '#7e22ce', border: '1px solid #d8b4fe', padding: '2px 7px', borderRadius: '12px', fontSize: '10px', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                        <Truck size={10} /> In Doorstep Trial
+                                      </span>
+                                    ) : (
+                                      <span style={{ background: '#f1f5f9', color: '#64748b', border: '1px solid #cbd5e1', padding: '2px 7px', borderRadius: '12px', fontSize: '10px', fontWeight: 700 }}>
+                                        Offline
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#0f172a', marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '170px' }}>
+                                    {u.currentScreen}
+                                  </div>
+                                  <div style={{ fontSize: '9.5px', color: '#64748b' }}>
+                                    {u.deviceInfo} · <span style={{ color: '#0284c7' }}>{u.lastActiveAt}</span>
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td>
+                                <div>
+                                  <div style={{ fontWeight: 800, fontSize: '12.5px', color: '#0f172a' }}>
+                                    ₹{u.totalSpentInr.toLocaleString('en-IN')}
+                                  </div>
+                                  <div style={{ fontSize: '10px', color: '#64748b' }}>
+                                    {u.totalOrdersCount} Orders · {u.doorstepTrialsCount} Trials
+                                  </div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                                    <div style={{ width: '50px', height: '5px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                                      <div style={{ width: `${u.keptRatioPercentage}%`, height: '100%', background: u.keptRatioPercentage >= 80 ? '#10b981' : '#f59e0b' }} />
+                                    </div>
+                                    <span style={{ fontSize: '9.5px', fontWeight: 800, color: u.keptRatioPercentage >= 80 ? '#047857' : '#d97706' }}>
+                                      {u.keptRatioPercentage}% Kept
+                                    </span>
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td>
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedCustomerModal(u)}
+                                  className={styles.btnSecondary}
+                                  style={{ padding: '5px 10px', fontSize: '11px', gap: '4px', fontWeight: 700 }}
+                                >
+                                  <Eye size={12} /> Inspect
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* RIGHT: Real-time Live Activity Telemetry Radar */}
+                <div className={styles.sectionCard} style={{ margin: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className={styles.hubStatusLiveDot} />
+                        <h4 style={{ margin: 0, fontSize: '13.5px', fontWeight: 800, color: '#0f172a' }}>
+                          Live Activity Stream
+                        </h4>
+                      </div>
+                      <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px' }}>
+                        Realtime Supabase Telemetry Broadcast
+                      </div>
+                    </div>
+
+                    <span style={{ fontSize: '10px', background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '2px 8px', borderRadius: '12px', fontWeight: 800 }}>
+                      ⚡ Real-Time
+                    </span>
+                  </div>
+
+                  {/* Activity List Container */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '680px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {userActivities.map((act) => {
+                      let typeBg = '#eff6ff';
+                      let typeColor = '#1d4ed8';
+                      let typeLabel = 'Activity';
+
+                      if (act.activityType === 'PRODUCT_CLICK') {
+                        typeBg = '#fff7ed';
+                        typeColor = '#c2410c';
+                        typeLabel = 'Product Click';
+                      } else if (act.activityType === 'DOORSTEP_TRIAL_START') {
+                        typeBg = '#faf5ff';
+                        typeColor = '#7e22ce';
+                        typeLabel = 'Doorstep Fitting';
+                      } else if (act.activityType === 'WISHLIST_ADD') {
+                        typeBg = '#fdf2f8';
+                        typeColor = '#be185d';
+                        typeLabel = 'Wishlist';
+                      } else if (act.activityType === 'PROFILE_EDIT') {
+                        typeBg = '#f0fdf4';
+                        typeColor = '#15803d';
+                        typeLabel = 'Profile Edit';
+                      } else if (act.activityType === 'PAGE_VIEW') {
+                        typeBg = '#ecfeff';
+                        typeColor = '#0e7490';
+                        typeLabel = 'Browse View';
+                      }
+
+                      return (
+                        <div
+                          key={act.id}
+                          style={{
+                            background: '#ffffff',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '10px',
+                            padding: '10px 12px',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <span style={{ fontSize: '9.5px', fontWeight: 800, background: typeBg, color: typeColor, padding: '1px 6px', borderRadius: '4px' }}>
+                                {typeLabel}
+                              </span>
+                              <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#0f172a' }}>
+                                {act.userName}
+                              </span>
+                            </div>
+                            <span style={{ fontSize: '10px', color: '#94a3b8' }}>
+                              {act.timestamp}
+                            </span>
+                          </div>
+
+                          <div style={{ fontSize: '11.5px', color: '#334155', fontWeight: 600, lineHeight: 1.4 }}>
+                            {act.title}
+                          </div>
+
+                          {act.details && Object.keys(act.details).length > 0 && (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '6px' }}>
+                              {Object.entries(act.details).map(([k, v]) => (
+                                <span key={k} style={{ fontSize: '9.5px', background: '#f8fafc', border: '1px solid #e2e8f0', padding: '1px 6px', borderRadius: '4px', color: '#475569' }}>
+                                  <strong>{k}:</strong> {String(v)}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid #f1f5f9', fontSize: '10px', color: '#64748b' }}>
+                            <span>📱 {act.device || 'Mobile App'}</span>
+                            <span style={{ color: '#0284c7' }}>{act.screen || 'App'}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
 
@@ -4146,6 +4816,265 @@ export default function AdminDashboardPage() {
                 style={{ background: '#059669', borderColor: '#047857', padding: '8px 20px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}
               >
                 <CheckCircle2 size={14} /> Disburse ₹{settlementModalBrand.wholesalePayoutDue.toLocaleString('en-IN')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. CUSTOMER PROFILE DEEP DIVE DOSSIER MODAL */}
+      {selectedCustomerModal && (
+        <div className={styles.modalOverlay} onClick={() => setSelectedCustomerModal(null)}>
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '820px', width: '95vw', padding: 0, overflow: 'hidden', borderRadius: '20px' }}
+          >
+            {/* Header Banner */}
+            <div
+              style={{
+                padding: '24px 28px',
+                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                color: '#ffffff',
+                position: 'relative'
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setSelectedCustomerModal(null)}
+                style={{
+                  position: 'absolute',
+                  top: '18px',
+                  right: '18px',
+                  background: 'rgba(255,255,255,0.15)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#ffffff',
+                  cursor: 'pointer'
+                }}
+                aria-label="Close"
+              >
+                <X size={16} />
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                {selectedCustomerModal.avatar ? (
+                  <img
+                    src={selectedCustomerModal.avatar}
+                    alt={selectedCustomerModal.name}
+                    style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.3)' }}
+                  />
+                ) : (
+                  <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '24px' }}>
+                    {selectedCustomerModal.name.slice(0, 1)}
+                  </div>
+                )}
+
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h2 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: '#ffffff' }}>
+                      {selectedCustomerModal.name}
+                    </h2>
+                    <span style={{ background: '#38bdf8', color: '#0f172a', fontSize: '10px', fontWeight: 800, padding: '2px 8px', borderRadius: '12px' }}>
+                      VERIFIED SHOPPER
+                    </span>
+                    <span style={{
+                      background: selectedCustomerModal.currentStatus === 'Active Browsing' ? '#22c55e' : selectedCustomerModal.currentStatus === 'In Doorstep Trial' ? '#a855f7' : 'rgba(255,255,255,0.2)',
+                      color: '#ffffff',
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      padding: '2px 8px',
+                      borderRadius: '12px'
+                    }}>
+                      {selectedCustomerModal.currentStatus}
+                    </span>
+                  </div>
+
+                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#94a3b8' }}>
+                    {selectedCustomerModal.email} · {selectedCustomerModal.phone} · UPI: <code>{selectedCustomerModal.upiId}</code>
+                  </p>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#38bdf8' }}>
+                    📍 {selectedCustomerModal.hubZone} ({selectedCustomerModal.city})
+                  </p>
+                </div>
+              </div>
+
+              {/* Metrics Strip */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+                  gap: '10px',
+                  marginTop: '18px',
+                  paddingTop: '16px',
+                  borderTop: '1px solid rgba(255,255,255,0.1)'
+                }}
+              >
+                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#38bdf8' }}>
+                    ₹{selectedCustomerModal.totalSpentInr.toLocaleString('en-IN')}
+                  </div>
+                  <div style={{ fontSize: '10.5px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Spend (GMV)</div>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#4ade80' }}>
+                    {selectedCustomerModal.totalOrdersCount} Orders
+                  </div>
+                  <div style={{ fontSize: '10.5px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Purchase Count</div>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#fbbf24' }}>
+                    {selectedCustomerModal.doorstepTrialsCount} Trials
+                  </div>
+                  <div style={{ fontSize: '10.5px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Doorstep Sessions</div>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#c084fc' }}>
+                    {selectedCustomerModal.keptRatioPercentage}%
+                  </div>
+                  <div style={{ fontSize: '10.5px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Fitting Kept Ratio</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Body: Sizing & Telemetry Details */}
+            <div style={{ padding: '20px 24px', maxHeight: '58vh', overflowY: 'auto' }}>
+              {/* 1. Fashion Sizing Profile */}
+              <div style={{ marginBottom: '18px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  👗 Fashion Sizing Matrix &amp; Cut Preferences
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Top / Upper</div>
+                    <div style={{ fontSize: '16px', fontWeight: 900, color: '#0284c7', marginTop: '2px' }}>{selectedCustomerModal.topSize}</div>
+                  </div>
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Waist / Denim</div>
+                    <div style={{ fontSize: '16px', fontWeight: 900, color: '#7e22ce', marginTop: '2px' }}>{selectedCustomerModal.bottomSize}</div>
+                  </div>
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Footwear</div>
+                    <div style={{ fontSize: '16px', fontWeight: 900, color: '#b45309', marginTop: '2px' }}>{selectedCustomerModal.footwearSize}</div>
+                  </div>
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Silhouette Fit</div>
+                    <div style={{ fontSize: '16px', fontWeight: 900, color: '#15803d', marginTop: '2px' }}>{selectedCustomerModal.preferredFit}</div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+                  {(selectedCustomerModal.preferredStyles || []).map((st, i) => (
+                    <span key={i} style={{ fontSize: '11px', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                      🏷️ {st}
+                    </span>
+                  ))}
+                  {(selectedCustomerModal.favouriteBrands || []).map((b, i) => (
+                    <span key={i} style={{ fontSize: '11px', background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                      ⭐ {b}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2. Real-time Telemetry & Presence */}
+              <div style={{ marginBottom: '18px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px' }}>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  📱 Real-Time Presence &amp; Active Device Telemetry
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', fontSize: '11.5px' }}>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Current Screen:</span>
+                    <div style={{ fontWeight: 800, color: '#0f172a', marginTop: '1px' }}>{selectedCustomerModal.currentScreen}</div>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Hardware Device:</span>
+                    <div style={{ fontWeight: 800, color: '#0f172a', marginTop: '1px' }}>{selectedCustomerModal.deviceInfo}</div>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Last Ping:</span>
+                    <div style={{ fontWeight: 800, color: '#0284c7', marginTop: '1px' }}>{selectedCustomerModal.lastActiveAt}</div>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b' }}>IP Address:</span>
+                    <div style={{ fontWeight: 800, color: '#475569', marginTop: '1px' }}>{selectedCustomerModal.ipAddress || '103.24.112.5'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Linked Doorstep Trial Orders */}
+              {(() => {
+                const userOrders = trialOrders.filter(o => 
+                  (o.customerPhone && o.customerPhone === selectedCustomerModal.phone) ||
+                  (o.customerName && o.customerName.toLowerCase() === selectedCustomerModal.name.toLowerCase())
+                );
+
+                return (
+                  <div>
+                    <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      📦 Doorstep Fitting Orders ({userOrders.length})
+                    </h4>
+
+                    {userOrders.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {userOrders.map((ord) => (
+                          <div key={ord.id} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span style={{ fontWeight: 900, fontSize: '13px', color: '#0284c7' }}>{ord.orderNumber}</span>
+                                <span style={{ fontSize: '10px', fontWeight: 800, padding: '1px 6px', borderRadius: '4px', background: '#eff6ff', color: '#1d4ed8' }}>
+                                  {ord.status}
+                                </span>
+                              </div>
+                              <div style={{ fontSize: '11px', color: '#334155', fontWeight: 600, marginTop: '2px' }}>
+                                {ord.productName} ({ord.price})
+                              </div>
+                              <div style={{ fontSize: '10px', color: '#64748b' }}>
+                                Shelf: <code>{ord.shelfLocation}</code> · Runner: {ord.riderName || 'Pending'}
+                              </div>
+                            </div>
+
+                            <div style={{ textAlign: 'right' }}>
+                              <div style={{ fontWeight: 800, fontSize: '12.5px', color: '#0f172a' }}>{ord.price}</div>
+                              <div style={{ fontSize: '10px', color: '#16a34a' }}>
+                                Kept: ₹{ord.keptAmount ?? 0}
+                              </div>
+                              {ord.refundAmount && ord.refundAmount > 0 && (
+                                <div style={{ fontSize: '10px', color: '#d97706' }}>
+                                  Refunded: ₹{ord.netRefundAmount ?? ord.refundAmount}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ padding: '16px', textAlign: 'center', background: '#f8fafc', borderRadius: '10px', color: '#64748b', fontSize: '12px' }}>
+                        No orders recorded under this phone number yet.
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '14px 24px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedCustomerModal(null)}
+                className={styles.btnSecondary}
+                style={{ padding: '8px 20px', fontWeight: 700 }}
+              >
+                Close Dossier
               </button>
             </div>
           </div>

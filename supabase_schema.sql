@@ -720,3 +720,215 @@ CREATE POLICY "Public read/write on shipments" ON drobe_inbound_shipments FOR AL
 CREATE POLICY "Public read/write on runners" ON drobe_runners FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Public read/write on orders" ON drobe_trial_orders FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Public read/write on events" ON drobe_order_events FOR ALL USING (true) WITH CHECK (true);
+
+-- ==============================================================================
+-- 14. CUSTOMER USER PROFILES & TELEMETRY
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS drobe_user_profiles (
+    id VARCHAR(128) PRIMARY KEY,          -- e.g. "usr_aman_01"
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    phone VARCHAR(64) NOT NULL UNIQUE,
+    avatar TEXT,
+    city VARCHAR(128) DEFAULT 'Ahmedabad',
+    hub_zone VARCHAR(255) DEFAULT 'Ahmedabad Darkstore Hub #01 (SG Highway)',
+    top_size VARCHAR(32) DEFAULT 'L',
+    bottom_size VARCHAR(32) DEFAULT '32',
+    footwear_size VARCHAR(32) DEFAULT 'UK 9',
+    preferred_fit VARCHAR(64) DEFAULT 'Relaxed',
+    preferred_styles JSONB DEFAULT '["Streetwear", "Casual", "Minimal", "Oversized"]'::jsonb,
+    favourite_brands JSONB DEFAULT '["SNITCH", "The Souled Store", "Tilt", "Mark Leute"]'::jsonb,
+    saved_addresses JSONB DEFAULT '[]'::jsonb,
+    upi_id VARCHAR(128) DEFAULT 'aman@okhdfcbank',
+    total_orders_count INT DEFAULT 0,
+    total_spent_inr INT DEFAULT 0,
+    doorstep_trials_count INT DEFAULT 0,
+    kept_ratio_percentage INT DEFAULT 100,
+    current_status VARCHAR(64) DEFAULT 'Active Browsing',
+    -- Statuses: 'Active Browsing', 'In Doorstep Trial', 'Trial Bag Out', 'Offline'
+    current_screen VARCHAR(255) DEFAULT 'Home Feed',
+    device_info VARCHAR(255) DEFAULT 'iPhone 16 Pro · iOS 18.2',
+    ip_address VARCHAR(64) DEFAULT '103.24.112.5',
+    last_active_at TIMESTAMPTZ DEFAULT NOW(),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ==============================================================================
+-- 15. REAL-TIME USER ACTIVITY STREAM (Audit & Telemetry Log)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS drobe_user_activities (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id VARCHAR(128) REFERENCES drobe_user_profiles(id) ON DELETE CASCADE,
+    user_name VARCHAR(255) NOT NULL,
+    activity_type VARCHAR(64) NOT NULL,
+    -- Types: 'PAGE_VIEW', 'PRODUCT_CLICK', 'WISHLIST_ADD', 'TRIAL_ORDER_PLACED', 
+    --        'DOORSTEP_TRIAL_START', 'ITEM_KEPT', 'ITEM_RETURNED', 'PROFILE_EDIT'
+    title VARCHAR(255) NOT NULL,
+    details JSONB DEFAULT '{}'::jsonb,
+    screen VARCHAR(128),
+    ip_address VARCHAR(64),
+    device VARCHAR(128),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes for User Telemetry & Fast Filtering
+CREATE INDEX IF NOT EXISTS idx_users_email ON drobe_user_profiles(email);
+CREATE INDEX IF NOT EXISTS idx_users_phone ON drobe_user_profiles(phone);
+CREATE INDEX IF NOT EXISTS idx_users_last_active ON drobe_user_profiles(last_active_at DESC);
+CREATE INDEX IF NOT EXISTS idx_users_status ON drobe_user_profiles(current_status);
+CREATE INDEX IF NOT EXISTS idx_activities_user_id ON drobe_user_activities(user_id);
+CREATE INDEX IF NOT EXISTS idx_activities_created_at ON drobe_user_activities(created_at DESC);
+
+-- Enable Realtime Broadcasting on Supabase for Users & Activities
+ALTER PUBLICATION supabase_realtime ADD TABLE drobe_user_profiles;
+ALTER PUBLICATION supabase_realtime ADD TABLE drobe_user_activities;
+
+-- Row Level Security
+ALTER TABLE drobe_user_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE drobe_user_activities ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read/write on user profiles" ON drobe_user_profiles FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read/write on user activities" ON drobe_user_activities FOR ALL USING (true) WITH CHECK (true);
+
+-- Auto-update trigger
+DROP TRIGGER IF EXISTS trigger_drobe_users_updated ON drobe_user_profiles;
+CREATE TRIGGER trigger_drobe_users_updated BEFORE UPDATE ON drobe_user_profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ==============================================================================
+-- 16. SEED DATA: ACTIVE AHMEDABAD CUSTOMERS & LIVE ACTIVITY LOG
+-- ==============================================================================
+INSERT INTO drobe_user_profiles (
+    id, name, email, phone, avatar, city, hub_zone,
+    top_size, bottom_size, footwear_size, preferred_fit,
+    preferred_styles, favourite_brands, upi_id,
+    total_orders_count, total_spent_inr, doorstep_trials_count, kept_ratio_percentage,
+    current_status, current_screen, device_info, last_active_at
+) VALUES 
+    (
+        'usr_aman_01',
+        'Aman Mishra',
+        'aman@example.com',
+        '+91 98250 88123',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+        'Ahmedabad',
+        'Ahmedabad Darkstore Hub #01 (SG Highway)',
+        'L', '32', 'UK 9', 'Relaxed',
+        '["Streetwear", "Casual", "Minimal", "Oversized"]'::jsonb,
+        '["SNITCH", "The Souled Store", "Tilt", "Mark Leute"]'::jsonb,
+        'aman@okhdfcbank',
+        4, 12890, 4, 100,
+        'Active Browsing', 'Viewing Mark Leute Hoodie', 'iPhone 16 Pro · iOS 18.2', NOW()
+    ),
+    (
+        'usr_pooja_02',
+        'Pooja Shah',
+        'pooja.shah@gmail.com',
+        '+91 98792 33410',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
+        'Ahmedabad',
+        'Bopal Darkstore Express Zone',
+        'M', '28', 'UK 6', 'Regular',
+        '["Minimal", "Casual", "Athleisure"]'::jsonb,
+        '["Tilt", "Mark Leute", "Bluorng"]'::jsonb,
+        'pooja@axisbank',
+        3, 8400, 3, 100,
+        'In Doorstep Trial', '6-Minute Doorstep Fitting Window', 'OnePlus 12 · Android 14', NOW() - INTERVAL '4 minutes'
+    ),
+    (
+        'usr_harshil_03',
+        'Harshil Patel',
+        'harshil.p@outlook.com',
+        '+91 97120 44912',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+        'Ahmedabad',
+        'Motera & Koteshwar Express Hub',
+        'XL', '34', 'UK 10', 'Oversized',
+        '["Streetwear", "Oversized", "Drop Shoulder"]'::jsonb,
+        '["SNITCH", "Huemn", "VegNonVeg"]'::jsonb,
+        'harshil@okaxis',
+        5, 15200, 6, 83,
+        'Active Browsing', 'Catalog Category Filter: Outerwear', 'Samsung Galaxy S24 Ultra', NOW() - INTERVAL '12 minutes'
+    ),
+    (
+        'usr_tanya_04',
+        'Tanya Joshi',
+        'tanya.j@icloud.com',
+        '+91 99041 55201',
+        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80',
+        'Ahmedabad',
+        'Satellite & Vastrapur Hub #02',
+        'S', '26', 'UK 5', 'Slim',
+        '["Minimal", "Contemporary", "Streetwear"]'::jsonb,
+        '["The Souled Store", "Tilt"]'::jsonb,
+        'tanyaj@paytm',
+        2, 6500, 2, 100,
+        'Offline', 'Home Feed', 'iPhone 15 · iOS 18.1', NOW() - INTERVAL '2 hours'
+    ),
+    (
+        'usr_dhruv_05',
+        'Dhruv Mehta',
+        'dhruv99@yahoo.com',
+        '+91 98980 77144',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
+        'Ahmedabad',
+        'Prahlad Nagar Express Zone',
+        'M', '30', 'UK 8', 'Relaxed',
+        '["Casual", "Streetwear"]'::jsonb,
+        '["Mark Leute", "SNITCH"]'::jsonb,
+        'dhruv@icici',
+        1, 4200, 2, 50,
+        'Offline', 'Past Orders Screen', 'Google Pixel 9 Pro', NOW() - INTERVAL '5 hours'
+    )
+ON CONFLICT (id) DO NOTHING;
+
+-- Initial Real-Time Activities Feed Seed
+INSERT INTO drobe_user_activities (
+    user_id, user_name, activity_type, title, details, screen, device
+) VALUES 
+    (
+        'usr_aman_01',
+        'Aman Mishra',
+        'PRODUCT_CLICK',
+        'Viewing Mark Leute Heavy Oversized Hoodie (Size L)',
+        '{"brand": "Mark Leute", "sku": "DR1", "price": "₹2,899", "size": "L"}'::jsonb,
+        'Product Detail',
+        'iPhone 16 Pro'
+    ),
+    (
+        'usr_pooja_02',
+        'Pooja Shah',
+        'DOORSTEP_TRIAL_START',
+        '6-Minute Doorstep Fitting Window Started in Bopal',
+        '{"order_number": "#DRB-9843", "runner": "Jay Suthar", "item": "Sculpted Wool Overcoat"}'::jsonb,
+        'Live Doorstep Trial',
+        'OnePlus 12'
+    ),
+    (
+        'usr_harshil_03',
+        'Harshil Patel',
+        'WISHLIST_ADD',
+        'Saved Tilt Utility Cargo to Wishlist',
+        '{"brand": "Tilt", "category": "Bottoms", "price": "₹1,999"}'::jsonb,
+        'Collection Lookbook',
+        'Samsung Galaxy S24 Ultra'
+    ),
+    (
+        'usr_aman_01',
+        'Aman Mishra',
+        'PROFILE_EDIT',
+        'Updated Fashion Preferences: Top Size L, Streetwear & Minimal',
+        '{"styles": ["Streetwear", "Minimal"], "topSize": "L", "bottomSize": "32"}'::jsonb,
+        'Fashion Preferences Modal',
+        'iPhone 16 Pro'
+    ),
+    (
+        'usr_tanya_04',
+        'Tanya Joshi',
+        'PAGE_VIEW',
+        'Browsed New Independent Brand Drops at Ahmedabad Hub',
+        '{"hub": "AMD-HUB-01", "total_brands": 8}'::jsonb,
+        'Discover Brands',
+        'iPhone 15'
+    )
+ON CONFLICT (id) DO NOTHING;
+

@@ -5,7 +5,9 @@ import {
   DarkstoreProduct, 
   InboundStockShipment, 
   TrialOrder, 
-  DarkstoreRunner 
+  DarkstoreRunner,
+  DrobeUserProfile,
+  DrobeUserActivity 
 } from './darkstoreData';
 import { Product } from '@/data/catalog';
 import { 
@@ -1206,6 +1208,203 @@ export async function supabaseCheckDbHealth(): Promise<{
       error: err?.message || 'Database timeout'
     };
   }
+}
+
+// ==============================================================================
+// CUSTOMER USER PROFILES & TELEMETRY LIVE DB ADAPTERS
+// ==============================================================================
+
+// Fetch all customer profiles from Supabase
+export async function supabaseFetchUserProfiles(): Promise<DrobeUserProfile[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_user_profiles')
+      .select('*')
+      .order('last_active_at', { ascending: false });
+
+    if (error) {
+      console.warn('Supabase fetch user profiles error:', error.message);
+      return null;
+    }
+
+    return (data || []).map((row: any): DrobeUserProfile => ({
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      phone: row.phone,
+      avatar: row.avatar || '',
+      city: row.city || 'Ahmedabad',
+      hubZone: row.hub_zone || 'Ahmedabad Darkstore Hub #01 (SG Highway)',
+      topSize: row.top_size || 'L',
+      bottomSize: row.bottom_size || '32',
+      footwearSize: row.footwear_size || 'UK 9',
+      preferredFit: row.preferred_fit || 'Relaxed',
+      preferredStyles: Array.isArray(row.preferred_styles) ? row.preferred_styles : [],
+      favouriteBrands: Array.isArray(row.favourite_brands) ? row.favourite_brands : [],
+      savedAddresses: Array.isArray(row.saved_addresses) ? row.saved_addresses : [],
+      upiId: row.upi_id || '',
+      totalOrdersCount: Number(row.total_orders_count) || 0,
+      totalSpentInr: Number(row.total_spent_inr) || 0,
+      doorstepTrialsCount: Number(row.doorstep_trials_count) || 0,
+      keptRatioPercentage: Number(row.kept_ratio_percentage) || 0,
+      currentStatus: row.current_status || 'Active Browsing',
+      currentScreen: row.current_screen || 'Home Feed',
+      deviceInfo: row.device_info || 'Mobile App',
+      ipAddress: row.ip_address || '',
+      lastActiveAt: row.last_active_at ? new Date(row.last_active_at).toLocaleTimeString() : 'Just now',
+      createdAt: row.created_at ? new Date(row.created_at).toLocaleDateString() : 'Recent'
+    }));
+  } catch (err) {
+    console.warn('supabaseFetchUserProfiles exception:', err);
+    return null;
+  }
+}
+
+// Upsert or update a user profile in Supabase
+export async function supabaseUpsertUserProfile(profile: Partial<DrobeUserProfile> & { id: string }): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const payload: Record<string, any> = {
+      id: profile.id,
+      updated_at: new Date().toISOString(),
+      last_active_at: new Date().toISOString()
+    };
+
+    if (profile.name !== undefined) payload.name = profile.name;
+    if (profile.email !== undefined) payload.email = profile.email;
+    if (profile.phone !== undefined) payload.phone = profile.phone;
+    if (profile.avatar !== undefined) payload.avatar = profile.avatar;
+    if (profile.city !== undefined) payload.city = profile.city;
+    if (profile.hubZone !== undefined) payload.hub_zone = profile.hubZone;
+    if (profile.topSize !== undefined) payload.top_size = profile.topSize;
+    if (profile.bottomSize !== undefined) payload.bottom_size = profile.bottomSize;
+    if (profile.footwearSize !== undefined) payload.footwear_size = profile.footwearSize;
+    if (profile.preferredFit !== undefined) payload.preferred_fit = profile.preferredFit;
+    if (profile.preferredStyles !== undefined) payload.preferred_styles = profile.preferredStyles;
+    if (profile.favouriteBrands !== undefined) payload.favourite_brands = profile.favouriteBrands;
+    if (profile.savedAddresses !== undefined) payload.saved_addresses = profile.savedAddresses;
+    if (profile.upiId !== undefined) payload.upi_id = profile.upiId;
+    if (profile.totalOrdersCount !== undefined) payload.total_orders_count = profile.totalOrdersCount;
+    if (profile.totalSpentInr !== undefined) payload.total_spent_inr = profile.totalSpentInr;
+    if (profile.doorstepTrialsCount !== undefined) payload.doorstep_trials_count = profile.doorstepTrialsCount;
+    if (profile.keptRatioPercentage !== undefined) payload.kept_ratio_percentage = profile.keptRatioPercentage;
+    if (profile.currentStatus !== undefined) payload.current_status = profile.currentStatus;
+    if (profile.currentScreen !== undefined) payload.current_screen = profile.currentScreen;
+    if (profile.deviceInfo !== undefined) payload.device_info = profile.deviceInfo;
+    if (profile.ipAddress !== undefined) payload.ip_address = profile.ipAddress;
+
+    const { error } = await supabase
+      .from('drobe_user_profiles')
+      .upsert(payload);
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// Fetch live user activities / telemetry stream
+export async function supabaseFetchUserActivities(limit: number = 50): Promise<DrobeUserActivity[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_user_activities')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.warn('Supabase fetch user activities error:', error.message);
+      return null;
+    }
+
+    return (data || []).map((row: any): DrobeUserActivity => ({
+      id: row.id,
+      userId: row.user_id,
+      userName: row.user_name,
+      activityType: row.activity_type,
+      title: row.title,
+      details: row.details || {},
+      screen: row.screen,
+      device: row.device,
+      timestamp: row.created_at ? new Date(row.created_at).toLocaleTimeString() : 'Just now'
+    }));
+  } catch (err) {
+    console.warn('supabaseFetchUserActivities exception:', err);
+    return null;
+  }
+}
+
+// Log a live customer action into drobe_user_activities
+export async function supabaseLogUserActivity(activity: {
+  userId: string;
+  userName: string;
+  activityType: string;
+  title: string;
+  details?: Record<string, any>;
+  screen?: string;
+  device?: string;
+}): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('drobe_user_activities')
+      .insert({
+        user_id: activity.userId,
+        user_name: activity.userName,
+        activity_type: activity.activityType,
+        title: activity.title,
+        details: activity.details || {},
+        screen: activity.screen || '',
+        device: activity.device || 'Mobile App',
+        created_at: new Date().toISOString()
+      });
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// Real-time listener for user activities stream
+export function subscribeToRealtimeUserActivities(onNewActivity: (act: any) => void) {
+  if (!supabase) return () => {};
+
+  const channel = supabase
+    .channel('drobe_user_activities_channel')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'drobe_user_activities' },
+      payload => {
+        onNewActivity(payload.new);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}
+
+// Real-time listener for user profile presence / updates
+export function subscribeToRealtimeUserProfiles(onProfileChange: (profile: any) => void) {
+  if (!supabase) return () => {};
+
+  const channel = supabase
+    .channel('drobe_user_profiles_channel')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'drobe_user_profiles' },
+      payload => {
+        onProfileChange(payload.new);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
 }
 
 export { invalidateBrandCache, invalidateCacheKey };

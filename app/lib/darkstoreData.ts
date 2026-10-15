@@ -2093,3 +2093,343 @@ export function generateShiftReportCsv(): string {
 
   return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
 }
+
+// ==============================================================================
+// CUSTOMER USER PROFILES & REAL-TIME ACTIVITY TELEMETRY
+// ==============================================================================
+
+export interface DrobeUserProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  avatar: string;
+  city: string;
+  hubZone: string;
+  topSize: string;
+  bottomSize: string;
+  footwearSize: string;
+  preferredFit: string;
+  preferredStyles: string[];
+  favouriteBrands: string[];
+  savedAddresses: Array<{
+    id: string;
+    tag: string;
+    recipient: string;
+    line1: string;
+    line2: string;
+    pincode: string;
+    isDefault?: boolean;
+  }>;
+  upiId: string;
+  totalOrdersCount: number;
+  totalSpentInr: number;
+  doorstepTrialsCount: number;
+  keptRatioPercentage: number;
+  currentStatus: 'Active Browsing' | 'In Doorstep Trial' | 'Trial Bag Out' | 'Offline';
+  currentScreen: string;
+  deviceInfo: string;
+  ipAddress?: string;
+  lastActiveAt: string;
+  createdAt: string;
+}
+
+export interface DrobeUserActivity {
+  id: string;
+  userId: string;
+  userName: string;
+  activityType: 'PAGE_VIEW' | 'PRODUCT_CLICK' | 'WISHLIST_ADD' | 'TRIAL_ORDER_PLACED' | 'DOORSTEP_TRIAL_START' | 'ITEM_KEPT' | 'ITEM_RETURNED' | 'PROFILE_EDIT';
+  title: string;
+  details?: Record<string, any>;
+  screen?: string;
+  device?: string;
+  timestamp: string;
+}
+
+export const INITIAL_USER_PROFILES: DrobeUserProfile[] = [
+  {
+    id: 'usr_aman_01',
+    name: 'Aman Mishra',
+    email: 'aman@example.com',
+    phone: '+91 98250 88123',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    city: 'Ahmedabad',
+    hubZone: 'Ahmedabad Darkstore Hub #01 (SG Highway)',
+    topSize: 'L',
+    bottomSize: '32',
+    footwearSize: 'UK 9',
+    preferredFit: 'Relaxed',
+    preferredStyles: ['Streetwear', 'Casual', 'Minimal', 'Oversized'],
+    favouriteBrands: ['SNITCH', 'The Souled Store', 'Tilt', 'Mark Leute'],
+    savedAddresses: [
+      {
+        id: 'addr-1',
+        tag: 'Home',
+        recipient: 'Aman Mishra',
+        line1: 'B-702, Shaligram Plus, Opp. Iskcon Temple',
+        line2: 'SG Highway, Ahmedabad, Gujarat',
+        pincode: '380015',
+        isDefault: true
+      }
+    ],
+    upiId: 'aman@okhdfcbank',
+    totalOrdersCount: 4,
+    totalSpentInr: 12890,
+    doorstepTrialsCount: 4,
+    keptRatioPercentage: 100,
+    currentStatus: 'Active Browsing',
+    currentScreen: 'Viewing Mark Leute Hoodie',
+    deviceInfo: 'iPhone 16 Pro · iOS 18.2',
+    lastActiveAt: 'Just now',
+    createdAt: 'Oct 01, 2026'
+  },
+  {
+    id: 'usr_pooja_02',
+    name: 'Pooja Shah',
+    email: 'pooja.shah@gmail.com',
+    phone: '+91 98792 33410',
+    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
+    city: 'Ahmedabad',
+    hubZone: 'Bopal Darkstore Express Zone',
+    topSize: 'M',
+    bottomSize: '28',
+    footwearSize: 'UK 6',
+    preferredFit: 'Regular',
+    preferredStyles: ['Minimal', 'Casual', 'Athleisure'],
+    favouriteBrands: ['Tilt', 'Mark Leute', 'Bluorng'],
+    savedAddresses: [
+      {
+        id: 'addr-2',
+        tag: 'Home',
+        recipient: 'Pooja Shah',
+        line1: 'Villa 14, Sun City, Bopal',
+        line2: 'Ahmedabad, Gujarat',
+        pincode: '380058',
+        isDefault: true
+      }
+    ],
+    upiId: 'pooja@axisbank',
+    totalOrdersCount: 3,
+    totalSpentInr: 8400,
+    doorstepTrialsCount: 3,
+    keptRatioPercentage: 100,
+    currentStatus: 'In Doorstep Trial',
+    currentScreen: '6-Minute Doorstep Fitting Window',
+    deviceInfo: 'OnePlus 12 · Android 14',
+    lastActiveAt: '2 mins ago',
+    createdAt: 'Oct 04, 2026'
+  },
+  {
+    id: 'usr_harshil_03',
+    name: 'Harshil Patel',
+    email: 'harshil.p@outlook.com',
+    phone: '+91 97120 44912',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+    city: 'Ahmedabad',
+    hubZone: 'Motera & Koteshwar Express Hub',
+    topSize: 'XL',
+    bottomSize: '34',
+    footwearSize: 'UK 10',
+    preferredFit: 'Oversized',
+    preferredStyles: ['Streetwear', 'Oversized', 'Drop Shoulder'],
+    favouriteBrands: ['SNITCH', 'Huemn', 'VegNonVeg'],
+    savedAddresses: [
+      {
+        id: 'addr-3',
+        tag: 'Work',
+        recipient: 'Harshil Patel',
+        line1: 'Floor 3, Westgate Business Bay, SG Highway',
+        line2: 'Ahmedabad, Gujarat',
+        pincode: '380054',
+        isDefault: true
+      }
+    ],
+    upiId: 'harshil@okaxis',
+    totalOrdersCount: 5,
+    totalSpentInr: 15200,
+    doorstepTrialsCount: 6,
+    keptRatioPercentage: 83,
+    currentStatus: 'Active Browsing',
+    currentScreen: 'Catalog Category Filter: Outerwear',
+    deviceInfo: 'Samsung Galaxy S24 Ultra',
+    lastActiveAt: '12 mins ago',
+    createdAt: 'Sep 28, 2026'
+  },
+  {
+    id: 'usr_tanya_04',
+    name: 'Tanya Joshi',
+    email: 'tanya.j@icloud.com',
+    phone: '+91 99041 55201',
+    avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80',
+    city: 'Ahmedabad',
+    hubZone: 'Satellite & Vastrapur Hub #02',
+    topSize: 'S',
+    bottomSize: '26',
+    footwearSize: 'UK 5',
+    preferredFit: 'Slim',
+    preferredStyles: ['Minimal', 'Contemporary', 'Streetwear'],
+    favouriteBrands: ['The Souled Store', 'Tilt'],
+    savedAddresses: [],
+    upiId: 'tanyaj@paytm',
+    totalOrdersCount: 2,
+    totalSpentInr: 6500,
+    doorstepTrialsCount: 2,
+    keptRatioPercentage: 100,
+    currentStatus: 'Offline',
+    currentScreen: 'Home Feed',
+    deviceInfo: 'iPhone 15 · iOS 18.1',
+    lastActiveAt: '2 hours ago',
+    createdAt: 'Oct 08, 2026'
+  },
+  {
+    id: 'usr_dhruv_05',
+    name: 'Dhruv Mehta',
+    email: 'dhruv99@yahoo.com',
+    phone: '+91 98980 77144',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
+    city: 'Ahmedabad',
+    hubZone: 'Prahlad Nagar Express Zone',
+    topSize: 'M',
+    bottomSize: '30',
+    footwearSize: 'UK 8',
+    preferredFit: 'Relaxed',
+    preferredStyles: ['Casual', 'Streetwear'],
+    favouriteBrands: ['Mark Leute', 'SNITCH'],
+    savedAddresses: [],
+    upiId: 'dhruv@icici',
+    totalOrdersCount: 1,
+    totalSpentInr: 4200,
+    doorstepTrialsCount: 2,
+    keptRatioPercentage: 50,
+    currentStatus: 'Offline',
+    currentScreen: 'Past Orders Screen',
+    deviceInfo: 'Google Pixel 9 Pro',
+    lastActiveAt: '5 hours ago',
+    createdAt: 'Oct 10, 2026'
+  }
+];
+
+export const INITIAL_USER_ACTIVITIES: DrobeUserActivity[] = [
+  {
+    id: 'act-001',
+    userId: 'usr_aman_01',
+    userName: 'Aman Mishra',
+    activityType: 'PRODUCT_CLICK',
+    title: 'Viewing Mark Leute Heavy Oversized Hoodie (Size L)',
+    details: { brand: 'Mark Leute', sku: 'DR1', price: '₹2,899', size: 'L' },
+    screen: 'Product Detail',
+    device: 'iPhone 16 Pro',
+    timestamp: 'Just now'
+  },
+  {
+    id: 'act-002',
+    userId: 'usr_pooja_02',
+    userName: 'Pooja Shah',
+    activityType: 'DOORSTEP_TRIAL_START',
+    title: '6-Minute Doorstep Fitting Window Started in Bopal',
+    details: { orderNumber: '#DRB-9843', runner: 'Jay Suthar', item: 'Sculpted Wool Overcoat' },
+    screen: 'Live Doorstep Trial',
+    device: 'OnePlus 12',
+    timestamp: '2 mins ago'
+  },
+  {
+    id: 'act-003',
+    userId: 'usr_harshil_03',
+    userName: 'Harshil Patel',
+    activityType: 'WISHLIST_ADD',
+    title: 'Saved Tilt Utility Cargo to Wishlist',
+    details: { brand: 'Tilt', category: 'Bottoms', price: '₹1,999' },
+    screen: 'Collection Lookbook',
+    device: 'Samsung Galaxy S24 Ultra',
+    timestamp: '8 mins ago'
+  },
+  {
+    id: 'act-004',
+    userId: 'usr_aman_01',
+    userName: 'Aman Mishra',
+    activityType: 'PROFILE_EDIT',
+    title: 'Updated Fashion Preferences: Top Size L, Streetwear & Minimal',
+    details: { styles: ['Streetwear', 'Minimal'], topSize: 'L', bottomSize: '32' },
+    screen: 'Fashion Preferences Modal',
+    device: 'iPhone 16 Pro',
+    timestamp: '15 mins ago'
+  },
+  {
+    id: 'act-005',
+    userId: 'usr_tanya_04',
+    userName: 'Tanya Joshi',
+    activityType: 'PAGE_VIEW',
+    title: 'Browsed New Independent Brand Drops at Ahmedabad Hub',
+    details: { hub: 'AMD-HUB-01', totalBrands: 8 },
+    screen: 'Discover Brands',
+    device: 'iPhone 15',
+    timestamp: '1 hour ago'
+  }
+];
+
+export function getUserProfiles(): DrobeUserProfile[] {
+  if (typeof window === 'undefined') return INITIAL_USER_PROFILES;
+  try {
+    const raw = localStorage.getItem('drobe_user_profiles');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return INITIAL_USER_PROFILES;
+}
+
+export function saveUserProfiles(users: DrobeUserProfile[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('drobe_user_profiles', JSON.stringify(users));
+    window.dispatchEvent(new Event('storage'));
+  } catch {}
+}
+
+export function getUserActivities(): DrobeUserActivity[] {
+  if (typeof window === 'undefined') return INITIAL_USER_ACTIVITIES;
+  try {
+    const raw = localStorage.getItem('drobe_user_activities');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return INITIAL_USER_ACTIVITIES;
+}
+
+export function saveUserActivities(acts: DrobeUserActivity[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('drobe_user_activities', JSON.stringify(acts));
+    window.dispatchEvent(new Event('storage'));
+  } catch {}
+}
+
+export function logUserActivity(activity: Omit<DrobeUserActivity, 'id' | 'timestamp'>): DrobeUserActivity {
+  const current = getUserActivities();
+  const newActivity: DrobeUserActivity = {
+    ...activity,
+    id: `act-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    timestamp: 'Just now'
+  };
+  const updated = [newActivity, ...current].slice(0, 50);
+  saveUserActivities(updated);
+  return newActivity;
+}
+
+export function updateUserProfile(profile: Partial<DrobeUserProfile> & { id: string }): DrobeUserProfile | null {
+  const users = getUserProfiles();
+  const idx = users.findIndex(u => u.id === profile.id);
+  if (idx === -1) return null;
+  const updatedUser = {
+    ...users[idx],
+    ...profile,
+    lastActiveAt: 'Just now'
+  };
+  users[idx] = updatedUser;
+  saveUserProfiles(users);
+  return updatedUser;
+}
+
