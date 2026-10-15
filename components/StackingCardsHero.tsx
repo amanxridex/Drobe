@@ -29,9 +29,13 @@ export default function StackingCardsHero({
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [isPaused, setIsPaused] = useState(false);
 
-  // Drag tracking to prevent accidental click navigation while swiping
-  const dragDistanceRef = useRef(0);
-  const isDraggingRef = useRef(false);
+  // Real-time finger swipe state
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const touchStartXRef = useRef(0);
+  const touchStartYRef = useRef(0);
+  const isHorizontalSwipeRef = useRef<boolean | null>(null);
+  const hasMovedRef = useRef(false);
 
   // Advance to next card (comes ON TOP of current card)
   const nextCard = useCallback(() => {
@@ -56,32 +60,122 @@ export default function StackingCardsHero({
 
   // Autoplay timer: automatically stacks the next card on top every autoPlayInterval
   useEffect(() => {
-    if (isPaused || count <= 1) return;
+    if (isPaused || count <= 1 || isSwiping) return;
     const timer = setInterval(() => {
       nextCard();
     }, autoPlayInterval);
 
     return () => clearInterval(timer);
-  }, [isPaused, count, autoPlayInterval, nextCard]);
+  }, [isPaused, count, autoPlayInterval, isSwiping, nextCard]);
 
   // Handle clicking on the top card to navigate
   const handleCardClick = (card: StackingCardItem) => {
-    if (isDraggingRef.current || Math.abs(dragDistanceRef.current) > 8) return;
+    if (hasMovedRef.current || Math.abs(dragOffset) > 8) return;
     const destination = card.name
       ? `/brand/${slugify(card.name)}`
       : card.deeplink || '/categories';
     router.push(destination);
   };
 
+  // ========================================================
+  // NATIVE TOUCH SWIPE HANDLERS (Fingers on mobile)
+  // ========================================================
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsPaused(true);
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+    isHorizontalSwipeRef.current = null;
+    hasMovedRef.current = false;
+    setIsSwiping(true);
+    setDragOffset(0);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const dx = e.touches[0].clientX - touchStartXRef.current;
+    const dy = e.touches[0].clientY - touchStartYRef.current;
+
+    // Detect horizontal vs vertical intent early (after 6px move)
+    if (isHorizontalSwipeRef.current === null) {
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+        isHorizontalSwipeRef.current = Math.abs(dx) > Math.abs(dy);
+      }
+    }
+
+    if (isHorizontalSwipeRef.current) {
+      // Horizontal swipe active: cancel vertical scroll jitter
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+      hasMovedRef.current = true;
+      // Slight resistance damping when pulling beyond boundaries
+      setDragOffset(dx);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsSwiping(false);
+    if (isHorizontalSwipeRef.current && hasMovedRef.current) {
+      if (dragOffset < -42) {
+        // Swiped left -> next card
+        nextCard();
+      } else if (dragOffset > 42) {
+        // Swiped right -> previous card
+        prevCard();
+      }
+    }
+    setDragOffset(0);
+    isHorizontalSwipeRef.current = null;
+    setTimeout(() => {
+      hasMovedRef.current = false;
+      setIsPaused(false);
+    }, 2800);
+  };
+
+  // ========================================================
+  // MOUSE DRAG HANDLERS (For desktop pair-programming testing)
+  // ========================================================
+  const mouseStartXRef = useRef(0);
+  const isMouseDownRef = useRef(false);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isMouseDownRef.current = true;
+    mouseStartXRef.current = e.clientX;
+    hasMovedRef.current = false;
+    setIsSwiping(true);
+    setDragOffset(0);
+    setIsPaused(true);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isMouseDownRef.current) return;
+    const dx = e.clientX - mouseStartXRef.current;
+    if (Math.abs(dx) > 6) {
+      hasMovedRef.current = true;
+      setDragOffset(dx);
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (!isMouseDownRef.current) return;
+    isMouseDownRef.current = false;
+    setIsSwiping(false);
+    if (hasMovedRef.current) {
+      if (dragOffset < -42) {
+        nextCard();
+      } else if (dragOffset > 42) {
+        prevCard();
+      }
+    }
+    setDragOffset(0);
+    setTimeout(() => {
+      hasMovedRef.current = false;
+      setIsPaused(false);
+    }, 2800);
+  };
+
   if (!cards || count === 0) return null;
 
-  // We determine which cards to render in the stacked deck:
-  // - Top card: activeIndex (depth 0, highest z-index)
-  // - 1st card underneath: (activeIndex - 1 + count) % count OR the prior history
-  //   In a true "deck coming on top", the cards underneath are the ones that were previously stacked!
-  //   Underneath card 1: (activeIndex - 1 + count) % count
-  //   Underneath card 2: (activeIndex - 2 + count) % count
-  // This visually displays the existing cards remaining stacked underneath!
+  // Stack Depth indices
   const depth1Index = (activeIndex - 1 + count) % count;
   const depth2Index = (activeIndex - 2 + count) % count;
 
@@ -93,7 +187,7 @@ export default function StackingCardsHero({
     <section
       style={{
         width: '100%',
-        padding: '6px 0 22px',
+        padding: '6px 0 20px',
         position: 'relative',
         userSelect: 'none',
         display: 'flex',
@@ -102,14 +196,20 @@ export default function StackingCardsHero({
         overflow: 'hidden'
       }}
       onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={() => setIsPaused(true)}
-      onTouchEnd={() => {
-        setTimeout(() => setIsPaused(false), 2500);
+      onMouseLeave={() => {
+        if (!isMouseDownRef.current) setIsPaused(false);
       }}
     >
       {/* Deck Viewport Container */}
       <div
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
         style={{
           width: '100%',
           maxWidth: 410,
@@ -119,15 +219,30 @@ export default function StackingCardsHero({
           height: 184, // Gives room for the stacked cards peeking below
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'flex-start'
+          alignItems: 'flex-start',
+          cursor: isSwiping ? 'grabbing' : 'grab',
+          touchAction: 'pan-y'
         }}
       >
         {/* ========================================================
             DEPTH 2 CARD (Bottom-most peek in stack)
+            Smoothly scales & brightens with spring physics
             ======================================================== */}
         {cardBelow2 && (
-          <div
-            onClick={() => goToCard(depth2Index)}
+          <motion.div
+            key={`depth2-${depth2Index}`}
+            animate={{
+              y: 22,
+              scale: 0.88,
+              opacity: 0.85,
+              filter: 'brightness(0.40)'
+            }}
+            transition={{
+              type: 'spring',
+              stiffness: 280,
+              damping: 28,
+              mass: 0.85
+            }}
             style={{
               position: 'absolute',
               top: 0,
@@ -136,13 +251,11 @@ export default function StackingCardsHero({
               aspectRatio: '2.4 / 1',
               borderRadius: 18,
               overflow: 'hidden',
-              transform: 'translateY(24px) scale(0.88)',
               transformOrigin: 'top center',
               zIndex: 10,
-              filter: 'brightness(0.42)',
               boxShadow: '0 6px 18px rgba(0, 0, 0, 0.45)',
-              transition: 'transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1), filter 0.4s ease',
-              cursor: 'pointer'
+              backgroundColor: '#16161c',
+              pointerEvents: 'none'
             }}
           >
             <img
@@ -156,16 +269,28 @@ export default function StackingCardsHero({
                 display: 'block'
               }}
             />
-          </div>
+          </motion.div>
         )}
 
         {/* ========================================================
             DEPTH 1 CARD (Directly below active card, peeking out)
-            Exact look from user's screenshot where the card below peeks out!
+            Responsive to top card drag offset!
             ======================================================== */}
         {cardBelow1 && (
-          <div
-            onClick={() => goToCard(depth1Index)}
+          <motion.div
+            key={`depth1-${depth1Index}`}
+            animate={{
+              y: isSwiping ? 12 - Math.min(Math.abs(dragOffset) * 0.08, 6) : 12,
+              scale: isSwiping ? 0.94 + Math.min(Math.abs(dragOffset) * 0.0008, 0.03) : 0.94,
+              opacity: 1,
+              filter: isSwiping ? `brightness(${0.65 + Math.min(Math.abs(dragOffset) * 0.003, 0.25)})` : 'brightness(0.65)'
+            }}
+            transition={{
+              type: 'spring',
+              stiffness: 300,
+              damping: 28,
+              mass: 0.8
+            }}
             style={{
               position: 'absolute',
               top: 0,
@@ -174,13 +299,11 @@ export default function StackingCardsHero({
               aspectRatio: '2.4 / 1',
               borderRadius: 18,
               overflow: 'hidden',
-              transform: 'translateY(13px) scale(0.94)',
               transformOrigin: 'top center',
               zIndex: 20,
-              filter: 'brightness(0.68)',
               boxShadow: '0 8px 24px rgba(0, 0, 0, 0.55)',
-              transition: 'transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1), filter 0.4s ease',
-              cursor: 'pointer'
+              backgroundColor: '#1a1a22',
+              pointerEvents: 'none'
             }}
           >
             <img
@@ -194,24 +317,25 @@ export default function StackingCardsHero({
                 display: 'block'
               }}
             />
-          </div>
+          </motion.div>
         )}
 
         {/* ========================================================
             ACTIVE TOP CARD (Lands ON TOP with smooth stacking animation)
+            Tracks finger in real time during swipe
             ======================================================== */}
         <AnimatePresence initial={false} custom={direction}>
           <motion.div
             key={activeIndex}
             custom={direction}
             variants={{
-              // When moving forward: card comes from the right and lands ON TOP
+              // When moving forward: new card comes from the right and lands ON TOP
               enter: (dir: 'forward' | 'backward') => ({
-                x: dir === 'forward' ? '108%' : '-108%',
-                y: -6,
-                scale: 1.03,
-                rotate: dir === 'forward' ? 2.5 : -2.5,
-                opacity: 0.85,
+                x: dir === 'forward' ? '104%' : '-104%',
+                y: 0,
+                scale: 1.02,
+                rotate: dir === 'forward' ? 2 : -2,
+                opacity: 0.9,
                 zIndex: 35
               }),
               center: {
@@ -223,50 +347,27 @@ export default function StackingCardsHero({
                 zIndex: 30,
                 transition: {
                   type: 'spring',
-                  stiffness: 270,
-                  damping: 26,
-                  mass: 0.85
+                  stiffness: 290,
+                  damping: 27,
+                  mass: 0.8
                 }
               },
-              // When leaving: card stays slightly behind or fades out smoothly
+              // When leaving: top card slides smoothly to depth 1 or offscreen
               exit: (dir: 'forward' | 'backward') => ({
-                x: dir === 'forward' ? '-18%' : '18%',
-                y: 13,
-                scale: 0.94,
-                opacity: 0.5,
-                zIndex: 15,
+                x: dir === 'forward' ? '-10%' : '104%',
+                y: dir === 'forward' ? 12 : 0,
+                scale: dir === 'forward' ? 0.94 : 1,
+                opacity: dir === 'forward' ? 0.85 : 0,
+                zIndex: 22,
                 transition: {
-                  duration: 0.35,
-                  ease: [0.32, 0.72, 0, 1]
+                  duration: 0.32,
+                  ease: [0.25, 1, 0.5, 1]
                 }
               })
             }}
             initial="enter"
             animate="center"
             exit="exit"
-            drag="x"
-            dragDirectionLock
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.45}
-            onDragStart={() => {
-              isDraggingRef.current = true;
-              dragDistanceRef.current = 0;
-            }}
-            onDrag={(_, info) => {
-              dragDistanceRef.current = info.offset.x;
-            }}
-            onDragEnd={(_, info) => {
-              setTimeout(() => {
-                isDraggingRef.current = false;
-              }, 80);
-
-              const { offset, velocity } = info;
-              if (offset.x < -40 || velocity.x < -300) {
-                nextCard();
-              } else if (offset.x > 40 || velocity.x > 300) {
-                prevCard();
-              }
-            }}
             onClick={() => handleCardClick(currentCard)}
             style={{
               position: 'absolute',
@@ -276,13 +377,16 @@ export default function StackingCardsHero({
               aspectRatio: '2.4 / 1',
               borderRadius: 18,
               overflow: 'hidden',
-              cursor: 'grab',
-              touchAction: 'pan-y', // Native mobile page scroll remains smooth
-              boxShadow: '0 14px 36px rgba(0, 0, 0, 0.75), 0 2px 8px rgba(0, 0, 0, 0.45)',
-              backgroundColor: '#1c1c22',
-              transformOrigin: 'top center'
+              cursor: isSwiping ? 'grabbing' : 'grab',
+              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.72), 0 2px 8px rgba(0, 0, 0, 0.45)',
+              backgroundColor: '#1c1c24',
+              transformOrigin: 'top center',
+              // Apply real-time finger drag offset smoothly
+              transform: isSwiping && dragOffset !== 0
+                ? `translate3d(${dragOffset}px, 0, 0) rotate(${dragOffset * 0.03}deg)`
+                : undefined
             }}
-            whileTap={{ cursor: 'grabbing', scale: 0.985 }}
+            whileTap={{ scale: 0.985 }}
           >
             <img
               src={currentCard.img}
@@ -306,86 +410,15 @@ export default function StackingCardsHero({
                 left: 0,
                 right: 0,
                 height: 1,
-                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
+                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent)',
                 pointerEvents: 'none'
               }}
             />
           </motion.div>
         </AnimatePresence>
-
-        {/* Floating Subtle Left / Right Navigation Tap Targets (Desktop & Tablet) */}
-        {count > 1 && (
-          <>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                prevCard();
-              }}
-              aria-label="Previous card"
-              style={{
-                position: 'absolute',
-                left: 4,
-                top: '40%',
-                transform: 'translateY(-50%)',
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                background: 'rgba(20, 20, 26, 0.65)',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                zIndex: 40,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                transition: 'opacity 0.2s',
-                opacity: 0.8
-              }}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </button>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                nextCard();
-              }}
-              aria-label="Next card"
-              style={{
-                position: 'absolute',
-                right: 4,
-                top: '40%',
-                transform: 'translateY(-50%)',
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                background: 'rgba(20, 20, 26, 0.65)',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                zIndex: 40,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                transition: 'opacity 0.2s',
-                opacity: 0.8
-              }}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            </button>
-          </>
-        )}
       </div>
 
-      {/* Pagination Indicator Dots / Pills */}
+      {/* Pagination Indicator Dots / Pills (Subtle, tapping any dot jumps to it) */}
       {count > 1 && (
         <div
           style={{
