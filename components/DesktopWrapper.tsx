@@ -146,87 +146,38 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
 
   return (
     <div
-      id="app-desktop-wrapper"
+      id="app-root-viewport"
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: isMobile ? 'var(--app-height, 100dvh)' : '100vh',
-        backgroundColor: '#242424',
+        width: '100%',
+        minHeight: '100vh',
+        height: 'var(--app-height, 100dvh)',
+        backgroundColor: '#000000',
+        position: 'relative',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden'
+        flexDirection: 'column',
+        overflow: 'hidden',
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none'
       }}
     >
-      {/* Desktop Left QR Download Card */}
-      <div id="qr-download-card">
-        <img
-          src="/assets/images/desktop_qr_exact.png"
-          alt="Download DROBE"
-          style={{
-            width: '212px',
-            display: 'block'
-          }}
-        />
-      </div>
-
-      {/* Main Centered Mobile Application Frame */}
       <div
         id="mobile-app-frame"
         style={{
           width: '100%',
-          maxWidth: isMobile ? '100%' : '446px',
-          height: isMobile ? 'var(--app-height, 100dvh)' : '100vh',
-          backgroundColor: '#171717',
+          height: '100%',
+          backgroundColor: '#000000',
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
           scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          boxShadow: isMobile ? 'none' : '0 0 50px rgba(0,0,0,0.6)',
-          margin: '0 auto'
+          msOverflowStyle: 'none'
         }}
       >
         {children}
         <LocationModal />
         <AuthModal />
         <CouponModal />
-      </div>
-
-      {/* Desktop Right Social Link */}
-      <div id="social-links-card">
-        <a
-          href="https://www.instagram.com/drobe.luxury"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 7,
-            background: '#2b2b2b',
-            border: '1px solid #383838',
-            borderRadius: 22,
-            padding: '7px 15px',
-            color: '#ffffff',
-            textDecoration: 'none',
-            fontSize: '13px',
-            fontWeight: 600,
-            fontFamily: 'system-ui, -apple-system, sans-serif'
-          }}
-        >
-          <img
-            src="/assets/images/insta_social.svg"
-            alt=""
-            style={{ width: 16, height: 16 }}
-            onError={(e) => {
-              (e.target as HTMLElement).style.display = 'none';
-            }}
-          />
-          Instagram
-        </a>
       </div>
     </div>
   );

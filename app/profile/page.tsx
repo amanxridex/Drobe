@@ -1,18 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import BottomNav from '@/components/BottomNav';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getTrialOrders, TrialOrder } from '@/app/lib/darkstoreData';
 import {
-  Settings,
-  ArrowLeft,
-  Check,
-  CheckCircle2,
-  Camera,
   Package,
   Heart,
   MapPin,
@@ -25,46 +19,40 @@ import {
   RotateCcw,
   ShieldCheck,
   FileText,
-  LogOut,
   ChevronRight,
-  ChevronDown,
-  Plus,
-  Trash2,
+  Camera,
   Download,
   X,
   Smartphone,
-  Sun,
   Moon,
-  ShoppingBag,
-  ExternalLink,
   Sparkles,
-  Zap,
-  Tag
+  Wallet,
+  UserCheck,
+  Trash2,
+  Check
 } from 'lucide-react';
 
-// Apple System Font Stack
 const FONT_FAMILY = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", -apple-system-subheadline, "Helvetica Neue", Helvetica, Arial, sans-serif';
 
-// UI Palette Matching Reference Images (Ultra-Sleek Dark + Neon Lime Accent)
+// Strictly Monochrome Black and White Palette (No Neon / Colors)
 const UI = {
-  bg: '#0a0a0f',
-  card: '#16161f',
-  cardBorder: '1px solid rgba(255, 255, 255, 0.06)',
-  cardHover: '#1c1c28',
-  divider: 'rgba(255, 255, 255, 0.07)',
-  accent: '#d4f938',       // Signature Neon-Lime from user screenshot
+  bg: '#000000',
+  card: '#121212',
+  cardBorder: '1px solid #222222',
+  cardHover: '#181818',
+  divider: '#1c1c1c',
+  accent: '#ffffff',
   accentText: '#000000',
   textPrimary: '#ffffff',
-  textSecondary: '#8e8e98',
-  textMuted: '#5d5d68',
-  pillBg: '#1a1a24',
-  pillBorder: '1px solid rgba(255, 255, 255, 0.08)',
-  toggleOff: '#272733',
-  inputBg: '#12121a',
-  danger: '#ef4444'
+  textSecondary: '#888888',
+  textMuted: '#555555',
+  pillBg: '#1c1c1c',
+  pillBorder: '1px solid #2e2e2e',
+  toggleOff: '#262626',
+  toggleOn: '#ffffff',
+  inputBg: '#161616',
+  danger: '#ffffff'
 };
-
-type ViewMode = 'main' | 'settings' | 'editProfile';
 
 type ActiveSheetType = 
   | 'orders'
@@ -73,20 +61,15 @@ type ActiveSheetType =
   | 'fashionPreferences'
   | 'helpSupport'
   | 'deleteAccount'
+  | 'editProfile'
   | null;
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, logoutUser, wishlist, orders: contextOrders } = useApp();
+  const { user, logoutUser, wishlist } = useApp();
 
-  // Navigation View State: 'main' (Image 1 Left), 'settings' (Image 1 Right), 'editProfile' (Image 2)
-  const [viewMode, setViewMode] = useState<ViewMode>('main');
-
-  // Active Bottom Sheet Modal for deep details
+  // Active Bottom Sheet Modal
   const [activeSheet, setActiveSheet] = useState<ActiveSheetType>(null);
-
-  // Profile Overview Tabs (Matching the horizontal pill switch in Image 1 Left)
-  const [activeProfileTab, setActiveProfileTab] = useState<'orders' | 'wishlist' | 'preferences' | 'addresses'>('orders');
 
   // User Identity Data
   const [userData, setUserData] = useState({
@@ -95,19 +78,14 @@ export default function ProfilePage() {
     phone: user?.phone || '+91 98250 88123',
     username: '@amanmishra',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-    hubZone: 'Ahmedabad Hub #01 (SG Highway)',
-    followersCount: '15.2k',
-    followingCount: '142'
+    hubZone: 'Ahmedabad Hub #01 (SG Highway)'
   });
 
-  // Toggles State (Matching Switches in Image 1 Right)
+  // Toggles State
   const [toggles, setToggles] = useState({
     pushNotifications: true,
-    doorstepTimerAlerts: true,
-    darkMode: true,
-    personalizedRecommendations: true,
-    locationPermission: true,
-    whatsappUpdates: true
+    smsAlerts: true,
+    darkMode: true
   });
 
   // Language
@@ -137,14 +115,14 @@ export default function ProfilePage() {
     }
   ]);
 
-  // Saved Payments & Tokenized Cards
-  const [upiId, setUpiId] = useState('aman@okhdfcbank');
+  // Saved Payments & UPI
+  const [upiId] = useState('aman@okhdfcbank');
   const [savedCards] = useState([
     { id: 'card-1', bank: 'HDFC Bank', type: 'Visa', last4: '4028', expiry: '08/29' },
     { id: 'card-2', bank: 'ICICI Bank', type: 'Mastercard', last4: '9102', expiry: '11/28' }
   ]);
 
-  // Fashion Preferences (Drobe Special Feature)
+  // Fashion Preferences
   const [fashionPrefs, setFashionPrefs] = useState({
     styles: ['Streetwear', 'Casual', 'Minimal', 'Oversized'],
     topSize: 'L',
@@ -154,11 +132,8 @@ export default function ProfilePage() {
     brands: ['SNITCH', 'The Souled Store', 'Tilt', 'Mark Leute']
   });
 
-  // Orders Tab Filter
-  const [orderTab, setOrderTab] = useState<'all' | 'live' | 'returns' | 'coupons'>('all');
-
-  // FAQ Accordion State
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  // Orders Tab Filter inside orders sheet
+  const [orderTab, setOrderTab] = useState<'all' | 'returns'>('all');
 
   // Toast Feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -167,7 +142,7 @@ export default function ProfilePage() {
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  // Trial Orders from Darkstore
+  // Trial Orders
   const [trialOrders, setTrialOrders] = useState<TrialOrder[]>([]);
 
   useEffect(() => {
@@ -206,7 +181,7 @@ export default function ProfilePage() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast('Account data exported successfully!');
+      showToast('Account data exported');
     } catch {
       showToast('Account data export prepared');
     }
@@ -215,14 +190,13 @@ export default function ProfilePage() {
   return (
     <div
       style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
+        width: '100%',
+        minHeight: '100dvh',
         background: UI.bg,
         color: UI.textPrimary,
         fontFamily: FONT_FAMILY,
-        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
         position: 'relative'
       }}
     >
@@ -235,20 +209,19 @@ export default function ProfilePage() {
             exit={{ opacity: 0, y: -15, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
             style={{
-              position: 'absolute',
-              top: 16,
+              position: 'fixed',
+              top: 20,
               left: 20,
               right: 20,
               zIndex: 100,
-              background: UI.card,
-              color: UI.accent,
-              border: `1px solid ${UI.accent}`,
-              borderRadius: 14,
-              padding: '10px 16px',
+              background: '#ffffff',
+              color: '#000000',
+              borderRadius: 12,
+              padding: '12px 18px',
               fontSize: 13,
               fontWeight: 700,
               textAlign: 'center',
-              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.6)'
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.8)'
             }}
           >
             {toastMessage}
@@ -256,1156 +229,740 @@ export default function ProfilePage() {
         )}
       </AnimatePresence>
 
-      {/* Main Scrollable Content Area */}
+      {/* Main Scrollable Edge-to-Edge List Content */}
       <main
         style={{
+          width: '100%',
           flex: 1,
           overflowY: 'auto',
-          padding: '16px 16px 90px',
+          padding: '20px 16px 110px',
           WebkitOverflowScrolling: 'touch'
         }}
       >
-        {/* ====================================================================
-            VIEW 1: MY PROFILE (Exact UI from Image 1 Left Screen)
-            ==================================================================== */}
-        {viewMode === 'main' && (
-          <motion.div
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
-            transition={{ duration: 0.18 }}
+        {/* Top Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 900, color: UI.textPrimary, margin: 0, letterSpacing: '-0.02em' }}>
+            Profile
+          </h1>
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setActiveSheet('editProfile')}
+            style={{
+              background: UI.pillBg,
+              border: UI.cardBorder,
+              borderRadius: 20,
+              padding: '6px 14px',
+              color: UI.textPrimary,
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
           >
-            {/* Top Navigation Bar: Title + Right Action Buttons */}
-            <div
+            Edit
+          </motion.button>
+        </div>
+
+        {/* User Hero Identity Card */}
+        <div
+          style={{
+            background: UI.card,
+            border: UI.cardBorder,
+            borderRadius: 16,
+            padding: '20px 18px',
+            marginBottom: 24,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 16
+          }}
+        >
+          {/* Avatar with Monochrome Camera Badge */}
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <img
+              src={userData.avatar}
+              alt={userData.name}
               style={{
+                width: 72,
+                height: 72,
+                borderRadius: '50%',
+                objectFit: 'cover',
+                background: '#1a1a1a',
+                border: '2px solid #333333'
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setActiveSheet('editProfile')}
+              style={{
+                position: 'absolute',
+                bottom: -2,
+                right: -2,
+                width: 26,
+                height: 26,
+                borderRadius: '50%',
+                background: '#ffffff',
+                border: '2px solid #000000',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 24,
-                paddingTop: 4
+                justifyContent: 'center',
+                cursor: 'pointer',
+                padding: 0
               }}
+              aria-label="Edit Profile Picture"
             >
-              <h1
-                style={{
-                  fontSize: 22,
-                  fontWeight: 800,
-                  color: UI.textPrimary,
-                  margin: 0,
-                  letterSpacing: '-0.02em'
-                }}
-              >
-                My profile
-              </h1>
+              <Camera size={13} color="#000000" strokeWidth={2.5} />
+            </button>
+          </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                {/* Notification Badge / Live Orders Counter */}
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => setActiveSheet('orders')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    background: UI.pillBg,
-                    border: UI.cardBorder,
-                    borderRadius: 20,
-                    padding: '6px 12px',
-                    color: UI.textPrimary,
-                    fontSize: 12,
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                >
-                  <Package size={14} color={UI.accent} />
-                  <span>{trialOrders.length || 1}</span>
-                </motion.button>
-
-                {/* Settings Icon Button (Navigates to Settings Screen matching Image 1 Right) */}
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setViewMode('settings')}
-                  style={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: 19,
-                    background: UI.pillBg,
-                    border: UI.cardBorder,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: UI.textPrimary,
-                    cursor: 'pointer'
-                  }}
-                >
-                  <Settings size={18} />
-                </motion.button>
-              </div>
+          {/* User Information (Clean - No Taglines) */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: UI.textPrimary, letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {userData.name}
             </div>
-
-            {/* Profile Hero: Centered Circular Avatar + Verified Checkmark */}
-            <div style={{ textAlign: 'center', marginBottom: 22 }}>
-              <div style={{ position: 'relative', display: 'inline-block', marginBottom: 12 }}>
-                <img
-                  src={userData.avatar}
-                  alt={userData.name}
-                  style={{
-                    width: 86,
-                    height: 86,
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    background: '#38bdf8', // Vibrant turquoise backing matching image
-                    border: '3px solid #1f1f2b'
-                  }}
-                />
-                {/* Camera / Edit Badge */}
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setViewMode('editProfile')}
-                  style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    right: 0,
-                    width: 28,
-                    height: 28,
-                    borderRadius: 14,
-                    background: UI.accent,
-                    border: '2px solid #0a0a0f',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <Camera size={14} color="#000000" strokeWidth={2.5} />
-                </motion.button>
-              </div>
-
-              {/* Name & Green Verified Check Badge */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: UI.textPrimary, letterSpacing: '-0.01em' }}>
-                  {userData.name}
-                </h2>
-                <div
-                  style={{
-                    width: 17,
-                    height: 17,
-                    borderRadius: '50%',
-                    background: UI.accent,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <Check size={11} color="#000000" strokeWidth={3} />
-                </div>
-              </div>
-
-              {/* Hub & Email Subtext */}
-              <p style={{ fontSize: 13, color: UI.textSecondary, margin: '5px 0 0 0' }}>
-                {userData.email} • {userData.hubZone}
-              </p>
-
-              {/* Stats Row */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginTop: 8 }}>
-                <span style={{ fontSize: 12, color: UI.textMuted }}>
-                  <strong style={{ color: UI.textPrimary }}>30-Min</strong> Express Trial Tier
-                </span>
-                <span style={{ color: UI.textMuted }}>•</span>
-                <span style={{ fontSize: 12, color: UI.textMuted }}>
-                  <strong style={{ color: UI.textPrimary }}>{wishlist.length}</strong> Saved Drops
-                </span>
-              </div>
+            <div style={{ fontSize: 13, color: UI.textSecondary, marginTop: 2 }}>
+              {userData.phone}
             </div>
-
-            {/* Horizontal Filter Switcher (Matching Image 1 Pill Switcher with Neon-Lime Active State) */}
-            <div
-              style={{
-                display: 'flex',
-                gap: 8,
-                marginBottom: 18,
-                overflowX: 'auto',
-                paddingBottom: 4
-              }}
-            >
-              {[
-                { id: 'orders', label: 'Orders', icon: Package },
-                { id: 'wishlist', label: 'Wishlist', icon: Heart },
-                { id: 'preferences', label: 'Fashion Prefs', icon: Shirt },
-                { id: 'addresses', label: 'Addresses', icon: MapPin }
-              ].map(tab => {
-                const isActive = activeProfileTab === tab.id;
-                const Icon = tab.icon;
-                return (
-                  <motion.button
-                    key={tab.id}
-                    type="button"
-                    whileTap={{ scale: 0.94 }}
-                    onClick={() => setActiveProfileTab(tab.id as any)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      padding: '8px 16px',
-                      borderRadius: 22,
-                      background: isActive ? UI.accent : UI.pillBg,
-                      color: isActive ? UI.accentText : UI.textSecondary,
-                      border: isActive ? 'none' : UI.pillBorder,
-                      fontSize: 12.5,
-                      fontWeight: isActive ? 800 : 600,
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    <Icon size={14} color={isActive ? '#000000' : UI.textSecondary} />
-                    <span>{tab.label}</span>
-                  </motion.button>
-                );
-              })}
+            <div style={{ fontSize: 12, color: UI.textMuted, marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {userData.email}
             </div>
-
-            {/* Tab 1 Content: Active / Recent Orders Card */}
-            {activeProfileTab === 'orders' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {trialOrders.length > 0 ? (
-                  trialOrders.slice(0, 2).map((order) => (
-                    <motion.div
-                      key={order.id}
-                      whileTap={{ scale: 0.985 }}
-                      onClick={() => router.push(`/order/${order.id}`)}
-                      style={{
-                        background: UI.card,
-                        border: UI.cardBorder,
-                        borderRadius: 18,
-                        padding: 16,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{ fontSize: 11, fontWeight: 800, background: UI.accent, color: '#000', padding: '2px 8px', borderRadius: 6 }}>
-                            LIVE 30-MIN
-                          </span>
-                          <span style={{ fontSize: 13, fontWeight: 800, color: UI.textPrimary }}>
-                            {order.orderNumber || order.id}
-                          </span>
-                        </div>
-                        <span style={{ fontSize: 11, color: UI.textMuted }}>
-                          {order.dispatchedAt || 'Today'}
-                        </span>
-                      </div>
-
-                      <div style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary, marginBottom: 4 }}>
-                        {order.status}
-                      </div>
-
-                      <div style={{ fontSize: 12.5, color: UI.textSecondary, marginBottom: 12 }}>
-                        {order.brandName} • {order.productName} ({order.size}) • {order.price}
-                      </div>
-
-                      <div
-                        style={{
-                          background: '#121219',
-                          borderRadius: 12,
-                          padding: '10px 12px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between'
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: UI.accent }} />
-                          <span style={{ fontSize: 12, fontWeight: 600, color: UI.textPrimary }}>
-                            Runner {order.riderName} En Route
-                          </span>
-                        </div>
-                        <span style={{ fontSize: 11.5, fontWeight: 800, color: UI.accent }}>
-                          Open Live Map →
-                        </span>
-                      </div>
-                    </motion.div>
-                  ))
-                ) : (
-                  <div style={{ background: UI.card, border: UI.cardBorder, borderRadius: 18, padding: '30px 16px', textAlign: 'center' }}>
-                    <Package size={36} color={UI.textMuted} style={{ margin: '0 auto 10px' }} />
-                    <div style={{ fontSize: 14, fontWeight: 700 }}>No active orders</div>
-                    <div style={{ fontSize: 12, color: UI.textSecondary, marginTop: 4 }}>
-                      Your 30-min express trial fits will appear here.
-                    </div>
-                  </div>
-                )}
-
-                {/* View Full Order Details Sheet Trigger */}
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setActiveSheet('orders')}
-                  style={{
-                    width: '100%',
-                    padding: '13px 0',
-                    borderRadius: 14,
-                    background: UI.pillBg,
-                    border: UI.cardBorder,
-                    color: UI.textPrimary,
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                >
-                  View Returns, Invoices & Past Orders
-                </motion.button>
-              </div>
-            )}
-
-            {/* Tab 2 Content: Wishlist Preview */}
-            {activeProfileTab === 'wishlist' && (
-              <div style={{ background: UI.card, border: UI.cardBorder, borderRadius: 18, padding: 18 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <div style={{ fontSize: 14, fontWeight: 800 }}>Saved Wardrobe Drops</div>
-                  <span style={{ fontSize: 12, color: UI.textSecondary }}>{wishlist.length} items</span>
-                </div>
-                <p style={{ fontSize: 12.5, color: UI.textSecondary, lineHeight: 1.5, margin: '0 0 14px 0' }}>
-                  Pieces saved for express 30-minute doorstep trial. Stock is reserved locally in Ahmedabad Darkstore Hub #01.
-                </p>
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => router.push('/trends')}
-                  style={{
-                    width: '100%',
-                    padding: '12px 0',
-                    borderRadius: 12,
-                    background: UI.accent,
-                    color: '#000',
-                    fontSize: 13,
-                    fontWeight: 800,
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Browse Saved Trends & Drops
-                </motion.button>
-              </div>
-            )}
-
-            {/* Tab 3 Content: Fashion Preferences Preview */}
-            {activeProfileTab === 'preferences' && (
-              <div style={{ background: UI.card, border: UI.cardBorder, borderRadius: 18, padding: 18 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <div style={{ fontSize: 14, fontWeight: 800 }}>My Fashion Sizes & Styles</div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#000', background: UI.accent, padding: '2px 8px', borderRadius: 6 }}>
-                    Top: {fashionPrefs.topSize} • Bottom: {fashionPrefs.bottomSize}
-                  </span>
-                </div>
-
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
-                  {fashionPrefs.styles.map(s => (
-                    <span key={s} style={{ fontSize: 11.5, fontWeight: 600, background: UI.pillBg, padding: '5px 10px', borderRadius: 12, border: UI.cardBorder }}>
-                      {s}
-                    </span>
-                  ))}
-                  {fashionPrefs.brands.map(b => (
-                    <span key={b} style={{ fontSize: 11.5, fontWeight: 700, color: UI.accent, background: UI.pillBg, padding: '5px 10px', borderRadius: 12, border: UI.cardBorder }}>
-                      ★ {b}
-                    </span>
-                  ))}
-                </div>
-
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setActiveSheet('fashionPreferences')}
-                  style={{
-                    width: '100%',
-                    padding: '12px 0',
-                    borderRadius: 12,
-                    background: UI.pillBg,
-                    border: UI.cardBorder,
-                    color: UI.textPrimary,
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Edit Fashion & Brand Preferences
-                </motion.button>
-              </div>
-            )}
-
-            {/* Tab 4 Content: Saved Addresses Preview */}
-            {activeProfileTab === 'addresses' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {addresses.map(addr => (
-                  <div key={addr.id} style={{ background: UI.card, border: addr.isDefault ? `1.5px solid ${UI.accent}` : UI.cardBorder, borderRadius: 16, padding: 14 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                      <span style={{ fontSize: 11, fontWeight: 800, background: UI.pillBg, padding: '2px 8px', borderRadius: 6 }}>
-                        {addr.tag}
-                      </span>
-                      {addr.isDefault && (
-                        <span style={{ fontSize: 11, fontWeight: 700, color: UI.accent }}>Default Express Address ✓</span>
-                      )}
-                    </div>
-                    <div style={{ fontSize: 13.5, fontWeight: 700 }}>{addr.recipient}</div>
-                    <div style={{ fontSize: 12, color: UI.textSecondary, marginTop: 2 }}>{addr.line1}, {addr.line2}</div>
-                  </div>
-                ))}
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setActiveSheet('addresses')}
-                  style={{
-                    width: '100%',
-                    padding: '12px 0',
-                    borderRadius: 12,
-                    background: UI.pillBg,
-                    border: UI.cardBorder,
-                    color: UI.textPrimary,
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Manage Delivery Addresses
-                </motion.button>
-              </div>
-            )}
-          </motion.div>
-        )}
+          </div>
+        </div>
 
         {/* ====================================================================
-            VIEW 2: SETTINGS SCREEN (Exact UI from Image 1 Right Screen)
+            SECTION 1: ORDERS & ACTIVITY (PROPER VERTICAL LIST)
             ==================================================================== */}
-        {viewMode === 'settings' && (
-          <motion.div
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
-            transition={{ duration: 0.18 }}
-          >
-            {/* Top Navigation Bar: Back Arrow + Center Title */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 20,
-                paddingTop: 4
-              }}
-            >
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setViewMode('main')}
-                style={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: 19,
-                  background: UI.pillBg,
-                  border: UI.cardBorder,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: UI.textPrimary,
-                  cursor: 'pointer'
-                }}
-              >
-                <ArrowLeft size={18} />
-              </motion.button>
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: UI.textMuted, marginBottom: 8, paddingLeft: 4 }}>
+            Activity
+          </div>
 
-              <h1 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: UI.textPrimary }}>
-                Settings
-              </h1>
-
-              <div style={{ width: 38 }} />
-            </div>
-
-            {/* Profile Row Card at Top of Settings (Navigates to Edit Profile Screen in Image 2) */}
+          <div style={{ background: UI.card, border: UI.cardBorder, borderRadius: 14, overflow: 'hidden' }}>
+            {/* My Orders */}
             <motion.div
-              whileTap={{ scale: 0.985, backgroundColor: UI.cardHover }}
-              onClick={() => setViewMode('editProfile')}
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => setActiveSheet('orders')}
               style={{
-                background: UI.card,
-                border: UI.cardBorder,
-                borderRadius: 18,
                 padding: '14px 16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: 16,
                 cursor: 'pointer'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <img
-                  src={userData.avatar}
-                  alt={userData.name}
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    background: '#38bdf8'
-                  }}
-                />
-                <div>
-                  <div style={{ fontSize: 14.5, fontWeight: 800, color: UI.textPrimary }}>
-                    {userData.name}
-                  </div>
-                  <div style={{ fontSize: 12, color: UI.textSecondary, marginTop: 1 }}>
-                    {userData.email}
-                  </div>
-                </div>
+                <Package size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  My Orders &amp; 30-Min Trials
+                </span>
               </div>
-              <ChevronRight size={18} color={UI.textMuted} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 800, background: '#ffffff', color: '#000000', padding: '2px 8px', borderRadius: 10 }}>
+                  {trialOrders.length || 1} Active
+                </span>
+                <ChevronRight size={16} color={UI.textMuted} />
+              </div>
             </motion.div>
 
-            {/* Grouped Card 1: Notifications & Alert Preferences */}
-            <div
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* Wishlist */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => router.push('/cart')}
               style={{
-                background: UI.card,
-                border: UI.cardBorder,
-                borderRadius: 18,
-                overflow: 'hidden',
-                marginBottom: 14
-              }}
-            >
-              {/* Push Notifications Toggle */}
-              <div
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <Bell size={18} color={UI.textSecondary} />
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
-                      Push notifications
-                    </div>
-                    <div style={{ fontSize: 11, color: UI.textSecondary, marginTop: 1 }}>
-                      30-min delivery & live runner dispatch alerts
-                    </div>
-                  </div>
-                </div>
-
-                {/* iOS-Style Toggle Switch (Neon-Lime when ON as shown in Image 1 Right) */}
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => {
-                    const next = !toggles.pushNotifications;
-                    setToggles({ ...toggles, pushNotifications: next });
-                    showToast(`Notifications ${next ? 'Enabled' : 'Disabled'}`);
-                  }}
-                  style={{
-                    width: 48,
-                    height: 28,
-                    borderRadius: 14,
-                    background: toggles.pushNotifications ? UI.accent : UI.toggleOff,
-                    border: 'none',
-                    padding: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: toggles.pushNotifications ? 'flex-end' : 'flex-start',
-                    cursor: 'pointer',
-                    outline: 'none'
-                  }}
-                >
-                  <motion.div
-                    layout
-                    style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 12,
-                      background: '#ffffff',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-                    }}
-                  />
-                </motion.button>
-              </div>
-
-              <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
-
-              {/* Doorstep 6-Min Timer Alerts Row */}
-              <motion.div
-                whileTap={{ scale: 0.985, backgroundColor: UI.cardHover }}
-                onClick={() => setActiveSheet('fashionPreferences')}
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <Shirt size={18} color={UI.textSecondary} />
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
-                      Fashion & fit settings
-                    </div>
-                    <div style={{ fontSize: 11, color: UI.textSecondary, marginTop: 1 }}>
-                      Saved sizes, preferred fits & favourite brands
-                    </div>
-                  </div>
-                </div>
-                <ChevronRight size={18} color={UI.textMuted} />
-              </motion.div>
-            </div>
-
-            {/* Grouped Card 2: Appearance, Language, App Permissions */}
-            <div
-              style={{
-                background: UI.card,
-                border: UI.cardBorder,
-                borderRadius: 18,
-                overflow: 'hidden',
-                marginBottom: 14
-              }}
-            >
-              {/* Dark Mode Toggle (Off/White toggle as shown in Image 1 Right) */}
-              <div
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <Moon size={18} color={UI.textSecondary} />
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
-                      Dark mode
-                    </div>
-                    <div style={{ fontSize: 11, color: UI.textSecondary, marginTop: 1 }}>
-                      Ultra-sleek dark aesthetic
-                    </div>
-                  </div>
-                </div>
-
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => {
-                    const next = !toggles.darkMode;
-                    setToggles({ ...toggles, darkMode: next });
-                    showToast(`Visual Mode: ${next ? 'Dark Mode' : 'Light Mode'}`);
-                  }}
-                  style={{
-                    width: 48,
-                    height: 28,
-                    borderRadius: 14,
-                    background: toggles.darkMode ? UI.accent : UI.toggleOff,
-                    border: 'none',
-                    padding: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: toggles.darkMode ? 'flex-end' : 'flex-start',
-                    cursor: 'pointer',
-                    outline: 'none'
-                  }}
-                >
-                  <motion.div
-                    layout
-                    style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 12,
-                      background: '#ffffff',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-                    }}
-                  />
-                </motion.button>
-              </div>
-
-              <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
-
-              {/* Language Selection */}
-              <motion.div
-                whileTap={{ scale: 0.985, backgroundColor: UI.cardHover }}
-                onClick={() => {
-                  const langs = ['English (IN)', 'Hindi', 'Gujarati'];
-                  const currIdx = langs.indexOf(selectedLanguage);
-                  const nextLang = langs[(currIdx + 1) % langs.length];
-                  setSelectedLanguage(nextLang);
-                  showToast(`Language set to ${nextLang}`);
-                }}
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <Sliders size={18} color={UI.textSecondary} />
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
-                      Language
-                    </div>
-                    <div style={{ fontSize: 11, color: UI.textSecondary, marginTop: 1 }}>
-                      {selectedLanguage}
-                    </div>
-                  </div>
-                </div>
-                <ChevronRight size={18} color={UI.textMuted} />
-              </motion.div>
-
-              <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
-
-              {/* Saved Delivery Addresses */}
-              <motion.div
-                whileTap={{ scale: 0.985, backgroundColor: UI.cardHover }}
-                onClick={() => setActiveSheet('addresses')}
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <MapPin size={18} color={UI.textSecondary} />
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
-                      Saved addresses
-                    </div>
-                    <div style={{ fontSize: 11, color: UI.textSecondary, marginTop: 1 }}>
-                      Home, Work & default delivery locations
-                    </div>
-                  </div>
-                </div>
-                <ChevronRight size={18} color={UI.textMuted} />
-              </motion.div>
-
-              <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
-
-              {/* Payments & Refunds */}
-              <motion.div
-                whileTap={{ scale: 0.985, backgroundColor: UI.cardHover }}
-                onClick={() => setActiveSheet('payments')}
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <CreditCard size={18} color={UI.textSecondary} />
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
-                      Payments & refunds
-                    </div>
-                    <div style={{ fontSize: 11, color: UI.textSecondary, marginTop: 1 }}>
-                      Instant doorstep UPI VPA & tokenized cards
-                    </div>
-                  </div>
-                </div>
-                <ChevronRight size={18} color={UI.textMuted} />
-              </motion.div>
-            </div>
-
-            {/* Grouped Card 3: Help, Terms, Privacy Policy & Data */}
-            <div
-              style={{
-                background: UI.card,
-                border: UI.cardBorder,
-                borderRadius: 18,
-                overflow: 'hidden',
-                marginBottom: 20
-              }}
-            >
-              {/* Help & Support */}
-              <motion.div
-                whileTap={{ scale: 0.985, backgroundColor: UI.cardHover }}
-                onClick={() => setActiveSheet('helpSupport')}
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <HelpCircle size={18} color={UI.textSecondary} />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
-                    Help
-                  </span>
-                </div>
-                <ChevronRight size={18} color={UI.textMuted} />
-              </motion.div>
-
-              <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
-
-              {/* Terms of Service */}
-              <motion.div
-                whileTap={{ scale: 0.985, backgroundColor: UI.cardHover }}
-                onClick={() => showToast('Terms of Service: Authentic designer drops & 30-min trial guarantee.')}
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <FileText size={18} color={UI.textSecondary} />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
-                    Terms of service
-                  </span>
-                </div>
-                <ChevronRight size={18} color={UI.textMuted} />
-              </motion.div>
-
-              <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
-
-              {/* Privacy Policy */}
-              <motion.div
-                whileTap={{ scale: 0.985, backgroundColor: UI.cardHover }}
-                onClick={() => showToast('Privacy Policy: All customer data is encrypted & tokenized.')}
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <ShieldCheck size={18} color={UI.textSecondary} />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
-                    Privacy policy
-                  </span>
-                </div>
-                <ChevronRight size={18} color={UI.textMuted} />
-              </motion.div>
-
-              <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
-
-              {/* Download My Data */}
-              <motion.div
-                whileTap={{ scale: 0.985, backgroundColor: UI.cardHover }}
-                onClick={handleDownloadData}
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <Download size={18} color={UI.textSecondary} />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
-                    Download my data
-                  </span>
-                </div>
-                <ChevronRight size={18} color={UI.textMuted} />
-              </motion.div>
-            </div>
-
-            {/* Bottom Log Out Pill Button (Matching Image 1 Right Pill Button with White Background) */}
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.97 }}
-              onClick={handleLogout}
-              style={{
-                width: '100%',
-                padding: '14px 0',
-                borderRadius: 24,
-                background: '#ffffff',
-                color: '#111115',
-                fontSize: 14.5,
-                fontWeight: 800,
-                border: 'none',
-                cursor: 'pointer',
-                marginBottom: 14,
-                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.4)'
-              }}
-            >
-              Log Out
-            </motion.button>
-          </motion.div>
-        )}
-
-        {/* ====================================================================
-            VIEW 3: EDIT PROFILE SCREEN (Exact UI from Image 2 Screen)
-            ==================================================================== */}
-        {viewMode === 'editProfile' && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.18 }}
-          >
-            {/* Top Navigation Bar: Circular Back Arrow + Center Title */}
-            <div
-              style={{
+                padding: '14px 16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: 26,
-                paddingTop: 4
-              }}
-            >
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setViewMode('settings')}
-                style={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: 19,
-                  background: UI.pillBg,
-                  border: UI.cardBorder,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: UI.textPrimary,
-                  cursor: 'pointer'
-                }}
-              >
-                <ArrowLeft size={18} />
-              </motion.button>
-
-              <h1 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: UI.textPrimary }}>
-                Edit Profile
-              </h1>
-
-              <div style={{ width: 38 }} />
-            </div>
-
-            {/* Avatar Section: Centered Circle with Turquoise Backing & Neon-Lime Camera Icon */}
-            <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <div style={{ position: 'relative', display: 'inline-block' }}>
-                <img
-                  src={userData.avatar}
-                  alt={userData.name}
-                  style={{
-                    width: 96,
-                    height: 96,
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    background: '#38bdf8', // Vibrant turquoise
-                    border: '3px solid #1f1f2b'
-                  }}
-                />
-                {/* Neon-Lime Circular Camera Edit Badge (Exact match to Image 2) */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: 2,
-                    right: 2,
-                    width: 30,
-                    height: 30,
-                    borderRadius: 15,
-                    background: UI.accent,
-                    border: '2.5px solid #0a0a0f',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <Camera size={14} color="#000000" strokeWidth={2.5} />
-                </div>
-              </div>
-            </div>
-
-            {/* Form Fields Card (Exact UI Layout from Image 2) */}
-            <div
-              style={{
-                background: UI.card,
-                border: UI.cardBorder,
-                borderRadius: 18,
-                overflow: 'hidden',
-                marginBottom: 20
-              }}
-            >
-              {/* Row 1: Full name */}
-              <div
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <label style={{ fontSize: 13, color: UI.textSecondary, fontWeight: 600 }}>
-                  Full name
-                </label>
-                <input
-                  type="text"
-                  value={userData.name}
-                  onChange={(e) => setUserData({ ...userData, name: e.target.value })}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: UI.textPrimary,
-                    fontSize: 14,
-                    fontWeight: 700,
-                    textAlign: 'right',
-                    outline: 'none',
-                    fontFamily: FONT_FAMILY
-                  }}
-                />
-              </div>
-
-              <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
-
-              {/* Row 2: Phone number */}
-              <div
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <label style={{ fontSize: 13, color: UI.textSecondary, fontWeight: 600 }}>
-                  Phone number
-                </label>
-                <input
-                  type="tel"
-                  value={userData.phone}
-                  onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: UI.textPrimary,
-                    fontSize: 14,
-                    fontWeight: 700,
-                    textAlign: 'right',
-                    outline: 'none',
-                    fontFamily: FONT_FAMILY
-                  }}
-                />
-              </div>
-
-              <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
-
-              {/* Row 3: Email */}
-              <div
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <label style={{ fontSize: 13, color: UI.textSecondary, fontWeight: 600 }}>
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={userData.email}
-                  onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: UI.textPrimary,
-                    fontSize: 14,
-                    fontWeight: 700,
-                    textAlign: 'right',
-                    outline: 'none',
-                    fontFamily: FONT_FAMILY
-                  }}
-                />
-              </div>
-
-              <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
-
-              {/* Row 4: Username / Hub Zone */}
-              <div
-                style={{
-                  padding: '14px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <label style={{ fontSize: 13, color: UI.textSecondary, fontWeight: 600 }}>
-                  Username
-                </label>
-                <input
-                  type="text"
-                  value={userData.username}
-                  onChange={(e) => setUserData({ ...userData, username: e.target.value })}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: UI.textPrimary,
-                    fontSize: 14,
-                    fontWeight: 700,
-                    textAlign: 'right',
-                    outline: 'none',
-                    fontFamily: FONT_FAMILY
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Primary Action Button: Neon-Lime Pill "Save Changes" (Exact match to Image 2) */}
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.97 }}
-              onClick={() => {
-                setViewMode('main');
-                showToast('Profile changes saved successfully! ✨');
-              }}
-              style={{
-                width: '100%',
-                padding: '15px 0',
-                borderRadius: 25,
-                background: UI.accent,
-                color: '#000000',
-                fontSize: 14.5,
-                fontWeight: 800,
-                border: 'none',
-                cursor: 'pointer',
-                marginBottom: 12,
-                boxShadow: '0 6px 20px rgba(212, 249, 56, 0.25)'
-              }}
-            >
-              Save Changes
-            </motion.button>
-
-            {/* Secondary Action Button: Dark Pill "Delete Account" (Exact match to Image 2) */}
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.97 }}
-              onClick={() => setActiveSheet('deleteAccount')}
-              style={{
-                width: '100%',
-                padding: '14px 0',
-                borderRadius: 25,
-                background: UI.card,
-                border: UI.cardBorder,
-                color: UI.danger,
-                fontSize: 13.5,
-                fontWeight: 700,
                 cursor: 'pointer'
               }}
             >
-              Delete Account
-            </motion.button>
-          </motion.div>
-        )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Heart size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Wishlist &amp; Saved Fits
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: UI.textSecondary }}>
+                  {wishlist.length} Saved
+                </span>
+                <ChevronRight size={16} color={UI.textMuted} />
+              </div>
+            </motion.div>
+
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* Doorstep Fitting History */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => {
+                setOrderTab('returns');
+                setActiveSheet('orders');
+              }}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <RotateCcw size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Doorstep Fitting Sessions &amp; Returns
+                </span>
+              </div>
+              <ChevronRight size={16} color={UI.textMuted} />
+            </motion.div>
+          </div>
+        </div>
+
+        {/* ====================================================================
+            SECTION 2: FASHION & SIZING
+            ==================================================================== */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: UI.textMuted, marginBottom: 8, paddingLeft: 4 }}>
+            Fashion &amp; Sizing
+          </div>
+
+          <div style={{ background: UI.card, border: UI.cardBorder, borderRadius: 14, overflow: 'hidden' }}>
+            {/* Size & Fit Profile */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => setActiveSheet('fashionPreferences')}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Shirt size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Size &amp; Fit Profile
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: UI.textSecondary }}>
+                  {fashionPrefs.topSize} · {fashionPrefs.bottomSize} · {fashionPrefs.footwearSize}
+                </span>
+                <ChevronRight size={16} color={UI.textMuted} />
+              </div>
+            </motion.div>
+
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* Style & Brand Preferences */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => setActiveSheet('fashionPreferences')}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Sparkles size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Style &amp; Brand Preferences
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: UI.textSecondary }}>
+                  {fashionPrefs.preferredFit}
+                </span>
+                <ChevronRight size={16} color={UI.textMuted} />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* ====================================================================
+            SECTION 3: DELIVERY & PAYMENTS
+            ==================================================================== */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: UI.textMuted, marginBottom: 8, paddingLeft: 4 }}>
+            Delivery &amp; Payments
+          </div>
+
+          <div style={{ background: UI.card, border: UI.cardBorder, borderRadius: 14, overflow: 'hidden' }}>
+            {/* Saved Delivery Addresses */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => setActiveSheet('addresses')}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <MapPin size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Saved Delivery Addresses
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: UI.textSecondary }}>
+                  {addresses.length} Saved
+                </span>
+                <ChevronRight size={16} color={UI.textMuted} />
+              </div>
+            </motion.div>
+
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* Payment Methods */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => setActiveSheet('payments')}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <CreditCard size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Payment Methods &amp; Cards
+                </span>
+              </div>
+              <ChevronRight size={16} color={UI.textMuted} />
+            </motion.div>
+
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* Instant Doorstep UPI VPA */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => setActiveSheet('payments')}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Wallet size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Instant Doorstep Refund VPA
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: UI.textSecondary }}>
+                  {upiId}
+                </span>
+                <ChevronRight size={16} color={UI.textMuted} />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* ====================================================================
+            SECTION 4: PREFERENCES & SETTINGS (INLINE LIST - NO SEPARATE SCREEN)
+            ==================================================================== */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: UI.textMuted, marginBottom: 8, paddingLeft: 4 }}>
+            Preferences
+          </div>
+
+          <div style={{ background: UI.card, border: UI.cardBorder, borderRadius: 14, overflow: 'hidden' }}>
+            {/* Push Notifications Toggle */}
+            <div
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Bell size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Push Notifications
+                </span>
+              </div>
+
+              {/* Black & White iOS Toggle */}
+              <button
+                type="button"
+                onClick={() => {
+                  const next = !toggles.pushNotifications;
+                  setToggles({ ...toggles, pushNotifications: next });
+                  showToast(`Notifications ${next ? 'Enabled' : 'Disabled'}`);
+                }}
+                style={{
+                  width: 48,
+                  height: 28,
+                  borderRadius: 14,
+                  background: toggles.pushNotifications ? '#ffffff' : '#262626',
+                  border: 'none',
+                  padding: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: toggles.pushNotifications ? 'flex-end' : 'flex-start',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  transition: 'background 0.2s ease'
+                }}
+              >
+                <div
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: 12,
+                    background: toggles.pushNotifications ? '#000000' : '#888888',
+                    transition: 'transform 0.2s ease'
+                  }}
+                />
+              </button>
+            </div>
+
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* SMS & WhatsApp Alerts */}
+            <div
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Smartphone size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  SMS &amp; WhatsApp Alerts
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const next = !toggles.smsAlerts;
+                  setToggles({ ...toggles, smsAlerts: next });
+                  showToast(`Runner alerts ${next ? 'Enabled' : 'Disabled'}`);
+                }}
+                style={{
+                  width: 48,
+                  height: 28,
+                  borderRadius: 14,
+                  background: toggles.smsAlerts ? '#ffffff' : '#262626',
+                  border: 'none',
+                  padding: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: toggles.smsAlerts ? 'flex-end' : 'flex-start',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  transition: 'background 0.2s ease'
+                }}
+              >
+                <div
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: 12,
+                    background: toggles.smsAlerts ? '#000000' : '#888888',
+                    transition: 'transform 0.2s ease'
+                  }}
+                />
+              </button>
+            </div>
+
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* Dark Mode */}
+            <div
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Moon size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Dark Mode
+                </span>
+              </div>
+
+              <div
+                style={{
+                  width: 48,
+                  height: 28,
+                  borderRadius: 14,
+                  background: '#ffffff',
+                  padding: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end'
+                }}
+              >
+                <div
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: 12,
+                    background: '#000000'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* Language */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => {
+                const langs = ['English (IN)', 'Hindi', 'Gujarati'];
+                const next = langs[(langs.indexOf(selectedLanguage) + 1) % langs.length];
+                setSelectedLanguage(next);
+                showToast(`Language set to ${next}`);
+              }}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Sliders size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Language
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: UI.textSecondary }}>
+                  {selectedLanguage}
+                </span>
+                <ChevronRight size={16} color={UI.textMuted} />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* ====================================================================
+            SECTION 5: ACCOUNT & SECURITY
+            ==================================================================== */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: UI.textMuted, marginBottom: 8, paddingLeft: 4 }}>
+            Account &amp; Security
+          </div>
+
+          <div style={{ background: UI.card, border: UI.cardBorder, borderRadius: 14, overflow: 'hidden' }}>
+            {/* Edit Profile */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => setActiveSheet('editProfile')}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <UserCheck size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Edit Profile Details
+                </span>
+              </div>
+              <ChevronRight size={16} color={UI.textMuted} />
+            </motion.div>
+
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* Download My Data */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={handleDownloadData}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Download size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Download My Data
+                </span>
+              </div>
+              <ChevronRight size={16} color={UI.textMuted} />
+            </motion.div>
+
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* Security */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => showToast('Security: 256-bit AES encryption & tokenized payments active')}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <ShieldCheck size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Security &amp; Tokenization
+                </span>
+              </div>
+              <ChevronRight size={16} color={UI.textMuted} />
+            </motion.div>
+          </div>
+        </div>
+
+        {/* ====================================================================
+            SECTION 6: SUPPORT & LEGAL
+            ==================================================================== */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: UI.textMuted, marginBottom: 8, paddingLeft: 4 }}>
+            Support &amp; Legal
+          </div>
+
+          <div style={{ background: UI.card, border: UI.cardBorder, borderRadius: 14, overflow: 'hidden' }}>
+            {/* Help & Support */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => setActiveSheet('helpSupport')}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <HelpCircle size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Help &amp; Concierge Support
+                </span>
+              </div>
+              <ChevronRight size={16} color={UI.textMuted} />
+            </motion.div>
+
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* Terms of Service */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => showToast('Terms: Authentic designer drops with 30-min trial guarantee.')}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <FileText size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Terms of Service
+                </span>
+              </div>
+              <ChevronRight size={16} color={UI.textMuted} />
+            </motion.div>
+
+            <div style={{ height: 1, background: UI.divider, margin: '0 16px' }} />
+
+            {/* Privacy Policy */}
+            <motion.div
+              whileTap={{ scale: 0.99, backgroundColor: UI.cardHover }}
+              onClick={() => showToast('Privacy Policy: All customer data is tokenized and never sold.')}
+              style={{
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Lock size={18} color="#ffffff" />
+                <span style={{ fontSize: 14, fontWeight: 700, color: UI.textPrimary }}>
+                  Privacy Policy
+                </span>
+              </div>
+              <ChevronRight size={16} color={UI.textMuted} />
+            </motion.div>
+          </div>
+        </div>
+
+        {/* ====================================================================
+            SECTION 7: ACTIONS (CLEAN MONOCHROME LOGOUT & DELETE)
+            ==================================================================== */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+          {/* Solid White Button with Black Text */}
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.98 }}
+            onClick={handleLogout}
+            style={{
+              width: '100%',
+              padding: '15px 0',
+              borderRadius: 14,
+              background: '#ffffff',
+              color: '#000000',
+              fontSize: 14.5,
+              fontWeight: 800,
+              border: 'none',
+              cursor: 'pointer',
+              letterSpacing: '-0.01em'
+            }}
+          >
+            Log Out
+          </motion.button>
+
+          {/* Delete Account */}
+          <button
+            type="button"
+            onClick={() => setActiveSheet('deleteAccount')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: UI.textMuted,
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: 'pointer',
+              padding: '8px 0',
+              textAlign: 'center'
+            }}
+          >
+            Delete Account
+          </button>
+        </div>
       </main>
 
       {/* ====================================================================
-          SLIDE-OVER BOTTOM SHEETS (Retaining 100% of DROBE Fashion Content)
+          BOTTOM SHEETS (ALL RE-STYLED IN PURE BLACK & WHITE)
           ==================================================================== */}
       <AnimatePresence>
         {activeSheet && (
@@ -1417,8 +974,7 @@ export default function ProfilePage() {
               position: 'fixed',
               inset: 0,
               zIndex: 90,
-              background: 'rgba(0, 0, 0, 0.75)',
-              backdropFilter: 'blur(8px)',
+              background: 'rgba(0, 0, 0, 0.85)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end'
@@ -1431,10 +987,10 @@ export default function ProfilePage() {
               exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 450, damping: 32 }}
               style={{
-                background: UI.card,
-                borderTopLeftRadius: 24,
-                borderTopRightRadius: 24,
-                borderTop: UI.cardBorder,
+                background: '#121212',
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+                borderTop: '1px solid #222222',
                 maxHeight: '85vh',
                 display: 'flex',
                 flexDirection: 'column',
@@ -1449,7 +1005,7 @@ export default function ProfilePage() {
                 style={{
                   width: 36,
                   height: 4,
-                  background: '#333342',
+                  background: '#333333',
                   borderRadius: 2,
                   margin: '10px auto 14px'
                 }}
@@ -1459,7 +1015,7 @@ export default function ProfilePage() {
               {activeSheet === 'orders' && (
                 <div style={{ padding: '0 20px 30px', overflowY: 'auto' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                    <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>My Orders & 30-Min Tracking</h3>
+                    <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>My Orders &amp; 30-Min Tracking</h3>
                     <button
                       onClick={() => setActiveSheet(null)}
                       style={{ background: 'none', border: 'none', color: UI.textSecondary, cursor: 'pointer', padding: 4 }}
@@ -1472,8 +1028,7 @@ export default function ProfilePage() {
                   <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
                     {[
                       { key: 'all', label: 'All Orders' },
-                      { key: 'returns', label: 'Returns & Refunds' },
-                      { key: 'coupons', label: 'Coupons' }
+                      { key: 'returns', label: 'Doorstep Returns' }
                     ].map(t => (
                       <button
                         key={t.key}
@@ -1481,11 +1036,11 @@ export default function ProfilePage() {
                         style={{
                           padding: '6px 14px',
                           borderRadius: 20,
-                          background: orderTab === t.key ? UI.accent : UI.pillBg,
-                          color: orderTab === t.key ? '#000' : UI.textPrimary,
+                          background: orderTab === t.key ? '#ffffff' : '#1c1c1c',
+                          color: orderTab === t.key ? '#000000' : '#ffffff',
                           fontSize: 12,
                           fontWeight: 700,
-                          border: 'none',
+                          border: orderTab === t.key ? 'none' : '1px solid #2a2a2a',
                           cursor: 'pointer'
                         }}
                       >
@@ -1497,9 +1052,9 @@ export default function ProfilePage() {
                   {orderTab === 'all' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       {trialOrders.map(o => (
-                        <div key={o.id} style={{ background: '#111118', border: UI.cardBorder, borderRadius: 14, padding: 14 }}>
+                        <div key={o.id} style={{ background: '#181818', border: '1px solid #262626', borderRadius: 14, padding: 14 }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                            <span style={{ fontSize: 12, fontWeight: 800, color: UI.accent }}>{o.orderNumber || o.id}</span>
+                            <span style={{ fontSize: 12, fontWeight: 800, color: '#ffffff' }}>{o.orderNumber || o.id}</span>
                             <span style={{ fontSize: 11, color: UI.textMuted }}>{o.dispatchedAt || 'Today'}</span>
                           </div>
                           <div style={{ fontSize: 13.5, fontWeight: 700 }}>{o.status}</div>
@@ -1517,7 +1072,7 @@ export default function ProfilePage() {
                               width: '100%',
                               padding: '10px 0',
                               borderRadius: 10,
-                              background: UI.accent,
+                              background: '#ffffff',
                               color: '#000000',
                               fontSize: 12.5,
                               fontWeight: 800,
@@ -1534,8 +1089,8 @@ export default function ProfilePage() {
 
                   {orderTab === 'returns' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      <div style={{ background: '#111118', border: UI.cardBorder, borderRadius: 14, padding: 14 }}>
-                        <div style={{ fontSize: 11, fontWeight: 800, color: UI.accent, textTransform: 'uppercase' }}>
+                      <div style={{ background: '#181818', border: '1px solid #262626', borderRadius: 14, padding: 14 }}>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: '#ffffff', textTransform: 'uppercase' }}>
                           ✓ Instant Doorstep Refund Settled
                         </div>
                         <div style={{ fontSize: 13.5, fontWeight: 700, marginTop: 4 }}>
@@ -1547,28 +1102,6 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   )}
-
-                  {orderTab === 'coupons' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      {[
-                        { code: 'DROBE30', discount: '₹500 OFF', desc: 'Valid on first 30-min express trial order' },
-                        { code: 'FASHION30', discount: 'FREE 6-MIN TRIAL', desc: 'Complimentary doorstep fitting trial on all brands' }
-                      ].map(c => (
-                        <div key={c.code} style={{ background: '#111118', border: UI.cardBorder, borderRadius: 14, padding: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div>
-                            <div style={{ fontSize: 14, fontWeight: 800 }}>{c.code} • {c.discount}</div>
-                            <div style={{ fontSize: 11.5, color: UI.textSecondary, marginTop: 2 }}>{c.desc}</div>
-                          </div>
-                          <button
-                            onClick={() => showToast(`Coupon ${c.code} copied!`)}
-                            style={{ padding: '6px 12px', borderRadius: 8, background: UI.accent, color: '#000', border: 'none', fontSize: 11.5, fontWeight: 800, cursor: 'pointer' }}
-                          >
-                            Copy
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
               )}
 
@@ -1576,7 +1109,7 @@ export default function ProfilePage() {
               {activeSheet === 'payments' && (
                 <div style={{ padding: '0 20px 30px', overflowY: 'auto' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                    <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Payments & Billing</h3>
+                    <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Payments &amp; UPI</h3>
                     <button
                       onClick={() => setActiveSheet(null)}
                       style={{ background: 'none', border: 'none', color: UI.textSecondary, cursor: 'pointer', padding: 4 }}
@@ -1585,54 +1118,45 @@ export default function ProfilePage() {
                     </button>
                   </div>
 
-                  {/* Instant Doorstep UPI VPA */}
-                  <div style={{ background: '#111118', border: UI.cardBorder, borderRadius: 14, padding: 14, marginBottom: 14 }}>
-                    <div style={{ fontSize: 11, fontWeight: 800, color: UI.accent, textTransform: 'uppercase', marginBottom: 4 }}>
-                      ⚡ Instant Doorstep Refund VPA
+                  <div style={{ background: '#181818', border: '1px solid #262626', borderRadius: 14, padding: 14, marginBottom: 14 }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: UI.textMuted, textTransform: 'uppercase', marginBottom: 4 }}>
+                      Instant Doorstep Refund VPA
                     </div>
                     <div style={{ fontSize: 14, fontWeight: 700 }}>{upiId}</div>
-                    <p style={{ fontSize: 11.5, color: UI.textSecondary, margin: '4px 0 10px 0' }}>
-                      When you return unkept trial fits at your door, refunds are credited instantly to this UPI upon runner tag scan.
+                    <p style={{ fontSize: 12, color: UI.textSecondary, margin: '4px 0 10px 0' }}>
+                      Refunds are credited instantly to this UPI address when items are returned during the 6-min fitting trial.
                     </p>
                     <button
                       onClick={() => showToast('UPI VPA verified and active')}
-                      style={{ padding: '6px 12px', borderRadius: 8, background: UI.pillBg, border: UI.cardBorder, color: UI.textPrimary, fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}
+                      style={{ padding: '6px 14px', borderRadius: 8, background: '#ffffff', border: 'none', color: '#000000', fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}
                     >
-                      Edit UPI ID
+                      Verified Active
                     </button>
                   </div>
 
-                  {/* Tokenized Cards */}
-                  <div style={{ background: '#111118', border: UI.cardBorder, borderRadius: 14, padding: 14, marginBottom: 14 }}>
+                  <div style={{ background: '#181818', border: '1px solid #262626', borderRadius: 14, padding: 14, marginBottom: 14 }}>
                     <div style={{ fontSize: 11, fontWeight: 800, color: UI.textMuted, textTransform: 'uppercase', marginBottom: 8 }}>
-                      Tokenized Cards (RBI Compliant)
+                      Saved Cards
                     </div>
                     {savedCards.map(c => (
-                      <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                      <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                         <div>
                           <div style={{ fontSize: 13.5, fontWeight: 700 }}>{c.bank} {c.type} •••• {c.last4}</div>
                           <div style={{ fontSize: 11, color: UI.textSecondary }}>Expires {c.expiry}</div>
                         </div>
-                        <span style={{ fontSize: 11, color: UI.accent, fontWeight: 700 }}>Tokenized ✓</span>
+                        <span style={{ fontSize: 11, color: '#ffffff', fontWeight: 700 }}>Tokenized ✓</span>
                       </div>
                     ))}
-                  </div>
-
-                  <div style={{ fontSize: 11, color: UI.textMuted, textAlign: 'center' }}>
-                    🔒 DROBE uses PCI-DSS Level 1 tokenization. Raw card numbers, CVVs, and UPI PINs are never stored.
                   </div>
                 </div>
               )}
 
-              {/* SHEET 3: FASHION PREFERENCES (DROBE SPECIAL) */}
+              {/* SHEET 3: FASHION PREFERENCES */}
               {activeSheet === 'fashionPreferences' && (
                 <div style={{ padding: '0 20px 30px', overflowY: 'auto' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                     <div>
-                      <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Fashion Preferences</h3>
-                      <p style={{ fontSize: 12, color: UI.textSecondary, margin: '2px 0 0 0' }}>
-                        Personalize your 30-min doorstep wardrobe drops
-                      </p>
+                      <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Fashion &amp; Sizing Profile</h3>
                     </div>
                     <button
                       onClick={() => setActiveSheet(null)}
@@ -1640,47 +1164,12 @@ export default function ProfilePage() {
                     >
                       <X size={20} />
                     </button>
-                  </div>
-
-                  {/* Preferred Styles */}
-                  <div style={{ marginBottom: 18 }}>
-                    <label style={{ fontSize: 12, fontWeight: 800, color: UI.textSecondary, display: 'block', marginBottom: 8 }}>
-                      PREFERRED STYLES
-                    </label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                      {['Streetwear', 'Casual', 'Minimal', 'Oversized', 'Ethnic', 'Formal', 'Athleisure', 'Partywear'].map(st => {
-                        const isSelected = fashionPrefs.styles.includes(st);
-                        return (
-                          <button
-                            key={st}
-                            onClick={() => {
-                              setFashionPrefs(prev => ({
-                                ...prev,
-                                styles: isSelected ? prev.styles.filter(s => s !== st) : [...prev.styles, st]
-                              }));
-                            }}
-                            style={{
-                              padding: '7px 14px',
-                              borderRadius: 20,
-                              background: isSelected ? UI.accent : UI.pillBg,
-                              color: isSelected ? '#000000' : UI.textPrimary,
-                              fontSize: 12,
-                              fontWeight: isSelected ? 800 : 600,
-                              border: isSelected ? 'none' : UI.pillBorder,
-                              cursor: 'pointer'
-                            }}
-                          >
-                            {st}
-                          </button>
-                        );
-                      })}
-                    </div>
                   </div>
 
                   {/* Top Size */}
                   <div style={{ marginBottom: 18 }}>
                     <label style={{ fontSize: 12, fontWeight: 800, color: UI.textSecondary, display: 'block', marginBottom: 8 }}>
-                      TOP SIZE (SHIRTS / POLOS / HOODIES)
+                      TOP SIZE
                     </label>
                     <div style={{ display: 'flex', gap: 8 }}>
                       {['S', 'M', 'L', 'XL', 'XXL'].map(sz => (
@@ -1691,11 +1180,11 @@ export default function ProfilePage() {
                             flex: 1,
                             padding: '10px 0',
                             borderRadius: 10,
-                            background: fashionPrefs.topSize === sz ? UI.accent : UI.pillBg,
-                            color: fashionPrefs.topSize === sz ? '#000000' : UI.textPrimary,
+                            background: fashionPrefs.topSize === sz ? '#ffffff' : '#181818',
+                            color: fashionPrefs.topSize === sz ? '#000000' : '#ffffff',
                             fontSize: 13,
                             fontWeight: 800,
-                            border: 'none',
+                            border: fashionPrefs.topSize === sz ? 'none' : '1px solid #262626',
                             cursor: 'pointer'
                           }}
                         >
@@ -1708,7 +1197,7 @@ export default function ProfilePage() {
                   {/* Bottom Size */}
                   <div style={{ marginBottom: 18 }}>
                     <label style={{ fontSize: 12, fontWeight: 800, color: UI.textSecondary, display: 'block', marginBottom: 8 }}>
-                      BOTTOM SIZE (JEANS / TROUSERS / CARGOS)
+                      BOTTOM SIZE
                     </label>
                     <div style={{ display: 'flex', gap: 8 }}>
                       {['28', '30', '32', '34', '36'].map(sz => (
@@ -1719,11 +1208,11 @@ export default function ProfilePage() {
                             flex: 1,
                             padding: '10px 0',
                             borderRadius: 10,
-                            background: fashionPrefs.bottomSize === sz ? UI.accent : UI.pillBg,
-                            color: fashionPrefs.bottomSize === sz ? '#000000' : UI.textPrimary,
+                            background: fashionPrefs.bottomSize === sz ? '#ffffff' : '#181818',
+                            color: fashionPrefs.bottomSize === sz ? '#000000' : '#ffffff',
                             fontSize: 13,
                             fontWeight: 800,
-                            border: 'none',
+                            border: fashionPrefs.bottomSize === sz ? 'none' : '1px solid #262626',
                             cursor: 'pointer'
                           }}
                         >
@@ -1733,35 +1222,63 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  {/* Followed Brands */}
-                  <div style={{ marginBottom: 24 }}>
+                  {/* Footwear Size */}
+                  <div style={{ marginBottom: 18 }}>
                     <label style={{ fontSize: 12, fontWeight: 800, color: UI.textSecondary, display: 'block', marginBottom: 8 }}>
-                      FAVOURITE BRANDS (FOLLOW FOR NEW DROPS)
+                      FOOTWEAR SIZE
+                    </label>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      {['UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'].map(sz => (
+                        <button
+                          key={sz}
+                          onClick={() => setFashionPrefs(prev => ({ ...prev, footwearSize: sz }))}
+                          style={{
+                            flex: 1,
+                            padding: '10px 0',
+                            borderRadius: 10,
+                            background: fashionPrefs.footwearSize === sz ? '#ffffff' : '#181818',
+                            color: fashionPrefs.footwearSize === sz ? '#000000' : '#ffffff',
+                            fontSize: 12,
+                            fontWeight: 800,
+                            border: fashionPrefs.footwearSize === sz ? 'none' : '1px solid #262626',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {sz}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Styles */}
+                  <div style={{ marginBottom: 22 }}>
+                    <label style={{ fontSize: 12, fontWeight: 800, color: UI.textSecondary, display: 'block', marginBottom: 8 }}>
+                      PREFERRED STYLES
                     </label>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                      {['SNITCH', 'The Souled Store', 'Tilt', 'Mark Leute', 'Bluorng', 'VegNonVeg', 'Urban Monkey', 'Huemn'].map(b => {
-                        const isFav = fashionPrefs.brands.includes(b);
+                      {['Streetwear', 'Casual', 'Minimal', 'Oversized', 'Formal', 'Athleisure'].map(st => {
+                        const isSelected = fashionPrefs.styles.includes(st);
                         return (
                           <button
-                            key={b}
+                            key={st}
                             onClick={() => {
                               setFashionPrefs(prev => ({
                                 ...prev,
-                                brands: isFav ? prev.brands.filter(x => x !== b) : [...prev.brands, b]
+                                styles: isSelected ? prev.styles.filter(s => s !== st) : [...prev.styles, st]
                               }));
                             }}
                             style={{
-                              padding: '7px 14px',
+                              padding: '8px 14px',
                               borderRadius: 20,
-                              background: isFav ? UI.accent : UI.pillBg,
-                              color: isFav ? '#000000' : UI.textPrimary,
+                              background: isSelected ? '#ffffff' : '#181818',
+                              color: isSelected ? '#000000' : '#ffffff',
                               fontSize: 12,
-                              fontWeight: isFav ? 800 : 600,
-                              border: isFav ? 'none' : UI.pillBorder,
+                              fontWeight: isSelected ? 800 : 600,
+                              border: isSelected ? 'none' : '1px solid #262626',
                               cursor: 'pointer'
                             }}
                           >
-                            {isFav ? '✓ ' : '+ '}{b}
+                            {isSelected ? '✓ ' : '+ '}{st}
                           </button>
                         );
                       })}
@@ -1773,13 +1290,13 @@ export default function ProfilePage() {
                     whileTap={{ scale: 0.97 }}
                     onClick={() => {
                       setActiveSheet(null);
-                      showToast('Fashion preferences updated! ✨');
+                      showToast('Fashion preferences updated');
                     }}
                     style={{
                       width: '100%',
                       padding: '14px 0',
-                      borderRadius: 25,
-                      background: UI.accent,
+                      borderRadius: 14,
+                      background: '#ffffff',
                       color: '#000000',
                       fontSize: 14,
                       fontWeight: 800,
@@ -1807,13 +1324,13 @@ export default function ProfilePage() {
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 18 }}>
                     {addresses.map(addr => (
-                      <div key={addr.id} style={{ background: '#111118', border: addr.isDefault ? `1.5px solid ${UI.accent}` : UI.cardBorder, borderRadius: 14, padding: 14 }}>
+                      <div key={addr.id} style={{ background: '#181818', border: addr.isDefault ? '1.5px solid #ffffff' : '1px solid #262626', borderRadius: 14, padding: 14 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                          <span style={{ fontSize: 11, fontWeight: 800, background: UI.pillBg, padding: '2px 8px', borderRadius: 6 }}>
+                          <span style={{ fontSize: 11, fontWeight: 800, background: '#262626', color: '#ffffff', padding: '2px 8px', borderRadius: 6 }}>
                             {addr.tag}
                           </span>
                           {addr.isDefault && (
-                            <span style={{ fontSize: 11, fontWeight: 700, color: UI.accent }}>Default Address ✓</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: '#ffffff' }}>Default ✓</span>
                           )}
                         </div>
                         <div style={{ fontSize: 13.5, fontWeight: 700 }}>{addr.recipient}</div>
@@ -1825,12 +1342,12 @@ export default function ProfilePage() {
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.97 }}
-                    onClick={() => showToast('Address selection updated for 30-min express deliveries!')}
+                    onClick={() => showToast('Address selection updated')}
                     style={{
                       width: '100%',
                       padding: '13px 0',
-                      borderRadius: 25,
-                      background: UI.accent,
+                      borderRadius: 14,
+                      background: '#ffffff',
                       color: '#000000',
                       fontSize: 13.5,
                       fontWeight: 800,
@@ -1843,11 +1360,11 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              {/* SHEET 5: HELP & CONCIERGE */}
+              {/* SHEET 5: HELP & SUPPORT */}
               {activeSheet === 'helpSupport' && (
                 <div style={{ padding: '0 20px 30px', overflowY: 'auto' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                    <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Help & Concierge Support</h3>
+                    <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Help &amp; Support</h3>
                     <button
                       onClick={() => setActiveSheet(null)}
                       style={{ background: 'none', border: 'none', color: UI.textSecondary, cursor: 'pointer', padding: 4 }}
@@ -1863,8 +1380,25 @@ export default function ProfilePage() {
                       rel="noopener noreferrer"
                       style={{
                         padding: '14px 16px',
-                        borderRadius: 16,
-                        background: '#25d366',
+                        borderRadius: 12,
+                        background: '#ffffff',
+                        color: '#000000',
+                        textDecoration: 'none',
+                        fontSize: 13.5,
+                        fontWeight: 800,
+                        textAlign: 'center'
+                      }}
+                    >
+                      WhatsApp Support (+91 98250 88123)
+                    </a>
+
+                    <a
+                      href="tel:+919825088123"
+                      style={{
+                        padding: '14px 16px',
+                        borderRadius: 12,
+                        background: '#181818',
+                        border: '1px solid #262626',
                         color: '#ffffff',
                         textDecoration: 'none',
                         fontSize: 13.5,
@@ -1872,35 +1406,18 @@ export default function ProfilePage() {
                         textAlign: 'center'
                       }}
                     >
-                      Chat with Drobe Concierge on WhatsApp
-                    </a>
-
-                    <a
-                      href="tel:+919825088123"
-                      style={{
-                        padding: '14px 16px',
-                        borderRadius: 16,
-                        background: UI.pillBg,
-                        border: UI.cardBorder,
-                        color: UI.textPrimary,
-                        textDecoration: 'none',
-                        fontSize: 13.5,
-                        fontWeight: 700,
-                        textAlign: 'center'
-                      }}
-                    >
-                      Call Darkstore Hub (+91 98250 88123)
+                      Call Ahmedabad Darkstore Hub
                     </a>
                   </div>
 
                   {/* FAQs */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {[
-                      { q: 'How does 30-minute delivery work?', a: 'Orders are dispatched directly from Ahmedabad Hub #01 to your door using rapid EV runners.' },
-                      { q: 'What is the 6-minute doorstep trial?', a: 'Our runner waits 6 minutes while you try on your fits. Keep what fits and hand back what does not.' },
+                      { q: 'How does 30-minute delivery work?', a: 'Dispatched directly from Ahmedabad Central Darkstore to your door via express EV runners.' },
+                      { q: 'What is the 6-minute doorstep trial?', a: 'The runner waits 6 minutes while you try on your fits. Keep what fits and return what does not.' },
                       { q: 'How do instant doorstep refunds work?', a: 'Returned items are scanned on the spot, triggering immediate UPI credit to your verified VPA.' }
                     ].map((f, i) => (
-                      <div key={i} style={{ background: '#111118', border: UI.cardBorder, borderRadius: 12, padding: 12 }}>
+                      <div key={i} style={{ background: '#181818', border: '1px solid #262626', borderRadius: 12, padding: 12 }}>
                         <div style={{ fontSize: 13, fontWeight: 700 }}>{f.q}</div>
                         <div style={{ fontSize: 12, color: UI.textSecondary, marginTop: 4 }}>{f.a}</div>
                       </div>
@@ -1909,11 +1426,110 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              {/* SHEET 6: DELETE ACCOUNT */}
+              {/* SHEET 6: EDIT PROFILE (INLINE SHEET) */}
+              {activeSheet === 'editProfile' && (
+                <div style={{ padding: '0 20px 30px', overflowY: 'auto' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                    <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Edit Profile Details</h3>
+                    <button
+                      onClick={() => setActiveSheet(null)}
+                      style={{ background: 'none', border: 'none', color: UI.textSecondary, cursor: 'pointer', padding: 4 }}
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+                    <div style={{ background: '#181818', border: '1px solid #262626', borderRadius: 12, padding: '12px 14px' }}>
+                      <label style={{ fontSize: 11, color: UI.textSecondary, fontWeight: 700, display: 'block', marginBottom: 4 }}>
+                        FULL NAME
+                      </label>
+                      <input
+                        type="text"
+                        value={userData.name}
+                        onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                        style={{
+                          width: '100%',
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#ffffff',
+                          fontSize: 14,
+                          fontWeight: 700,
+                          outline: 'none'
+                        }}
+                      />
+                    </div>
+
+                    <div style={{ background: '#181818', border: '1px solid #262626', borderRadius: 12, padding: '12px 14px' }}>
+                      <label style={{ fontSize: 11, color: UI.textSecondary, fontWeight: 700, display: 'block', marginBottom: 4 }}>
+                        PHONE NUMBER
+                      </label>
+                      <input
+                        type="tel"
+                        value={userData.phone}
+                        onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
+                        style={{
+                          width: '100%',
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#ffffff',
+                          fontSize: 14,
+                          fontWeight: 700,
+                          outline: 'none'
+                        }}
+                      />
+                    </div>
+
+                    <div style={{ background: '#181818', border: '1px solid #262626', borderRadius: 12, padding: '12px 14px' }}>
+                      <label style={{ fontSize: 11, color: UI.textSecondary, fontWeight: 700, display: 'block', marginBottom: 4 }}>
+                        EMAIL ADDRESS
+                      </label>
+                      <input
+                        type="email"
+                        value={userData.email}
+                        onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                        style={{
+                          width: '100%',
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#ffffff',
+                          fontSize: 14,
+                          fontWeight: 700,
+                          outline: 'none'
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => {
+                      setActiveSheet(null);
+                      showToast('Profile updated successfully');
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '14px 0',
+                      borderRadius: 14,
+                      background: '#ffffff',
+                      color: '#000000',
+                      fontSize: 14,
+                      fontWeight: 800,
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Save Changes
+                  </motion.button>
+                </div>
+              )}
+
+              {/* SHEET 7: DELETE ACCOUNT */}
               {activeSheet === 'deleteAccount' && (
                 <div style={{ padding: '0 20px 30px', overflowY: 'auto' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                    <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: UI.danger }}>Delete Account</h3>
+                    <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: '#ffffff' }}>Delete Account</h3>
                     <button
                       onClick={() => setActiveSheet(null)}
                       style={{ background: 'none', border: 'none', color: UI.textSecondary, cursor: 'pointer', padding: 4 }}
@@ -1924,32 +1540,29 @@ export default function ProfilePage() {
 
                   <p style={{ fontSize: 13, color: UI.textSecondary, lineHeight: 1.5, marginBottom: 18 }}>
                     Deleting your account will permanently wipe your profile, saved measurements, and fashion preferences.
-                    In accordance with statutory tax and accounting regulations, historical order fulfillment records are retained for compliance.
                   </p>
 
                   <div style={{ display: 'flex', gap: 10 }}>
-                    <motion.button
+                    <button
                       type="button"
-                      whileTap={{ scale: 0.95 }}
                       onClick={() => setActiveSheet(null)}
                       style={{
                         flex: 1,
                         padding: '13px 0',
-                        borderRadius: 20,
-                        background: UI.pillBg,
-                        border: UI.cardBorder,
-                        color: UI.textPrimary,
+                        borderRadius: 14,
+                        background: '#181818',
+                        border: '1px solid #262626',
+                        color: '#ffffff',
                         fontSize: 13,
                         fontWeight: 700,
                         cursor: 'pointer'
                       }}
                     >
                       Cancel
-                    </motion.button>
+                    </button>
 
-                    <motion.button
+                    <button
                       type="button"
-                      whileTap={{ scale: 0.95 }}
                       onClick={() => {
                         setActiveSheet(null);
                         handleLogout();
@@ -1957,9 +1570,9 @@ export default function ProfilePage() {
                       style={{
                         flex: 1,
                         padding: '13px 0',
-                        borderRadius: 20,
-                        background: UI.danger,
-                        color: '#ffffff',
+                        borderRadius: 14,
+                        background: '#ffffff',
+                        color: '#000000',
                         fontSize: 13,
                         fontWeight: 800,
                         border: 'none',
@@ -1967,7 +1580,7 @@ export default function ProfilePage() {
                       }}
                     >
                       Confirm Delete
-                    </motion.button>
+                    </button>
                   </div>
                 </div>
               )}
@@ -1977,7 +1590,7 @@ export default function ProfilePage() {
         )}
       </AnimatePresence>
 
-      {/* Bottom Navigation */}
+      {/* Persistent Mobile Bottom Navigation */}
       <BottomNav />
     </div>
   );
