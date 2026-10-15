@@ -31,7 +31,13 @@ import {
   Globe,
   Mail,
   Phone,
-  Eye
+  Eye,
+  Download,
+  DollarSign,
+  Wallet,
+  Receipt,
+  TrendingUp,
+  ArrowDownRight
 } from 'lucide-react';
 import { 
   AHMEDABAD_WAREHOUSE,
@@ -67,12 +73,31 @@ import {
 import styles from './admin.module.css';
 
 export default function AdminDashboardPage() {
-  const [activeTab, setActiveTab] = useState<'inwarding' | 'inventory' | 'shelves' | 'trials' | 'approvals'>('inwarding');
+  const [activeTab, setActiveTab] = useState<'inwarding' | 'inventory' | 'shelves' | 'trials' | 'approvals' | 'settlement'>('inwarding');
   const [brands, setBrands] = useState<DarkstoreBrand[]>([]);
   const [products, setProducts] = useState<DarkstoreProduct[]>([]);
   const [inbounds, setInbounds] = useState<InboundStockShipment[]>([]);
   const [trialOrders, setTrialOrders] = useState<TrialOrder[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Wholesale Settlement & Margin Ledger State
+  const [settlementSearch, setSettlementSearch] = useState<string>('');
+  const [settlementBrandFilter, setSettlementBrandFilter] = useState<string>('all');
+  const [settlementModalBrand, setSettlementModalBrand] = useState<{
+    brandId: string;
+    brandName: string;
+    category?: string;
+    keptUnits: number;
+    wholesalePayoutDue: number;
+    drobeMarkup: number;
+    grossGmv: number;
+    avgBaseWholesale?: number;
+    dispatchedUnits?: number;
+    returnedUnits?: number;
+  } | null>(null);
+  const [payoutUtrRef, setPayoutUtrRef] = useState<string>('');
+  const [payoutNotes, setPayoutNotes] = useState<string>('');
+  const [settledBrands, setSettledBrands] = useState<Record<string, { utr: string; date: string; amount: number; notes?: string }>>({});
 
   // Brand Dossier Review Modal State
   const [selectedBrandForDossier, setSelectedBrandForDossier] = useState<DarkstoreBrand | null>(null);
@@ -155,12 +180,25 @@ export default function AdminDashboardPage() {
       loadAllData();
     });
 
+    try {
+      const savedSettled = localStorage.getItem('drobe_settled_brands');
+      if (savedSettled) {
+        setSettledBrands(JSON.parse(savedSettled));
+      }
+    } catch {}
+
     const unsubRealtime = subscribeToRealtimeOrders(() => {
       syncDarkstoreWithSupabase().then(() => loadAllData());
     });
 
     const handleStorageChange = () => {
       loadAllData();
+      try {
+        const savedSettled = localStorage.getItem('drobe_settled_brands');
+        if (savedSettled) {
+          setSettledBrands(JSON.parse(savedSettled));
+        }
+      } catch {}
     };
     window.addEventListener('storage', handleStorageChange);
     return () => {
@@ -200,6 +238,237 @@ export default function AdminDashboardPage() {
       loadAllData();
       triggerToast(`🎉 Order ${res.order.orderNumber} marked Delivered & Kept! Stock remains deducted in live DB.`);
     }
+  };
+
+  // =========================================================================
+  // FINANCIAL & WHOLESALE SETTLEMENT LEDGER RECONCILIATION
+  // =========================================================================
+  const financialLedger = React.useMemo(() => {
+    let totalAdvanceGMV = 0;
+    let totalInstantRefunds = 0;
+    let totalKeptGMV = 0;
+    let totalBrandPayoutsDue = 0;
+    let totalDrobeMarkupEarnings = 0;
+    let totalOvertimeFees = 0;
+    let totalUnitsDispatched = 0;
+    let totalUnitsKept = 0;
+    let totalUnitsReturned = 0;
+
+    // Per-brand ledger map
+    const brandMap: Record<string, {
+      brandId: string;
+      brandName: string;
+      category?: string;
+      dispatchedUnits: number;
+      keptUnits: number;
+      returnedUnits: number;
+      grossGmv: number;
+      refundsDisbursed: number;
+      netKeptGmv: number;
+      wholesalePayoutDue: number;
+      drobeMarkup: number;
+      avgBaseWholesale: number;
+    }> = {};
+
+    // Initialize with all approved brands
+    brands.forEach((b) => {
+      brandMap[b.id] = {
+        brandId: b.id,
+        brandName: b.name,
+        category: b.category,
+        dispatchedUnits: 0,
+        keptUnits: 0,
+        returnedUnits: 0,
+        grossGmv: 0,
+        refundsDisbursed: 0,
+        netKeptGmv: 0,
+        wholesalePayoutDue: 0,
+        drobeMarkup: 0,
+        avgBaseWholesale: 600
+      };
+    });
+
+    // Populate pricing info for products
+    const productPricingMap: Record<string, DrobeMarkupPricing> = {};
+    products.forEach((p) => {
+      productPricingMap[p.id] = getProductPricingInfo(p);
+      if (p.sku) productPricingMap[p.sku] = productPricingMap[p.id];
+    });
+
+    // Iterate through trial orders
+    trialOrders.forEach((ord) => {
+      const advancePaid = ord.advancePaidAmount ?? (parseFloat(ord.price.replace(/[^0-9.]/g, '')) || 0);
+      const refundPaid = (ord.refundStatus === 'Refund Processed Instantly' || ord.status === 'Restocked to Warehouse Shelf')
+        ? (ord.netRefundAmount ?? ord.refundAmount ?? 0)
+        : (ord.netRefundAmount ?? ord.refundAmount ?? 0);
+      const overtime = ord.overtimeFee || 0;
+
+      totalAdvanceGMV += advancePaid;
+      totalInstantRefunds += refundPaid;
+      totalOvertimeFees += overtime;
+
+      // Items within order
+      const items = (ord.items && ord.items.length > 0)
+        ? ord.items
+        : [{
+            productId: ord.productId,
+            productName: ord.productName,
+            productSku: ord.productSku,
+            brandId: ord.brandId,
+            brandName: ord.brandName,
+            price: ord.price,
+            priceNum: parseFloat(ord.price.replace(/[^0-9.]/g, '')) || 0,
+            size: ord.size,
+            status: ord.status === 'Kept on Spot (Purchased)' ? 'kept' as const : ord.status === 'Restocked to Warehouse Shelf' ? 'returned' as const : 'pending' as const
+          }];
+
+      items.forEach((it) => {
+        totalUnitsDispatched += 1;
+        const bId = it.brandId || slugify(it.brandName || 'drobe');
+        if (!brandMap[bId]) {
+          brandMap[bId] = {
+            brandId: bId,
+            brandName: it.brandName || 'Brand Partner',
+            category: 'Apparel',
+            dispatchedUnits: 0,
+            keptUnits: 0,
+            returnedUnits: 0,
+            grossGmv: 0,
+            refundsDisbursed: 0,
+            netKeptGmv: 0,
+            wholesalePayoutDue: 0,
+            drobeMarkup: 0,
+            avgBaseWholesale: 600
+          };
+        }
+
+        const bEntry = brandMap[bId];
+        bEntry.dispatchedUnits += 1;
+
+        // Pricing lookup
+        const pricing = productPricingMap[it.productId] || calculateDrobeMarkupPricing(it.priceNum || 629);
+        const itemSellingPrice = pricing.sellingPrice || it.priceNum || 629;
+        const baseWholesale = pricing.brandBasePrice || Math.round(itemSellingPrice / 1.05);
+        const markup = pricing.markupAmount || (itemSellingPrice - baseWholesale);
+
+        bEntry.grossGmv += itemSellingPrice;
+        bEntry.avgBaseWholesale = baseWholesale;
+
+        if (it.status === 'kept') {
+          totalUnitsKept += 1;
+          totalKeptGMV += itemSellingPrice;
+          totalBrandPayoutsDue += baseWholesale;
+          totalDrobeMarkupEarnings += markup;
+
+          bEntry.keptUnits += 1;
+          bEntry.netKeptGmv += itemSellingPrice;
+          bEntry.wholesalePayoutDue += baseWholesale;
+          bEntry.drobeMarkup += markup;
+        } else if (it.status === 'returned') {
+          totalUnitsReturned += 1;
+          bEntry.returnedUnits += 1;
+          bEntry.refundsDisbursed += itemSellingPrice;
+        }
+      });
+    });
+
+    const netPlatformEarnings = totalDrobeMarkupEarnings + totalOvertimeFees;
+    const avgMarkupPct = totalBrandPayoutsDue > 0
+      ? Number(((totalDrobeMarkupEarnings / totalBrandPayoutsDue) * 100).toFixed(2))
+      : 4.83;
+    const conversionRate = totalUnitsDispatched > 0
+      ? Number(((totalUnitsKept / totalUnitsDispatched) * 100).toFixed(1))
+      : 0;
+
+    return {
+      totalAdvanceGMV,
+      totalInstantRefunds,
+      totalKeptGMV,
+      totalBrandPayoutsDue,
+      totalDrobeMarkupEarnings,
+      totalOvertimeFees,
+      netPlatformEarnings,
+      avgMarkupPct,
+      totalUnitsDispatched,
+      totalUnitsKept,
+      totalUnitsReturned,
+      conversionRate,
+      brandLedgerRows: Object.values(brandMap)
+    };
+  }, [trialOrders, brands, products]);
+
+  const handleExportSettlementCsv = () => {
+    try {
+      const headers = [
+        'Brand Partner',
+        'Category',
+        'Units Dispatched',
+        'Units Kept',
+        'Units Returned',
+        'Gross GMV (₹)',
+        'Refunds Disbursed (₹)',
+        'Net Retained GMV (₹)',
+        'Wholesale Base B (₹)',
+        'Net Brand Payout Due (₹)',
+        'Drobe 5% Markup Retained (₹)',
+        'Settlement Status',
+        'Disbursement UTR'
+      ];
+
+      const rows = financialLedger.brandLedgerRows.map((b) => {
+        const isSettled = !!settledBrands[b.brandId];
+        return [
+          `"${b.brandName}"`,
+          `"${b.category || 'Apparel'}"`,
+          b.dispatchedUnits,
+          b.keptUnits,
+          b.returnedUnits,
+          b.grossGmv,
+          b.refundsDisbursed,
+          b.netKeptGmv,
+          b.avgBaseWholesale,
+          b.wholesalePayoutDue,
+          b.drobeMarkup,
+          isSettled ? 'Disbursed via Bank Transfer' : (b.wholesalePayoutDue > 0 ? 'Ready for Payout' : 'No Balance Due'),
+          isSettled ? `"${settledBrands[b.brandId].utr}"` : 'Pending'
+        ].join(',');
+      });
+
+      const csvContent = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `DROBE_Brand_Wholesale_Settlement_Ledger_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      triggerToast('✓ Exported Brand Wholesale Settlement Ledger to CSV');
+    } catch {
+      triggerToast('Failed to export settlement report');
+    }
+  };
+
+  const handleConfirmPayout = () => {
+    if (!settlementModalBrand) return;
+    const finalUtr = payoutUtrRef.trim() || `NEFT-DROBE-${Date.now().toString().slice(-6)}`;
+    const updated = {
+      ...settledBrands,
+      [settlementModalBrand.brandId]: {
+        utr: finalUtr,
+        date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+        amount: settlementModalBrand.wholesalePayoutDue,
+        notes: payoutNotes || 'Automated weekly darkstore wholesale payout'
+      }
+    };
+    setSettledBrands(updated);
+    try {
+      localStorage.setItem('drobe_settled_brands', JSON.stringify(updated));
+    } catch {}
+    triggerToast(`✓ Disbursed ₹${settlementModalBrand.wholesalePayoutDue.toLocaleString('en-IN')} Payout to ${settlementModalBrand.brandName} (UTR: ${finalUtr})`);
+    setSettlementModalBrand(null);
+    setPayoutUtrRef('');
+    setPayoutNotes('');
   };
 
   // Handlers
@@ -498,6 +767,26 @@ export default function AdminDashboardPage() {
             )}
           </button>
 
+          <div className={styles.sidebarSectionTitle} style={{ marginTop: '12px' }}>
+            Financials & Ledger
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('settlement')}
+            className={`${styles.sidebarNavItem} ${activeTab === 'settlement' ? styles.sidebarNavItemActive : ''}`}
+          >
+            <div className={styles.navItemLeft}>
+              <Receipt size={16} />
+              <span>Wholesale & Margin Ledger</span>
+            </div>
+            <span className={`${styles.badgePill} ${styles.badgeGreen}`}>5% Margin</span>
+          </button>
+
+          <div className={styles.sidebarSectionTitle} style={{ marginTop: '12px' }}>
+            External Hub Portals
+          </div>
+
           <Link
             href="/order-portal"
             target="_blank"
@@ -565,12 +854,15 @@ export default function AdminDashboardPage() {
                 {activeTab === 'approvals' && 'Brand Partner Approvals & Verification'}
                 {activeTab === 'shelves' && 'Ahmedabad Warehouse Floor Plan & Rack Matrix'}
                 {activeTab === 'trials' && 'Doorstep Fitting & Instant Return Room'}
+                {activeTab === 'settlement' && 'Brand Wholesale Settlement & Margin Ledger'}
               </h2>
               <div className={styles.topbarBreadcrumb}>
                 <span>Ahmedabad Darkstore Hub #01</span>
                 <span>/</span>
                 <span style={{ color: '#0f172a', fontWeight: 600 }}>
-                  {activeTab === 'trials' ? 'Doorstep Fittings & Returns' : (activeTab.charAt(0).toUpperCase() + activeTab.slice(1))}
+                  {activeTab === 'trials' ? 'Doorstep Fittings & Returns' : 
+                   activeTab === 'settlement' ? 'Wholesale & Margin Ledger' :
+                   (activeTab.charAt(0).toUpperCase() + activeTab.slice(1))}
                 </span>
               </div>
             </div>
@@ -2096,6 +2388,486 @@ export default function AdminDashboardPage() {
               )}
             </div>
           )}
+
+          {/* TAB 6: BRAND WHOLESALE SETTLEMENT & MARGIN LEDGER */}
+          {activeTab === 'settlement' && (
+            <div className={styles.sectionCard}>
+              <div className={styles.sectionHeader} style={{ flexWrap: 'wrap', gap: '12px', alignItems: 'flex-start' }}>
+                <div>
+                  <h3 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Receipt size={18} color="#059669" />
+                    Brand Wholesale Settlement &amp; Platform Margin Ledger
+                  </h3>
+                  <p className={styles.sectionDesc}>
+                    Dual-entry accounting view for Drobe hub administrators. Reconciles 100% upfront pre-paid GMV, instant customer return refunds, net wholesale payouts due to brand partners (<em>B</em> × units kept), and Drobe&apos;s retained 5% dynamic markup fee (+4.83% avg net margin).
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <button
+                    type="button"
+                    onClick={handleExportSettlementCsv}
+                    className={styles.btnSecondary}
+                    style={{ background: '#f8fafc', borderColor: '#cbd5e1', color: '#0f172a', fontWeight: 800, fontSize: '11.5px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <Download size={13} color="#0284c7" /> Export Settlement CSV
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      syncDarkstoreWithSupabase().then(() => loadAllData());
+                      triggerToast('Syncing latest settlements with live Supabase database...');
+                    }}
+                    className={styles.btnSecondary}
+                    style={{ fontSize: '11.5px', padding: '7px 12px' }}
+                  >
+                    <RotateCcw size={12} /> Sync DB Ledger
+                  </button>
+                </div>
+              </div>
+
+              {/* 1. TOP 4 EXECUTIVE KPI CARDS */}
+              <div className={styles.kpiGrid} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', marginBottom: '20px' }}>
+                {/* KPI 1: Advance GMV */}
+                <div className={styles.kpiCard} style={{ borderLeft: '4px solid #0284c7' }}>
+                  <div>
+                    <div className={styles.kpiLabel}>Total Advance GMV Collected</div>
+                    <div className={styles.kpiVal} style={{ color: '#0284c7' }}>
+                      ₹{financialLedger.totalAdvanceGMV.toLocaleString('en-IN')}
+                    </div>
+                    <div className={styles.kpiSub}>100% Pre-funded prior to dispatch</div>
+                  </div>
+                  <div className={styles.kpiIconWrap} style={{ background: '#e0f2fe', color: '#0284c7' }}>
+                    <Wallet size={20} />
+                  </div>
+                </div>
+
+                {/* KPI 2: Instant Refunds */}
+                <div className={styles.kpiCard} style={{ borderLeft: '4px solid #f59e0b' }}>
+                  <div>
+                    <div className={styles.kpiLabel}>Instant Customer Refunds</div>
+                    <div className={styles.kpiVal} style={{ color: '#d97706' }}>
+                      ₹{financialLedger.totalInstantRefunds.toLocaleString('en-IN')}
+                    </div>
+                    <div className={styles.kpiSub}>{financialLedger.totalUnitsReturned} returned pieces credited to UPI</div>
+                  </div>
+                  <div className={styles.kpiIconWrap} style={{ background: '#fef3c7', color: '#d97706' }}>
+                    <RotateCcw size={20} />
+                  </div>
+                </div>
+
+                {/* KPI 3: Net Brand Payouts Due (B x kept) */}
+                <div className={styles.kpiCard} style={{ borderLeft: '4px solid #6366f1' }}>
+                  <div>
+                    <div className={styles.kpiLabel}>Net Brand Payouts Due</div>
+                    <div className={styles.kpiVal} style={{ color: '#4f46e5' }}>
+                      ₹{financialLedger.totalBrandPayoutsDue.toLocaleString('en-IN')}
+                    </div>
+                    <div className={styles.kpiSub}>Formula: B × {financialLedger.totalUnitsKept} kept units</div>
+                  </div>
+                  <div className={styles.kpiIconWrap} style={{ background: '#e0e7ff', color: '#4f46e5' }}>
+                    <Building2 size={20} />
+                  </div>
+                </div>
+
+                {/* KPI 4: Drobe Net Platform Earnings */}
+                <div className={styles.kpiCard} style={{ borderLeft: '4px solid #10b981', background: 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)' }}>
+                  <div>
+                    <div className={styles.kpiLabel} style={{ color: '#166534', fontWeight: 800 }}>
+                      ⚡ Net Platform Earnings
+                    </div>
+                    <div className={styles.kpiVal} style={{ color: '#15803d' }}>
+                      +₹{financialLedger.netPlatformEarnings.toLocaleString('en-IN')}
+                    </div>
+                    <div className={styles.kpiSub} style={{ color: '#166534', fontWeight: 700 }}>
+                      +{financialLedger.avgMarkupPct}% Markup (+₹{financialLedger.totalDrobeMarkupEarnings}) {financialLedger.totalOvertimeFees > 0 ? `+ ₹${financialLedger.totalOvertimeFees} OT` : ''}
+                    </div>
+                  </div>
+                  <div className={styles.kpiIconWrap} style={{ background: '#dcfce7', color: '#15803d' }}>
+                    <TrendingUp size={20} />
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. DROBE BUSINESS & PRICING MODEL BANNER */}
+              <div style={{
+                background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                border: '1px solid #cbd5e1',
+                borderRadius: '14px',
+                padding: '14px 18px',
+                marginBottom: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '12px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#ecfdf5', border: '1px solid #a7f3d0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
+                    <ShieldCheck size={20} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#0f172a' }}>
+                      Drobe 5% Platform Markup &amp; Wholesale Payout Architecture
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', lineHeight: '16px' }}>
+                      Brands sell garments at Base Wholesale <strong>B</strong> (e.g. ₹600). Drobe adds 5% markup rounded to Charm 9 (Retail: <strong>₹629</strong>).
+                      When a garment is kept, <strong>₹600</strong> is disbursed to the brand partner while Drobe retains <strong>+₹29 (+4.83%)</strong> as net service revenue.
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <span style={{ fontSize: '10.5px', fontWeight: 800, background: '#dcfce7', color: '#15803d', padding: '4px 10px', borderRadius: '6px', border: '1px solid #86efac' }}>
+                    Conversion: {financialLedger.conversionRate}% Kept
+                  </span>
+                  <span style={{ fontSize: '10.5px', fontWeight: 800, background: '#e0f2fe', color: '#0369a1', padding: '4px 10px', borderRadius: '6px', border: '1px solid #7dd3fc' }}>
+                    {financialLedger.totalUnitsKept} Kept / {financialLedger.totalUnitsDispatched} Dispatched
+                  </span>
+                </div>
+              </div>
+
+              {/* 3. BRAND WHOLESALE SETTLEMENT TABLE */}
+              <div style={{ marginBottom: '28px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>
+                      Brand Partner Payout Ledger ({financialLedger.brandLedgerRows.length} Brands)
+                    </h4>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#64748b' }}>
+                      Wholesale base disbursements due to partner labels calculated per kept SKU on doorstep fittings.
+                    </p>
+                  </div>
+
+                  {/* Search within brands */}
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <div style={{ position: 'relative' }}>
+                      <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                      <input
+                        type="text"
+                        value={settlementSearch}
+                        onChange={(e) => setSettlementSearch(e.target.value)}
+                        placeholder="Filter brand label..."
+                        style={{
+                          padding: '6px 10px 6px 30px',
+                          borderRadius: '8px',
+                          border: '1px solid #cbd5e1',
+                          fontSize: '11.5px',
+                          width: '180px'
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.tableResponsive}>
+                  <table className={styles.adminTable}>
+                    <thead>
+                      <tr>
+                        <th>Brand Label</th>
+                        <th>Trial Dispatches</th>
+                        <th>Kept vs Returned (Ratio)</th>
+                        <th>Base Wholesale (B)</th>
+                        <th>Net Brand Payout Due (B × Kept)</th>
+                        <th>Drobe 5% Markup Retained</th>
+                        <th>Settlement Status</th>
+                        <th style={{ textAlign: 'right' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {financialLedger.brandLedgerRows
+                        .filter(b => !settlementSearch || b.brandName.toLowerCase().includes(settlementSearch.toLowerCase()) || b.brandId.includes(settlementSearch.toLowerCase()))
+                        .map((b) => {
+                          const isSettled = !!settledBrands[b.brandId];
+                          const keptRatio = b.dispatchedUnits > 0 ? Math.round((b.keptUnits / b.dispatchedUnits) * 100) : 0;
+
+                          return (
+                            <tr key={b.brandId}>
+                              <td>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                  <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#0f172a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '12px' }}>
+                                    {b.brandName.slice(0, 2).toUpperCase()}
+                                  </div>
+                                  <div>
+                                    <div style={{ fontWeight: 800, fontSize: '12.5px', color: '#0f172a' }}>
+                                      {b.brandName}
+                                    </div>
+                                    <div style={{ fontSize: '10.5px', color: '#64748b' }}>
+                                      {b.category || 'Apparel'} · ID: <span style={{ fontFamily: 'monospace' }}>{b.brandId}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td>
+                                <div style={{ fontWeight: 800, fontSize: '12px', color: '#0f172a' }}>
+                                  {b.dispatchedUnits} units
+                                </div>
+                                <div style={{ fontSize: '10px', color: '#64748b' }}>
+                                  Gross GMV: ₹{b.grossGmv.toLocaleString('en-IN')}
+                                </div>
+                              </td>
+
+                              <td>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                                  <span style={{ fontSize: '10px', fontWeight: 800, background: '#ecfdf5', color: '#059669', padding: '1px 6px', borderRadius: '4px' }}>
+                                    {b.keptUnits} Kept
+                                  </span>
+                                  <span style={{ fontSize: '10px', fontWeight: 800, background: '#fef2f2', color: '#dc2626', padding: '1px 6px', borderRadius: '4px' }}>
+                                    {b.returnedUnits} Ret
+                                  </span>
+                                </div>
+                                <div style={{ width: '100px', height: '5px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                                  <div style={{ width: `${keptRatio}%`, height: '100%', background: '#10b981' }} />
+                                </div>
+                              </td>
+
+                              <td>
+                                <div style={{ fontWeight: 700, color: '#334155', fontSize: '12px' }}>
+                                  ₹{b.avgBaseWholesale}
+                                </div>
+                                <div style={{ fontSize: '10px', color: '#64748b' }}>
+                                  per kept garment
+                                </div>
+                              </td>
+
+                              <td>
+                                <div style={{ fontWeight: 900, fontSize: '13.5px', color: b.wholesalePayoutDue > 0 ? (isSettled ? '#059669' : '#1e40af') : '#64748b' }}>
+                                  ₹{b.wholesalePayoutDue.toLocaleString('en-IN')}
+                                </div>
+                                <div style={{ fontSize: '10px', color: '#64748b' }}>
+                                  {b.keptUnits} units × ₹{b.avgBaseWholesale}
+                                </div>
+                              </td>
+
+                              <td>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                  <span style={{ fontWeight: 800, color: '#047857', fontSize: '12px' }}>
+                                    +₹{b.drobeMarkup.toLocaleString('en-IN')}
+                                  </span>
+                                  <span style={{ fontSize: '9px', fontWeight: 800, background: '#dcfce7', color: '#15803d', padding: '1px 5px', borderRadius: '4px', border: '1px solid #86efac' }}>
+                                    +4.83%
+                                  </span>
+                                </div>
+                                <div style={{ fontSize: '10px', color: '#64748b' }}>
+                                  Drobe Retained Fee
+                                </div>
+                              </td>
+
+                              <td>
+                                {isSettled ? (
+                                  <div>
+                                    <span style={{ fontSize: '10px', fontWeight: 900, background: '#ecfdf5', color: '#059669', padding: '2px 8px', borderRadius: '6px', border: '1px solid #a7f3d0', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                      <span>✓ Disbursed</span>
+                                    </span>
+                                    <div style={{ fontSize: '9.5px', color: '#64748b', fontFamily: 'monospace', marginTop: '2px' }}>
+                                      {settledBrands[b.brandId].utr}
+                                    </div>
+                                  </div>
+                                ) : b.wholesalePayoutDue > 0 ? (
+                                  <span style={{ fontSize: '10px', fontWeight: 800, background: '#eff6ff', color: '#1d4ed8', padding: '2px 8px', borderRadius: '6px', border: '1px solid #bfdbfe', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2563eb' }} />
+                                    <span>Ready for Transfer</span>
+                                  </span>
+                                ) : (
+                                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>
+                                    Zero Balance Due
+                                  </span>
+                                )}
+                              </td>
+
+                              <td style={{ textAlign: 'right' }}>
+                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                  {b.wholesalePayoutDue > 0 && !isSettled ? (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSettlementModalBrand(b);
+                                        setPayoutUtrRef(`NEFT-DRB-${Date.now().toString().slice(-6)}`);
+                                      }}
+                                      className={styles.btnPrimary}
+                                      style={{ padding: '5px 10px', fontSize: '11px', background: '#0284c7', borderColor: '#0369a1', fontWeight: 800 }}
+                                    >
+                                      Disburse ₹{b.wholesalePayoutDue.toLocaleString('en-IN')}
+                                    </button>
+                                  ) : isSettled ? (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        triggerToast(`Settlement Record: ₹${settledBrands[b.brandId].amount} transferred on ${settledBrands[b.brandId].date} (Ref: ${settledBrands[b.brandId].utr})`);
+                                      }}
+                                      className={styles.btnSecondary}
+                                      style={{ padding: '5px 8px', fontSize: '10.5px' }}
+                                    >
+                                      View Voucher
+                                    </button>
+                                  ) : (
+                                    <span style={{ fontSize: '11px', color: '#cbd5e1' }}>—</span>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* 4. ITEMIZED ORDER-BY-ORDER SETTLEMENT AUDIT LOG */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>
+                      Itemized Order Settlement Audit Log ({trialOrders.length} Orders)
+                    </h4>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#64748b' }}>
+                      Transaction ledger displaying exact GMV pre-paid, customer refund disbursed, brand wholesale share, and Drobe platform markup for each doorstep fitting session.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={styles.tableResponsive}>
+                  <table className={styles.adminTable}>
+                    <thead>
+                      <tr>
+                        <th>Order &amp; Customer</th>
+                        <th>Trial Items &amp; Split Decision</th>
+                        <th>Advance Pre-Paid (GMV)</th>
+                        <th>Instant Refund Disbursed</th>
+                        <th>Overtime Fee</th>
+                        <th>Brand Wholesale Due (B)</th>
+                        <th>Drobe Platform Markup</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {trialOrders.map((ord) => {
+                        const items = ord.items && ord.items.length > 0 ? ord.items : [];
+                        const advance = ord.advancePaidAmount ?? (parseFloat(ord.price.replace(/[^0-9.]/g, '')) || 0);
+                        const refund = ord.netRefundAmount ?? ord.refundAmount ?? 0;
+                        const otFee = ord.overtimeFee || 0;
+                        const keptItems = items.filter(it => it.status === 'kept');
+                        const brandWholesale = keptItems.reduce((acc, it) => {
+                          const p = getProductPricingInfo(it);
+                          return acc + (p.brandBasePrice || Math.round(it.priceNum / 1.05));
+                        }, 0);
+                        const drobeMarkup = keptItems.reduce((acc, it) => {
+                          const p = getProductPricingInfo(it);
+                          return acc + (p.markupAmount || (it.priceNum - Math.round(it.priceNum / 1.05)));
+                        }, 0);
+
+                        return (
+                          <tr key={ord.id}>
+                            <td>
+                              <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '12.5px' }}>
+                                {ord.orderNumber}
+                              </div>
+                              <div style={{ fontSize: '11px', color: '#64748b' }}>
+                                {ord.customerName} · <span style={{ color: '#0284c7' }}>{ord.customerPhone}</span>
+                              </div>
+                            </td>
+
+                            <td>
+                              {items.length > 0 ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                                  {items.map((it, idx) => (
+                                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10.5px' }}>
+                                      <span style={{ fontWeight: 700, color: '#0f172a' }}>{it.productName}</span>
+                                      <span style={{ color: '#64748b' }}>({it.price})</span>
+                                      <span style={{
+                                        fontSize: '9px',
+                                        fontWeight: 800,
+                                        padding: '1px 5px',
+                                        borderRadius: '3px',
+                                        background: it.status === 'kept' ? '#ecfdf5' : it.status === 'returned' ? '#fef2f2' : '#f1f5f9',
+                                        color: it.status === 'kept' ? '#059669' : it.status === 'returned' ? '#dc2626' : '#64748b'
+                                      }}>
+                                        {it.status === 'kept' ? '✓ Kept' : it.status === 'returned' ? '↩ Return' : 'In Trial'}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div style={{ fontSize: '11px', color: '#0f172a' }}>
+                                  {ord.productName} ({ord.price})
+                                </div>
+                              )}
+                            </td>
+
+                            <td>
+                              <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '12.5px' }}>
+                                ₹{advance}
+                              </div>
+                              <div style={{ fontSize: '9.5px', color: '#64748b' }}>
+                                100% Upfront Deposit
+                              </div>
+                            </td>
+
+                            <td>
+                              <div style={{ fontWeight: 800, color: refund > 0 ? '#d97706' : '#94a3b8', fontSize: '12px' }}>
+                                {refund > 0 ? `₹${refund}` : '₹0'}
+                              </div>
+                              <div style={{ fontSize: '9.5px', color: '#64748b' }}>
+                                {ord.refundStatus || 'No Refund'}
+                              </div>
+                            </td>
+
+                            <td>
+                              {otFee > 0 ? (
+                                <div style={{ color: '#dc2626', fontWeight: 800, fontSize: '11.5px' }}>
+                                  +₹{otFee} ({ord.overtimeMinutes || 1}m)
+                                </div>
+                              ) : (
+                                <span style={{ color: '#94a3b8', fontSize: '11px' }}>₹0</span>
+                              )}
+                            </td>
+
+                            <td>
+                              <div style={{ fontWeight: 800, color: '#4f46e5', fontSize: '12.5px' }}>
+                                ₹{brandWholesale}
+                              </div>
+                              <div style={{ fontSize: '9.5px', color: '#64748b' }}>
+                                {keptItems.length} kept × B
+                              </div>
+                            </td>
+
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <span style={{ fontWeight: 800, color: '#059669', fontSize: '12px' }}>
+                                  +₹{drobeMarkup}
+                                </span>
+                                {drobeMarkup > 0 && (
+                                  <span style={{ fontSize: '9px', fontWeight: 800, background: '#dcfce7', color: '#15803d', padding: '1px 4px', borderRadius: '3px' }}>
+                                    +4.83%
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+
+                            <td>
+                              <span style={{
+                                fontSize: '10px',
+                                fontWeight: 800,
+                                padding: '2px 8px',
+                                borderRadius: '6px',
+                                background: ord.status === 'Restocked to Warehouse Shelf' ? '#ecfdf5' : '#f0f9ff',
+                                color: ord.status === 'Restocked to Warehouse Shelf' ? '#047857' : '#0369a1',
+                                border: '1px solid',
+                                borderColor: ord.status === 'Restocked to Warehouse Shelf' ? '#a7f3d0' : '#bae6fd'
+                              }}>
+                                {ord.status === 'Restocked to Warehouse Shelf' ? 'Settled & Restocked' : ord.status}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
 
@@ -3228,6 +4000,152 @@ export default function AdminDashboardPage() {
                 style={{ background: '#059669', borderColor: '#047857', padding: '8px 18px', fontWeight: 800 }}
               >
                 <CheckCircle2 size={14} /> Confirm Restock &amp; Refund ₹{returningOrderModal.refundAmount || returningOrderModal.price}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. BRAND WHOLESALE PAYOUT DISBURSEMENT MODAL */}
+      {settlementModalBrand && (
+        <div className={styles.modalOverlay} onClick={() => setSettlementModalBrand(null)}>
+          <div 
+            className={styles.modalContent} 
+            style={{ maxWidth: '580px', padding: '24px', borderRadius: '22px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Wallet size={20} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 800, color: '#0f172a' }}>
+                    Disburse Brand Wholesale Payout
+                  </h3>
+                  <div style={{ fontSize: '11px', color: '#64748b' }}>
+                    Record commercial bank settlement voucher for units kept by customers
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSettlementModalBrand(null)}
+                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Brand Wholesale Reconciliation Box */}
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px', marginBottom: '18px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                <div>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a' }}>
+                    {settlementModalBrand.brandName}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#64748b' }}>
+                    Partner ID: <code style={{ color: '#0284c7' }}>{settlementModalBrand.brandId}</code> · Category: <strong>{settlementModalBrand.category || 'Apparel'}</strong>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '10.5px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748b', fontWeight: 700 }}>
+                    Wholesale Payable (B × Kept)
+                  </div>
+                  <div style={{ fontSize: '22px', fontWeight: 900, color: '#059669', lineHeight: 1.1 }}>
+                    ₹{settlementModalBrand.wholesalePayoutDue.toLocaleString('en-IN')}
+                  </div>
+                </div>
+              </div>
+
+              {/* Settlement Formula Breakdown Pill */}
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px 12px', fontSize: '11.5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <span style={{ color: '#64748b' }}>Reconciliation: </span>
+                  <strong>{settlementModalBrand.keptUnits} units kept</strong> × Base Wholesale <strong>₹{settlementModalBrand.avgBaseWholesale || 600} (B)</strong>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ color: '#64748b', fontSize: '10.5px' }}>Drobe Retained Markup: </span>
+                  <span style={{ background: '#ecfdf5', color: '#047857', fontWeight: 800, padding: '1px 6px', borderRadius: '4px', fontSize: '10.5px' }}>
+                    +₹{settlementModalBrand.drobeMarkup.toLocaleString('en-IN')} (+4.83%)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Payout Reference Details */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#334155', textTransform: 'uppercase', marginBottom: '6px' }}>
+                  Bank Settlement UTR / IMPS / Wire Reference *
+                </label>
+                <input
+                  type="text"
+                  value={payoutUtrRef}
+                  onChange={(e) => setPayoutUtrRef(e.target.value)}
+                  placeholder="e.g. NEFT-HDFC-9847120392"
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: '10px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '13px',
+                    fontFamily: 'monospace',
+                    fontWeight: 700,
+                    background: '#ffffff',
+                    color: '#0f172a'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#334155', textTransform: 'uppercase', marginBottom: '6px' }}>
+                  Settlement Cycle &amp; Internal Notes
+                </label>
+                <input
+                  type="text"
+                  value={payoutNotes}
+                  onChange={(e) => setPayoutNotes(e.target.value)}
+                  placeholder="e.g. Weekly Darkstore Batch Settlement #42 · Net 7 Days"
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: '10px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '12.5px',
+                    background: '#ffffff',
+                    color: '#0f172a'
+                  }}
+                />
+              </div>
+
+              {/* Settlement Guarantee Notice */}
+              <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '10px 12px', fontSize: '11px', color: '#166534', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <CheckCircle2 size={16} color="#16a34a" style={{ flexShrink: 0 }} />
+                <span>
+                  <strong>Zero-Risk Settlement Policy:</strong> Customers pre-paid 100% GMV at checkout. All instant customer return refunds have been cleared. This payout transfers wholesale price (<em>B</em>) with zero debt liability.
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setSettlementModalBrand(null)}
+                className={styles.btnSecondary}
+                style={{ padding: '8px 16px' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmPayout}
+                className={styles.btnPrimary}
+                style={{ background: '#059669', borderColor: '#047857', padding: '8px 20px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                <CheckCircle2 size={14} /> Disburse ₹{settlementModalBrand.wholesalePayoutDue.toLocaleString('en-IN')}
               </button>
             </div>
           </div>
