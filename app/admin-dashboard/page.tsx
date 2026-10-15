@@ -41,7 +41,14 @@ import {
   Users,
   Smartphone,
   Radio,
-  ShoppingBag
+  ShoppingBag,
+  Zap,
+  KeyRound,
+  ShieldAlert,
+  AlertTriangle,
+  Timer,
+  RefreshCw,
+  Bot
 } from 'lucide-react';
 import { 
   AHMEDABAD_WAREHOUSE,
@@ -69,10 +76,15 @@ import {
   DrobeMarkupPricing,
   DrobeUserProfile,
   DrobeUserActivity,
+  DrobeAIShopperReport,
   getUserProfiles,
   getUserActivities,
   saveUserProfiles,
-  logUserActivity
+  logUserActivity,
+  getLatestAIReport,
+  saveAIReport,
+  generateHeuristicAIShopperReport,
+  INITIAL_AI_REPORT
 } from '../lib/darkstoreData';
 import { 
   subscribeToRealtimeOrders, 
@@ -83,6 +95,8 @@ import {
   subscribeToRealtimeUserProfiles,
   subscribeToRealtimeUserActivities,
   supabaseUpsertUserProfile,
+  supabaseFetchLatestAIReport,
+  supabaseSaveAIReport,
   slugify 
 } from '../lib/supabaseClient';
 import styles from './admin.module.css';
@@ -101,6 +115,15 @@ export default function AdminDashboardPage() {
   const [usersFilter, setUsersFilter] = useState<'all' | 'online' | 'trial' | 'offline'>('all');
   const [usersSearch, setUsersSearch] = useState<string>('');
   const [selectedCustomerModal, setSelectedCustomerModal] = useState<DrobeUserProfile | null>(null);
+
+  // AI Shopper Telemetry & 2-Minute Heartbeat State
+  const [aiReport, setAiReport] = useState<DrobeAIShopperReport>(INITIAL_AI_REPORT);
+  const [aiCountdown, setAiCountdown] = useState<number>(120);
+  const [isAiGenerating, setIsAiGenerating] = useState<boolean>(false);
+  const [apiKeyModalOpen, setApiKeyModalOpen] = useState<boolean>(false);
+  const [aiApiKey, setAiApiKey] = useState<string>('');
+  const [showApiKeyText, setShowApiKeyText] = useState<boolean>(false);
+  const [activityFilter, setActivityFilter] = useState<'all' | 'dropoffs'>('all');
 
   // Wholesale Settlement & Margin Ledger State
   const [settlementSearch, setSettlementSearch] = useState<string>('');
@@ -183,13 +206,17 @@ export default function AdminDashboardPage() {
     if (localUsers.length > 0) setUserProfiles(localUsers);
     if (localActs.length > 0) setUserActivities(localActs);
 
-    // 2. Query live Supabase DB for all partner brands, catalog creations, live orders, users & activities
+    const localAi = getLatestAIReport();
+    if (localAi) setAiReport(localAi);
+
+    // 2. Query live Supabase DB for all partner brands, catalog creations, live orders, users, activities & AI reports
     try {
-      const [dbData, dbOrders, dbUsers, dbActs] = await Promise.all([
+      const [dbData, dbOrders, dbUsers, dbActs, dbAiReport] = await Promise.all([
         supabaseFetchAdminBrandsWithProducts(),
         supabaseFetchOrders(),
         supabaseFetchUserProfiles(),
-        supabaseFetchUserActivities(50)
+        supabaseFetchUserActivities(60),
+        supabaseFetchLatestAIReport()
       ]);
       if (dbData && dbData.brands && dbData.products) {
         setBrands(dbData.brands);
@@ -204,9 +231,75 @@ export default function AdminDashboardPage() {
       if (dbActs && dbActs.length > 0) {
         setUserActivities(dbActs);
       }
+      if (dbAiReport) {
+        setAiReport(dbAiReport);
+        saveAIReport(dbAiReport);
+      }
     } catch (err) {
       console.warn('Live fetch from Supabase failed, using cached data:', err);
     }
+  };
+
+  const runAIShopperSynthesis = async (overrideApiKey?: string) => {
+    if (isAiGenerating) return;
+    setIsAiGenerating(true);
+    try {
+      const keyToUse = overrideApiKey !== undefined ? overrideApiKey : (aiApiKey || (typeof window !== 'undefined' ? localStorage.getItem('drobe_ai_api_key') || '' : ''));
+      const res = await fetch('/api/admin/ai-summary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          apiKey: keyToUse,
+          activities: userActivities,
+          users: userProfiles
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.report) {
+          setAiReport(data.report);
+          saveAIReport(data.report);
+          supabaseSaveAIReport(data.report).catch(() => {});
+          triggerToast('⚡ 2-Min AI Pulse: Fresh Drop-off Root-Cause Intelligence Generated');
+        }
+      } else {
+        const fallback = generateHeuristicAIShopperReport(userActivities, userProfiles);
+        setAiReport(fallback);
+        saveAIReport(fallback);
+        supabaseSaveAIReport(fallback).catch(() => {});
+      }
+    } catch {
+      const fallback = generateHeuristicAIShopperReport(userActivities, userProfiles);
+      setAiReport(fallback);
+      saveAIReport(fallback);
+      supabaseSaveAIReport(fallback).catch(() => {});
+    } finally {
+      setIsAiGenerating(false);
+      setAiCountdown(120);
+    }
+  };
+
+  const formatCountdown = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const handleSaveApiKey = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = aiApiKey.trim();
+    if (typeof window !== 'undefined') {
+      if (trimmed) {
+        localStorage.setItem('drobe_ai_api_key', trimmed);
+        triggerToast('✓ AI API Key saved securely! Running live synthesis...');
+      } else {
+        localStorage.removeItem('drobe_ai_api_key');
+        triggerToast('Using Adaptive Local Behavioral Engine');
+      }
+    }
+    setApiKeyModalOpen(false);
+    await runAIShopperSynthesis(trimmed);
   };
 
   useEffect(() => {
@@ -219,6 +312,10 @@ export default function AdminDashboardPage() {
       const savedSettled = localStorage.getItem('drobe_settled_brands');
       if (savedSettled) {
         setSettledBrands(JSON.parse(savedSettled));
+      }
+      const savedKey = localStorage.getItem('drobe_ai_api_key');
+      if (savedKey) {
+        setAiApiKey(savedKey);
       }
     } catch {}
 
@@ -243,8 +340,13 @@ export default function AdminDashboardPage() {
           details: newAct.details || {},
           screen: newAct.screen,
           device: newAct.device,
-          timestamp: 'Just now'
-        }, ...prev].slice(0, 50));
+          timestamp: 'Just now',
+          isDropoffSignal: Boolean(newAct.is_dropoff_signal),
+          hesitationReason: newAct.hesitation_reason,
+          dropoffStage: newAct.dropoff_stage,
+          dwellSeconds: newAct.dwell_seconds,
+          aiRiskScore: newAct.ai_risk_score
+        }, ...prev].slice(0, 60));
       }
     });
 
@@ -255,16 +357,44 @@ export default function AdminDashboardPage() {
         if (savedSettled) {
           setSettledBrands(JSON.parse(savedSettled));
         }
+        const savedKey = localStorage.getItem('drobe_ai_api_key');
+        if (savedKey) {
+          setAiApiKey(savedKey);
+        }
       } catch {}
     };
+
+    const handleReportUpdate = (e: any) => {
+      if (e.detail) {
+        setAiReport(e.detail);
+      }
+    };
+
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('drobe_ai_report_updated', handleReportUpdate);
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('drobe_ai_report_updated', handleReportUpdate);
       if (unsubRealtimeOrders) unsubRealtimeOrders();
       if (unsubRealtimeProfiles) unsubRealtimeProfiles();
       if (unsubRealtimeActivities) unsubRealtimeActivities();
     };
   }, []);
+
+  // 2-Minute Recurring Heartbeat Timer for AI Pulse
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setAiCountdown(prev => {
+        if (prev <= 1) {
+          runAIShopperSynthesis();
+          return 120;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [userActivities, userProfiles, aiApiKey]);
 
   // Telemetry counts
   const waitingBrandsCount = brands.filter(b => b.status === 'Waiting for Approval').length;
@@ -548,6 +678,11 @@ export default function AdminDashboardPage() {
         'Bottom Size',
         'Footwear Size',
         'Preferred Fit',
+        'Drop-Off Risk',
+        'Funnel Stage',
+        'Last Hesitation Reason',
+        'Cart Total (INR)',
+        'Cart Items',
         'Total Orders',
         'Total Spent (INR)',
         'Doorstep Trials',
@@ -569,6 +704,11 @@ export default function AdminDashboardPage() {
         `"${u.bottomSize}"`,
         `"${u.footwearSize}"`,
         `"${u.preferredFit}"`,
+        `"${u.dropoffRisk || 'Low'}"`,
+        `"${u.funnelDropoffStage || 'Active Browsing'}"`,
+        `"${(u.lastHesitationReason || '').replace(/"/g, '""')}"`,
+        u.cartTotalInr || 0,
+        u.cartItemCount || 0,
         u.totalOrdersCount,
         u.totalSpentInr,
         u.doorstepTrialsCount,
@@ -584,11 +724,11 @@ export default function AdminDashboardPage() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `DROBE_Customer_Directory_${new Date().toISOString().slice(0, 10)}.csv`);
+      link.setAttribute('download', `DROBE_Customer_Dropoff_Telemetry_${new Date().toISOString().slice(0, 10)}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      triggerToast('✓ Exported Customer Directory to CSV');
+      triggerToast('✓ Exported Customer Directory & Drop-Off Telemetry to CSV');
     } catch {
       triggerToast('Failed to export customer directory');
     }
@@ -598,34 +738,76 @@ export default function AdminDashboardPage() {
     if (userProfiles.length === 0) return;
     const randomUser = userProfiles[Math.floor(Math.random() * userProfiles.length)];
     const sampleActions: Array<{
-      type: 'PRODUCT_CLICK' | 'WISHLIST_ADD' | 'PAGE_VIEW' | 'PROFILE_EDIT';
+      type: 'PRODUCT_CLICK' | 'WISHLIST_ADD' | 'PAGE_VIEW' | 'PROFILE_EDIT' | 'CHECKOUT_BACKOUT' | 'SIZE_UNAVAILABLE' | 'PRICE_HESITATION';
       title: string;
       details: Record<string, any>;
       screen: string;
+      isDropoffSignal?: boolean;
+      hesitationReason?: string;
+      dropoffStage?: 'Product Detail' | 'Catalog' | 'Cart' | 'Checkout / UPI' | 'Doorstep Fitting' | 'Return Initiated';
+      funnelStage?: 'Product View' | 'Cart Review' | 'Payment Gateway' | 'Doorstep Window';
+      dwellSeconds?: number;
+      aiRiskScore?: number;
     }> = [
+      {
+        type: 'CHECKOUT_BACKOUT',
+        title: `Hesitated on UPI PIN Entry & Backed Out of Cart (₹3,498)`,
+        details: { cartTotal: '₹3,498', gateway: 'Google Pay UPI', dwell: '180s', dropoff: 'Payment Screen' },
+        screen: 'UPI Payment Intent',
+        isDropoffSignal: true,
+        hesitationReason: 'Abandoned ₹3,498 cart after 180s dwell time on UPI intent screen without submitting PIN.',
+        dropoffStage: 'Checkout / UPI',
+        funnelStage: 'Payment Gateway',
+        dwellSeconds: 180,
+        aiRiskScore: 92
+      },
+      {
+        type: 'SIZE_UNAVAILABLE',
+        title: `Out of Stock Bounce: Footwear Size UK 8 (0 units on shelf)`,
+        details: { sku: 'DR-SNK-08', sizeRequested: 'UK 8', rackLocation: 'AMD-RC01' },
+        screen: 'Product Detail',
+        isDropoffSignal: true,
+        hesitationReason: 'Zero inward units available for Footwear Size UK 8 in darkstore rack AMD-RC01. User immediately bounced.',
+        dropoffStage: 'Product Detail',
+        funnelStage: 'Product View',
+        dwellSeconds: 15,
+        aiRiskScore: 84
+      },
+      {
+        type: 'PRICE_HESITATION',
+        title: 'Inspected Wholesale Pricing Transparency Markup Drawer for 120s',
+        details: { baseWholesale: '₹850', drobePrice: '₹1,499', dwell: '120s' },
+        screen: 'Price Transparency Drawer',
+        isDropoffSignal: true,
+        hesitationReason: 'Expanded wholesale markup pill and spent 120s reading fee structure before adding to bag.',
+        dropoffStage: 'Product Detail',
+        funnelStage: 'Product View',
+        dwellSeconds: 120,
+        aiRiskScore: 75
+      },
       {
         type: 'PRODUCT_CLICK',
         title: `Viewing ${products[0]?.name || 'Acid Washed Boxy Tee'} (Size ${randomUser.topSize})`,
         details: { sku: products[0]?.sku || 'DR3', brand: products[0]?.brandName || 'Underrated Club', price: products[0]?.price || '₹1,499', size: randomUser.topSize },
-        screen: 'Product Detail'
+        screen: 'Product Detail',
+        dropoffStage: 'Product Detail',
+        funnelStage: 'Product View'
       },
       {
         type: 'WISHLIST_ADD',
         title: `Saved ${products[1]?.name || 'Minimal Linen Overshirt'} to Wishlist`,
         details: { brand: products[1]?.brandName || 'Nova Studios', price: products[1]?.price || '₹2,199' },
-        screen: 'Brand Lookbook'
+        screen: 'Brand Lookbook',
+        dropoffStage: 'Catalog',
+        funnelStage: 'Product View'
       },
       {
         type: 'PAGE_VIEW',
         title: 'Explored Trending Streetwear Category for Ahmedabad Hub',
         details: { category: 'Streetwear', activeFilters: ['Drop Shoulder', 'Heavyweight'] },
-        screen: 'Category Feed'
-      },
-      {
-        type: 'PROFILE_EDIT',
-        title: `Updated Preferred Fit to ${randomUser.preferredFit} & Sizing Matrix`,
-        details: { preferredFit: randomUser.preferredFit, footwearSize: randomUser.footwearSize },
-        screen: 'Fashion Preferences'
+        screen: 'Category Feed',
+        dropoffStage: 'Catalog',
+        funnelStage: 'Product View'
       }
     ];
 
@@ -633,22 +815,30 @@ export default function AdminDashboardPage() {
     const newAct = logUserActivity({
       userId: randomUser.id,
       userName: randomUser.name,
-      activityType: chosen.type,
+      activityType: chosen.type as any,
       title: chosen.title,
       details: chosen.details,
       screen: chosen.screen,
-      device: randomUser.deviceInfo
+      device: randomUser.deviceInfo,
+      isDropoffSignal: chosen.isDropoffSignal,
+      hesitationReason: chosen.hesitationReason,
+      dropoffStage: chosen.dropoffStage,
+      dwellSeconds: chosen.dwellSeconds,
+      aiRiskScore: chosen.aiRiskScore
     });
 
-    setUserActivities(prev => [newAct, ...prev].slice(0, 50));
+    setUserActivities(prev => [newAct, ...prev].slice(0, 60));
 
-    const updatedProfiles = userProfiles.map(u => {
+    const updatedProfiles: DrobeUserProfile[] = userProfiles.map(u => {
       if (u.id === randomUser.id) {
         return {
           ...u,
           currentStatus: 'Active Browsing' as const,
           currentScreen: chosen.title,
-          lastActiveAt: 'Just now'
+          lastActiveAt: 'Just now',
+          dropoffRisk: chosen.isDropoffSignal ? (chosen.aiRiskScore && chosen.aiRiskScore > 85 ? 'Immediate Dropoff' : 'High') : u.dropoffRisk,
+          lastHesitationReason: chosen.hesitationReason || u.lastHesitationReason,
+          funnelDropoffStage: chosen.funnelStage || u.funnelDropoffStage
         };
       }
       return u;
@@ -660,7 +850,10 @@ export default function AdminDashboardPage() {
       supabaseUpsertUserProfile({
         id: randomUser.id,
         currentStatus: 'Active Browsing',
-        currentScreen: chosen.title
+        currentScreen: chosen.title,
+        dropoffRisk: chosen.isDropoffSignal ? (chosen.aiRiskScore && chosen.aiRiskScore > 85 ? 'Immediate Dropoff' : 'High') : randomUser.dropoffRisk,
+        lastHesitationReason: chosen.hesitationReason || randomUser.lastHesitationReason,
+        funnelDropoffStage: chosen.funnelStage || randomUser.funnelDropoffStage
       }).catch(() => {});
     } catch {}
 
@@ -3138,6 +3331,29 @@ export default function AdminDashboardPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     <button
                       type="button"
+                      onClick={() => setApiKeyModalOpen(true)}
+                      className={styles.btnSecondary}
+                      style={{ padding: '7px 12px', fontSize: '11.5px', gap: '6px', background: aiApiKey ? '#f0fdf4' : '#fffbeb', borderColor: aiApiKey ? '#86efac' : '#fde68a', color: aiApiKey ? '#15803d' : '#92400e', fontWeight: 800 }}
+                      title="Configure AI API Key for 2-Minute Drop-off Intelligence"
+                    >
+                      <KeyRound size={14} color={aiApiKey ? '#16a34a' : '#d97706'} />
+                      <span>{aiApiKey ? 'AI Key Active' : 'Provide AI Key'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => runAIShopperSynthesis()}
+                      disabled={isAiGenerating}
+                      className={styles.btnPrimary}
+                      style={{ padding: '7px 14px', fontSize: '11.5px', gap: '6px', fontWeight: 800, background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', border: 'none' }}
+                      title="Run on-demand AI analysis of why shoppers are dropping off"
+                    >
+                      <Zap size={14} className={isAiGenerating ? styles.spinAnimation : ''} />
+                      <span>{isAiGenerating ? 'Synthesizing...' : 'Run AI Pulse Now'}</span>
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={handleSimulateUserActivity}
                       className={styles.btnSecondary}
                       style={{ padding: '7px 12px', fontSize: '11.5px', gap: '6px', background: '#eff6ff', borderColor: '#bfdbfe', color: '#1d4ed8', fontWeight: 700 }}
@@ -3223,6 +3439,281 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
+              {/* AI SHOPPER INTELLIGENCE COMMAND CENTER: 2-MINUTE HEARTBEAT PULSE & DROP-OFF DIAGNOSIS */}
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #090d16 0%, #0f172a 45%, #1e1b4b 100%)',
+                  border: '1px solid rgba(99, 102, 241, 0.3)',
+                  borderRadius: '16px',
+                  padding: '22px 24px',
+                  marginBottom: '18px',
+                  color: '#ffffff',
+                  boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                }}
+              >
+                {/* Header Row */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '16px' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{
+                        background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                        color: '#ffffff',
+                        fontSize: '10.5px',
+                        fontWeight: 900,
+                        padding: '3px 9px',
+                        borderRadius: '20px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        letterSpacing: '0.04em'
+                      }}>
+                        <Sparkles size={12} /> AI BEHAVIORAL INTELLIGENCE
+                      </span>
+                      <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#f8fafc', letterSpacing: '-0.02em' }}>
+                        Shopper Drop-Off &amp; Hesitation Radar
+                      </h3>
+                    </div>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#94a3b8' }}>
+                      Synthesizing why shoppers are backing off, out-of-stock friction points, and doorstep trial hesitation every 2 minutes.
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    {/* 2-Min Live Countdown Ticker */}
+                    <div style={{
+                      background: 'rgba(15, 23, 42, 0.75)',
+                      border: '1px solid rgba(99, 102, 241, 0.35)',
+                      borderRadius: '12px',
+                      padding: '6px 14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 8px #22c55e' }} />
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '9px', textTransform: 'uppercase', color: '#94a3b8', fontWeight: 800, letterSpacing: '0.05em' }}>
+                          Next 2-Min AI Pulse
+                        </span>
+                        <span style={{ fontSize: '14px', fontWeight: 900, color: '#38bdf8', fontFamily: 'monospace' }}>
+                          {formatCountdown(aiCountdown)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Configure Key Button */}
+                    <button
+                      type="button"
+                      onClick={() => setApiKeyModalOpen(true)}
+                      style={{
+                        background: aiApiKey ? 'rgba(34, 197, 94, 0.15)' : 'rgba(255, 255, 255, 0.08)',
+                        border: `1px solid ${aiApiKey ? 'rgba(34, 197, 94, 0.4)' : 'rgba(255, 255, 255, 0.15)'}`,
+                        color: aiApiKey ? '#4ade80' : '#e2e8f0',
+                        borderRadius: '10px',
+                        padding: '8px 14px',
+                        fontSize: '11.5px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <KeyRound size={13} />
+                      <span>{aiApiKey ? 'AI Key Active' : 'Provide AI Key'}</span>
+                    </button>
+
+                    {/* Run Now Trigger Button */}
+                    <button
+                      type="button"
+                      onClick={() => runAIShopperSynthesis()}
+                      disabled={isAiGenerating}
+                      style={{
+                        background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '10px',
+                        padding: '8px 16px',
+                        fontSize: '11.5px',
+                        fontWeight: 800,
+                        cursor: isAiGenerating ? 'not-allowed' : 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        boxShadow: '0 4px 12px rgba(79, 70, 229, 0.35)',
+                        opacity: isAiGenerating ? 0.7 : 1
+                      }}
+                    >
+                      <RefreshCw size={13} className={isAiGenerating ? styles.spinAnimation : ''} />
+                      <span>{isAiGenerating ? 'Analyzing Telemetry...' : '⚡ Run AI Pulse Now'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Executive Summary Banner */}
+                <div
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '12px',
+                    padding: '14px 16px',
+                    marginBottom: '16px'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Bot size={15} color="#818cf8" />
+                      <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#818cf8', fontWeight: 800 }}>
+                        Executive Diagnostic Briefing
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '10px', color: '#64748b', background: 'rgba(0, 0, 0, 0.3)', padding: '2px 8px', borderRadius: '10px' }}>
+                      Model: <span style={{ color: '#38bdf8' }}>{aiReport.modelUsed}</span> · Synced {aiReport.timestamp}
+                    </span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '12.5px', lineHeight: 1.55, color: '#e2e8f0', fontWeight: 500 }}>
+                    {aiReport.executiveSummary}
+                  </p>
+                </div>
+
+                {/* 3-Column Diagnostic Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+                  {/* Panel 1: Why Shoppers Back Off (Root Causes) */}
+                  <div style={{ background: 'rgba(15, 23, 42, 0.65)', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: '12px', padding: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <AlertTriangle size={15} color="#f87171" />
+                        <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#fca5a5', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          Why Shoppers Back Off
+                        </span>
+                      </div>
+                      <span style={{ fontSize: '10px', background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', padding: '1px 7px', borderRadius: '10px', fontWeight: 800 }}>
+                        {aiReport.dropoffRootCauses.length} Bottlenecks
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {aiReport.dropoffRootCauses.map((rc, idx) => (
+                        <div key={idx} style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', padding: '9px 10px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
+                            <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#ffffff' }}>
+                              {rc.user}
+                            </span>
+                            <span style={{
+                              fontSize: '9.5px',
+                              fontWeight: 800,
+                              padding: '1px 6px',
+                              borderRadius: '4px',
+                              background: rc.riskLevel === 'Critical' ? '#7f1d1d' : rc.riskLevel === 'High' ? '#7c2d12' : '#713f12',
+                              color: rc.riskLevel === 'Critical' ? '#fecaca' : rc.riskLevel === 'High' ? '#fed7aa' : '#fef08a'
+                            }}>
+                              {rc.riskLevel}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '10px', color: '#38bdf8', fontWeight: 700, marginBottom: '2px' }}>
+                            📍 Funnel Stage: {rc.stage}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#cbd5e1', lineHeight: 1.35 }}>
+                            {rc.trigger}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Panel 2: Recommended Tactical Actions */}
+                  <div style={{ background: 'rgba(15, 23, 42, 0.65)', border: '1px solid rgba(34, 197, 94, 0.25)', borderRadius: '12px', padding: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Zap size={15} color="#4ade80" />
+                        <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#86efac', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          Tactical Interventions
+                        </span>
+                      </div>
+                      <span style={{ fontSize: '10px', background: 'rgba(34, 197, 94, 0.2)', color: '#86efac', padding: '1px 7px', borderRadius: '10px', fontWeight: 800 }}>
+                        {aiReport.recommendedActions.length} Suggested
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {aiReport.recommendedActions.map((act, idx) => (
+                        <div key={idx} style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', padding: '9px 10px' }}>
+                          <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#4ade80', marginBottom: '2px' }}>
+                            🎯 Target: {act.target}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#ffffff', fontWeight: 600, lineHeight: 1.35 }}>
+                            {act.action}
+                          </div>
+                          <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px', fontStyle: 'italic' }}>
+                            ⚡ Impact: {act.impact}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Panel 3: Live Shopper Intent Radar */}
+                  <div style={{ background: 'rgba(15, 23, 42, 0.65)', border: '1px solid rgba(129, 140, 248, 0.25)', borderRadius: '12px', padding: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Activity size={15} color="#818cf8" />
+                        <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#c7d2fe', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          Shopper Intent Radar
+                        </span>
+                      </div>
+                      <span style={{ fontSize: '10px', background: 'rgba(129, 140, 248, 0.2)', color: '#c7d2fe', padding: '1px 7px', borderRadius: '10px', fontWeight: 800 }}>
+                        {aiReport.liveTrafficCount} Monitored
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 700, marginBottom: '4px' }}>
+                          <span style={{ color: '#4ade80' }}>🟢 High Purchase Intent</span>
+                          <span>{aiReport.shopperIntentBreakdown.highIntentCount} shoppers ({aiReport.shopperIntentBreakdown.highIntentPct}%)</span>
+                        </div>
+                        <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                          <div style={{ width: `${aiReport.shopperIntentBreakdown.highIntentPct}%`, height: '100%', background: '#22c55e' }} />
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 700, marginBottom: '4px' }}>
+                          <span style={{ color: '#f87171' }}>🔴 At-Risk of Dropping Off</span>
+                          <span>{aiReport.shopperIntentBreakdown.atRiskDropoffCount} shoppers ({aiReport.shopperIntentBreakdown.atRiskPct}%)</span>
+                        </div>
+                        <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                          <div style={{ width: `${aiReport.shopperIntentBreakdown.atRiskPct}%`, height: '100%', background: '#ef4444' }} />
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 700, marginBottom: '4px' }}>
+                          <span style={{ color: '#38bdf8' }}>🔵 Window / Casual Browsing</span>
+                          <span>{aiReport.shopperIntentBreakdown.windowShoppersCount} shoppers</span>
+                        </div>
+                        <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                          <div style={{ width: `${Math.max(10, 100 - aiReport.shopperIntentBreakdown.highIntentPct - aiReport.shopperIntentBreakdown.atRiskPct)}%`, height: '100%', background: '#38bdf8' }} />
+                        </div>
+                      </div>
+
+                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '10px', marginTop: '4px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', textAlign: 'center' }}>
+                        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '6px', borderRadius: '6px' }}>
+                          <div style={{ fontSize: '16px', fontWeight: 900, color: '#c084fc' }}>{aiReport.activeDoorstepTrials}</div>
+                          <div style={{ fontSize: '9.5px', color: '#94a3b8' }}>Doorstep Trials Active</div>
+                        </div>
+                        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '6px', borderRadius: '6px' }}>
+                          <div style={{ fontSize: '16px', fontWeight: 900, color: '#fbbf24' }}>
+                            ₹{userProfiles.filter(u => u.dropoffRisk === 'High' || u.dropoffRisk === 'Immediate Dropoff').reduce((acc, u) => acc + (u.cartTotalInr || 0), 0).toLocaleString('en-IN')}
+                          </div>
+                          <div style={{ fontSize: '9.5px', color: '#94a3b8' }}>Cart Value at Risk</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Two-Column Split Layout: Shoppers Directory Table (Left) + Live Telemetry Stream (Right) */}
               <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.8fr) minmax(360px, 1.2fr)', gap: '16px', alignItems: 'start' }}>
                 {/* LEFT: Customer Profiles Directory */}
@@ -3293,7 +3784,7 @@ export default function AdminDashboardPage() {
                         <tr>
                           <th>Shopper Profile</th>
                           <th>Fashion Sizing</th>
-                          <th>Style &amp; Brands</th>
+                          <th>⚠️ Drop-Off Risk &amp; Reason</th>
                           <th>Live Status &amp; Screen</th>
                           <th>Spend &amp; Kept Ratio</th>
                           <th>Actions</th>
@@ -3355,21 +3846,30 @@ export default function AdminDashboardPage() {
                               </td>
 
                               <td>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '170px' }}>
-                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px' }}>
-                                    {(u.preferredStyles || []).slice(0, 2).map((s, idx) => (
-                                      <span key={idx} style={{ fontSize: '9px', fontWeight: 700, background: '#f1f5f9', color: '#334155', padding: '1px 5px', borderRadius: '3px' }}>
-                                        {s}
-                                      </span>
-                                    ))}
-                                    {(u.preferredStyles || []).length > 2 && (
-                                      <span style={{ fontSize: '9px', color: '#64748b' }}>
-                                        +{(u.preferredStyles || []).length - 2}
-                                      </span>
-                                    )}
+                                <div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
+                                    <span style={{
+                                      fontSize: '9.5px',
+                                      fontWeight: 800,
+                                      padding: '2px 7px',
+                                      borderRadius: '12px',
+                                      background: u.dropoffRisk === 'Immediate Dropoff' ? '#fee2e2' : u.dropoffRisk === 'High' ? '#ffedd5' : u.dropoffRisk === 'Medium' ? '#fef9c3' : '#dcfce7',
+                                      color: u.dropoffRisk === 'Immediate Dropoff' ? '#991b1b' : u.dropoffRisk === 'High' ? '#9a3412' : u.dropoffRisk === 'Medium' ? '#854d0e' : '#166534',
+                                      border: `1px solid ${u.dropoffRisk === 'Immediate Dropoff' ? '#fca5a5' : u.dropoffRisk === 'High' ? '#fdba74' : u.dropoffRisk === 'Medium' ? '#fde047' : '#86efac'}`
+                                    }}>
+                                      {u.dropoffRisk === 'Immediate Dropoff' ? '🚨 Immediate Back-Off' : u.dropoffRisk === 'High' ? '⚠️ High Risk' : u.dropoffRisk === 'Medium' ? '🟡 Moderate Risk' : '🟢 Low Risk'}
+                                    </span>
+                                    <span style={{ fontSize: '9.5px', color: '#64748b', fontWeight: 700 }}>
+                                      {u.funnelDropoffStage || 'Active'}
+                                    </span>
                                   </div>
-                                  <div style={{ fontSize: '9.5px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                    Brands: {(u.favouriteBrands || []).join(', ') || 'Various'}
+                                  {u.cartTotalInr && u.cartTotalInr > 0 ? (
+                                    <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#dc2626' }}>
+                                      Cart: ₹{u.cartTotalInr.toLocaleString('en-IN')} ({u.cartItemCount || 1} items)
+                                    </div>
+                                  ) : null}
+                                  <div style={{ fontSize: '10px', color: '#475569', lineHeight: 1.3, maxWidth: '210px', marginTop: '2px' }}>
+                                    {u.lastHesitationReason || 'Active browsing with zero back-off friction.'}
                                   </div>
                                 </div>
                               </td>
@@ -3440,7 +3940,7 @@ export default function AdminDashboardPage() {
 
                 {/* RIGHT: Real-time Live Activity Telemetry Radar */}
                 <div className={styles.sectionCard} style={{ margin: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <span className={styles.hubStatusLiveDot} />
@@ -3453,19 +3953,71 @@ export default function AdminDashboardPage() {
                       </div>
                     </div>
 
-                    <span style={{ fontSize: '10px', background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '2px 8px', borderRadius: '12px', fontWeight: 800 }}>
-                      ⚡ Real-Time
-                    </span>
+                    {/* Drop-Off Filter Toggle */}
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setActivityFilter('all')}
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          border: '1px solid',
+                          background: activityFilter === 'all' ? '#0284c7' : '#ffffff',
+                          color: activityFilter === 'all' ? '#ffffff' : '#475569',
+                          borderColor: activityFilter === 'all' ? '#0284c7' : '#cbd5e1',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        All ({userActivities.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActivityFilter('dropoffs')}
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          border: '1px solid',
+                          background: activityFilter === 'dropoffs' ? '#ef4444' : '#ffffff',
+                          color: activityFilter === 'dropoffs' ? '#ffffff' : '#b91c1c',
+                          borderColor: activityFilter === 'dropoffs' ? '#ef4444' : '#fca5a5',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px'
+                        }}
+                      >
+                        <AlertTriangle size={11} />
+                        Drop-Offs ({userActivities.filter(a => a.isDropoffSignal || a.activityType === 'CHECKOUT_BACKOUT' || a.activityType === 'CART_ABANDON' || a.activityType === 'PRICE_HESITATION' || a.activityType === 'SIZE_UNAVAILABLE').length})
+                      </button>
+                    </div>
                   </div>
 
                   {/* Activity List Container */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '680px', overflowY: 'auto', paddingRight: '4px' }}>
-                    {userActivities.map((act) => {
+                    {userActivities
+                      .filter(act => activityFilter === 'all' || act.isDropoffSignal || act.activityType === 'CHECKOUT_BACKOUT' || act.activityType === 'CART_ABANDON' || act.activityType === 'PRICE_HESITATION' || act.activityType === 'SIZE_UNAVAILABLE')
+                      .map((act) => {
+                      const isDropoff = act.isDropoffSignal || 
+                        act.activityType === 'CHECKOUT_BACKOUT' || 
+                        act.activityType === 'CART_ABANDON' || 
+                        act.activityType === 'PRICE_HESITATION' || 
+                        act.activityType === 'SIZE_UNAVAILABLE';
+
                       let typeBg = '#eff6ff';
                       let typeColor = '#1d4ed8';
                       let typeLabel = 'Activity';
 
-                      if (act.activityType === 'PRODUCT_CLICK') {
+                      if (isDropoff) {
+                        typeBg = '#fee2e2';
+                        typeColor = '#991b1b';
+                        typeLabel = act.activityType === 'CHECKOUT_BACKOUT' ? 'Checkout Backout' : 
+                                    act.activityType === 'SIZE_UNAVAILABLE' ? 'Size OOS Bounce' : 
+                                    act.activityType === 'PRICE_HESITATION' ? 'Price Hesitation' : 'Drop-off Signal';
+                      } else if (act.activityType === 'PRODUCT_CLICK') {
                         typeBg = '#fff7ed';
                         typeColor = '#c2410c';
                         typeLabel = 'Product Click';
@@ -3491,11 +4043,11 @@ export default function AdminDashboardPage() {
                         <div
                           key={act.id}
                           style={{
-                            background: '#ffffff',
-                            border: '1px solid #e2e8f0',
+                            background: isDropoff ? '#fff5f5' : '#ffffff',
+                            border: `1px solid ${isDropoff ? '#fca5a5' : '#e2e8f0'}`,
                             borderRadius: '10px',
                             padding: '10px 12px',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+                            boxShadow: isDropoff ? '0 2px 6px rgba(239, 68, 68, 0.08)' : '0 1px 3px rgba(0,0,0,0.03)'
                           }}
                         >
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
@@ -3512,11 +4064,42 @@ export default function AdminDashboardPage() {
                             </span>
                           </div>
 
-                          <div style={{ fontSize: '11.5px', color: '#334155', fontWeight: 600, lineHeight: 1.4 }}>
+                          <div style={{ fontSize: '11.5px', color: isDropoff ? '#991b1b' : '#334155', fontWeight: 700, lineHeight: 1.4 }}>
                             {act.title}
                           </div>
 
-                          {act.details && Object.keys(act.details).length > 0 && (
+                          {/* Drop-off Diagnosis Callout */}
+                          {isDropoff && (act.hesitationReason || act.aiRiskScore) && (
+                            <div style={{
+                              background: '#fef2f2',
+                              borderLeft: '3px solid #ef4444',
+                              padding: '6px 8px',
+                              borderRadius: '0 6px 6px 0',
+                              marginTop: '6px',
+                              fontSize: '10.5px'
+                            }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                                <span style={{ fontWeight: 800, color: '#b91c1c' }}>
+                                  🚨 Back-Off Reason:
+                                </span>
+                                {act.aiRiskScore ? (
+                                  <span style={{ fontSize: '9.5px', fontWeight: 800, color: '#dc2626', background: '#fee2e2', padding: '1px 5px', borderRadius: '3px' }}>
+                                    Risk: {act.aiRiskScore}/100
+                                  </span>
+                                ) : null}
+                              </div>
+                              <div style={{ color: '#7f1d1d', lineHeight: 1.35 }}>
+                                {act.hesitationReason}
+                              </div>
+                              {act.dwellSeconds ? (
+                                <div style={{ fontSize: '9.5px', color: '#991b1b', marginTop: '3px', fontWeight: 600 }}>
+                                  ⏱️ Dwell time on screen: {act.dwellSeconds}s (Stage: {act.dropoffStage || 'Checkout'})
+                                </div>
+                              ) : null}
+                            </div>
+                          )}
+
+                          {act.details && Object.keys(act.details).length > 0 && !isDropoff && (
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '6px' }}>
                               {Object.entries(act.details).map(([k, v]) => (
                                 <span key={k} style={{ fontSize: '9.5px', background: '#f8fafc', border: '1px solid #e2e8f0', padding: '1px 6px', borderRadius: '4px', color: '#475569' }}>
@@ -3528,7 +4111,7 @@ export default function AdminDashboardPage() {
 
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid #f1f5f9', fontSize: '10px', color: '#64748b' }}>
                             <span>📱 {act.device || 'Mobile App'}</span>
-                            <span style={{ color: '#0284c7' }}>{act.screen || 'App'}</span>
+                            <span style={{ color: isDropoff ? '#b91c1c' : '#0284c7', fontWeight: 600 }}>{act.screen || 'App'}</span>
                           </div>
                         </div>
                       );
@@ -5010,7 +5593,89 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              {/* 3. Linked Doorstep Trial Orders */}
+              {/* 3. AI Churn & Drop-Off Diagnosis Card */}
+              <div style={{
+                marginBottom: '18px',
+                background: selectedCustomerModal.dropoffRisk === 'Immediate Dropoff' ? '#fef2f2' : selectedCustomerModal.dropoffRisk === 'High' ? '#fff7ed' : '#f0fdf4',
+                border: `1.5px solid ${selectedCustomerModal.dropoffRisk === 'Immediate Dropoff' ? '#fca5a5' : selectedCustomerModal.dropoffRisk === 'High' ? '#fdba74' : '#bbf7d0'}`,
+                borderRadius: '12px',
+                padding: '14px 16px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <AlertTriangle size={16} color={selectedCustomerModal.dropoffRisk === 'Immediate Dropoff' ? '#dc2626' : selectedCustomerModal.dropoffRisk === 'High' ? '#ea580c' : '#16a34a'} />
+                    <h4 style={{ margin: 0, fontSize: '12.5px', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      AI Hesitation &amp; Back-Off Telemetry Analysis
+                    </h4>
+                  </div>
+                  <span style={{
+                    fontSize: '10px',
+                    fontWeight: 800,
+                    padding: '2px 8px',
+                    borderRadius: '12px',
+                    background: selectedCustomerModal.dropoffRisk === 'Immediate Dropoff' ? '#dc2626' : selectedCustomerModal.dropoffRisk === 'High' ? '#ea580c' : '#16a34a',
+                    color: '#ffffff'
+                  }}>
+                    {selectedCustomerModal.dropoffRisk === 'Immediate Dropoff' ? '🚨 CRITICAL DROP-OFF RISK' : selectedCustomerModal.dropoffRisk === 'High' ? '⚠️ HIGH HESITATION' : '🟢 HEALTHY ENGAGEMENT'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '10px', fontSize: '11.5px', marginBottom: '10px' }}>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Funnel Drop-Off Stage:</span>
+                    <div style={{ fontWeight: 800, color: '#0f172a', marginTop: '1px' }}>
+                      {selectedCustomerModal.funnelDropoffStage || 'Active Browsing'}
+                    </div>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Cart at Risk:</span>
+                    <div style={{ fontWeight: 800, color: '#dc2626', marginTop: '1px' }}>
+                      ₹{(selectedCustomerModal.cartTotalInr || 0).toLocaleString('en-IN')} ({selectedCustomerModal.cartItemCount || 0} items)
+                    </div>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Dwell Time on Stage:</span>
+                    <div style={{ fontWeight: 800, color: '#0284c7', marginTop: '1px' }}>
+                      {selectedCustomerModal.dwellSeconds || 0} seconds
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px 12px', fontSize: '11.5px' }}>
+                  <div style={{ fontWeight: 800, color: '#334155', marginBottom: '2px' }}>
+                    Trigger Reason Identified by Telemetry:
+                  </div>
+                  <div style={{ color: '#0f172a', lineHeight: 1.4 }}>
+                    {selectedCustomerModal.lastHesitationReason || 'Customer is actively engaging without back-off hesitation.'}
+                  </div>
+                </div>
+
+                {(selectedCustomerModal.dropoffRisk === 'Immediate Dropoff' || selectedCustomerModal.dropoffRisk === 'High') && (
+                  <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="button"
+                      onClick={() => triggerToast(`💬 Triggered 1-Click WhatsApp Retention Nudge with ₹150 credit to ${selectedCustomerModal.name}`)}
+                      style={{
+                        background: '#16a34a',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '6px 12px',
+                        fontSize: '11px',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      <Sparkles size={12} /> Send 1-Click WhatsApp Recovery Nudge (₹150 Credit)
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* 4. Linked Doorstep Trial Orders */}
               {(() => {
                 const userOrders = trialOrders.filter(o => 
                   (o.customerPhone && o.customerPhone === selectedCustomerModal.phone) ||
@@ -5077,6 +5742,111 @@ export default function AdminDashboardPage() {
                 Close Dossier
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. AI API KEY CONFIGURATION MODAL */}
+      {apiKeyModalOpen && (
+        <div className={styles.modalOverlay} onClick={() => setApiKeyModalOpen(false)}>
+          <div
+            className={styles.modalContent}
+            style={{ maxWidth: '540px', padding: '24px', borderRadius: '22px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <KeyRound size={20} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 800, color: '#0f172a' }}>
+                    Configure AI Behavioral Engine Key
+                  </h3>
+                  <div style={{ fontSize: '11px', color: '#64748b' }}>
+                    Powers real-time 2-minute shopper telemetry &amp; drop-off summarization
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setApiKeyModalOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveApiKey}>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px', marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#334155', textTransform: 'uppercase', marginBottom: '6px' }}>
+                  Google Gemini or OpenAI API Key
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showApiKeyText ? 'text' : 'password'}
+                    value={aiApiKey}
+                    onChange={(e) => setAiApiKey(e.target.value)}
+                    placeholder="e.g. AIzaSy... (Gemini) or sk-... (OpenAI)"
+                    style={{
+                      width: '100%',
+                      padding: '10px 42px 10px 14px',
+                      borderRadius: '10px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '13px',
+                      fontFamily: 'monospace',
+                      background: '#ffffff',
+                      color: '#0f172a'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKeyText(!showApiKeyText)}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      color: '#64748b',
+                      cursor: 'pointer',
+                      padding: '4px'
+                    }}
+                  >
+                    <Eye size={16} />
+                  </button>
+                </div>
+                <div style={{ fontSize: '11px', color: '#64748b', marginTop: '6px' }}>
+                  Key is saved in browser local storage and never exposed publicly.
+                </div>
+              </div>
+
+              <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '12px 14px', fontSize: '11.5px', color: '#166534', marginBottom: '18px', display: 'flex', gap: '8px' }}>
+                <Sparkles size={16} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <strong>Adaptive Fallback Engine Included:</strong> If no API key is provided, Drobe runs its built-in local behavioral analytics pipeline to summarize drop-off bottlenecks with zero external credit dependency.
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setApiKeyModalOpen(false)}
+                  className={styles.btnSecondary}
+                  style={{ padding: '8px 16px' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={styles.btnPrimary}
+                  style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', border: 'none', padding: '8px 20px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <Zap size={14} /> Save Key &amp; Trigger Pulse
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

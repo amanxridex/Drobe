@@ -7,7 +7,8 @@ import {
   TrialOrder, 
   DarkstoreRunner,
   DrobeUserProfile,
-  DrobeUserActivity 
+  DrobeUserActivity,
+  DrobeAIShopperReport 
 } from './darkstoreData';
 import { Product } from '@/data/catalog';
 import { 
@@ -1253,7 +1254,13 @@ export async function supabaseFetchUserProfiles(): Promise<DrobeUserProfile[] | 
       deviceInfo: row.device_info || 'Mobile App',
       ipAddress: row.ip_address || '',
       lastActiveAt: row.last_active_at ? new Date(row.last_active_at).toLocaleTimeString() : 'Just now',
-      createdAt: row.created_at ? new Date(row.created_at).toLocaleDateString() : 'Recent'
+      createdAt: row.created_at ? new Date(row.created_at).toLocaleDateString() : 'Recent',
+      dropoffRisk: row.dropoff_risk || 'Low',
+      funnelDropoffStage: row.funnel_dropoff_stage || 'Product View',
+      lastHesitationReason: row.last_hesitation_reason || '',
+      cartItemCount: Number(row.cart_item_count) || 0,
+      cartTotalInr: Number(row.cart_total_inr) || 0,
+      dwellSeconds: Number(row.dwell_seconds) || 0
     }));
   } catch (err) {
     console.warn('supabaseFetchUserProfiles exception:', err);
@@ -1293,6 +1300,12 @@ export async function supabaseUpsertUserProfile(profile: Partial<DrobeUserProfil
     if (profile.currentScreen !== undefined) payload.current_screen = profile.currentScreen;
     if (profile.deviceInfo !== undefined) payload.device_info = profile.deviceInfo;
     if (profile.ipAddress !== undefined) payload.ip_address = profile.ipAddress;
+    if (profile.dropoffRisk !== undefined) payload.dropoff_risk = profile.dropoffRisk;
+    if (profile.funnelDropoffStage !== undefined) payload.funnel_dropoff_stage = profile.funnelDropoffStage;
+    if (profile.lastHesitationReason !== undefined) payload.last_hesitation_reason = profile.lastHesitationReason;
+    if (profile.cartItemCount !== undefined) payload.cart_item_count = profile.cartItemCount;
+    if (profile.cartTotalInr !== undefined) payload.cart_total_inr = profile.cartTotalInr;
+    if (profile.dwellSeconds !== undefined) payload.dwell_seconds = profile.dwellSeconds;
 
     const { error } = await supabase
       .from('drobe_user_profiles')
@@ -1305,7 +1318,7 @@ export async function supabaseUpsertUserProfile(profile: Partial<DrobeUserProfil
 }
 
 // Fetch live user activities / telemetry stream
-export async function supabaseFetchUserActivities(limit: number = 50): Promise<DrobeUserActivity[] | null> {
+export async function supabaseFetchUserActivities(limit: number = 60): Promise<DrobeUserActivity[] | null> {
   if (!supabase) return null;
   try {
     const { data, error } = await supabase
@@ -1328,7 +1341,12 @@ export async function supabaseFetchUserActivities(limit: number = 50): Promise<D
       details: row.details || {},
       screen: row.screen,
       device: row.device,
-      timestamp: row.created_at ? new Date(row.created_at).toLocaleTimeString() : 'Just now'
+      timestamp: row.created_at ? new Date(row.created_at).toLocaleTimeString() : 'Just now',
+      isDropoffSignal: Boolean(row.is_dropoff_signal),
+      hesitationReason: row.hesitation_reason || '',
+      dropoffStage: row.dropoff_stage || undefined,
+      dwellSeconds: Number(row.dwell_seconds) || 0,
+      aiRiskScore: Number(row.ai_risk_score) || 0
     }));
   } catch (err) {
     console.warn('supabaseFetchUserActivities exception:', err);
@@ -1345,6 +1363,11 @@ export async function supabaseLogUserActivity(activity: {
   details?: Record<string, any>;
   screen?: string;
   device?: string;
+  isDropoffSignal?: boolean;
+  hesitationReason?: string;
+  dropoffStage?: string;
+  dwellSeconds?: number;
+  aiRiskScore?: number;
 }): Promise<boolean> {
   if (!supabase) return false;
   try {
@@ -1358,6 +1381,69 @@ export async function supabaseLogUserActivity(activity: {
         details: activity.details || {},
         screen: activity.screen || '',
         device: activity.device || 'Mobile App',
+        is_dropoff_signal: Boolean(activity.isDropoffSignal),
+        hesitation_reason: activity.hesitationReason || null,
+        dropoff_stage: activity.dropoffStage || null,
+        dwell_seconds: activity.dwellSeconds || 0,
+        ai_risk_score: activity.aiRiskScore || 0,
+        created_at: new Date().toISOString()
+      });
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// Fetch latest AI shopper report from Supabase
+export async function supabaseFetchLatestAIReport(): Promise<DrobeAIShopperReport | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('drobe_ai_telemetry_reports')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error || !data) return null;
+
+    return {
+      id: data.id,
+      timestamp: data.created_at ? new Date(data.created_at).toLocaleTimeString() : 'Just now',
+      executiveSummary: data.executive_summary,
+      dropoffRootCauses: data.dropoff_root_causes || [],
+      recommendedActions: data.recommended_actions || [],
+      shopperIntentBreakdown: data.shopper_intent_breakdown || {
+        highIntentCount: 2,
+        atRiskDropoffCount: 2,
+        windowShoppersCount: 1,
+        highIntentPct: 40,
+        atRiskPct: 40
+      },
+      liveTrafficCount: data.live_traffic_count || 5,
+      activeDoorstepTrials: data.active_doorstep_trials || 1,
+      modelUsed: data.model_used || 'Gemini 1.5 Flash'
+    };
+  } catch {
+    return null;
+  }
+}
+
+// Save generated AI report to Supabase
+export async function supabaseSaveAIReport(report: DrobeAIShopperReport): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('drobe_ai_telemetry_reports')
+      .insert({
+        executive_summary: report.executiveSummary,
+        dropoff_root_causes: report.dropoffRootCauses,
+        recommended_actions: report.recommendedActions,
+        shopper_intent_breakdown: report.shopperIntentBreakdown,
+        live_traffic_count: report.liveTrafficCount,
+        active_doorstep_trials: report.activeDoorstepTrials,
+        model_used: report.modelUsed,
         created_at: new Date().toISOString()
       });
 

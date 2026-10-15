@@ -750,6 +750,13 @@ CREATE TABLE IF NOT EXISTS drobe_user_profiles (
     device_info VARCHAR(255) DEFAULT 'iPhone 16 Pro · iOS 18.2',
     ip_address VARCHAR(64) DEFAULT '103.24.112.5',
     last_active_at TIMESTAMPTZ DEFAULT NOW(),
+    -- Advanced Drop-off & Back-out Telemetry
+    dropoff_risk VARCHAR(32) DEFAULT 'Low', -- 'Low', 'Medium', 'High', 'Immediate Dropoff'
+    funnel_dropoff_stage VARCHAR(64) DEFAULT 'Product View',
+    last_hesitation_reason TEXT,
+    cart_item_count INT DEFAULT 0,
+    cart_total_inr INT DEFAULT 0,
+    dwell_seconds INT DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -763,12 +770,36 @@ CREATE TABLE IF NOT EXISTS drobe_user_activities (
     user_name VARCHAR(255) NOT NULL,
     activity_type VARCHAR(64) NOT NULL,
     -- Types: 'PAGE_VIEW', 'PRODUCT_CLICK', 'WISHLIST_ADD', 'TRIAL_ORDER_PLACED', 
-    --        'DOORSTEP_TRIAL_START', 'ITEM_KEPT', 'ITEM_RETURNED', 'PROFILE_EDIT'
+    --        'DOORSTEP_TRIAL_START', 'ITEM_KEPT', 'ITEM_RETURNED', 'PROFILE_EDIT',
+    --        'CART_ABANDON', 'CHECKOUT_BACKOUT', 'PRICE_HESITATION', 'SIZE_UNAVAILABLE',
+    --        'DOORSTEP_TIMER_ANXIETY', 'DWELL_TIME_EXCEEDED'
     title VARCHAR(255) NOT NULL,
     details JSONB DEFAULT '{}'::jsonb,
     screen VARCHAR(128),
     ip_address VARCHAR(64),
     device VARCHAR(128),
+    -- Advanced Hesitation & Drop-Off Fields
+    is_dropoff_signal BOOLEAN DEFAULT FALSE,
+    hesitation_reason TEXT,
+    dropoff_stage VARCHAR(64),
+    dwell_seconds INT DEFAULT 0,
+    ai_risk_score INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ==============================================================================
+-- 15.5. AI SHOPPER TELEMETRY REPORTS (Periodic 2-Minute Summaries)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS drobe_ai_telemetry_reports (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    timestamp TIMESTAMPTZ DEFAULT NOW(),
+    executive_summary TEXT NOT NULL,
+    dropoff_root_causes JSONB DEFAULT '[]'::jsonb,
+    recommended_actions JSONB DEFAULT '[]'::jsonb,
+    shopper_intent_breakdown JSONB DEFAULT '{}'::jsonb,
+    live_traffic_count INT DEFAULT 0,
+    active_doorstep_trials INT DEFAULT 0,
+    model_used VARCHAR(64) DEFAULT 'Gemini 1.5 Flash',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -777,18 +808,24 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON drobe_user_profiles(email);
 CREATE INDEX IF NOT EXISTS idx_users_phone ON drobe_user_profiles(phone);
 CREATE INDEX IF NOT EXISTS idx_users_last_active ON drobe_user_profiles(last_active_at DESC);
 CREATE INDEX IF NOT EXISTS idx_users_status ON drobe_user_profiles(current_status);
+CREATE INDEX IF NOT EXISTS idx_users_dropoff_risk ON drobe_user_profiles(dropoff_risk);
 CREATE INDEX IF NOT EXISTS idx_activities_user_id ON drobe_user_activities(user_id);
 CREATE INDEX IF NOT EXISTS idx_activities_created_at ON drobe_user_activities(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_activities_is_dropoff ON drobe_user_activities(is_dropoff_signal);
+CREATE INDEX IF NOT EXISTS idx_ai_reports_created ON drobe_ai_telemetry_reports(created_at DESC);
 
--- Enable Realtime Broadcasting on Supabase for Users & Activities
+-- Enable Realtime Broadcasting on Supabase for Users & Activities & AI Reports
 ALTER PUBLICATION supabase_realtime ADD TABLE drobe_user_profiles;
 ALTER PUBLICATION supabase_realtime ADD TABLE drobe_user_activities;
+ALTER PUBLICATION supabase_realtime ADD TABLE drobe_ai_telemetry_reports;
 
 -- Row Level Security
 ALTER TABLE drobe_user_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE drobe_user_activities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE drobe_ai_telemetry_reports ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read/write on user profiles" ON drobe_user_profiles FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Public read/write on user activities" ON drobe_user_activities FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read/write on ai reports" ON drobe_ai_telemetry_reports FOR ALL USING (true) WITH CHECK (true);
 
 -- Auto-update trigger
 DROP TRIGGER IF EXISTS trigger_drobe_users_updated ON drobe_user_profiles;

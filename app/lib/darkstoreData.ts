@@ -2132,18 +2132,74 @@ export interface DrobeUserProfile {
   ipAddress?: string;
   lastActiveAt: string;
   createdAt: string;
+
+  // ADVANCED DROP-OFF & HESITATION TELEMETRY
+  dropoffRisk?: 'Low' | 'Medium' | 'High' | 'Immediate Dropoff';
+  funnelDropoffStage?: 'Product View' | 'Cart Review' | 'Payment Gateway' | 'Doorstep Window';
+  lastHesitationReason?: string;
+  cartItemCount?: number;
+  cartTotalInr?: number;
+  dwellSeconds?: number;
 }
 
 export interface DrobeUserActivity {
   id: string;
   userId: string;
   userName: string;
-  activityType: 'PAGE_VIEW' | 'PRODUCT_CLICK' | 'WISHLIST_ADD' | 'TRIAL_ORDER_PLACED' | 'DOORSTEP_TRIAL_START' | 'ITEM_KEPT' | 'ITEM_RETURNED' | 'PROFILE_EDIT';
+  activityType: 
+    | 'PAGE_VIEW' 
+    | 'PRODUCT_CLICK' 
+    | 'WISHLIST_ADD' 
+    | 'TRIAL_ORDER_PLACED' 
+    | 'DOORSTEP_TRIAL_START' 
+    | 'ITEM_KEPT' 
+    | 'ITEM_RETURNED' 
+    | 'PROFILE_EDIT'
+    | 'CART_ABANDON'
+    | 'CHECKOUT_BACKOUT'
+    | 'PRICE_HESITATION'
+    | 'SIZE_UNAVAILABLE'
+    | 'DOORSTEP_TIMER_ANXIETY'
+    | 'DWELL_TIME_EXCEEDED';
   title: string;
   details?: Record<string, any>;
   screen?: string;
   device?: string;
   timestamp: string;
+
+  // Advanced Hesitation & Drop-Off Signals
+  isDropoffSignal?: boolean;
+  hesitationReason?: string;
+  dropoffStage?: 'Catalog' | 'Product Detail' | 'Cart' | 'Checkout / UPI' | 'Doorstep Fitting' | 'Return Initiated';
+  dwellSeconds?: number;
+  aiRiskScore?: number;
+}
+
+export interface DrobeAIShopperReport {
+  id: string;
+  timestamp: string;
+  executiveSummary: string;
+  dropoffRootCauses: Array<{
+    user: string;
+    stage: string;
+    trigger: string;
+    riskLevel: 'High' | 'Medium' | 'Critical';
+  }>;
+  recommendedActions: Array<{
+    target: string;
+    action: string;
+    impact: string;
+  }>;
+  shopperIntentBreakdown: {
+    highIntentCount: number;
+    atRiskDropoffCount: number;
+    windowShoppersCount: number;
+    highIntentPct: number;
+    atRiskPct: number;
+  };
+  liveTrafficCount: number;
+  activeDoorstepTrials: number;
+  modelUsed: string;
 }
 
 export const INITIAL_USER_PROFILES: DrobeUserProfile[] = [
@@ -2181,7 +2237,13 @@ export const INITIAL_USER_PROFILES: DrobeUserProfile[] = [
     currentScreen: 'Viewing Mark Leute Hoodie',
     deviceInfo: 'iPhone 16 Pro · iOS 18.2',
     lastActiveAt: 'Just now',
-    createdAt: 'Oct 01, 2026'
+    createdAt: 'Oct 01, 2026',
+    dropoffRisk: 'Low',
+    funnelDropoffStage: 'Cart Review',
+    lastHesitationReason: 'Checking shoulder drop sizing on Heavy Oversized Hoodie',
+    cartItemCount: 2,
+    cartTotalInr: 4398,
+    dwellSeconds: 94
   },
   {
     id: 'usr_pooja_02',
@@ -2217,7 +2279,13 @@ export const INITIAL_USER_PROFILES: DrobeUserProfile[] = [
     currentScreen: '6-Minute Doorstep Fitting Window',
     deviceInfo: 'OnePlus 12 · Android 14',
     lastActiveAt: '2 mins ago',
-    createdAt: 'Oct 04, 2026'
+    createdAt: 'Oct 04, 2026',
+    dropoffRisk: 'Low',
+    funnelDropoffStage: 'Doorstep Window',
+    lastHesitationReason: 'Active 6-minute fitting trial in Bopal · Runner waiting outside',
+    cartItemCount: 1,
+    cartTotalInr: 4200,
+    dwellSeconds: 210
   },
   {
     id: 'usr_harshil_03',
@@ -2253,7 +2321,13 @@ export const INITIAL_USER_PROFILES: DrobeUserProfile[] = [
     currentScreen: 'Catalog Category Filter: Outerwear',
     deviceInfo: 'Samsung Galaxy S24 Ultra',
     lastActiveAt: '12 mins ago',
-    createdAt: 'Sep 28, 2026'
+    createdAt: 'Sep 28, 2026',
+    dropoffRisk: 'High',
+    funnelDropoffStage: 'Payment Gateway',
+    lastHesitationReason: 'Checkout Back-Out: Paused at UPI confirmation screen for ₹3,498 cart for 180s without OTP',
+    cartItemCount: 2,
+    cartTotalInr: 3498,
+    dwellSeconds: 180
   },
   {
     id: 'usr_tanya_04',
@@ -2279,7 +2353,13 @@ export const INITIAL_USER_PROFILES: DrobeUserProfile[] = [
     currentScreen: 'Home Feed',
     deviceInfo: 'iPhone 15 · iOS 18.1',
     lastActiveAt: '2 hours ago',
-    createdAt: 'Oct 08, 2026'
+    createdAt: 'Oct 08, 2026',
+    dropoffRisk: 'Medium',
+    funnelDropoffStage: 'Product View',
+    lastHesitationReason: 'Doorstep Timer Anxiety: Spent 90s reading 6-minute fitting rules and overtime fee structure',
+    cartItemCount: 1,
+    cartTotalInr: 1999,
+    dwellSeconds: 95
   },
   {
     id: 'usr_dhruv_05',
@@ -2305,13 +2385,67 @@ export const INITIAL_USER_PROFILES: DrobeUserProfile[] = [
     currentScreen: 'Past Orders Screen',
     deviceInfo: 'Google Pixel 9 Pro',
     lastActiveAt: '5 hours ago',
-    createdAt: 'Oct 10, 2026'
+    createdAt: 'Oct 10, 2026',
+    dropoffRisk: 'Immediate Dropoff',
+    funnelDropoffStage: 'Product View',
+    lastHesitationReason: 'Size Out of Stock: Looked for UK 8 in footwear at Ahmedabad Hub, found 0 units, exited app',
+    cartItemCount: 0,
+    cartTotalInr: 0,
+    dwellSeconds: 40
   }
 ];
 
 export const INITIAL_USER_ACTIVITIES: DrobeUserActivity[] = [
   {
     id: 'act-001',
+    userId: 'usr_harshil_03',
+    userName: 'Harshil Patel',
+    activityType: 'CHECKOUT_BACKOUT',
+    title: '⚠️ Abandoned Cart at UPI Payment Gateway (₹3,498)',
+    details: { cartTotal: '₹3,498', items: '2 Fits', dwellTime: '180s', step: 'UPI Intent' },
+    screen: 'UPI Payment Gateway',
+    device: 'Samsung Galaxy S24 Ultra',
+    timestamp: 'Just now',
+    isDropoffSignal: true,
+    hesitationReason: 'User paused on GPay/PhonePe screen for 3 minutes without confirming UPI PIN.',
+    dropoffStage: 'Checkout / UPI',
+    dwellSeconds: 180,
+    aiRiskScore: 92
+  },
+  {
+    id: 'act-002',
+    userId: 'usr_dhruv_05',
+    userName: 'Dhruv Mehta',
+    activityType: 'SIZE_UNAVAILABLE',
+    title: '⚠️ Out of Stock Bounce: Attempted to Select UK 8 Sneaker',
+    details: { brand: 'VegNonVeg', sizeRequested: 'UK 8', stockStatus: '0 pcs in Hub' },
+    screen: 'Product Detail Sizing Selector',
+    device: 'Google Pixel 9 Pro',
+    timestamp: '3 mins ago',
+    isDropoffSignal: true,
+    hesitationReason: 'Size UK 8 has 0 inward units in Ahmedabad Hub. User tapped out-of-stock size and exited app.',
+    dropoffStage: 'Product Detail',
+    dwellSeconds: 40,
+    aiRiskScore: 85
+  },
+  {
+    id: 'act-003',
+    userId: 'usr_tanya_04',
+    userName: 'Tanya Joshi',
+    activityType: 'DOORSTEP_TIMER_ANXIETY',
+    title: '⚡ Hesitation on 6-Min Doorstep Window Terms & Overtime Surcharge',
+    details: { section: '6-Min Doorstep Fitting Terms', overtimeFee: '₹2/min', dwell: '95s' },
+    screen: 'Checkout Doorstep Agreement',
+    device: 'iPhone 15',
+    timestamp: '7 mins ago',
+    isDropoffSignal: true,
+    hesitationReason: 'Customer read through doorstep trial overtime fees 3 times without proceeding to address confirmation.',
+    dropoffStage: 'Cart',
+    dwellSeconds: 95,
+    aiRiskScore: 68
+  },
+  {
+    id: 'act-004',
     userId: 'usr_aman_01',
     userName: 'Aman Mishra',
     activityType: 'PRODUCT_CLICK',
@@ -2319,10 +2453,14 @@ export const INITIAL_USER_ACTIVITIES: DrobeUserActivity[] = [
     details: { brand: 'Mark Leute', sku: 'DR1', price: '₹2,899', size: 'L' },
     screen: 'Product Detail',
     device: 'iPhone 16 Pro',
-    timestamp: 'Just now'
+    timestamp: '10 mins ago',
+    isDropoffSignal: false,
+    dropoffStage: 'Product Detail',
+    dwellSeconds: 94,
+    aiRiskScore: 20
   },
   {
-    id: 'act-002',
+    id: 'act-005',
     userId: 'usr_pooja_02',
     userName: 'Pooja Shah',
     activityType: 'DOORSTEP_TRIAL_START',
@@ -2330,42 +2468,82 @@ export const INITIAL_USER_ACTIVITIES: DrobeUserActivity[] = [
     details: { orderNumber: '#DRB-9843', runner: 'Jay Suthar', item: 'Sculpted Wool Overcoat' },
     screen: 'Live Doorstep Trial',
     device: 'OnePlus 12',
-    timestamp: '2 mins ago'
+    timestamp: '14 mins ago',
+    isDropoffSignal: false,
+    dropoffStage: 'Doorstep Fitting',
+    dwellSeconds: 210,
+    aiRiskScore: 10
   },
   {
-    id: 'act-003',
+    id: 'act-006',
     userId: 'usr_harshil_03',
     userName: 'Harshil Patel',
-    activityType: 'WISHLIST_ADD',
-    title: 'Saved Tilt Utility Cargo to Wishlist',
-    details: { brand: 'Tilt', category: 'Bottoms', price: '₹1,999' },
-    screen: 'Collection Lookbook',
+    activityType: 'PRICE_HESITATION',
+    title: '⚡ Inspected Drobe 5% Platform Markup & Wholesale Pricing Breakdown',
+    details: { basePrice: '₹1,900', customerPrice: '₹1,999', markup: '+₹99 (4.83%)' },
+    screen: 'Price Transparency Drawer',
     device: 'Samsung Galaxy S24 Ultra',
-    timestamp: '8 mins ago'
-  },
-  {
-    id: 'act-004',
-    userId: 'usr_aman_01',
-    userName: 'Aman Mishra',
-    activityType: 'PROFILE_EDIT',
-    title: 'Updated Fashion Preferences: Top Size L, Streetwear & Minimal',
-    details: { styles: ['Streetwear', 'Minimal'], topSize: 'L', bottomSize: '32' },
-    screen: 'Fashion Preferences Modal',
-    device: 'iPhone 16 Pro',
-    timestamp: '15 mins ago'
-  },
-  {
-    id: 'act-005',
-    userId: 'usr_tanya_04',
-    userName: 'Tanya Joshi',
-    activityType: 'PAGE_VIEW',
-    title: 'Browsed New Independent Brand Drops at Ahmedabad Hub',
-    details: { hub: 'AMD-HUB-01', totalBrands: 8 },
-    screen: 'Discover Brands',
-    device: 'iPhone 15',
-    timestamp: '1 hour ago'
+    timestamp: '18 mins ago',
+    isDropoffSignal: true,
+    hesitationReason: 'Expanded wholesale markup pill and spent 120s reading fee structure before adding to bag.',
+    dropoffStage: 'Product Detail',
+    dwellSeconds: 120,
+    aiRiskScore: 75
   }
 ];
+
+export const INITIAL_AI_REPORT: DrobeAIShopperReport = {
+  id: 'rep-init-01',
+  timestamp: 'Just now',
+  executiveSummary: 'Live analysis of Ahmedabad Darkstore traffic shows strong purchase interest, but distinct drop-off friction at the final payment gateway and specific out-of-stock shoe sizes. Harshil Patel represents an immediate drop-off risk at the UPI gateway (₹3,498 cart abandoned), while Dhruv Mehta exited after encountering an out-of-stock UK 8 sneaker size. Doorstep trial fitting retention in Bopal & SG Highway remains stellar at 87% with zero friction.',
+  dropoffRootCauses: [
+    {
+      user: 'Harshil Patel',
+      stage: 'Payment Gateway (UPI)',
+      trigger: 'Abandoned ₹3,498 cart after 180s dwell time on UPI intent screen without submitting PIN.',
+      riskLevel: 'Critical'
+    },
+    {
+      user: 'Dhruv Mehta',
+      stage: 'Product Detail',
+      trigger: 'Zero inward units available for Footwear Size UK 8 in darkstore rack AMD-RC01. User immediately bounced.',
+      riskLevel: 'High'
+    },
+    {
+      user: 'Tanya Joshi',
+      stage: 'Cart & Doorstep Terms',
+      trigger: 'Dwell time exceeded 95s reviewing 6-minute fitting rules and ₹2/min overtime surcharge.',
+      riskLevel: 'Medium'
+    }
+  ],
+  recommendedActions: [
+    {
+      target: 'Harshil Patel',
+      action: 'Send instant WhatsApp nudge with 1-click ₹150 trial credit to clear UPI hesitation and dispatch order.',
+      impact: 'Immediate recovery of ₹3,498 high-intent outerwear cart.'
+    },
+    {
+      target: 'Darkstore Inwarding Ops (Koteshwar Hub)',
+      action: 'Fast-track consignment inwarding for Size UK 8 / EU 42 on Rack C-01 to capture repeat sneaker demand.',
+      impact: 'Prevents estimated ₹8,400 weekly revenue loss from out-of-stock bounces.'
+    },
+    {
+      target: 'Doorstep Fitting Agreement UI',
+      action: 'Highlight reassurance: "Runner waits comfortably outside. Return unchosen items instantly with zero return fee."',
+      impact: 'Reduces doorstep timer anxiety by ~35%.'
+    }
+  ],
+  shopperIntentBreakdown: {
+    highIntentCount: 2,
+    atRiskDropoffCount: 2,
+    windowShoppersCount: 1,
+    highIntentPct: 40,
+    atRiskPct: 40
+  },
+  liveTrafficCount: 5,
+  activeDoorstepTrials: 1,
+  modelUsed: 'Gemini 1.5 Flash (Ahmedabad Shopper Behavioral Engine)'
+};
 
 export function getUserProfiles(): DrobeUserProfile[] {
   if (typeof window === 'undefined') return INITIAL_USER_PROFILES;
@@ -2414,7 +2592,7 @@ export function logUserActivity(activity: Omit<DrobeUserActivity, 'id' | 'timest
     id: `act-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
     timestamp: 'Just now'
   };
-  const updated = [newActivity, ...current].slice(0, 50);
+  const updated = [newActivity, ...current].slice(0, 60);
   saveUserActivities(updated);
   return newActivity;
 }
@@ -2431,5 +2609,81 @@ export function updateUserProfile(profile: Partial<DrobeUserProfile> & { id: str
   users[idx] = updatedUser;
   saveUserProfiles(users);
   return updatedUser;
+}
+
+// AI Shopper Telemetry Reports Storage & Synthesis
+export function getLatestAIReport(): DrobeAIShopperReport {
+  if (typeof window === 'undefined') return INITIAL_AI_REPORT;
+  try {
+    const raw = localStorage.getItem('drobe_latest_ai_report');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.executiveSummary) return parsed;
+    }
+  } catch {}
+  return INITIAL_AI_REPORT;
+}
+
+export function saveAIReport(report: DrobeAIShopperReport): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('drobe_latest_ai_report', JSON.stringify(report));
+    window.dispatchEvent(new CustomEvent('drobe_ai_report_updated', { detail: report }));
+  } catch {}
+}
+
+// Smart Heuristic AI Fallback Generator (used if external LLM API is unavailable)
+export function generateHeuristicAIShopperReport(
+  activities: DrobeUserActivity[],
+  users: DrobeUserProfile[]
+): DrobeAIShopperReport {
+  const dropoffs = activities.filter(a => a.isDropoffSignal || a.activityType === 'CHECKOUT_BACKOUT' || a.activityType === 'SIZE_UNAVAILABLE' || a.activityType === 'PRICE_HESITATION');
+  const atRiskUsers = users.filter(u => u.dropoffRisk === 'High' || u.dropoffRisk === 'Immediate Dropoff');
+  const highIntentUsers = users.filter(u => u.dropoffRisk === 'Low');
+
+  const rootCauses = dropoffs.slice(0, 4).map(d => ({
+    user: d.userName,
+    stage: d.dropoffStage || 'Product Detail',
+    trigger: d.hesitationReason || d.title,
+    riskLevel: (d.aiRiskScore && d.aiRiskScore >= 80 ? 'Critical' : 'High') as 'Critical' | 'High' | 'Medium'
+  }));
+
+  const recommendedActions = atRiskUsers.slice(0, 3).map(u => ({
+    target: u.name,
+    action: u.funnelDropoffStage === 'Payment Gateway' 
+      ? `Send automated recovery WhatsApp message with 1-click UPI link and ₹100 trial discount.`
+      : u.funnelDropoffStage === 'Doorstep Window'
+      ? `Reassure customer: 6-minute fitting trial includes instant doorstep handover with zero return penalty.`
+      : `Restock size ${u.topSize || u.footwearSize} at darkstore shelf to eliminate bounce friction.`,
+    impact: `Direct recovery of shopper with ₹${(u.totalSpentInr || 2400).toLocaleString('en-IN')} average LTV.`
+  }));
+
+  if (recommendedActions.length === 0) {
+    recommendedActions.push({
+      target: 'General Darkstore Traffic',
+      action: 'Maintain instant 30-minute delivery SLA in SG Highway & Bopal zones.',
+      impact: 'Sustains current 87% doorstep fitting retention.'
+    });
+  }
+
+  return {
+    id: `rep-${Date.now()}`,
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    executiveSummary: dropoffs.length > 0
+      ? `Live monitoring detected ${dropoffs.length} hesitation / drop-off signal(s) in the last 10 minutes. ${atRiskUsers.map(u => u.name).join(', ') || 'Shoppers'} backed out due to ${dropoffs[0]?.hesitationReason?.slice(0, 80) || 'checkout payment friction'}. ${highIntentUsers.length} shopper(s) maintain strong conversion intent.`
+      : `Platform operating smoothly across Ahmedabad Darkstore. ${users.length} shoppers active, with healthy browsing velocity and zero checkout drop-offs detected in this window.`,
+    dropoffRootCauses: rootCauses.length > 0 ? rootCauses : INITIAL_AI_REPORT.dropoffRootCauses,
+    recommendedActions,
+    shopperIntentBreakdown: {
+      highIntentCount: highIntentUsers.length,
+      atRiskDropoffCount: atRiskUsers.length,
+      windowShoppersCount: Math.max(0, users.length - highIntentUsers.length - atRiskUsers.length),
+      highIntentPct: Math.round((highIntentUsers.length / (users.length || 1)) * 100),
+      atRiskPct: Math.round((atRiskUsers.length / (users.length || 1)) * 100)
+    },
+    liveTrafficCount: users.length,
+    activeDoorstepTrials: users.filter(u => u.currentStatus === 'In Doorstep Trial').length,
+    modelUsed: 'Gemini Behavioral Analytics Engine (Adaptive Local Fallback)'
+  };
 }
 
