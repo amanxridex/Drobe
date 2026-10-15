@@ -51,7 +51,10 @@ import {
   Bot,
   Database,
   Copy,
-  Server
+  Server,
+  ChevronDown,
+  ChevronUp,
+  Terminal
 } from 'lucide-react';
 import { 
   AHMEDABAD_WAREHOUSE,
@@ -190,6 +193,19 @@ export default function AdminDashboardPage() {
   const [aiApiKey, setAiApiKey] = useState<string>('');
   const [showApiKeyText, setShowApiKeyText] = useState<boolean>(false);
   const [activityFilter, setActivityFilter] = useState<'all' | 'dropoffs'>('all');
+
+  // NVIDIA NIM meta/muse-glimmer-30b Executive Copilot State
+  const [copilotModalOpen, setCopilotModalOpen] = useState<boolean>(false);
+  const [copilotPrompt, setCopilotPrompt] = useState<string>('Which number is larger, 9.11 or 9.8?');
+  const [copilotLoading, setCopilotLoading] = useState<boolean>(false);
+  const [copilotResult, setCopilotResult] = useState<{
+    content: string;
+    reasoning?: string | null;
+    model?: string;
+    timestamp?: string;
+  } | null>(null);
+  const [showCopilotReasoning, setShowCopilotReasoning] = useState<boolean>(false);
+  const [copiedCopilotText, setCopiedCopilotText] = useState<boolean>(false);
 
   // Wholesale Settlement & Margin Ledger State
   const [settlementSearch, setSettlementSearch] = useState<string>('');
@@ -369,6 +385,51 @@ export default function AdminDashboardPage() {
     }
     setApiKeyModalOpen(false);
     await runAIShopperSynthesis(trimmed);
+  };
+
+  const handleRunCopilotQuery = async (overridePrompt?: string) => {
+    const query = (overridePrompt !== undefined ? overridePrompt : copilotPrompt).trim();
+    if (!query || copilotLoading) return;
+    setCopilotLoading(true);
+    try {
+      const liveContext = `DROBE Ahmedabad Darkstore Hub (AMD-DARKSTORE-01)
+Live Orders: ${trialOrders.length}
+Registered Shoppers: ${userProfiles.length} (${userProfiles.filter(u => u.currentStatus === 'Active Browsing' || u.currentStatus === 'In Doorstep Trial').length} currently active)
+Active Doorstep Trials: ${userProfiles.filter(u => u.currentStatus === 'In Doorstep Trial').length}
+Shoppers with Drop-off Hesitation: ${userProfiles.filter(u => u.dropoffRisk === 'High' || u.dropoffRisk === 'Immediate Dropoff').map(u => `${u.name} (Stage: ${u.funnelDropoffStage}, Cart: ₹${u.cartTotalInr}, Trigger: "${u.lastHesitationReason}")`).join('; ') || 'None'}
+Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`;
+
+      const keyToUse = aiApiKey || (typeof window !== 'undefined' ? localStorage.getItem('drobe_ai_api_key') || '' : '');
+      const res = await fetch('/api/admin/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: query,
+          apiKey: keyToUse,
+          context: liveContext,
+          temperature: 1,
+          top_p: 0.95,
+          max_tokens: 8192
+        })
+      });
+
+      const data = await res.json();
+      if (data.success && (data.content || data.reasoning)) {
+        setCopilotResult({
+          content: data.content,
+          reasoning: data.reasoning,
+          model: data.model || 'meta/muse-glimmer-30b',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        });
+        triggerToast('⚡ NVIDIA meta/muse-glimmer-30b reasoning finished');
+      } else {
+        triggerToast('⚠️ ' + (data.error || 'Failed to complete query'));
+      }
+    } catch (err: any) {
+      triggerToast('❌ Error calling NVIDIA AI: ' + err.message);
+    } finally {
+      setCopilotLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -3424,6 +3485,26 @@ export default function AdminDashboardPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     <button
                       type="button"
+                      onClick={() => setCopilotModalOpen(true)}
+                      className={styles.btnSecondary}
+                      style={{
+                        padding: '7px 13px',
+                        fontSize: '11.5px',
+                        gap: '6px',
+                        background: '#0f172a',
+                        borderColor: '#334155',
+                        color: '#76b900',
+                        fontWeight: 800,
+                        boxShadow: '0 2px 8px rgba(118, 185, 0, 0.25)'
+                      }}
+                      title="Open NVIDIA Meta Muse-Glimmer AI Reasoning Console"
+                    >
+                      <Bot size={14} color="#76b900" />
+                      <span>NVIDIA AI Copilot</span>
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={() => setApiKeyModalOpen(true)}
                       className={styles.btnSecondary}
                       style={{ padding: '7px 12px', fontSize: '11.5px', gap: '6px', background: aiApiKey ? '#f0fdf4' : '#fffbeb', borderColor: aiApiKey ? '#86efac' : '#fde68a', color: aiApiKey ? '#15803d' : '#92400e', fontWeight: 800 }}
@@ -3592,6 +3673,31 @@ export default function AdminDashboardPage() {
                         </span>
                       </div>
                     </div>
+
+                    {/* NVIDIA Copilot Trigger Button */}
+                    <button
+                      type="button"
+                      onClick={() => setCopilotModalOpen(true)}
+                      style={{
+                        background: 'rgba(118, 185, 0, 0.15)',
+                        border: '1px solid rgba(118, 185, 0, 0.45)',
+                        color: '#76b900',
+                        borderRadius: '10px',
+                        padding: '8px 14px',
+                        fontSize: '11.5px',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.2s',
+                        boxShadow: '0 2px 10px rgba(118, 185, 0, 0.15)'
+                      }}
+                      title="Open NVIDIA Meta Muse-Glimmer Reasoning Copilot"
+                    >
+                      <Bot size={13} color="#76b900" />
+                      <span>NVIDIA AI Copilot</span>
+                    </button>
 
                     {/* Configure Key Button */}
                     <button
@@ -6155,20 +6261,20 @@ export default function AdminDashboardPage() {
         <div className={styles.modalOverlay} onClick={() => setApiKeyModalOpen(false)}>
           <div
             className={styles.modalContent}
-            style={{ maxWidth: '540px', padding: '24px', borderRadius: '22px' }}
+            style={{ maxWidth: '560px', padding: '24px', borderRadius: '22px' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <KeyRound size={20} />
+                <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'linear-gradient(135deg, #15803d 0%, #76b900 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Bot size={22} color="#ffffff" />
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 800, color: '#0f172a' }}>
-                    Configure AI Behavioral Engine Key
+                    Configure AI Intelligence Key
                   </h3>
                   <div style={{ fontSize: '11px', color: '#64748b' }}>
-                    Powers real-time 2-minute shopper telemetry &amp; drop-off summarization
+                    Powers NVIDIA NIM (meta/muse-glimmer-30b), Gemini 1.5 Flash &amp; OpenAI
                   </div>
                 </div>
               </div>
@@ -6184,14 +6290,14 @@ export default function AdminDashboardPage() {
             <form onSubmit={handleSaveApiKey}>
               <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px', marginBottom: '16px' }}>
                 <label style={{ display: 'block', fontSize: '11.5px', fontWeight: 800, color: '#334155', textTransform: 'uppercase', marginBottom: '6px' }}>
-                  Google Gemini or OpenAI API Key
+                  NVIDIA NIM, Google Gemini or OpenAI API Key
                 </label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type={showApiKeyText ? 'text' : 'password'}
                     value={aiApiKey}
                     onChange={(e) => setAiApiKey(e.target.value)}
-                    placeholder="e.g. AIzaSy... (Gemini) or sk-... (OpenAI)"
+                    placeholder="e.g. nvapi-... (NVIDIA meta/muse-glimmer-30b) or AIza... or sk-..."
                     style={{
                       width: '100%',
                       padding: '10px 42px 10px 14px',
@@ -6222,14 +6328,14 @@ export default function AdminDashboardPage() {
                   </button>
                 </div>
                 <div style={{ fontSize: '11px', color: '#64748b', marginTop: '6px' }}>
-                  Key is saved in browser local storage and never exposed publicly.
+                  Keys are stored safely in local storage and never logged.
                 </div>
               </div>
 
               <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '12px 14px', fontSize: '11.5px', color: '#166534', marginBottom: '18px', display: 'flex', gap: '8px' }}>
                 <Sparkles size={16} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <div>
-                  <strong>Adaptive Fallback Engine Included:</strong> If no API key is provided, Drobe runs its built-in local behavioral analytics pipeline to summarize drop-off bottlenecks with zero external credit dependency.
+                  <strong>NVIDIA NIM meta/muse-glimmer-30b Active by Default:</strong> The server is pre-configured with the live NVIDIA Integrate API endpoint (<code style={{ background: '#dcfce7', padding: '1px 4px', borderRadius: '4px' }}>nvapi-Tqy0f...</code>). You can leave this blank to use the server key or enter your own custom key above.
                 </div>
               </div>
 
@@ -6251,6 +6357,328 @@ export default function AdminDashboardPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 7. NVIDIA NIM META MUSE-GLIMMER-30B EXECUTIVE COPILOT MODAL */}
+      {copilotModalOpen && (
+        <div className={styles.modalOverlay} onClick={() => setCopilotModalOpen(false)}>
+          <div
+            className={styles.modalContent}
+            style={{
+              maxWidth: '780px',
+              width: '94%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              background: '#0f172a',
+              border: '1px solid #1e293b',
+              borderRadius: '24px',
+              padding: '24px',
+              color: '#f8fafc',
+              boxShadow: '0 25px 60px rgba(0, 0, 0, 0.65)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Copilot Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '14px',
+                  background: 'linear-gradient(135deg, #76b900 0%, #15803d 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 14px rgba(118, 185, 0, 0.35)'
+                }}>
+                  <Bot size={24} color="#ffffff" />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
+                      NVIDIA NIM · meta/muse-glimmer-30b
+                    </h3>
+                    <span style={{
+                      fontSize: '10px',
+                      background: 'rgba(118, 185, 0, 0.18)',
+                      color: '#76b900',
+                      border: '1px solid rgba(118, 185, 0, 0.4)',
+                      padding: '2px 8px',
+                      borderRadius: '10px',
+                      fontWeight: 800
+                    }}>
+                      LIVE REASONING
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: '#94a3b8', marginTop: '2px' }}>
+                    Executive AI Reasoning Console · <code style={{ color: '#38bdf8' }}>https://integrate.api.nvidia.com/v1</code> · Max 8,192 Tokens
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCopilotModalOpen(false)}
+                style={{ background: 'rgba(255, 255, 255, 0.08)', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '6px', borderRadius: '8px' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Live Darkstore Telemetry Banner */}
+            <div style={{
+              background: 'rgba(30, 41, 59, 0.6)',
+              border: '1px solid rgba(51, 65, 85, 0.8)',
+              borderRadius: '12px',
+              padding: '10px 14px',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '8px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11.5px', color: '#cbd5e1' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 8px #22c55e' }} />
+                <span><strong>Live Context:</strong> Ahmedabad Hub · {trialOrders.length} Orders · {userProfiles.length} Shoppers · {products.length} SKUs</span>
+              </div>
+              <span style={{ fontSize: '10.5px', color: '#76b900', fontFamily: 'monospace', fontWeight: 700 }}>
+                Temp: 1.0 · Top-P: 0.95
+              </span>
+            </div>
+
+            {/* Quick Benchmark Prompt Pills */}
+            <div style={{ marginBottom: '14px' }}>
+              <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800, marginBottom: '6px', letterSpacing: '0.04em' }}>
+                Quick Prompts &amp; Benchmarks:
+              </div>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {[
+                  { text: 'Which number is larger, 9.11 or 9.8?', label: '⚡ User Benchmark' },
+                  { text: 'Why are shoppers backing off at the UPI checkout screen?', label: '🛒 Cart Drop-off' },
+                  { text: 'Calculate wholesale settlement margins for Kept vs Returned fits', label: '💰 Wholesale Ledger' },
+                  { text: 'How to reduce doorstep fitting trial anxiety in 6 minutes?', label: '⏱️ Fitting Trial' },
+                  { text: 'Check low-stock SKU inventory in Zone A & Zone B', label: '📦 Inventory Restock' }
+                ].map((item, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setCopilotPrompt(item.text);
+                      handleRunCopilotQuery(item.text);
+                    }}
+                    disabled={copilotLoading}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      borderRadius: '8px',
+                      padding: '5px 10px',
+                      color: '#e2e8f0',
+                      fontSize: '11px',
+                      cursor: copilotLoading ? 'not-allowed' : 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s'
+                    }}
+                  >
+                    <span style={{ color: '#76b900', fontWeight: 700, marginRight: '4px' }}>{item.label}:</span>
+                    <span>{item.text}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Prompt Input Form */}
+            <div style={{ marginBottom: '18px' }}>
+              <div style={{ position: 'relative' }}>
+                <textarea
+                  value={copilotPrompt}
+                  onChange={(e) => setCopilotPrompt(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                      e.preventDefault();
+                      handleRunCopilotQuery();
+                    }
+                  }}
+                  placeholder="Ask meta/muse-glimmer-30b anything (e.g. Which number is larger, 9.11 or 9.8?)..."
+                  rows={3}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: '12px',
+                    border: '1px solid #334155',
+                    background: '#1e293b',
+                    color: '#f8fafc',
+                    fontSize: '13px',
+                    fontFamily: 'system-ui, -apple-system, sans-serif',
+                    resize: 'vertical',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>
+                  Press <kbd style={{ background: '#334155', color: '#e2e8f0', padding: '1px 5px', borderRadius: '4px', fontSize: '10px' }}>Ctrl + Enter</kbd> to run query
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleRunCopilotQuery()}
+                  disabled={copilotLoading || !copilotPrompt.trim()}
+                  style={{
+                    background: 'linear-gradient(135deg, #76b900 0%, #15803d 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '8px 20px',
+                    fontSize: '12.5px',
+                    fontWeight: 800,
+                    cursor: copilotLoading || !copilotPrompt.trim() ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '7px',
+                    boxShadow: '0 4px 14px rgba(118, 185, 0, 0.3)'
+                  }}
+                >
+                  <Zap size={14} className={copilotLoading ? styles.spinAnimation : ''} />
+                  <span>{copilotLoading ? 'Reasoning (meta/muse-glimmer)...' : 'Run Query'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Loading Indicator */}
+            {copilotLoading && (
+              <div style={{
+                background: 'rgba(30, 41, 59, 0.8)',
+                border: '1px solid rgba(118, 185, 0, 0.3)',
+                borderRadius: '14px',
+                padding: '24px',
+                textAlign: 'center',
+                marginBottom: '16px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                  <Zap size={20} color="#76b900" className={styles.spinAnimation} />
+                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc' }}>
+                    meta/muse-glimmer-30b is generating reasoning chain &amp; final answer...
+                  </span>
+                </div>
+                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px' }}>
+                  NVIDIA Integrate endpoint · Max 8,192 tokens · Temperature 1.0 · Top-P 0.95
+                </div>
+              </div>
+            )}
+
+            {/* Copilot Result Card */}
+            {copilotResult && !copilotLoading && (
+              <div style={{
+                background: '#1e293b',
+                border: '1px solid #334155',
+                borderRadius: '16px',
+                padding: '18px',
+                marginBottom: '10px'
+              }}>
+                {/* Result Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155', paddingBottom: '10px', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Bot size={16} color="#76b900" />
+                    <span style={{ fontSize: '13px', fontWeight: 800, color: '#ffffff' }}>
+                      Model Output ({copilotResult.model || 'meta/muse-glimmer-30b'})
+                    </span>
+                    {copilotResult.timestamp && (
+                      <span style={{ fontSize: '11px', color: '#64748b' }}>
+                        at {copilotResult.timestamp}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (copilotResult.content) {
+                        navigator.clipboard.writeText(copilotResult.content);
+                        setCopiedCopilotText(true);
+                        setTimeout(() => setCopiedCopilotText(false), 2000);
+                      }
+                    }}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      border: 'none',
+                      color: copiedCopilotText ? '#4ade80' : '#cbd5e1',
+                      borderRadius: '6px',
+                      padding: '4px 10px',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    {copiedCopilotText ? <Check size={12} /> : <Copy size={12} />}
+                    <span>{copiedCopilotText ? 'Copied!' : 'Copy Answer'}</span>
+                  </button>
+                </div>
+
+                {/* Primary Content Output */}
+                <div style={{
+                  fontSize: '13.5px',
+                  lineHeight: '1.65',
+                  color: '#f1f5f9',
+                  whiteSpace: 'pre-wrap',
+                  fontFamily: 'system-ui, -apple-system, sans-serif'
+                }}>
+                  {copilotResult.content}
+                </div>
+
+                {/* Deep Chain-of-Thought Reasoning Accordion */}
+                {copilotResult.reasoning && (
+                  <div style={{ marginTop: '16px', borderTop: '1px solid #334155', paddingTop: '12px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowCopilotReasoning(!showCopilotReasoning)}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '8px',
+                        padding: '6px 12px',
+                        color: '#94a3b8',
+                        fontSize: '11.5px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Terminal size={13} color="#76b900" />
+                        <span>View Deep Chain-of-Thought Reasoning ({copilotResult.reasoning.length} characters)</span>
+                      </div>
+                      {showCopilotReasoning ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    </button>
+
+                    {showCopilotReasoning && (
+                      <div style={{
+                        marginTop: '10px',
+                        background: '#090d16',
+                        border: '1px solid #1e293b',
+                        borderRadius: '10px',
+                        padding: '14px',
+                        fontSize: '12px',
+                        lineHeight: '1.6',
+                        color: '#94a3b8',
+                        fontFamily: 'monospace',
+                        whiteSpace: 'pre-wrap',
+                        maxHeight: '320px',
+                        overflowY: 'auto'
+                      }}>
+                        {copilotResult.reasoning}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

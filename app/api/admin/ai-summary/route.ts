@@ -19,7 +19,12 @@ export async function POST(req: Request) {
       users: DrobeUserProfile[];
     };
 
-    const apiKey = clientApiKey?.trim() || process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY;
+    const apiKey =
+      clientApiKey?.trim() ||
+      process.env.NVIDIA_API_KEY ||
+      process.env.GEMINI_API_KEY ||
+      process.env.OPENAI_API_KEY ||
+      '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';
 
     // Filter drop-off signals to give LLM direct high-signal context
     const dropoffActivities = (activities as DrobeUserActivity[]).filter(
@@ -35,10 +40,12 @@ export async function POST(req: Request) {
       u => u.dropoffRisk === 'High' || u.dropoffRisk === 'Immediate Dropoff'
     );
 
-    // If an API key is available, call Gemini (or OpenAI if key starts with sk-)
+    // If an API key is available, call NVIDIA NIM (meta/muse-glimmer-30b), Gemini, or OpenAI
     if (apiKey) {
       try {
-        const isGemini = !apiKey.startsWith('sk-');
+        const isNvidia = apiKey.startsWith('nvapi-') || (!apiKey.startsWith('AIza') && !apiKey.startsWith('sk-'));
+        const isGemini = apiKey.startsWith('AIza');
+        const isOpenAi = apiKey.startsWith('sk-');
 
         const prompt = `You are Drobe's E-Commerce Behavioral Intelligence Engine analyzing real-time shopper telemetry from the Ahmedabad Quick-Commerce Darkstore.
 Drobe provides ultra-fast 30-minute delivery with 6-minute doorstep fitting trials.
@@ -83,7 +90,74 @@ Respond ONLY with a valid JSON object matching this exact structure:
   }
 }`;
 
-        if (isGemini) {
+        const cleanJsonString = (rawText: string) => {
+          let text = rawText.trim();
+          if (text.startsWith('```json')) {
+            text = text.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+          } else if (text.startsWith('```')) {
+            text = text.replace(/^```\s*/, '').replace(/\s*```$/, '');
+          }
+          const firstBrace = text.indexOf('{');
+          const lastBrace = text.lastIndexOf('}');
+          if (firstBrace !== -1 && lastBrace !== -1) {
+            text = text.substring(firstBrace, lastBrace + 1);
+          }
+          return text;
+        };
+
+        if (isNvidia) {
+          // NVIDIA Integrate NIM (meta/muse-glimmer-30b) endpoint
+          const nvidiaUrl = `${(process.env.NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1').replace(/\/$/, '')}/chat/completions`;
+          const response = await fetch(nvidiaUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              model: process.env.NVIDIA_MODEL || 'meta/muse-glimmer-30b',
+              messages: [
+                { role: 'system', content: 'You are Drobe E-Commerce Intelligence Engine. Output valid JSON only, without any commentary.' },
+                { role: 'user', content: prompt }
+              ],
+              temperature: 0.3,
+              top_p: 0.95,
+              max_tokens: 4096,
+              stream: false
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const choice = data?.choices?.[0]?.message;
+            const textContent = choice?.content || choice?.reasoning_content;
+            if (textContent) {
+              const cleaned = cleanJsonString(textContent);
+              const parsed = JSON.parse(cleaned);
+              const report: DrobeAIShopperReport = {
+                id: `rep-${Date.now()}`,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                executiveSummary: parsed.executiveSummary || 'Live intelligence analysis complete via NVIDIA NIM.',
+                dropoffRootCauses: parsed.dropoffRootCauses || [],
+                recommendedActions: parsed.recommendedActions || [],
+                shopperIntentBreakdown: parsed.shopperIntentBreakdown || {
+                  highIntentCount: Math.max(1, users.length - highRiskUsers.length),
+                  atRiskDropoffCount: highRiskUsers.length,
+                  windowShoppersCount: Math.max(0, users.length - highRiskUsers.length - 1),
+                  highIntentPct: Math.round(((users.length - highRiskUsers.length) / (users.length || 1)) * 100),
+                  atRiskPct: Math.round((highRiskUsers.length / (users.length || 1)) * 100)
+                },
+                liveTrafficCount: users.length,
+                activeDoorstepTrials: users.filter(u => u.currentStatus === 'In Doorstep Trial').length,
+                modelUsed: `NVIDIA NIM ${data?.model || 'meta/muse-glimmer-30b'} (Live AI Pipeline)`
+              };
+              return NextResponse.json({ success: true, report });
+            }
+          } else {
+            const errBody = await response.text();
+            console.warn('NVIDIA API call failed, falling back:', response.status, errBody);
+          }
+        } else if (isGemini) {
           // Google Gemini 1.5 Flash endpoint
           const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
           const response = await fetch(geminiUrl, {
@@ -102,7 +176,8 @@ Respond ONLY with a valid JSON object matching this exact structure:
             const data = await response.json();
             const textContent = data?.candidates?.[0]?.content?.parts?.[0]?.text;
             if (textContent) {
-              const parsed = JSON.parse(textContent);
+              const cleaned = cleanJsonString(textContent);
+              const parsed = JSON.parse(cleaned);
               const report: DrobeAIShopperReport = {
                 id: `rep-${Date.now()}`,
                 timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -126,7 +201,7 @@ Respond ONLY with a valid JSON object matching this exact structure:
             const errBody = await response.text();
             console.warn('Gemini API call failed, falling back to heuristic engine:', response.status, errBody);
           }
-        } else {
+        } else if (isOpenAi) {
           // OpenAI endpoint
           const openAiUrl = 'https://api.openai.com/v1/chat/completions';
           const response = await fetch(openAiUrl, {
@@ -150,7 +225,8 @@ Respond ONLY with a valid JSON object matching this exact structure:
             const data = await response.json();
             const textContent = data?.choices?.[0]?.message?.content;
             if (textContent) {
-              const parsed = JSON.parse(textContent);
+              const cleaned = cleanJsonString(textContent);
+              const parsed = JSON.parse(cleaned);
               const report: DrobeAIShopperReport = {
                 id: `rep-${Date.now()}`,
                 timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
