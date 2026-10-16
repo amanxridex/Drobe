@@ -1,17 +1,37 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '@/context/AppContext';
 
 export default function SplashScreen() {
+  const pathname = usePathname();
   const { location, userCoords, deliveryMinutes, requestExactLocation, isLocating } = useApp();
   const [showSplash, setShowSplash] = useState(true);
   const [showPermissionPrompt, setShowPermissionPrompt] = useState(false);
   const [permissionChoice, setPermissionChoice] = useState<'prompt' | 'granted' | 'denied'>('prompt');
   const [statusText, setStatusText] = useState('Initializing Ahmedabad Darkstore Hub #01...');
 
+  // Bypassed routes: brand dashboard, admin, and partner portals must NEVER show consumer delivery splash
+  const isBypassedRoute =
+    pathname?.startsWith('/brand-dashboard') ||
+    pathname?.startsWith('/admin-dashboard') ||
+    pathname?.startsWith('/order-portal') ||
+    pathname?.startsWith('/delivery-partner') ||
+    pathname?.startsWith('/platform-changes');
+
   useEffect(() => {
+    if (isBypassedRoute) {
+      setShowSplash(false);
+      return;
+    }
+
+    // Safety failsafe: never keep splash screen visible for more than 2.5s under any condition
+    const failsafeTimer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2500);
+
     // Check if we've already prompted in this browser session
     const hasPrompted = typeof window !== 'undefined' ? sessionStorage.getItem('drobe_splash_shown') : null;
     const storedCoords = typeof window !== 'undefined' ? localStorage.getItem('drobe_user_coords') : null;
@@ -21,7 +41,10 @@ export default function SplashScreen() {
       const timer = setTimeout(() => {
         setShowSplash(false);
       }, 650);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(failsafeTimer);
+      };
     }
 
     // First time launch: show splash and check for location permission
@@ -35,8 +58,13 @@ export default function SplashScreen() {
       }
     }, 1200);
 
-    return () => clearTimeout(promptTimer);
-  }, []);
+    return () => {
+      clearTimeout(promptTimer);
+      clearTimeout(failsafeTimer);
+    };
+  }, [isBypassedRoute]);
+
+  if (isBypassedRoute || !showSplash) return null;
 
   const handleGrantPermission = async (mode: 'precise' | 'approximate') => {
     setStatusText('Acquiring real-time GPS satellites...');
