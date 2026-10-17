@@ -91,6 +91,15 @@ export default function RootLayout({
                   window.visualViewport.addEventListener('resize', updateAppHeight);
                 }
 
+                // Purge any stale service worker caches from previous versions
+                if ('caches' in window) {
+                  caches.keys().then(function(keys) {
+                    for (var k of keys) {
+                      if (k !== 'drobe-pwa-v2') caches.delete(k);
+                    }
+                  });
+                }
+
                 // Register PWA service worker
                 if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
                   window.addEventListener('load', function() {
@@ -101,6 +110,9 @@ export default function RootLayout({
             `
           }}
         />
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
       </head>
       <body>
         <SecurityShield />

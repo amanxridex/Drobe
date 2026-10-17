@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 export default function DevGatekeeper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isDevMode, setIsDevMode] = useState<boolean>(false);
-  const [mounted, setMounted] = useState<boolean>(false);
   const [tapCount, setTapCount] = useState<number>(0);
   const [showPinModal, setShowPinModal] = useState<boolean>(false);
   const [pinInput, setPinInput] = useState<string>('');
@@ -23,9 +22,7 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
 
   const enableDev = () => {
     try {
-      localStorage.setItem('drobe_dev_mode', 'true');
       sessionStorage.setItem('drobe_dev_mode', 'true');
-      document.cookie = 'drobe_dev_mode=true; path=/; max-age=31536000; SameSite=Lax';
     } catch (e) {}
     setIsDevMode(true);
     setShowPinModal(false);
@@ -43,11 +40,8 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
   };
 
   useEffect(() => {
-    setMounted(true);
-
     if (typeof window === 'undefined') return;
 
-    // 1. Check URL parameters for developer bypass
     const params = new URLSearchParams(window.location.search);
     const hasDevParam =
       params.get('dev') === 'true' ||
@@ -71,17 +65,19 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
       return;
     }
 
-    // 2. Check stored credentials
+    // Clean any old permanent localStorage flags so all public visitors see the red screen first
     try {
-      const stored = localStorage.getItem('drobe_dev_mode');
+      localStorage.removeItem('drobe_dev_mode');
       const session = sessionStorage.getItem('drobe_dev_mode');
-      const hasCookie = document.cookie.includes('drobe_dev_mode=true');
-
-      if (stored === 'true' || session === 'true' || hasCookie) {
+      if (session === 'true') {
         setIsDevMode(true);
+      } else {
+        setIsDevMode(false);
       }
-    } catch (e) {}
-  }, []);
+    } catch (e) {
+      setIsDevMode(false);
+    }
+  }, [pathname]);
 
   // Handle secret tap gesture on the white DROBE logo
   const handleLogoTap = () => {
@@ -198,21 +194,26 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
       style={{
         width: '100%',
         height: '100%',
-        minHeight: '100%',
+        minHeight: 'var(--app-height, 100dvh)',
         flex: 1,
         backgroundColor: '#E5002B',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         position: 'relative',
         overflow: 'hidden',
         userSelect: 'none',
         WebkitUserSelect: 'none',
         margin: 0,
-        padding: 0
+        padding: '36px 20px calc(28px + env(safe-area-inset-bottom, 0px))',
+        boxSizing: 'border-box',
+        fontFamily: 'Satoshi, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}
     >
+      {/* Top Balancing Spacer */}
+      <div style={{ height: 40, width: '100%' }} />
+
       {/* Centered White DROBE Logo */}
       <div
         onClick={handleLogoTap}
@@ -222,7 +223,7 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          padding: 30,
+          padding: 20,
           transition: 'transform 0.15s ease'
         }}
         active-tap="true"
@@ -232,8 +233,8 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
           src="/drobe-logo-full-white.png"
           alt="DROBE"
           style={{
-            width: 220,
-            maxWidth: '68vw',
+            width: 215,
+            maxWidth: '65vw',
             height: 'auto',
             display: 'block',
             objectFit: 'contain',
@@ -241,6 +242,47 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
             pointerEvents: 'none'
           }}
         />
+      </div>
+
+      {/* Bottom Text Calculated Viewport Anchor */}
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          gap: 6,
+          padding: '0 8px'
+        }}
+      >
+        {/* Line 1: Fashion in 30 minutes | Launching Soon */}
+        <div
+          style={{
+            fontSize: 'clamp(12px, 3.4vw, 14px)',
+            fontWeight: 700,
+            color: '#ffffff',
+            letterSpacing: '0.04em',
+            lineHeight: 1.3,
+            textShadow: '0 1px 4px rgba(0, 0, 0, 0.15)'
+          }}
+        >
+          Fashion in 30 minutes | Launching Soon
+        </div>
+
+        {/* Line 2: Ahmedbad | Guragaon | Chandigarh | Lucknow */}
+        <div
+          style={{
+            fontSize: 'clamp(10px, 2.7vw, 11.5px)',
+            fontWeight: 600,
+            color: 'rgba(255, 255, 255, 0.88)',
+            letterSpacing: '0.06em',
+            lineHeight: 1.3
+          }}
+        >
+          Ahmedbad | Guragaon | Chandigarh | Lucknow
+        </div>
       </div>
 
       {/* Discreet Developer Passcode Modal (triggered by 3 taps on logo) */}

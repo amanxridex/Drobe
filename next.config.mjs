@@ -38,6 +38,10 @@ const nextConfig = {
         source: '/:path*',
         headers: [
           {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate, max-age=0'
+          },
+          {
             key: 'X-Content-Type-Options',
             value: 'nosniff'
           },
