@@ -162,21 +162,6 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
         overflow: 'hidden'
       }}
     >
-      {/* Desktop Left QR Download Card */}
-      {!isMobile && (
-        <div id="qr-download-card">
-          <img
-            src="/assets/images/desktop_qr_exact.png"
-            alt="Download DROBE"
-            className="qr-img"
-            style={{
-              width: '212px',
-              display: 'block'
-            }}
-          />
-        </div>
-      )}
-
       {/* Main Centered Mobile Application Frame */}
       <div
         id="mobile-app-frame"
