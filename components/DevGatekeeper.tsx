@@ -271,7 +271,7 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
           Fashion in 30 minutes | Launching Soon
         </div>
 
-        {/* Line 2: Ahmedbad | Guragaon | Chandigarh | Lucknow */}
+        {/* Line 2: Ahmedabad | Gurgaon | Chandigarh | Lucknow */}
         <div
           style={{
             fontSize: 'clamp(10px, 2.7vw, 11.5px)',
@@ -281,7 +281,7 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
             lineHeight: 1.3
           }}
         >
-          Ahmedbad | Guragaon | Chandigarh | Lucknow
+          Ahmedabad | Gurgaon | Chandigarh | Lucknow
         </div>
       </div>
 
