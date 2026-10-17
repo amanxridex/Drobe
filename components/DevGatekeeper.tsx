@@ -137,8 +137,8 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
           id="drobe-dev-indicator"
           style={{
             position: 'fixed',
-            bottom: 24,
-            right: 24,
+            top: 20,
+            right: 20,
             zIndex: 999999,
             display: 'flex',
             alignItems: 'center',
@@ -191,20 +191,21 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
     );
   }
 
-  // Live Red Holding Screen for All Public Users
+  // Live Red Holding Screen for All Public Users (contained inside the mobile frame)
   return (
     <div
       id="drobe-live-red-screen"
       style={{
-        position: 'fixed',
-        inset: 0,
-        width: '100vw',
-        height: '100dvh',
+        width: '100%',
+        height: '100%',
+        minHeight: '100%',
+        flex: 1,
         backgroundColor: '#E5002B',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 9999999,
+        position: 'relative',
         overflow: 'hidden',
         userSelect: 'none',
         WebkitUserSelect: 'none',

@@ -105,10 +105,12 @@ export default function RootLayout({
       <body>
         <SecurityShield />
         <AppProvider>
-          <DevGatekeeper>
-            <SplashScreen />
-            <DesktopWrapper>{children}</DesktopWrapper>
-          </DevGatekeeper>
+          <DesktopWrapper>
+            <DevGatekeeper>
+              <SplashScreen />
+              {children}
+            </DevGatekeeper>
+          </DesktopWrapper>
         </AppProvider>
       </body>
     </html>
