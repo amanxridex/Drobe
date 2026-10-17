@@ -190,7 +190,7 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
       {!isMobile && (
         <div id="social-links-card">
           <a
-            href="https://www.instagram.com/drobe.luxury"
+            href="https://www.instagram.com/drobe.one"
             target="_blank"
             rel="noopener noreferrer"
             className="social-link-btn"
