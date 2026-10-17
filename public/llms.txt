@@ -1,0 +1,55 @@
+# DROBE — 30-Minute Fashion Delivery & Doorstep Trial
+> Canonical Domain: https://drobe.one
+> Official Tagline: Fashion in 30 minutes | Launching Soon
+> Active Launch Hubs: Ahmedabad (Central Hub #01) · Gurgaon · Chandigarh · Lucknow
+
+## Overview & Business Model
+DROBE is India's pioneer quick-commerce fashion platform delivering premium streetwear, casuals, and ethnic collections in under 30 minutes with an integrated 6-minute mirror trial before you buy.
+
+- **Speed**: Under 30-minute doorstep delivery powered by hyper-local darkstores.
+- **Try Before You Buy**: Delivery runners carry multiple size options to the customer's doorstep. Customers have a 6-minute mirror trial window to try on garments.
+- **Instant Doorstep Return**: Unwanted sizes or items are handed directly back to the runner on the spot with zero courier returns, no repackaging, and no reverse pickup delays.
+- **Payment**: Instant UPI on delivery or Cash on Delivery only after keeping preferred items.
+
+## Operational Cities & Darkstore Hubs
+1. **Ahmedabad**: Central Hub #01 (Shivam Bungalows 1, Koteshwar Road · Serving Motera, Chandkheda, SG Highway, Bopal, Satellite, Prahlad Nagar).
+2. **Gurgaon**: Cyber City & Golf Course Road Express Hub.
+3. **Chandigarh**: Sector 17 & Mohali Central Express Zone.
+4. **Lucknow**: Gomti Nagar & Hazratganj Express Hub.
+
+## Featured Partner Brands
+- [What The Flex](https://drobe.one/brand/what-the-flex) — Heavyweight street denim, oversized graphic tees, and boxy silhouettes. (Streetwear)
+- [Chapter 2](https://drobe.one/brand/chapter-2) — Utility streetwear, relaxed cargoes, and statement drop-shoulder hoodies. (Streetwear & Cargoes)
+- [Main Character](https://drobe.one/brand/main-character) — Trend-setting Gen-Z aesthetics, textured knits, and statement jackets. (Casualwear)
+- [The Souled Store](https://drobe.one/brand/the-souled-store) — Pop-culture oversized tees, co-ord sets, and everyday premium casuals. (Casualwear & Co-Ords)
+- [GENRAGE](https://drobe.one/brand/genrage) — Acid-washed boxy cuts, luxury graphic tees, and minimalist hoodies. (Streetwear)
+- [Ikoho](https://drobe.one/brand/ikoho) — Modern linen casuals, camp collar shirts, and breathable resort wear. (Resort & Casual)
+- [Powerlook](https://drobe.one/brand/powerlook) — Modern heritage streetwear, relaxed corduroy shirts, and baggy denims. (Denim & Streetwear)
+- [Rawayi](https://drobe.one/brand/rawayi) — Contemporary ethnic kurtas, mirror-work bundis, and festive sets. (Ethnic & Festive)
+- [CALDRI](https://drobe.one/brand/caldri) — Tailored luxury basics, clean-cut polos, and versatile bottoms. (Basics & Polos)
+- [House of Koala](https://drobe.one/brand/house-of-koala) — Eco-friendly premium cotton tees, relaxed trousers, and smart casuals. (Smart Casual)
+- [IWE STUDIOS](https://drobe.one/brand/iwe-studios) — Exclusive capsule drops, luxury streetwear, and distressed denim. (Capsule Drops)
+- [Vastramay](https://drobe.one/brand/vastramay) — Royal wedding wear, brocade nehru jackets, and embroidered kurta sets. (Ethnic)
+- [SNITCH](https://drobe.one/brand/snitch) — Fast drops, street denim, and runway-inspired shirts. (Fast Fashion)
+- [TASVA](https://drobe.one/brand/tasva) — Designer kurta sets, bundis, and wedding essentials by Tarun Tahiliani. (Luxury Ethnic)
+- [Manyavar](https://drobe.one/brand/manyavar) — Celebration wear, sherwanis, and festive kurta sets. (Festive Wear)
+- [GIVA](https://drobe.one/brand/giva) — 925 sterling fine silver jewellery and minimalist fashion accessories. (Fine Jewellery)
+- [Chumbak](https://drobe.one/brand/chumbak) — Boho lifestyle, analog watches, and colourful accessories. (Watches & Accessories)
+- [KALKI Fashion](https://drobe.one/brand/kalki-fashion) — Haute couture lehengas, pre-draped sarees, and gowns. (Designer Couture)
+
+## Core Categories
+- [Men's Collection](https://drobe.one/categories) — Oversized tees, cuban shirts, denim, kurtas, sneaker footwear.
+- [Women's Collection](https://drobe.one/categories) — Co-ord sets, dresses, festive anarkalis, corsets, 925 silver jewellery.
+- [Trending Drops](https://drobe.one/trends) — Fastest moving darkstore drops refreshed weekly.
+
+## Frequently Asked Questions (FAQ)
+- **Q: How does 30-minute fashion delivery work?**
+  A: Orders are picked and packed in 90 seconds from hyper-local darkstore fulfillment centers and dispatched via express runners with direct turn-by-turn routing.
+- **Q: Can I order two sizes to try on?**
+  A: Yes! DROBE encourages ordering adjacent sizes. The runner waits while you try on both sizes, and takes back the unkept size immediately.
+- **Q: How can I reach DROBE?**
+  A: Official Website: https://drobe.one | Official Instagram: https://www.instagram.com/drobe.one
+
+## Detailed Catalog Index
+For the complete list of 400+ indexed products with direct purchase URLs, specifications, and prices, visit:
+https://drobe.one/llms-full.txt

@@ -180,6 +180,137 @@ export default function RootLayout({
           content="Fashion in 30 minutes | Launching Soon in Ahmedabad, Gurgaon, Chandigarh, and Lucknow."
         />
         <meta name="twitter:image" content="https://drobe.one/og-image.png" />
+
+        {/* ========================================================
+            SCHEMA.ORG RICH RESULTS & KNOWLEDGE GRAPH (SEO, AEO, GEO)
+            Google Rich Snippets, Perplexity Citations, ChatGPT Citing
+            ======================================================== */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                '@context': 'https://schema.org',
+                '@type': 'Organization',
+                name: 'DROBE',
+                legalName: 'Drobe Luxury Technologies Private Limited',
+                url: 'https://drobe.one',
+                logo: 'https://drobe.one/drobe-logo-full-white.png',
+                image: 'https://drobe.one/og-image.png',
+                description:
+                  'India\'s first 30-minute doorstep fashion delivery platform with 6-minute mirror trial before you buy.',
+                sameAs: [
+                  'https://www.instagram.com/drobe.one',
+                  'https://x.com/drobe_one',
+                  'https://www.linkedin.com/company/drobe'
+                ],
+                contactPoint: {
+                  '@type': 'ContactPoint',
+                  telephone: '+91-800-376-2347',
+                  contactType: 'customer service',
+                  areaServed: 'IN',
+                  availableLanguage: ['English', 'Hindi', 'Gujarati']
+                }
+              },
+              {
+                '@context': 'https://schema.org',
+                '@type': 'WebSite',
+                name: 'DROBE',
+                url: 'https://drobe.one',
+                potentialAction: {
+                  '@type': 'SearchAction',
+                  target: {
+                    '@type': 'EntryPoint',
+                    urlTemplate: 'https://drobe.one/search?q={search_term_string}'
+                  },
+                  'query-input': 'required name=search_term_string'
+                }
+              },
+              {
+                '@context': 'https://schema.org',
+                '@type': 'DeliveryService',
+                name: 'DROBE 30-Minute Fashion Delivery & Trial',
+                provider: {
+                  '@type': 'Organization',
+                  name: 'DROBE',
+                  url: 'https://drobe.one'
+                },
+                serviceType: '30-Minute Express Doorstep Fashion Delivery and Try Before You Buy Trial',
+                areaServed: [
+                  { '@type': 'City', name: 'Ahmedabad' },
+                  { '@type': 'City', name: 'Gurgaon' },
+                  { '@type': 'City', name: 'Chandigarh' },
+                  { '@type': 'City', name: 'Lucknow' }
+                ],
+                hoursAvailable: {
+                  '@type': 'OpeningHoursSpecification',
+                  dayOfWeek: [
+                    'Monday',
+                    'Tuesday',
+                    'Wednesday',
+                    'Thursday',
+                    'Friday',
+                    'Saturday',
+                    'Sunday'
+                  ],
+                  opens: '08:00',
+                  closes: '23:30'
+                }
+              },
+              {
+                '@context': 'https://schema.org',
+                '@type': 'FAQPage',
+                mainEntity: [
+                  {
+                    '@type': 'Question',
+                    name: 'What is DROBE?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text:
+                        'DROBE (drobe.one) is India\'s pioneer quick-commerce fashion platform delivering premium streetwear, casuals, and ethnic wear from leading brands to your doorstep in under 30 minutes with an integrated 6-minute mirror trial before you buy.'
+                    }
+                  },
+                  {
+                    '@type': 'Question',
+                    name: 'Which cities does DROBE serve?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text:
+                        'DROBE is launching across Ahmedabad (Central Hub #01 at Koteshwar Road / Motera), Gurgaon, Chandigarh, and Lucknow.'
+                    }
+                  },
+                  {
+                    '@type': 'Question',
+                    name: 'How does Try Before You Buy work on DROBE?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text:
+                        'When you place an order on DROBE, our delivery runner arrives within 30 minutes carrying your items and adjacent sizes. You take 6 minutes to try them on in front of your mirror, keep what fits, and return what doesn\'t on the spot with zero courier returns or repackaging.'
+                    }
+                  },
+                  {
+                    '@type': 'Question',
+                    name: 'Which fashion brands are available on DROBE?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text:
+                        'DROBE features top streetwear, casual, and ethnic fashion brands including The Souled Store, Snitch, What The Flex, Chapter 2, Main Character, Powerlook, GENRAGE, Ikoho, Rawayi, CALDRI, House of Koala, IWE Studios, Vastramay, TASVA, Manyavar, GIVA, and Chumbak.'
+                    }
+                  },
+                  {
+                    '@type': 'Question',
+                    name: 'How do payments work on DROBE?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text:
+                        'Customers only pay after trying on their garments. You can pay instantly using any UPI app (Google Pay, PhonePe, Paytm), credit/debit card, or cash on delivery directly to the delivery runner.'
+                    }
+                  }
+                ]
+              }
+            ])
+          }}
+        />
       </head>
       <body>
         <SecurityShield />

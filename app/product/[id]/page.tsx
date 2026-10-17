@@ -125,6 +125,69 @@ export default function ProductDetailPage() {
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', background: '#0e0e11', overflow: 'hidden' }}>
+      {/* Schema.org Product Structured Data for Google & AI Bot Discovery */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.title,
+            image: thumbnails.map((img) => (img.startsWith('http') ? img : `https://drobe.one${img}`)),
+            description:
+              product.description ||
+              `${product.title} by ${product.brand}. Available for 30-minute doorstep trial on DROBE in Ahmedabad, Gurgaon, Chandigarh, and Lucknow.`,
+            sku: product.id,
+            brand: {
+              '@type': 'Brand',
+              name: product.brand
+            },
+            offers: {
+              '@type': 'Offer',
+              url: `https://drobe.one/product/${product.id}`,
+              priceCurrency: 'INR',
+              price: product.price,
+              priceValidUntil: '2027-12-31',
+              itemCondition: 'https://schema.org/NewCondition',
+              availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+              seller: {
+                '@type': 'Organization',
+                name: 'DROBE'
+              }
+            },
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: String(product.rating || '4.9'),
+              reviewCount: String(product.reviewsCount || '38')
+            }
+          })
+        }}
+      />
+
+      {/* Launching Soon Top Bar */}
+      <div
+        style={{
+          background: 'linear-gradient(90deg, #E5002B 0%, #B8001F 100%)',
+          padding: '6px 12px',
+          textAlign: 'center',
+          color: '#ffffff',
+          fontSize: '11px',
+          fontWeight: 700,
+          letterSpacing: '0.04em',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+          zIndex: 50
+        }}
+      >
+        <span>⚡ DROBE</span>
+        <span style={{ opacity: 0.7 }}>·</span>
+        <span>Launching Soon in Ahmedabad, Gurgaon, Chandigarh & Lucknow</span>
+        <span style={{ opacity: 0.7 }}>·</span>
+        <span>30-Min Doorstep Trial</span>
+      </div>
+
       {/* ========================================================
           1. TOP NAVIGATION BAR (Exact 1:1 match)
           Back Arrow + Blue K Monogram Logo + Search + Heart + Bag

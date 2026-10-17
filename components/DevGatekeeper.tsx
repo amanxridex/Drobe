@@ -12,8 +12,29 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
   const [pinError, setPinError] = useState<string>('');
   const tapTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Bypassed management routes (admin, brand dashboard, portal, etc.)
+  // Automatically allow search engines & AI bots (Google, GPTBot, Claude, Perplexity) to crawl the full store
+  const [isBot, setIsBot] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof navigator !== 'undefined') {
+      const ua = navigator.userAgent || '';
+      const botPattern = /Googlebot|bingbot|yandex|baiduspider|facebookexternalhit|twitterbot|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|slackbot|vkShare|W3C_Validator|whatsapp|GPTBot|ChatGPT-User|ClaudeBot|PerplexityBot|Applebot|Google-Extended|Amazonbot|Bytespider|cohere-ai|anthropic-ai/i;
+      if (botPattern.test(ua)) {
+        setIsBot(true);
+      }
+    }
+  }, []);
+
+  // Direct product and brand deep links allow visitors to land directly on the particular product
+  const isDirectProductOrBrand =
+    pathname?.startsWith('/product/') ||
+    pathname?.startsWith('/brand/') ||
+    pathname?.startsWith('/collection/');
+
+  // Bypassed management routes (admin, brand dashboard, portal, etc.) or bot crawlers / deep links
   const isBypassedRoute =
+    isBot ||
+    isDirectProductOrBrand ||
     pathname?.startsWith('/admin-dashboard') ||
     pathname?.startsWith('/brand-dashboard') ||
     pathname?.startsWith('/platform-changes') ||
