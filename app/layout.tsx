@@ -5,6 +5,8 @@ import DesktopWrapper from '@/components/DesktopWrapper';
 import SecurityShield from '@/components/SecurityShield';
 import SplashScreen from '@/components/SplashScreen';
 
+import DevGatekeeper from '@/components/DevGatekeeper';
+
 export const viewport: Viewport = {
   themeColor: '#000000',
   width: 'device-width',
@@ -103,8 +105,10 @@ export default function RootLayout({
       <body>
         <SecurityShield />
         <AppProvider>
-          <SplashScreen />
-          <DesktopWrapper>{children}</DesktopWrapper>
+          <DevGatekeeper>
+            <SplashScreen />
+            <DesktopWrapper>{children}</DesktopWrapper>
+          </DevGatekeeper>
         </AppProvider>
       </body>
     </html>

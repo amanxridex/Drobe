@@ -148,32 +148,51 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
 
   return (
     <div
-      id="app-root-viewport"
+      id="app-desktop-wrapper"
       style={{
-        width: '100%',
-        minHeight: '100vh',
-        height: 'var(--app-height, 100dvh)',
-        backgroundColor: '#000000',
-        position: 'relative',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: isMobile ? 'var(--app-height, 100dvh)' : '100vh',
+        backgroundColor: '#242424',
         display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none'
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden'
       }}
     >
+      {/* Desktop Left QR Download Card */}
+      {!isMobile && (
+        <div id="qr-download-card">
+          <img
+            src="/assets/images/desktop_qr_exact.png"
+            alt="Download DROBE"
+            className="qr-img"
+            style={{
+              width: '212px',
+              display: 'block'
+            }}
+          />
+        </div>
+      )}
+
+      {/* Main Centered Mobile Application Frame */}
       <div
         id="mobile-app-frame"
         style={{
           width: '100%',
-          height: '100%',
-          backgroundColor: '#000000',
+          maxWidth: isMobile ? '100%' : '446px',
+          height: isMobile ? 'var(--app-height, 100dvh)' : '100vh',
+          backgroundColor: '#171717',
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
           scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
+          msOverflowStyle: 'none',
+          boxShadow: isMobile ? 'none' : '0 0 50px rgba(0,0,0,0.6)',
+          margin: '0 auto'
         }}
       >
         {children}
@@ -181,6 +200,28 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
         <AuthModal />
         <CouponModal />
       </div>
+
+      {/* Desktop Right Social Link */}
+      {!isMobile && (
+        <div id="social-links-card">
+          <a
+            href="https://www.instagram.com/drobe.luxury"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="social-link-btn"
+          >
+            <img
+              src="/assets/images/insta_social.svg"
+              alt=""
+              style={{ width: 16, height: 16 }}
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
+            Instagram
+          </a>
+        </div>
+      )}
     </div>
   );
 }
