@@ -18,7 +18,8 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
   useEffect(() => {
     if (typeof navigator !== 'undefined') {
       const ua = navigator.userAgent || '';
-      const botPattern = /Googlebot|bingbot|yandex|baiduspider|facebookexternalhit|twitterbot|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|slackbot|vkShare|W3C_Validator|whatsapp|GPTBot|ChatGPT-User|ClaudeBot|PerplexityBot|Applebot|Google-Extended|Amazonbot|Bytespider|cohere-ai|anthropic-ai/i;
+      const botPattern =
+        /Googlebot|bingbot|yandex|baiduspider|facebookexternalhit|twitterbot|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|slackbot|vkShare|W3C_Validator|whatsapp|GPTBot|ChatGPT-User|OAI-SearchBot|ChatGPT|OpenAI|ClaudeBot|Claude-Web|anthropic-ai|PerplexityBot|Perplexity-User|Applebot|Applebot-Extended|Google-Extended|GoogleOther|Storebot-Google|Amazonbot|Bytespider|cohere-ai|MistralBot|DuckAssistBot|DuckDuckBot|Bravebot|YouBot|KagiBot|ExaBot|Diffbot|WebzBot|Timpibot|MojeekBot|Qwantify|Yeti|Slurp|CCBot|Discordbot|TelegramBot|RedditBot|BlueskyCard|SkypeUriPreview/i;
       if (botPattern.test(ua)) {
         setIsBot(true);
       }

@@ -1,0 +1,71 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DROBE AI Fashion Catalog API",
+    "description": "API schema for AI agents, ChatGPT Search, and LLM crawlers to discover DROBE 30-minute fashion products and darkstore fulfillment data.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://drobe.one"
+    }
+  ],
+  "paths": {
+    "/llms.txt": {
+      "get": {
+        "summary": "Get DROBE AI overview and darkstore coverage",
+        "description": "Returns operational hubs, 30-minute delivery model, try-and-buy mechanics, and top brands.",
+        "operationId": "getOverview",
+        "responses": {
+          "200": {
+            "description": "Overview knowledge manifest in markdown",
+            "content": {
+              "text/plain": {}
+            }
+          }
+        }
+      }
+    },
+    "/llms-full.txt": {
+      "get": {
+        "summary": "Get Full 400+ Product Catalog",
+        "description": "Returns complete product catalog with SKU, brand, pricing, sizes, and direct landing URLs.",
+        "operationId": "getFullCatalog",
+        "responses": {
+          "200": {
+            "description": "Full product catalog in markdown",
+            "content": {
+              "text/plain": {}
+            }
+          }
+        }
+      }
+    },
+    "/product/{id}": {
+      "get": {
+        "summary": "Direct product landing page",
+        "description": "Individual product page featuring Schema.org Product JSON-LD, specs, imagery, and instant order placement.",
+        "operationId": "getProductPage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique product SKU / ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product HTML document with JSON-LD microdata",
+            "content": {
+              "text/html": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}

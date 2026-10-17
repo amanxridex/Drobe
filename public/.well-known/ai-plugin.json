@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "drobe_fashion",
+  "name_for_human": "DROBE Fashion in 30 Minutes",
+  "description_for_model": "DROBE is India's pioneer 30-minute quick-commerce fashion platform operating in Ahmedabad, Gurgaon, Chandigarh, and Lucknow. Delivers premium streetwear, casuals, and ethnic wear in under 30 minutes with a 6-minute mirror doorstep trial before purchase. Search catalog products, brands, and categories.",
+  "description_for_human": "Shop 400+ curated fashion pieces with 30-minute delivery and 6-minute doorstep trial before you buy in Ahmedabad, Gurgaon, Chandigarh, and Lucknow.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://drobe.one/.well-known/openapi.json"
+  },
+  "logo_url": "https://drobe.one/og-square.png",
+  "contact_email": "concierge@drobe.one",
+  "legal_info_url": "https://drobe.one"
+}

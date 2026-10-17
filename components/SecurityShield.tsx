@@ -159,6 +159,22 @@ export default function SecurityShield() {
       window.print = () => false as any;
     } catch {}
 
+    // 9. Framebusting: Prevent clickjacking / embedding inside malicious iframes
+    try {
+      if (window.top && window.top !== window.self) {
+        window.top.location.href = window.self.location.href;
+      }
+    } catch {}
+
+    // 10. Security Notice in Developer Console against automated scraping
+    try {
+      console.log(
+        '%c[DROBE SECURITY SHIELD]%c Automated catalog scraping, code extraction, and malicious attacks are actively monitored and blocked.',
+        'background: #E5002B; color: #ffffff; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 13px;',
+        'color: #ff3333; font-weight: 600; font-size: 12px; margin-left: 6px;'
+      );
+    } catch {}
+
     return () => {
       window.removeEventListener('contextmenu', handleContextMenu, true);
       document.removeEventListener('contextmenu', handleContextMenu, true);
