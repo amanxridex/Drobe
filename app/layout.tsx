@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from 'next';
 import { AppProvider } from '@/context/AppContext';
 import DesktopWrapper from '@/components/DesktopWrapper';
 import SecurityShield from '@/components/SecurityShield';
-import SplashScreen from '@/components/SplashScreen';
 
 import DevGatekeeper from '@/components/DevGatekeeper';
 
@@ -317,7 +316,6 @@ export default function RootLayout({
         <AppProvider>
           <DesktopWrapper>
             <DevGatekeeper>
-              <SplashScreen />
               {children}
             </DevGatekeeper>
           </DesktopWrapper>
