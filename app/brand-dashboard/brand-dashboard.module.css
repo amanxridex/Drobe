@@ -1299,11 +1299,20 @@
 
 .stepperWrapper {
   background: #ffffff;
-  padding: 12px 16px 8px 16px;
+  padding: 10px 14px 6px 14px;
   display: flex;
   flex-direction: column;
   position: relative;
   z-index: 10;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.stepperWrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .stepperPillTrack {
@@ -1312,14 +1321,18 @@
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;
   border-radius: 9999px;
-  padding: 4px;
-  gap: 4px;
+  padding: 3px 4px;
+  gap: 2px;
+  width: 100%;
+  min-width: max-content;
+  box-sizing: border-box;
 }
 
 .stepPillItem {
   position: relative;
-  flex: 1;
-  height: 38px;
+  flex: 1 1 0;
+  min-width: max-content;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1327,7 +1340,7 @@
   border: none;
   border-radius: 9999px;
   cursor: pointer;
-  padding: 0 4px;
+  padding: 0 8px;
   font-family: inherit;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -1338,6 +1351,7 @@
   background: #2563eb !important;
   color: #ffffff !important;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.28);
+  padding: 0 10px;
 }
 
 .stepPillItemDone {
@@ -1350,6 +1364,7 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
+  white-space: nowrap;
 }
 
 .stepPillDoneIcon {
@@ -1359,7 +1374,7 @@
 .stepPillNum {
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   opacity: 0.85;
 }
 
@@ -1368,13 +1383,34 @@
 }
 
 .stepPillLabel {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 
 .stepPillItemActive .stepPillLabel {
   color: #ffffff;
+}
+
+@media (max-width: 440px) {
+  .stepperWrapper {
+    padding: 8px 10px 4px 10px;
+  }
+  .stepperPillTrack {
+    padding: 3px;
+    gap: 2px;
+  }
+  .stepPillItem {
+    height: 32px;
+    padding: 0 6px;
+  }
+  .stepPillNum {
+    font-size: 9.5px;
+  }
+  .stepPillLabel {
+    font-size: 10px;
+  }
 }
 
 .onboardingScrollContent {

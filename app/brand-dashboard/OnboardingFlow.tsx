@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, 
@@ -62,6 +62,16 @@ export default function OnboardingFlow({
   const [showPassword, setShowPassword] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
   const [confirmAccountNumber, setConfirmAccountNumber] = useState(brand.bankAccount?.accountNumber || '');
+  const pillTrackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (pillTrackRef.current) {
+      const activeBtn = pillTrackRef.current.children[currentStep] as HTMLElement | undefined;
+      if (activeBtn) {
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  }, [currentStep]);
 
   const normalizedCategory: 'Male' | 'Both' | 'Female' = 
     brand.category === 'Male' ? 'Male' : 
@@ -228,7 +238,7 @@ export default function OnboardingFlow({
 
       {/* 2. CRISP STEPPER PILL TRACK */}
       <div className={styles.stepperWrapper}>
-        <div className={styles.stepperPillTrack}>
+        <div ref={pillTrackRef} className={styles.stepperPillTrack}>
           {STEPS.map((st, idx) => {
             const isActive = idx === currentStep;
             const isDone = idx < currentStep;
