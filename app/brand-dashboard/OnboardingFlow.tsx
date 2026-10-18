@@ -17,7 +17,8 @@ import {
   Building2,
   CreditCard,
   ShieldCheck,
-  Crop
+  Crop,
+  Camera
 } from 'lucide-react';
 import { BrandProfile, BrandBankAccount } from './types';
 import { supabaseUploadMedia } from '../lib/supabaseClient';
@@ -119,6 +120,8 @@ export default function OnboardingFlow({
     field: null
   });
   const pillTrackRef = useRef<HTMLDivElement>(null);
+  const logoFileInputRef = useRef<HTMLInputElement>(null);
+  const coverFileInputRef = useRef<HTMLInputElement>(null);
 
 
   useEffect(() => {
@@ -208,7 +211,7 @@ export default function OnboardingFlow({
             imageSrc: reader.result,
             targetAspect: field === 'profileImage' ? 1 : 16 / 9,
             title: field === 'profileImage' ? 'Crop & Frame Brand Emblem' : 'Crop & Frame Cover Panorama Banner',
-            aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Landscape',
+            aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Panorama Banner',
             shape: field === 'profileImage' ? 'round' : 'rect',
             field
           });
@@ -227,7 +230,7 @@ export default function OnboardingFlow({
       imageSrc: currentSrc,
       targetAspect: field === 'profileImage' ? 1 : 16 / 9,
       title: field === 'profileImage' ? 'Adjust Brand Emblem' : 'Adjust Cover Panorama Banner',
-      aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Landscape',
+      aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Panorama Banner',
       shape: field === 'profileImage' ? 'round' : 'rect',
       field
     });
@@ -854,28 +857,66 @@ export default function OnboardingFlow({
 
                 <div className={styles.ronasBannerPreviewBox}>
                   {brand.coverImage ? (
-                    <img
-                      src={brand.coverImage}
-                      alt="Cover banner"
-                      className={styles.ronasBannerImg}
-                    />
+                    <div
+                      style={{ position: 'relative', cursor: 'pointer', overflow: 'hidden', borderRadius: '12px' }}
+                      onClick={() => handleOpenExistingCrop('coverImage')}
+                      title="Click to adjust framing and crop (16:9)"
+                    >
+                      <img
+                        src={brand.coverImage}
+                        alt="Cover banner"
+                        className={styles.ronasBannerImg}
+                      />
+                      <div
+                        style={{
+                          position: 'absolute',
+                          bottom: '8px',
+                          right: '8px',
+                          backgroundColor: 'rgba(15, 23, 42, 0.78)',
+                          backdropFilter: 'blur(6px)',
+                          color: '#ffffff',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          padding: '4px 10px',
+                          borderRadius: '8px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px'
+                        }}
+                      >
+                        <Crop size={12} />
+                        <span>Adjust &amp; Crop (16:9)</span>
+                      </div>
+                    </div>
                   ) : (
-                    <div className={styles.ronasBannerEmpty}>
-                      No cover banner uploaded yet
+                    <div
+                      className={styles.ronasBannerEmpty}
+                      onClick={() => coverFileInputRef.current?.click()}
+                      style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '6px' }}
+                      title="Click to upload & crop cover banner"
+                    >
+                      <Camera size={24} color="#94a3b8" />
+                      <span>Click to upload &amp; crop panorama banner (16:9)</span>
                     </div>
                   )}
 
                   <div className={styles.ronasMediaControlsRow}>
-                    <label className={styles.ronasUploadBtn} style={{ cursor: 'pointer', flexShrink: 0 }}>
+                    <input
+                      ref={coverFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileSelectForCrop(e, 'coverImage')}
+                      style={{ display: 'none' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => coverFileInputRef.current?.click()}
+                      className={styles.ronasUploadBtn}
+                      style={{ cursor: 'pointer', flexShrink: 0 }}
+                    >
                       <Upload size={14} style={{ marginRight: '6px' }} />
                       {brand.coverImage ? 'Change & Crop' : 'Upload Banner'}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileSelectForCrop(e, 'coverImage')}
-                        style={{ display: 'none' }}
-                      />
-                    </label>
+                    </button>
 
                     {brand.coverImage && (
                       <button
@@ -897,6 +938,19 @@ export default function OnboardingFlow({
                       className={styles.ronasInputField}
                       style={{ flex: 1, fontSize: '12px' }}
                     />
+
+                    {brand.coverImage && !brand.coverImage.startsWith('data:') && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenExistingCrop('coverImage')}
+                        className={styles.cropActionBtn}
+                        style={{ flexShrink: 0 }}
+                        title="Crop loaded URL image"
+                      >
+                        <Crop size={13} />
+                        <span>Crop</span>
+                      </button>
+                    )}
                   </div>
                   {isUploadingMedia && (
                     <div style={{ fontSize: '11px', color: '#6366f1', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', fontWeight: 500 }}>

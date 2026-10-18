@@ -45,6 +45,7 @@ export default function ImageCropDrawer({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentAspect, setCurrentAspect] = useState(targetAspect);
+  const [imgNaturalSize, setImgNaturalSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const imageElementRef = useRef<HTMLImageElement | null>(null);
@@ -67,6 +68,7 @@ export default function ImageCropDrawer({
     img.src = imageSrc;
     img.onload = () => {
       imageElementRef.current = img;
+      setImgNaturalSize({ width: img.naturalWidth, height: img.naturalHeight });
     };
   }, [imageSrc]);
 
@@ -122,8 +124,8 @@ export default function ImageCropDrawer({
       const cropBox = containerRef.current.getBoundingClientRect();
 
       // Output canvas dimensions
-      let outWidth = 1000;
-      let outHeight = Math.round(1000 / currentAspect);
+      let outWidth = 1200;
+      let outHeight = Math.round(1200 / currentAspect);
       if (currentAspect === 1) {
         outWidth = 800;
         outHeight = 800;
@@ -146,28 +148,25 @@ export default function ImageCropDrawer({
       ctx.imageSmoothingQuality = 'high';
 
       // Fill background (white for transparency fallback)
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#0f172a';
       ctx.fillRect(0, 0, outWidth, outHeight);
 
       // Save context
       ctx.save();
 
-      // Move center of canvas
-      ctx.translate(outWidth / 2, outHeight / 2);
+      // Ratio between export canvas and onscreen preview box
+      const boxWidth = cropBox.width;
+      const boxHeight = cropBox.height;
+      const ratio = outWidth / boxWidth;
+
+      // Center + offset in canvas export
+      ctx.translate(outWidth / 2 + offset.x * ratio, outHeight / 2 + offset.y * ratio);
 
       // Rotate
       ctx.rotate((rotation * Math.PI) / 180);
 
-      // Calculate source aspect ratio & layout
-      const boxWidth = cropBox.width;
-      const boxHeight = cropBox.height;
-
-      // Ratio between export canvas and onscreen preview box
-      const ratio = outWidth / boxWidth;
-
-      // Apply offset scaled to export size
-      const drawOffsetX = offset.x * ratio;
-      const drawOffsetY = offset.y * ratio;
+      // Scale
+      ctx.scale(scale, scale);
 
       // Base fitted image size inside the preview box
       const isRotated90or270 = rotation === 90 || rotation === 270;
@@ -176,19 +175,11 @@ export default function ImageCropDrawer({
 
       // Scale to fill box
       const fillScale = Math.max(boxWidth / effectiveImgW, boxHeight / effectiveImgH);
-      const drawW = img.naturalWidth * fillScale * scale * ratio;
-      const drawH = img.naturalHeight * fillScale * scale * ratio;
+      const drawBaseW = img.naturalWidth * fillScale * ratio;
+      const drawBaseH = img.naturalHeight * fillScale * ratio;
 
-      // Account for rotation coordinates
-      if (rotation === 90) {
-        ctx.drawImage(img, -drawH / 2 + drawOffsetY, -drawW / 2 - drawOffsetX, drawH, drawW);
-      } else if (rotation === 180) {
-        ctx.drawImage(img, -drawW / 2 - drawOffsetX, -drawH / 2 - drawOffsetY, drawW, drawH);
-      } else if (rotation === 270) {
-        ctx.drawImage(img, -drawH / 2 - drawOffsetY, -drawW / 2 + drawOffsetX, drawH, drawW);
-      } else {
-        ctx.drawImage(img, -drawW / 2 + drawOffsetX, -drawH / 2 + drawOffsetY, drawW, drawH);
-      }
+      // Draw centered
+      ctx.drawImage(img, -drawBaseW / 2, -drawBaseH / 2, drawBaseW, drawBaseH);
 
       ctx.restore();
 
@@ -213,8 +204,18 @@ export default function ImageCropDrawer({
 
   // Determine viewport dimensions
   const isLandscape = currentAspect > 1.2;
-  const viewportWidth = 320;
+  const viewportWidth = isLandscape ? 450 : 280;
   const viewportHeight = Math.round(viewportWidth / currentAspect);
+
+  const isRotated90or270 = rotation === 90 || rotation === 270;
+  const naturalW = imgNaturalSize.width || 800;
+  const naturalH = imgNaturalSize.height || 600;
+  const effectiveW = isRotated90or270 ? naturalH : naturalW;
+  const effectiveH = isRotated90or270 ? naturalW : naturalH;
+
+  const baseFillScale = Math.max(viewportWidth / effectiveW, viewportHeight / effectiveH);
+  const renderW = naturalW * baseFillScale;
+  const renderH = naturalH * baseFillScale;
 
   return (
     <AnimatePresence>
@@ -242,7 +243,7 @@ export default function ImageCropDrawer({
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
           style={{
             width: '100%',
-            maxWidth: '520px',
+            maxWidth: isLandscape ? '560px' : '520px',
             backgroundColor: '#ffffff',
             borderRadius: '28px 28px 0 0',
             boxShadow: '0 -20px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(226, 232, 240, 0.8)',
@@ -283,7 +284,7 @@ export default function ImageCropDrawer({
                 </span>
               </div>
               <p style={{ fontSize: '12px', color: '#64748b', margin: '2px 0 0 0' }}>
-                Drag to frame or adjust zoom &amp; rotation
+                Drag image to frame · Scroll or use slider to zoom
               </p>
             </div>
 
@@ -328,7 +329,8 @@ export default function ImageCropDrawer({
               onPointerCancel={handlePointerUp}
               onWheel={handleWheel}
               style={{
-                width: `${viewportWidth}px`,
+                width: '100%',
+                maxWidth: `${viewportWidth}px`,
                 height: `${viewportHeight}px`,
                 position: 'relative',
                 overflow: 'hidden',
@@ -342,14 +344,20 @@ export default function ImageCropDrawer({
               {/* Image Transform Layer */}
               <div
                 style={{
-                  width: '100%',
-                  height: '100%',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  width: `${renderW}px`,
+                  height: `${renderH}px`,
+                  marginLeft: `-${renderW / 2}px`,
+                  marginTop: `-${renderH / 2}px`,
+                  transform: `translate(${offset.x}px, ${offset.y}px) rotate(${rotation}deg) scale(${scale})`,
+                  transformOrigin: 'center center',
+                  transition: isDragging ? 'none' : 'transform 0.1s ease-out',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale}) rotate(${rotation}deg)`,
-                  transformOrigin: 'center center',
-                  transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+                  pointerEvents: 'none'
                 }}
               >
                 <img
@@ -357,11 +365,10 @@ export default function ImageCropDrawer({
                   alt="Crop preview"
                   draggable={false}
                   style={{
-                    maxWidth: 'none',
-                    maxHeight: 'none',
-                    width: currentAspect >= 1 ? '100%' : 'auto',
-                    height: currentAspect < 1 ? '100%' : 'auto',
-                    objectFit: 'contain',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
                     pointerEvents: 'none'
                   }}
                 />

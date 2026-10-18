@@ -105,8 +105,8 @@ export default function EditBrandProfileSheet({
             isOpen: true,
             imageSrc: reader.result,
             targetAspect: field === 'profileImage' ? 1 : 16 / 9,
-            title: field === 'profileImage' ? 'Crop & Frame Brand Emblem' : 'Crop & Frame Cover Banner',
-            aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Landscape',
+            title: field === 'profileImage' ? 'Crop & Frame Brand Emblem' : 'Crop & Frame Cover Panorama Banner',
+            aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Panorama Banner',
             shape: field === 'profileImage' ? 'round' : 'rect',
             field
           });
@@ -124,8 +124,8 @@ export default function EditBrandProfileSheet({
       isOpen: true,
       imageSrc: currentSrc,
       targetAspect: field === 'profileImage' ? 1 : 16 / 9,
-      title: field === 'profileImage' ? 'Adjust Brand Emblem' : 'Adjust Cover Banner',
-      aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Landscape',
+      title: field === 'profileImage' ? 'Adjust Brand Emblem' : 'Adjust Cover Panorama Banner',
+      aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Panorama Banner',
       shape: field === 'profileImage' ? 'round' : 'rect',
       field
     });
@@ -364,9 +364,14 @@ export default function EditBrandProfileSheet({
                   {formData.coverImage ? (
                     <img src={formData.coverImage} alt="Cover Banner" className={styles.editBannerImg} />
                   ) : (
-                    <div className={styles.editBannerEmpty}>
+                    <div
+                      className={styles.editBannerEmpty}
+                      onClick={() => coverInputRef.current?.click()}
+                      style={{ cursor: 'pointer' }}
+                      title="Click to upload & crop cover banner"
+                    >
                       <Camera size={22} color="#94a3b8" />
-                      <span>No cover banner set</span>
+                      <span>Click to upload &amp; crop panorama banner (16:9)</span>
                     </div>
                   )}
 
