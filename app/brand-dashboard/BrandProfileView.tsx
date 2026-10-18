@@ -77,145 +77,81 @@ const InstagramIcon = ({ size = 14, color = "#ffffff" }: { size?: number; color?
   </svg>
 );
 
+const ZERO_ANALYTICS_DATA = {
+  gmv: '₹0',
+  gmvTrend: '0%',
+  ordersCount: '0 doorstep orders',
+  doorstepTrials: '0 Trials',
+  convRate: '0%',
+  tryOnTime: '0 min avg fitting',
+  hubStock: '0 Units',
+  hubShelves: '0 / 96 Shelves Occupied',
+  payout: '₹0',
+  payoutSubtitle: 'No pending settlements',
+  peakBadge: 'Awaiting first order',
+  funnel: [
+    { stage: 'Doorstep Express Dispatched', count: '0 trials', pct: '0%', fill: '0%', color: '#38bdf8' },
+    { stage: '10-Min Delivery ETA Achieved', count: '0 (0%)', pct: '0%', fill: '0%', color: '#0284c7' },
+    { stage: 'In-Home Customer Try-on', count: '0 tried', pct: '0%', fill: '0%', color: '#818cf8' },
+    { stage: 'Kept & Instant UPI Paid', count: '0 kept', pct: '0%', fill: '0%', color: '#16a34a' },
+    { stage: 'Instant Return to Hub (Zero RTO)', count: '0 returned', pct: '0%', fill: '0%', color: '#94a3b8' },
+  ],
+  hotspots: [
+    { name: 'Prahlad Nagar', share: '0%', eta: '10 min', gmv: '₹0', fill: '0%' },
+    { name: 'Bodakdev / Sindhu Bhavan', share: '0%', eta: '10 min', gmv: '₹0', fill: '0%' },
+    { name: 'Satellite / Vastrapur', share: '0%', eta: '10 min', gmv: '₹0', fill: '0%' },
+    { name: 'Ambawadi / CG Road', share: '0%', eta: '10 min', gmv: '₹0', fill: '0%' },
+  ]
+};
+
 const ANALYTICS_DATA_MAP = {
   today: {
+    ...ZERO_ANALYTICS_DATA,
     label: 'Today (Live)',
-    gmv: '₹48,920',
-    gmvTrend: '+18.4%',
-    ordersCount: '14 orders',
-    doorstepTrials: '18 Trials',
-    convRate: '77.8%',
-    tryOnTime: '7.8 mins avg fitting',
-    hubStock: '480 Units',
-    hubShelves: '34 / 96 Shelves Occupied',
-    payout: '₹48,920',
-    payoutSubtitle: 'Settling Tonight 11:59 PM',
     chartTitle: "Today's Hourly Fitting Velocity",
-    peakBadge: 'Peak Rush: 7 PM–10 PM',
     bars: [
-      { day: '11 AM', val: '₹4.2k', height: '35%' },
-      { day: '1 PM', val: '₹7.8k', height: '52%' },
-      { day: '3 PM', val: '₹9.4k', height: '64%' },
-      { day: '5 PM', val: '₹12.1k', height: '78%' },
-      { day: '7 PM', val: '₹15.4k', height: '96%', active: true },
-      { day: '9 PM', val: '₹11.8k', height: '80%' },
-    ],
-    funnel: [
-      { stage: 'Doorstep Express Dispatched', count: '18 trials', pct: '100%', fill: '100%', color: '#38bdf8' },
-      { stage: '10-Min Delivery ETA Achieved', count: '18 (avg 7.8m)', pct: '100%', fill: '100%', color: '#0284c7' },
-      { stage: 'In-Home Customer Try-on', count: '18 tried', pct: '100%', fill: '100%', color: '#818cf8' },
-      { stage: 'Kept & Instant UPI Paid', count: '14 kept', pct: '77.8%', fill: '78%', color: '#16a34a' },
-      { stage: 'Instant Return to Hub (Zero RTO)', count: '4 returned', pct: '22.2%', fill: '22%', color: '#94a3b8' },
-    ],
-    hotspots: [
-      { name: 'Prahlad Nagar', share: '42%', eta: '7.2 min', gmv: '₹20,550', fill: '84%' },
-      { name: 'Bodakdev / Sindhu Bhavan', share: '36%', eta: '8.0 min', gmv: '₹17,610', fill: '72%' },
-      { name: 'Satellite / Vastrapur', share: '22%', eta: '8.8 min', gmv: '₹10,760', fill: '44%' },
+      { day: '11 AM', val: '₹0', height: '4%' },
+      { day: '1 PM', val: '₹0', height: '4%' },
+      { day: '3 PM', val: '₹0', height: '4%' },
+      { day: '5 PM', val: '₹0', height: '4%' },
+      { day: '7 PM', val: '₹0', height: '4%', active: true },
+      { day: '9 PM', val: '₹0', height: '4%' },
     ]
   },
   '7d': {
+    ...ZERO_ANALYTICS_DATA,
     label: 'Past 7 Days',
-    gmv: '₹3,18,400',
-    gmvTrend: '+24.6%',
-    ordersCount: '89 doorstep orders',
-    doorstepTrials: '114 Trials',
-    convRate: '78.4%',
-    tryOnTime: '8.5 mins avg fitting',
-    hubStock: '480 Units',
-    hubShelves: '34 / 96 Shelves Occupied',
-    payout: '₹1,84,200',
-    payoutSubtitle: 'Settling 11:59 PM to HDFC Bank',
     chartTitle: '7-Day Order & Fitting Velocity',
-    peakBadge: 'Peak Rush: 7 PM–10 PM',
     bars: [
-      { day: 'Mon', val: '₹28k', height: '48%' },
-      { day: 'Tue', val: '₹36k', height: '58%' },
-      { day: 'Wed', val: '₹42k', height: '65%' },
-      { day: 'Thu', val: '₹49k', height: '74%' },
-      { day: 'Fri', val: '₹64k', height: '88%' },
-      { day: 'Sat', val: '₹73k', height: '96%' },
-      { day: 'Sun', val: '₹59k', height: '82%', active: true }
-    ],
-    funnel: [
-      { stage: 'Doorstep Express Dispatched', count: '114 trials', pct: '100%', fill: '100%', color: '#38bdf8' },
-      { stage: '10-Min Delivery ETA Achieved', count: '112 (98.2%)', pct: '98.2%', fill: '98%', color: '#0284c7' },
-      { stage: 'In-Home Customer Try-on', count: '114 tried', pct: '100%', fill: '100%', color: '#818cf8' },
-      { stage: 'Kept & Instant UPI Paid', count: '89 kept', pct: '78.4%', fill: '78%', color: '#16a34a' },
-      { stage: 'Instant Return to Hub (Zero RTO)', count: '25 returned', pct: '21.6%', fill: '22%', color: '#94a3b8' },
-    ],
-    hotspots: [
-      { name: 'Prahlad Nagar', share: '38%', eta: '7.4 min', gmv: '₹1,21,000', fill: '76%' },
-      { name: 'Bodakdev / Sindhu Bhavan', share: '31%', eta: '8.1 min', gmv: '₹98,700', fill: '62%' },
-      { name: 'Satellite / Vastrapur', share: '19%', eta: '8.9 min', gmv: '₹60,500', fill: '38%' },
-      { name: 'Ambawadi / CG Road', share: '12%', eta: '9.9 min', gmv: '₹38,200', fill: '24%' },
+      { day: 'Mon', val: '₹0', height: '4%' },
+      { day: 'Tue', val: '₹0', height: '4%' },
+      { day: 'Wed', val: '₹0', height: '4%' },
+      { day: 'Thu', val: '₹0', height: '4%' },
+      { day: 'Fri', val: '₹0', height: '4%' },
+      { day: 'Sat', val: '₹0', height: '4%' },
+      { day: 'Sun', val: '₹0', height: '4%', active: true }
     ]
   },
   '30d': {
+    ...ZERO_ANALYTICS_DATA,
     label: 'Past 30 Days',
-    gmv: '₹12,48,900',
-    gmvTrend: '+32.8%',
-    ordersCount: '356 doorstep orders',
-    doorstepTrials: '448 Trials',
-    convRate: '79.5%',
-    tryOnTime: '8.2 mins avg fitting',
-    hubStock: '480 Units',
-    hubShelves: '34 / 96 Shelves Occupied',
-    payout: '₹12,48,900',
-    payoutSubtitle: 'Fully Settled across 30 cycles',
     chartTitle: '4-Week Monthly Sales Trajectory',
-    peakBadge: 'Peak Weekend Fittings: Sat-Sun',
     bars: [
-      { day: 'W1', val: '₹2.4L', height: '62%' },
-      { day: 'W2', val: '₹2.9L', height: '74%' },
-      { day: 'W3', val: '₹3.4L', height: '86%' },
-      { day: 'W4', val: '₹3.8L', height: '98%', active: true },
-    ],
-    funnel: [
-      { stage: 'Doorstep Express Dispatched', count: '448 trials', pct: '100%', fill: '100%', color: '#38bdf8' },
-      { stage: '10-Min Delivery ETA Achieved', count: '441 (98.4%)', pct: '98.4%', fill: '98%', color: '#0284c7' },
-      { stage: 'In-Home Customer Try-on', count: '448 tried', pct: '100%', fill: '100%', color: '#818cf8' },
-      { stage: 'Kept & Instant UPI Paid', count: '356 kept', pct: '79.5%', fill: '80%', color: '#16a34a' },
-      { stage: 'Instant Return to Hub (Zero RTO)', count: '92 returned', pct: '20.5%', fill: '21%', color: '#94a3b8' },
-    ],
-    hotspots: [
-      { name: 'Prahlad Nagar', share: '38%', eta: '7.3 min', gmv: '₹4,74,500', fill: '76%' },
-      { name: 'Bodakdev / Sindhu Bhavan', share: '31%', eta: '8.0 min', gmv: '₹3,87,150', fill: '62%' },
-      { name: 'Satellite / Vastrapur', share: '19%', eta: '8.8 min', gmv: '₹2,37,290', fill: '38%' },
-      { name: 'Ambawadi / CG Road', share: '12%', eta: '9.9 min', gmv: '₹1,49,960', fill: '24%' },
+      { day: 'W1', val: '₹0', height: '4%' },
+      { day: 'W2', val: '₹0', height: '4%' },
+      { day: 'W3', val: '₹0', height: '4%' },
+      { day: 'W4', val: '₹0', height: '4%', active: true },
     ]
   },
   all: {
+    ...ZERO_ANALYTICS_DATA,
     label: 'All Time',
-    gmv: '₹48,20,000',
-    gmvTrend: '+41.2%',
-    ordersCount: '1,380 doorstep orders',
-    doorstepTrials: '1,760 Trials',
-    convRate: '78.4%',
-    tryOnTime: '8.3 mins avg fitting',
-    hubStock: '480 Units',
-    hubShelves: '34 / 96 Shelves Occupied',
-    payout: '₹48,20,000',
-    payoutSubtitle: '100% On-Time T+0 Daily Payouts',
     chartTitle: 'Quarterly Lifetime Trajectory',
-    peakBadge: 'Avg 8.3 min Doorstep Delivery',
     bars: [
-      { day: 'Q1', val: '₹8.6L', height: '52%' },
-      { day: 'Q2', val: '₹11.4L', height: '68%' },
-      { day: 'Q3', val: '₹13.8L', height: '82%' },
-      { day: 'Q4', val: '₹14.4L', height: '95%', active: true },
-    ],
-    funnel: [
-      { stage: 'Doorstep Express Dispatched', count: '1,760 trials', pct: '100%', fill: '100%', color: '#38bdf8' },
-      { stage: '10-Min Delivery ETA Achieved', count: '1,732 (98.4%)', pct: '98.4%', fill: '98%', color: '#0284c7' },
-      { stage: 'In-Home Customer Try-on', count: '1,760 tried', pct: '100%', fill: '100%', color: '#818cf8' },
-      { stage: 'Kept & Instant UPI Paid', count: '1,380 kept', pct: '78.4%', fill: '78%', color: '#16a34a' },
-      { stage: 'Instant Return to Hub (Zero RTO)', count: '380 returned', pct: '21.6%', fill: '22%', color: '#94a3b8' },
-    ],
-    hotspots: [
-      { name: 'Prahlad Nagar', share: '38%', eta: '7.4 min', gmv: '₹18,31,600', fill: '76%' },
-      { name: 'Bodakdev / Sindhu Bhavan', share: '31%', eta: '8.1 min', gmv: '₹14,94,200', fill: '62%' },
-      { name: 'Satellite / Vastrapur', share: '19%', eta: '8.9 min', gmv: '₹9,15,800', fill: '38%' },
-      { name: 'Ambawadi / CG Road', share: '12%', eta: '9.9 min', gmv: '₹5,78,400', fill: '24%' },
+      { day: 'Q1', val: '₹0', height: '4%' },
+      { day: 'Q2', val: '₹0', height: '4%' },
+      { day: 'Q3', val: '₹0', height: '4%' },
+      { day: 'Q4', val: '₹0', height: '4%', active: true },
     ]
   }
 };
@@ -389,6 +325,16 @@ export default function BrandProfileView({
   });
 
   const activeProducts = brand.products.filter(p => p.name?.trim().length > 0);
+  const brandTrialOrders = trialOrders.filter(
+    (o) =>
+      (o.brandName && brand.name && o.brandName.trim().toLowerCase() === brand.name.trim().toLowerCase()) ||
+      (o.brandId && brand.id && o.brandId === brand.id)
+  );
+  const brandInboundShipments = inboundShipments.filter(
+    (s) =>
+      (s.brandName && brand.name && s.brandName.trim().toLowerCase() === brand.name.trim().toLowerCase()) ||
+      (s.brandId && brand.id && s.brandId === brand.id)
+  );
   const isBrandApproved = brand.status === 'Approved' || brand.status === 'Published';
 
   const handleOpenAddModal = () => {
@@ -894,40 +840,50 @@ export default function BrandProfileView({
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {topPieces.map((p, idx) => (
-                    <div key={idx} className={styles.skuLeaderboardItem}>
-                      <div className={`${styles.skuRankBadge} ${idx === 0 ? styles.skuRankGold : idx === 1 ? styles.skuRankSilver : styles.skuRankBronze}`}>
-                        #{idx + 1}
-                      </div>
-                      {p.image ? (
-                        <img src={p.image} alt={p.name} className={styles.skuThumb} />
-                      ) : (
-                        <div className={styles.skuThumb} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Package size={16} color="#94a3b8" />
-                        </div>
-                      )}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {p.name}
-                        </div>
-                        <div style={{ fontSize: '10px', color: '#64748b', display: 'flex', gap: '8px', marginTop: '2px' }}>
-                          <span>{p.price || '₹2,499'}</span>
-                          <span>·</span>
-                          <span style={{ color: '#16a34a', fontWeight: 700 }}>
-                            {idx === 0 ? '84.0% keep rate' : idx === 1 ? '77.8% keep rate' : '73.1% keep rate'}
-                          </span>
-                        </div>
-                      </div>
-                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a' }}>
-                          {idx === 0 ? '₹1,04,958' : idx === 1 ? '₹89,572' : '₹74,081'}
-                        </div>
-                        <div style={{ fontSize: '9.5px', color: '#64748b' }}>
-                          {idx === 0 ? '42 sold' : idx === 1 ? '28 sold' : '19 sold'}
-                        </div>
+                  {topPieces.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '18px 12px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                      <Package size={20} color="#94a3b8" style={{ margin: '0 auto 6px auto', display: 'block' }} />
+                      <div style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a' }}>No sales recorded yet</div>
+                      <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px' }}>
+                        Once doorstep orders start, top-performing pieces will rank here.
                       </div>
                     </div>
-                  ))}
+                  ) : (
+                    topPieces.map((p, idx) => (
+                      <div key={idx} className={styles.skuLeaderboardItem}>
+                        <div className={`${styles.skuRankBadge} ${idx === 0 ? styles.skuRankGold : idx === 1 ? styles.skuRankSilver : styles.skuRankBronze}`}>
+                          #{idx + 1}
+                        </div>
+                        {p.image ? (
+                          <img src={p.image} alt={p.name} className={styles.skuThumb} />
+                        ) : (
+                          <div className={styles.skuThumb} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Package size={16} color="#94a3b8" />
+                          </div>
+                        )}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {p.name}
+                          </div>
+                          <div style={{ fontSize: '10px', color: '#64748b', display: 'flex', gap: '8px', marginTop: '2px' }}>
+                            <span>{p.price || '₹0'}</span>
+                            <span>·</span>
+                            <span style={{ color: '#64748b', fontWeight: 600 }}>
+                              0% keep rate
+                            </span>
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                          <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a' }}>
+                            ₹0
+                          </div>
+                          <div style={{ fontSize: '9.5px', color: '#64748b' }}>
+                            0 sold
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -978,56 +934,40 @@ export default function BrandProfileView({
                     onClick={() => setActiveTab('trials')}
                     style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: '11px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
                   >
-                    View All ({trialOrders.length}) <ArrowUpRight size={12} />
+                    View All ({brandTrialOrders.length}) <ArrowUpRight size={12} />
                   </button>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '10px 12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <span style={{ fontSize: '10px', fontWeight: 800, color: '#16a34a', backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        <Clock size={10} /> Doorstep Fitting (6 mins left)
-                      </span>
-                      <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#0f172a' }}>₹2,499</span>
+                {brandTrialOrders.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '24px 16px', backgroundColor: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '14px' }}>
+                    <Truck size={22} color="#94a3b8" style={{ margin: '0 auto 8px auto', display: 'block' }} />
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>
+                      No Doorstep Trials in Progress
                     </div>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
-                      Japanese Heavyweight Oversized Tee · L
-                    </div>
-                    <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <MapPin size={10} /> Prahlad Nagar, Ahmedabad · Rider: Ramesh S.
-                    </div>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#64748b', lineHeight: 1.45 }}>
+                      When customers order your creations to try at home in Ahmedabad, real-time 10-minute delivery and fitting timers will appear here.
+                    </p>
                   </div>
-
-                  <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '10px 12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <span style={{ fontSize: '10px', fontWeight: 800, color: '#7c3aed', backgroundColor: '#f5f3ff', padding: '2px 8px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        <CheckCircle2 size={10} /> Kept on Spot (Purchased)
-                      </span>
-                      <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#0f172a' }}>₹3,199</span>
-                    </div>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
-                      Resort Cuban Collar Linen Shirt · M
-                    </div>
-                    <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <MapPin size={10} /> Bodakdev, Ahmedabad · Instant UPI Settlement
-                    </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {brandTrialOrders.slice(0, 3).map((ord) => (
+                      <div key={ord.id} style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '10px 12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                          <span style={{ fontSize: '10px', fontWeight: 800, color: '#16a34a', backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <Clock size={10} /> {ord.status || 'Active Fitting'}
+                          </span>
+                          <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#0f172a' }}>{ord.price}</span>
+                        </div>
+                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
+                          {ord.productName} · {ord.size}
+                        </div>
+                        <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <MapPin size={10} /> {ord.customerName} · Partner: {ord.riderName}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-
-                  <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '10px 12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <span style={{ fontSize: '10px', fontWeight: 800, color: '#0284c7', backgroundColor: '#e0f2fe', padding: '2px 8px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        <Truck size={10} /> Out for 10-Min Delivery
-                      </span>
-                      <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#0f172a' }}>₹3,899</span>
-                    </div>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
-                      Raw Indigo Relaxed Denim · 32
-                    </div>
-                    <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <MapPin size={10} /> Satellite, Ahmedabad · Rider ETA 4 mins
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* 8. Quick Operations Launchpad */}
@@ -1402,26 +1342,26 @@ export default function BrandProfileView({
             <div className={styles.analyticsGrid}>
               <div className={styles.statCard}>
                 <span className={styles.statCardLabel}>Brand Page Views</span>
-                <span className={styles.statCardValue}>2,840</span>
-                <span className={styles.statCardTrend}><TrendingUp size={11} /> +18.4%</span>
+                <span className={styles.statCardValue}>0</span>
+                <span className={styles.statCardTrend}><TrendingUp size={11} /> 0%</span>
               </div>
 
               <div className={styles.statCard}>
                 <span className={styles.statCardLabel}>Overall Product Views</span>
-                <span className={styles.statCardValue}>9,850</span>
-                <span className={styles.statCardTrend}><TrendingUp size={11} /> +24.6%</span>
+                <span className={styles.statCardValue}>0</span>
+                <span className={styles.statCardTrend}><TrendingUp size={11} /> 0%</span>
               </div>
 
               <div className={styles.statCard}>
                 <span className={styles.statCardLabel}>Products Sold</span>
-                <span className={styles.statCardValue}>142</span>
-                <span className={styles.statCardTrend}><TrendingUp size={11} /> +15.2%</span>
+                <span className={styles.statCardValue}>0</span>
+                <span className={styles.statCardTrend}><TrendingUp size={11} /> 0%</span>
               </div>
 
               <div className={styles.statCard}>
                 <span className={styles.statCardLabel}>Total Value</span>
-                <span className={styles.statCardValue}>₹2,48,900</span>
-                <span className={styles.statCardTrend}><TrendingUp size={11} /> +21.8%</span>
+                <span className={styles.statCardValue}>₹0</span>
+                <span className={styles.statCardTrend}><TrendingUp size={11} /> 0%</span>
               </div>
             </div>
           </div>
@@ -1482,47 +1422,57 @@ export default function BrandProfileView({
                   Inward Shipments to Ahmedabad
                 </h4>
                 <span style={{ fontSize: '11px', color: '#64748b' }}>
-                  {inboundShipments.length} consignments
+                  {brandInboundShipments.length} consignments
                 </span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {inboundShipments.map((ship) => {
-                  const isVerified = ship.status === 'Verified & Shelved';
-                  return (
-                    <div key={ship.id} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                        <div>
-                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
-                            {ship.productName}
+              {brandInboundShipments.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '24px 16px', background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '12px' }}>
+                  <Truck size={20} color="#94a3b8" style={{ margin: '0 auto 6px auto', display: 'block' }} />
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>0 Inward Shipments</div>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#64748b' }}>
+                    Dispatch stock to Ahmedabad Darkstore Hub to enable 10-minute doorstep fittings for your pieces.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {brandInboundShipments.map((ship) => {
+                    const isVerified = ship.status === 'Verified & Shelved';
+                    return (
+                      <div key={ship.id} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                          <div>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                              {ship.productName}
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#64748b' }}>
+                              {ship.id} · {ship.units} units via {ship.courierPartner}
+                            </div>
                           </div>
-                          <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            {ship.id} · {ship.units} units via {ship.courierPartner}
-                          </div>
+                          {isVerified ? (
+                            <span style={{ fontSize: '10px', fontWeight: 700, color: '#16a34a', backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '8px' }}>
+                              ✓ Inwarded ({ship.assignedSku})
+                            </span>
+                          ) : (
+                            <span style={{ fontSize: '10px', fontWeight: 700, color: '#b45309', backgroundColor: '#fef3c7', padding: '2px 8px', borderRadius: '8px' }}>
+                              🚚 {ship.status}
+                            </span>
+                          )}
                         </div>
-                        {isVerified ? (
-                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#16a34a', backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '8px' }}>
-                            ✓ Inwarded ({ship.assignedSku})
-                          </span>
-                        ) : (
-                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#b45309', backgroundColor: '#fef3c7', padding: '2px 8px', borderRadius: '8px' }}>
-                            🚚 {ship.status}
-                          </span>
-                        )}
-                      </div>
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '10.5px', color: '#94a3b8', paddingTop: '6px', borderTop: '1px solid #e2e8f0' }}>
-                        <span>Dispatched: {ship.dispatchDate}</span>
-                        {isVerified ? (
-                          <span style={{ color: '#0284c7', fontWeight: 700 }}>Stored at {ship.assignedShelf}</span>
-                        ) : (
-                          <span>Tracking: {ship.trackingNumber}</span>
-                        )}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '10.5px', color: '#94a3b8', paddingTop: '6px', borderTop: '1px solid #e2e8f0' }}>
+                          <span>Dispatched: {ship.dispatchDate}</span>
+                          {isVerified ? (
+                            <span style={{ color: '#0284c7', fontWeight: 700 }}>Stored at {ship.assignedShelf}</span>
+                          ) : (
+                            <span>Tracking: {ship.trackingNumber}</span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Warehouse Shelf & SKU Matrix */}
@@ -1536,42 +1486,52 @@ export default function BrandProfileView({
                 </span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {activeProducts.map((prod, idx) => {
-                  const darkstoreProds = darkstoreProducts;
-                  const matchingDarkstore = darkstoreProds.find(dp => dp.name?.toLowerCase().trim() === prod.name?.toLowerCase().trim() || dp.id === prod.id);
-                  const assignedSku = prod.sku || matchingDarkstore?.sku || (idx === 0 ? 'DR1' : undefined);
-                  const warehouseLocation = prod.warehouseLocation || matchingDarkstore?.warehouseLocation || (idx === 0 ? { code: 'AMD-RA02-S3-B04', rack: 'Rack A-02', shelf: 'Shelf 3', bin: 'Bin 04', hubName: 'Ahmedabad Darkstore Hub #01' } : undefined);
-                  const isLive = Boolean(assignedSku);
+              {activeProducts.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '24px 16px', background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '12px' }}>
+                  <Package size={20} color="#94a3b8" style={{ margin: '0 auto 6px auto', display: 'block' }} />
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>No Products in Catalog</div>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#64748b' }}>
+                    Add pieces to your catalog to assign warehouse shelves and SKU tags.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {activeProducts.map((prod, idx) => {
+                    const darkstoreProds = darkstoreProducts;
+                    const matchingDarkstore = darkstoreProds.find(dp => dp.name?.toLowerCase().trim() === prod.name?.toLowerCase().trim() || dp.id === prod.id);
+                    const assignedSku = prod.sku || matchingDarkstore?.sku;
+                    const warehouseLocation = prod.warehouseLocation || matchingDarkstore?.warehouseLocation;
+                    const isLive = Boolean(assignedSku);
 
-                  return (
-                    <div key={idx} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ fontSize: '11px', fontWeight: 800, color: isLive ? '#16a34a' : '#94a3b8', background: isLive ? '#dcfce7' : '#f1f5f9', padding: '1px 6px', borderRadius: '4px' }}>
-                            {assignedSku || 'NO SKU'}
-                          </span>
-                          <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#0f172a' }}>
-                            {prod.name}
-                          </span>
+                    return (
+                      <div key={idx} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 800, color: isLive ? '#16a34a' : '#94a3b8', background: isLive ? '#dcfce7' : '#f1f5f9', padding: '1px 6px', borderRadius: '4px' }}>
+                              {assignedSku || 'NO SKU'}
+                            </span>
+                            <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#0f172a' }}>
+                              {prod.name}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px' }}>
+                            {warehouseLocation ? `📍 Stored at ${warehouseLocation.code}` : '📦 Awaiting darkstore placement'}
+                          </div>
                         </div>
-                        <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px' }}>
-                          {warehouseLocation ? `📍 Stored at ${warehouseLocation.code}` : '📦 Awaiting darkstore placement'}
+
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: '11px', fontWeight: 700, color: isLive ? '#0284c7' : '#64748b' }}>
+                            {isLive ? 'Live (10-Min)' : 'Pending'}
+                          </span>
+                          <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+                            {prod.inventory ?? 0} units
+                          </div>
                         </div>
                       </div>
-
-                      <div style={{ textAlign: 'right' }}>
-                        <span style={{ fontSize: '11px', fontWeight: 700, color: isLive ? '#0284c7' : '#64748b' }}>
-                          {isLive ? 'Live (30-Min)' : 'Pending'}
-                        </span>
-                        <div style={{ fontSize: '10px', color: '#94a3b8' }}>
-                          {prod.inventory || 20} units
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1597,69 +1557,81 @@ export default function BrandProfileView({
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {trialOrders.map((ord) => {
-                const isDoorstepFitting = (ord.status || '').includes('Doorstep Fitting');
-                const isOut = ord.status === 'Out for 30-Min Delivery';
-                const isKept = ord.status === 'Kept on Spot (Purchased)';
-                const isRunnerReturning = (ord.status || '').includes('Returned on Spot');
-                const isRestocked = ord.status === 'Restocked to Warehouse Shelf';
-
-                return (
-                  <div key={ord.id} className={styles.darkCardBox} style={{ padding: '14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 800, color: '#0284c7' }}>
-                        {ord.orderNumber}
-                      </span>
-                      {isDoorstepFitting ? (
-                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#7e22ce', backgroundColor: '#f3e8ff', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          <Clock size={10} /> Delivery Partner Waiting Outside ({ord.doorstepTimerMinutesLeft || 6}m fitting window)
-                        </span>
-                      ) : isOut ? (
-                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#b45309', backgroundColor: '#fef3c7', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          <Truck size={10} /> Out for 30-Min Delivery
-                        </span>
-                      ) : isKept ? (
-                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#16a34a', backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          <CheckCircle2 size={10} /> Kept on Spot · Purchased
-                        </span>
-                      ) : isRunnerReturning ? (
-                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#b45309', backgroundColor: '#fef3c7', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          <RotateCcw size={10} /> Handed Back at Door · Heading to Hub
-                        </span>
-                      ) : (
-                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#059669', backgroundColor: '#ecfdf5', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          <CheckCircle2 size={10} /> Restocked to Shelf · Client Refunded
-                        </span>
-                      )}
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                      <div>
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
-                          {ord.productName} ({ord.size})
-                        </div>
-                        <div style={{ fontSize: '11px', color: '#64748b' }}>
-                          SKU: <strong style={{ color: '#16a34a' }}>{ord.productSku}</strong> · Shelf: <strong style={{ color: '#0284c7' }}>{ord.shelfLocation}</strong>
-                        </div>
-                      </div>
-                      <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
-                        {ord.price}
-                      </span>
-                    </div>
-
-                    {ord.notes && (
-                      <div style={{ fontSize: '10.5px', color: '#475569', background: '#f8fafc', padding: '6px 8px', borderRadius: '6px', margin: '6px 0', borderLeft: '2px solid #0284c7' }}>
-                        {ord.notes}
-                      </div>
-                    )}
-
-                    <div style={{ fontSize: '10.5px', color: '#94a3b8', borderTop: '1px solid #f1f5f9', paddingTop: '6px', marginTop: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div><strong>Client:</strong> {ord.customerName} ({ord.distanceKm} from hub)</div>
-                      <div style={{ color: '#0284c7', fontWeight: 600 }}>Delivery Partner: {ord.riderName}</div>
-                    </div>
+              {brandTrialOrders.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '36px 16px', background: '#ffffff', border: '1px dashed #cbd5e1', borderRadius: '16px' }}>
+                  <RotateCcw size={26} color="#94a3b8" style={{ margin: '0 auto 8px auto', display: 'block' }} />
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
+                    0 Doorstep Trials Recorded
                   </div>
-                );
-              })}
+                  <p style={{ margin: '6px 0 0 0', fontSize: '12px', color: '#64748b', maxWidth: '360px', marginInline: 'auto', lineHeight: 1.5 }}>
+                    No doorstep fittings or returns yet for {brand.name || 'your brand'}. Once customers request 10-minute trials at home, orders will track here in real-time.
+                  </p>
+                </div>
+              ) : (
+                brandTrialOrders.map((ord) => {
+                  const isDoorstepFitting = (ord.status || '').includes('Doorstep Fitting');
+                  const isOut = ord.status === 'Out for 30-Min Delivery';
+                  const isKept = ord.status === 'Kept on Spot (Purchased)';
+                  const isRunnerReturning = (ord.status || '').includes('Returned on Spot');
+                  const isRestocked = ord.status === 'Restocked to Warehouse Shelf';
+
+                  return (
+                    <div key={ord.id} className={styles.darkCardBox} style={{ padding: '14px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 800, color: '#0284c7' }}>
+                          {ord.orderNumber}
+                        </span>
+                        {isDoorstepFitting ? (
+                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#7e22ce', backgroundColor: '#f3e8ff', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <Clock size={10} /> Delivery Partner Waiting Outside ({ord.doorstepTimerMinutesLeft || 6}m fitting window)
+                          </span>
+                        ) : isOut ? (
+                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#b45309', backgroundColor: '#fef3c7', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <Truck size={10} /> Out for 30-Min Delivery
+                          </span>
+                        ) : isKept ? (
+                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#16a34a', backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <CheckCircle2 size={10} /> Kept on Spot · Purchased
+                          </span>
+                        ) : isRunnerReturning ? (
+                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#b45309', backgroundColor: '#fef3c7', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <RotateCcw size={10} /> Handed Back at Door · Heading to Hub
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#059669', backgroundColor: '#ecfdf5', padding: '2px 8px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <CheckCircle2 size={10} /> Restocked to Shelf · Client Refunded
+                          </span>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                            {ord.productName} ({ord.size})
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#64748b' }}>
+                            SKU: <strong style={{ color: '#16a34a' }}>{ord.productSku}</strong> · Shelf: <strong style={{ color: '#0284c7' }}>{ord.shelfLocation}</strong>
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                          {ord.price}
+                        </span>
+                      </div>
+
+                      {ord.notes && (
+                        <div style={{ fontSize: '10.5px', color: '#475569', background: '#f8fafc', padding: '6px 8px', borderRadius: '6px', margin: '6px 0', borderLeft: '2px solid #0284c7' }}>
+                          {ord.notes}
+                        </div>
+                      )}
+
+                      <div style={{ fontSize: '10.5px', color: '#94a3b8', borderTop: '1px solid #f1f5f9', paddingTop: '6px', marginTop: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div><strong>Client:</strong> {ord.customerName} ({ord.distanceKm} from hub)</div>
+                        <div style={{ color: '#0284c7', fontWeight: 600 }}>Delivery Partner: {ord.riderName}</div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         )}
@@ -1698,11 +1670,11 @@ export default function BrandProfileView({
               </div>
 
               <div className={styles.payoutHeroAmountHuge}>
-                ₹48,250
+                ₹0
               </div>
 
               <div className={styles.payoutHeroSubtext}>
-                Scheduled for automated transfer tomorrow by 10:00 AM directly into your bank.
+                No pending settlements. Earnings from doorstep kept orders credit automatically on T+1 directly into your bank.
               </div>
             </div>
 
@@ -1710,33 +1682,33 @@ export default function BrandProfileView({
             <div className={styles.payoutGrid}>
               <div className={styles.payoutGridCard}>
                 <span className={styles.payoutGridLabel}>Total Sales</span>
-                <span className={styles.payoutGridValue}>₹2,48,900</span>
-                <span className={styles.payoutGridNote} style={{ backgroundColor: '#ecfdf5', color: '#059669' }}>
-                  +21.8% ↗
+                <span className={styles.payoutGridValue}>₹0</span>
+                <span className={styles.payoutGridNote} style={{ backgroundColor: '#f1f5f9', color: '#64748b' }}>
+                  0%
                 </span>
               </div>
 
               <div className={styles.payoutGridCard}>
                 <span className={styles.payoutGridLabel}>Today&apos;s Total Sales</span>
-                <span className={styles.payoutGridValue}>₹18,400</span>
+                <span className={styles.payoutGridValue}>₹0</span>
                 <span className={styles.payoutGridNote} style={{ backgroundColor: '#f0f9ff', color: '#0284c7' }}>
-                  8 express orders ⚡
+                  0 express orders
                 </span>
               </div>
 
               <div className={styles.payoutGridCard}>
                 <span className={styles.payoutGridLabel}>T+1 Payout Value</span>
-                <span className={styles.payoutGridValue}>₹48,250</span>
-                <span className={styles.payoutGridNote} style={{ backgroundColor: '#ecfdf5', color: '#059669' }}>
-                  Tomorrow ✨
+                <span className={styles.payoutGridValue}>₹0</span>
+                <span className={styles.payoutGridNote} style={{ backgroundColor: '#f1f5f9', color: '#64748b' }}>
+                  ₹0 scheduled
                 </span>
               </div>
 
               <div className={styles.payoutGridCard}>
                 <span className={styles.payoutGridLabel}>Past Payouts</span>
-                <span className={styles.payoutGridValue}>₹1,88,250</span>
+                <span className={styles.payoutGridValue}>₹0</span>
                 <span className={styles.payoutGridNote} style={{ backgroundColor: '#f8fafc', color: '#475569' }}>
-                  100% Cleared ✓
+                  0 payouts cleared
                 </span>
               </div>
             </div>
@@ -1748,21 +1720,21 @@ export default function BrandProfileView({
                   How Payouts Work
                 </span>
                 <span style={{ fontSize: '10px', color: '#94a3b8' }}>
-                  24h Client Try-On Window
+                  Instant Doorstep Decisions
                 </span>
               </div>
 
               <div className={styles.settlementFlowSteps}>
                 <div className={styles.settlementStepItem}>
                   <div className={styles.settlementStepNum}>STEP 1</div>
-                  <div className={styles.settlementStepTitle}>⚡ 60m Delivery</div>
+                  <div className={styles.settlementStepTitle}>⚡ 10m Delivery</div>
                 </div>
 
                 <div className={styles.settlementStepArrow}>➔</div>
 
                 <div className={styles.settlementStepItem}>
                   <div className={styles.settlementStepNum}>STEP 2</div>
-                  <div className={styles.settlementStepTitle}>👗 24h Try-On</div>
+                  <div className={styles.settlementStepTitle}>👗 Doorstep Try-On</div>
                 </div>
 
                 <div className={styles.settlementStepArrow}>➔</div>
@@ -1791,24 +1763,13 @@ export default function BrandProfileView({
               </div>
 
               <div className={styles.pastPayoutsList}>
-                {[
-                  { date: '13 Oct 2026', utr: 'UTR #DROBE8921890', bank: 'HDFC Bank', amount: '₹34,800', badge: 'Settled ✨' },
-                  { date: '12 Oct 2026', utr: 'UTR #DROBE8917412', bank: 'HDFC Bank', amount: '₹42,150', badge: 'Settled ✨' },
-                  { date: '11 Oct 2026', utr: 'UTR #DROBE8905183', bank: 'HDFC Bank', amount: '₹28,900', badge: 'Settled ✨' },
-                  { date: '10 Oct 2026', utr: 'UTR #DROBE8892041', bank: 'HDFC Bank', amount: '₹51,200', badge: 'Settled ✨' },
-                  { date: '09 Oct 2026', utr: 'UTR #DROBE8881920', bank: 'HDFC Bank', amount: '₹31,200', badge: 'Settled ✨' }
-                ].map((payout, index) => (
-                  <div key={index} className={styles.pastPayoutRow}>
-                    <div>
-                      <div className={styles.pastPayoutDate}>{payout.date}</div>
-                      <div className={styles.pastPayoutUtr}>{payout.utr} · {payout.bank}</div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div className={styles.pastPayoutAmount}>{payout.amount}</div>
-                      <span className={styles.pastPayoutBadge}>{payout.badge}</span>
-                    </div>
-                  </div>
-                ))}
+                <div style={{ textAlign: 'center', padding: '28px 16px', background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '14px' }}>
+                  <Wallet size={22} color="#94a3b8" style={{ margin: '0 auto 6px auto', display: 'block' }} />
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>0 Past Settlements</div>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#64748b' }}>
+                    No payout transfers recorded yet. Completed doorstep orders are automatically settled T+1 to your bank.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

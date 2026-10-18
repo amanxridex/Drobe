@@ -22,32 +22,7 @@ const DEFAULT_SHOWCASE_BRAND: BrandProfile = {
   founderName: 'Aman Patel',
   founderRole: 'Founder & Creative Director',
   status: 'Approved',
-  products: [
-    {
-      name: 'Japanese Heavyweight Oversized Tee',
-      tagline: '320 GSM French Terry Cotton',
-      description: 'Custom milled 320 GSM French Terry Cotton with relaxed drop shoulders and durable ribbed collar.',
-      price: '₹2,499',
-      inventory: '48 in stock',
-      image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80'
-    },
-    {
-      name: 'Resort Cuban Collar Linen Shirt',
-      tagline: '100% Breathable European Flax',
-      description: 'Crafted from 100% natural European flax with a relaxed camp collar and pearl shell buttons.',
-      price: '₹3,199',
-      inventory: '34 in stock',
-      image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&auto=format&fit=crop&q=80'
-    },
-    {
-      name: 'Raw Indigo Relaxed Selvedge Denim',
-      tagline: '14oz Japanese Kurabo Denim',
-      description: 'Shuttle-loomed 14oz Japanese redline selvedge denim designed to age with unique wear patterns.',
-      price: '₹3,899',
-      inventory: '26 in stock',
-      image: 'https://images.unsplash.com/photo-1542272604-780c96856592?w=800&auto=format&fit=crop&q=80'
-    }
-  ]
+  products: []
 };
 
 export default function BrandDashboardPage() {
@@ -223,41 +198,7 @@ export default function BrandDashboardPage() {
           onViewLiveDashboard={() => {
             if (!brand.name || brand.name.trim().length === 0) {
               setBrand({
-                ...EMPTY_BRAND_PROFILE,
-                id: 'brand-jihi-01',
-                name: 'JIHI',
-                tagline: 'Contemporary Resort & Evening Wear',
-                category: 'Female',
-                basedOutOf: 'Ahmedabad · Gujarat',
-                founderName: 'Aman Patel',
-                founderRole: 'Founder & Creative Director',
-                status: 'Approved',
-                products: [
-                  {
-                    name: 'Japanese Heavyweight Oversized Tee',
-                    tagline: '320 GSM French Terry Cotton',
-                    description: 'Custom milled 320 GSM French Terry Cotton with relaxed drop shoulders and durable ribbed collar.',
-                    price: '₹2,499',
-                    inventory: '48 in stock',
-                    image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80'
-                  },
-                  {
-                    name: 'Resort Cuban Collar Linen Shirt',
-                    tagline: '100% Breathable European Flax',
-                    description: 'Crafted from 100% natural European flax with a relaxed camp collar and pearl shell buttons.',
-                    price: '₹3,199',
-                    inventory: '34 in stock',
-                    image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&auto=format&fit=crop&q=80'
-                  },
-                  {
-                    name: 'Raw Indigo Relaxed Selvedge Denim',
-                    tagline: '14oz Japanese Kurabo Denim',
-                    description: 'Shuttle-loomed 14oz Japanese redline selvedge denim designed to age with unique wear patterns.',
-                    price: '₹3,899',
-                    inventory: '26 in stock',
-                    image: 'https://images.unsplash.com/photo-1542272604-780c96856592?w=800&auto=format&fit=crop&q=80'
-                  }
-                ]
+                ...DEFAULT_SHOWCASE_BRAND
               });
             }
             setOpenEditOnProfile(false);
