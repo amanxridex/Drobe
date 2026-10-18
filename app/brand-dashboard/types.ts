@@ -16,7 +16,7 @@ export interface BrandProductHighlight {
   sku?: string; // DR1, DR2, DR3...
   name: string;
   tagline?: string;
-  description: string;
+  description?: string;
   primaryColor?: string;
   fabric?: string;
   volume?: string;

@@ -12,9 +12,47 @@ import styles from './brand-dashboard.module.css';
 
 const STORAGE_KEY = 'drobe_brand_profile_v1';
 
+const DEFAULT_SHOWCASE_BRAND: BrandProfile = {
+  ...EMPTY_BRAND_PROFILE,
+  id: 'brand-jihi-01',
+  name: 'JIHI',
+  tagline: 'Contemporary Resort & Evening Wear',
+  category: 'Female',
+  basedOutOf: 'Ahmedabad · Gujarat',
+  founderName: 'Aman Patel',
+  founderRole: 'Founder & Creative Director',
+  status: 'Approved',
+  products: [
+    {
+      name: 'Japanese Heavyweight Oversized Tee',
+      tagline: '320 GSM French Terry Cotton',
+      description: 'Custom milled 320 GSM French Terry Cotton with relaxed drop shoulders and durable ribbed collar.',
+      price: '₹2,499',
+      inventory: '48 in stock',
+      image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80'
+    },
+    {
+      name: 'Resort Cuban Collar Linen Shirt',
+      tagline: '100% Breathable European Flax',
+      description: 'Crafted from 100% natural European flax with a relaxed camp collar and pearl shell buttons.',
+      price: '₹3,199',
+      inventory: '34 in stock',
+      image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&auto=format&fit=crop&q=80'
+    },
+    {
+      name: 'Raw Indigo Relaxed Selvedge Denim',
+      tagline: '14oz Japanese Kurabo Denim',
+      description: 'Shuttle-loomed 14oz Japanese redline selvedge denim designed to age with unique wear patterns.',
+      price: '₹3,899',
+      inventory: '26 in stock',
+      image: 'https://images.unsplash.com/photo-1542272604-780c96856592?w=800&auto=format&fit=crop&q=80'
+    }
+  ]
+};
+
 export default function BrandDashboardPage() {
-  const [brand, setBrand] = useState<BrandProfile>(EMPTY_BRAND_PROFILE);
-  const [activeView, setActiveView] = useState<'start' | 'filing' | 'profile'>('start');
+  const [brand, setBrand] = useState<BrandProfile>(DEFAULT_SHOWCASE_BRAND);
+  const [activeView, setActiveView] = useState<'start' | 'filing' | 'profile'>('profile');
   const [openEditOnProfile, setOpenEditOnProfile] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -26,13 +64,19 @@ export default function BrandDashboardPage() {
       const brandParam = urlParams.get('brand') || urlParams.get('id');
       const editParam = urlParams.get('edit');
 
-      // 1. Direct Onboarding Link Support (e.g. /brand-dashboard?onboard=true)
+      // 1. Explicit Landing / Start Pitch Screen Support
+      if (viewParam === 'start' || viewParam === 'landing') {
+        setActiveView('start');
+        return;
+      }
+
+      // 2. Direct Onboarding Link Support (e.g. /brand-dashboard?onboard=true)
       if (onboardParam === 'true' || onboardParam === '1' || viewParam === 'filing' || viewParam === 'onboarding') {
         setActiveView('filing');
         return;
       }
 
-      // 2. Direct Brand Link Support (e.g. /brand-dashboard?brand=underrated-club)
+      // 3. Direct Brand Link Support (e.g. /brand-dashboard?brand=underrated-club)
       if (brandParam) {
         supabaseFetchBrandById(brandParam).then(async (dbBrand) => {
           if (dbBrand) {
@@ -53,19 +97,21 @@ export default function BrandDashboardPage() {
         return;
       }
 
-      if (viewParam === 'profile') {
-        setActiveView('profile');
-      }
-
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        setBrand(parsed);
+        if (parsed.name && parsed.name.trim().length > 0) {
+          setBrand(parsed);
+        } else {
+          setBrand(DEFAULT_SHOWCASE_BRAND);
+        }
       } else {
-        setBrand(EMPTY_BRAND_PROFILE);
+        setBrand(DEFAULT_SHOWCASE_BRAND);
       }
+      setActiveView('profile');
     } catch {
-      setBrand(EMPTY_BRAND_PROFILE);
+      setBrand(DEFAULT_SHOWCASE_BRAND);
+      setActiveView('profile');
     }
   }, []);
 
@@ -173,6 +219,45 @@ export default function BrandDashboardPage() {
           brand={brand}
           onStartOnboarding={() => setActiveView('filing')}
           onViewLiveDashboard={() => {
+            if (!brand.name || brand.name.trim().length === 0) {
+              setBrand({
+                ...EMPTY_BRAND_PROFILE,
+                id: 'brand-jihi-01',
+                name: 'JIHI',
+                tagline: 'Contemporary Resort & Evening Wear',
+                category: 'Female',
+                basedOutOf: 'Ahmedabad · Gujarat',
+                founderName: 'Aman Patel',
+                founderRole: 'Founder & Creative Director',
+                status: 'Approved',
+                products: [
+                  {
+                    name: 'Japanese Heavyweight Oversized Tee',
+                    tagline: '320 GSM French Terry Cotton',
+                    description: 'Custom milled 320 GSM French Terry Cotton with relaxed drop shoulders and durable ribbed collar.',
+                    price: '₹2,499',
+                    inventory: '48 in stock',
+                    image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80'
+                  },
+                  {
+                    name: 'Resort Cuban Collar Linen Shirt',
+                    tagline: '100% Breathable European Flax',
+                    description: 'Crafted from 100% natural European flax with a relaxed camp collar and pearl shell buttons.',
+                    price: '₹3,199',
+                    inventory: '34 in stock',
+                    image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&auto=format&fit=crop&q=80'
+                  },
+                  {
+                    name: 'Raw Indigo Relaxed Selvedge Denim',
+                    tagline: '14oz Japanese Kurabo Denim',
+                    description: 'Shuttle-loomed 14oz Japanese redline selvedge denim designed to age with unique wear patterns.',
+                    price: '₹3,899',
+                    inventory: '26 in stock',
+                    image: 'https://images.unsplash.com/photo-1542272604-780c96856592?w=800&auto=format&fit=crop&q=80'
+                  }
+                ]
+              });
+            }
             setOpenEditOnProfile(false);
             setActiveView('profile');
           }}

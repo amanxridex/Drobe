@@ -2969,12 +2969,236 @@
   box-shadow: none !important;
 }
 
+/* --- BRAND DASHBOARD HOME ANALYTICS STYLES --- */
+.homeAnalyticsWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.telemetryStripCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+}
+
+.pulseLiveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25);
+  animation: pulseDotLive 2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulseDotLive {
+  0% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(22, 163, 74, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+  }
+}
+
+.timeRangePillTrack {
+  display: flex;
+  align-items: center;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.timeRangeBtn {
+  background: none;
+  border: none;
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.timeRangeBtnActive {
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+}
+
+.quickLaunchBtn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0f172a;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+}
+
+.quickLaunchBtn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+/* Doorstep Conversion Funnel */
+.funnelCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-top: 12px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+}
+
+.funnelStageRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.funnelStageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.funnelStageTrack {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.funnelStageFill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* SKU Leaderboard */
+.skuLeaderboardCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-top: 12px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+}
+
+.skuLeaderboardItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.skuLeaderboardItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.skuRankBadge {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #0f172a;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.skuRankGold {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.skuRankSilver {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.skuRankBronze {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.skuThumb {
+  width: 38px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #e2e8f0;
+  flex-shrink: 0;
+}
+
+/* Neighborhood Heatmap */
+.heatmapCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-top: 12px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+}
+
+.heatmapRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 0;
+}
+
+.heatmapHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.heatmapTrack {
+  height: 5px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.heatmapFill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #38bdf8 0%, #0284c7 100%);
+}
+
 /* Analytics & Dashboard Cards */
 .analyticsGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 4px;
 }
 
 .statCard {

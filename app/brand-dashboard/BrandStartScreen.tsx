@@ -447,10 +447,18 @@ export default function BrandStartScreen({
             <>
               <button
                 type="button"
-                onClick={onStartOnboarding}
+                onClick={onViewLiveDashboard}
                 className={styles.screen1BtnPrimary}
               >
-                Start Brand Onboarding →
+                📊 Open Live Partner Dashboard &amp; Analytics
+              </button>
+
+              <button
+                type="button"
+                onClick={onStartOnboarding}
+                className={styles.screen1BtnSecondary}
+              >
+                Start New Brand Onboarding →
               </button>
 
               <button
@@ -459,7 +467,7 @@ export default function BrandStartScreen({
                   setModalTab('claim');
                   setShowLoginModal(true);
                 }}
-                className={styles.screen1BtnSecondary}
+                className={styles.resetFreshBtn}
               >
                 Find &amp; Claim Your Brand
               </button>

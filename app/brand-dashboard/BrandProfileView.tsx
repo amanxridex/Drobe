@@ -77,6 +77,149 @@ const InstagramIcon = ({ size = 14, color = "#ffffff" }: { size?: number; color?
   </svg>
 );
 
+const ANALYTICS_DATA_MAP = {
+  today: {
+    label: 'Today (Live)',
+    gmv: '₹48,920',
+    gmvTrend: '+18.4%',
+    ordersCount: '14 orders',
+    doorstepTrials: '18 Trials',
+    convRate: '77.8%',
+    tryOnTime: '7.8 mins avg fitting',
+    hubStock: '480 Units',
+    hubShelves: '34 / 96 Shelves Occupied',
+    payout: '₹48,920',
+    payoutSubtitle: 'Settling Tonight 11:59 PM',
+    chartTitle: "Today's Hourly Fitting Velocity",
+    peakBadge: 'Peak Rush: 7 PM–10 PM',
+    bars: [
+      { day: '11 AM', val: '₹4.2k', height: '35%' },
+      { day: '1 PM', val: '₹7.8k', height: '52%' },
+      { day: '3 PM', val: '₹9.4k', height: '64%' },
+      { day: '5 PM', val: '₹12.1k', height: '78%' },
+      { day: '7 PM', val: '₹15.4k', height: '96%', active: true },
+      { day: '9 PM', val: '₹11.8k', height: '80%' },
+    ],
+    funnel: [
+      { stage: 'Doorstep Express Dispatched', count: '18 trials', pct: '100%', fill: '100%', color: '#38bdf8' },
+      { stage: '10-Min Delivery ETA Achieved', count: '18 (avg 7.8m)', pct: '100%', fill: '100%', color: '#0284c7' },
+      { stage: 'In-Home Customer Try-on', count: '18 tried', pct: '100%', fill: '100%', color: '#818cf8' },
+      { stage: 'Kept & Instant UPI Paid', count: '14 kept', pct: '77.8%', fill: '78%', color: '#16a34a' },
+      { stage: 'Instant Return to Hub (Zero RTO)', count: '4 returned', pct: '22.2%', fill: '22%', color: '#94a3b8' },
+    ],
+    hotspots: [
+      { name: 'Prahlad Nagar', share: '42%', eta: '7.2 min', gmv: '₹20,550', fill: '84%' },
+      { name: 'Bodakdev / Sindhu Bhavan', share: '36%', eta: '8.0 min', gmv: '₹17,610', fill: '72%' },
+      { name: 'Satellite / Vastrapur', share: '22%', eta: '8.8 min', gmv: '₹10,760', fill: '44%' },
+    ]
+  },
+  '7d': {
+    label: 'Past 7 Days',
+    gmv: '₹3,18,400',
+    gmvTrend: '+24.6%',
+    ordersCount: '89 doorstep orders',
+    doorstepTrials: '114 Trials',
+    convRate: '78.4%',
+    tryOnTime: '8.5 mins avg fitting',
+    hubStock: '480 Units',
+    hubShelves: '34 / 96 Shelves Occupied',
+    payout: '₹1,84,200',
+    payoutSubtitle: 'Settling 11:59 PM to HDFC Bank',
+    chartTitle: '7-Day Order & Fitting Velocity',
+    peakBadge: 'Peak Rush: 7 PM–10 PM',
+    bars: [
+      { day: 'Mon', val: '₹28k', height: '48%' },
+      { day: 'Tue', val: '₹36k', height: '58%' },
+      { day: 'Wed', val: '₹42k', height: '65%' },
+      { day: 'Thu', val: '₹49k', height: '74%' },
+      { day: 'Fri', val: '₹64k', height: '88%' },
+      { day: 'Sat', val: '₹73k', height: '96%' },
+      { day: 'Sun', val: '₹59k', height: '82%', active: true }
+    ],
+    funnel: [
+      { stage: 'Doorstep Express Dispatched', count: '114 trials', pct: '100%', fill: '100%', color: '#38bdf8' },
+      { stage: '10-Min Delivery ETA Achieved', count: '112 (98.2%)', pct: '98.2%', fill: '98%', color: '#0284c7' },
+      { stage: 'In-Home Customer Try-on', count: '114 tried', pct: '100%', fill: '100%', color: '#818cf8' },
+      { stage: 'Kept & Instant UPI Paid', count: '89 kept', pct: '78.4%', fill: '78%', color: '#16a34a' },
+      { stage: 'Instant Return to Hub (Zero RTO)', count: '25 returned', pct: '21.6%', fill: '22%', color: '#94a3b8' },
+    ],
+    hotspots: [
+      { name: 'Prahlad Nagar', share: '38%', eta: '7.4 min', gmv: '₹1,21,000', fill: '76%' },
+      { name: 'Bodakdev / Sindhu Bhavan', share: '31%', eta: '8.1 min', gmv: '₹98,700', fill: '62%' },
+      { name: 'Satellite / Vastrapur', share: '19%', eta: '8.9 min', gmv: '₹60,500', fill: '38%' },
+      { name: 'Ambawadi / CG Road', share: '12%', eta: '9.9 min', gmv: '₹38,200', fill: '24%' },
+    ]
+  },
+  '30d': {
+    label: 'Past 30 Days',
+    gmv: '₹12,48,900',
+    gmvTrend: '+32.8%',
+    ordersCount: '356 doorstep orders',
+    doorstepTrials: '448 Trials',
+    convRate: '79.5%',
+    tryOnTime: '8.2 mins avg fitting',
+    hubStock: '480 Units',
+    hubShelves: '34 / 96 Shelves Occupied',
+    payout: '₹12,48,900',
+    payoutSubtitle: 'Fully Settled across 30 cycles',
+    chartTitle: '4-Week Monthly Sales Trajectory',
+    peakBadge: 'Peak Weekend Fittings: Sat-Sun',
+    bars: [
+      { day: 'W1', val: '₹2.4L', height: '62%' },
+      { day: 'W2', val: '₹2.9L', height: '74%' },
+      { day: 'W3', val: '₹3.4L', height: '86%' },
+      { day: 'W4', val: '₹3.8L', height: '98%', active: true },
+    ],
+    funnel: [
+      { stage: 'Doorstep Express Dispatched', count: '448 trials', pct: '100%', fill: '100%', color: '#38bdf8' },
+      { stage: '10-Min Delivery ETA Achieved', count: '441 (98.4%)', pct: '98.4%', fill: '98%', color: '#0284c7' },
+      { stage: 'In-Home Customer Try-on', count: '448 tried', pct: '100%', fill: '100%', color: '#818cf8' },
+      { stage: 'Kept & Instant UPI Paid', count: '356 kept', pct: '79.5%', fill: '80%', color: '#16a34a' },
+      { stage: 'Instant Return to Hub (Zero RTO)', count: '92 returned', pct: '20.5%', fill: '21%', color: '#94a3b8' },
+    ],
+    hotspots: [
+      { name: 'Prahlad Nagar', share: '38%', eta: '7.3 min', gmv: '₹4,74,500', fill: '76%' },
+      { name: 'Bodakdev / Sindhu Bhavan', share: '31%', eta: '8.0 min', gmv: '₹3,87,150', fill: '62%' },
+      { name: 'Satellite / Vastrapur', share: '19%', eta: '8.8 min', gmv: '₹2,37,290', fill: '38%' },
+      { name: 'Ambawadi / CG Road', share: '12%', eta: '9.9 min', gmv: '₹1,49,960', fill: '24%' },
+    ]
+  },
+  all: {
+    label: 'All Time',
+    gmv: '₹48,20,000',
+    gmvTrend: '+41.2%',
+    ordersCount: '1,380 doorstep orders',
+    doorstepTrials: '1,760 Trials',
+    convRate: '78.4%',
+    tryOnTime: '8.3 mins avg fitting',
+    hubStock: '480 Units',
+    hubShelves: '34 / 96 Shelves Occupied',
+    payout: '₹48,20,000',
+    payoutSubtitle: '100% On-Time T+0 Daily Payouts',
+    chartTitle: 'Quarterly Lifetime Trajectory',
+    peakBadge: 'Avg 8.3 min Doorstep Delivery',
+    bars: [
+      { day: 'Q1', val: '₹8.6L', height: '52%' },
+      { day: 'Q2', val: '₹11.4L', height: '68%' },
+      { day: 'Q3', val: '₹13.8L', height: '82%' },
+      { day: 'Q4', val: '₹14.4L', height: '95%', active: true },
+    ],
+    funnel: [
+      { stage: 'Doorstep Express Dispatched', count: '1,760 trials', pct: '100%', fill: '100%', color: '#38bdf8' },
+      { stage: '10-Min Delivery ETA Achieved', count: '1,732 (98.4%)', pct: '98.4%', fill: '98%', color: '#0284c7' },
+      { stage: 'In-Home Customer Try-on', count: '1,760 tried', pct: '100%', fill: '100%', color: '#818cf8' },
+      { stage: 'Kept & Instant UPI Paid', count: '1,380 kept', pct: '78.4%', fill: '78%', color: '#16a34a' },
+      { stage: 'Instant Return to Hub (Zero RTO)', count: '380 returned', pct: '21.6%', fill: '22%', color: '#94a3b8' },
+    ],
+    hotspots: [
+      { name: 'Prahlad Nagar', share: '38%', eta: '7.4 min', gmv: '₹18,31,600', fill: '76%' },
+      { name: 'Bodakdev / Sindhu Bhavan', share: '31%', eta: '8.1 min', gmv: '₹14,94,200', fill: '62%' },
+      { name: 'Satellite / Vastrapur', share: '19%', eta: '8.9 min', gmv: '₹9,15,800', fill: '38%' },
+      { name: 'Ambawadi / CG Road', share: '12%', eta: '9.9 min', gmv: '₹5,78,400', fill: '24%' },
+    ]
+  }
+};
+
 interface BrandProfileViewProps {
   brand: BrandProfile;
   onEditClick?: () => void;
@@ -96,7 +239,8 @@ export default function BrandProfileView({
   onToast,
   onSignOut
 }: BrandProfileViewProps) {
-  const [activeTab, setActiveTab] = useState<'home' | 'catalog' | 'warehouse' | 'trials' | 'analytics' | 'payouts' | 'profile'>('catalog');
+  const [activeTab, setActiveTab] = useState<'home' | 'catalog' | 'warehouse' | 'trials' | 'analytics' | 'payouts' | 'profile'>('home');
+  const [analyticsRange, setAnalyticsRange] = useState<'today' | '7d' | '30d' | 'all'>('today');
   const [isEditingProfile, setIsEditingProfile] = useState(Boolean(initialOpenEdit));
   const [showBankModal, setShowBankModal] = useState(false);
   const [isStoreLive, setIsStoreLive] = useState(true);
@@ -552,84 +696,451 @@ export default function BrandProfileView({
 
 
 
-        {/* TAB 0: Home Overview */}
-        {activeTab === 'home' && (
-          <div>
+        {/* TAB 0: Home Analytics & Operations Cockpit */}
+        {activeTab === 'home' && (() => {
+          const currentAnalytics = ANALYTICS_DATA_MAP[analyticsRange] || ANALYTICS_DATA_MAP['today'];
+          const topPieces = (activeProducts && activeProducts.length > 0) ? activeProducts.slice(0, 3) : [];
 
-            {/* Signature Creation Spotlight */}
-            <div className={styles.darkCardBox} style={{ marginBottom: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span className={styles.darkCardTag}>Signature Spotlight</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {activeProducts.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => handleStartEditProduct(0)}
-                      style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#0f172a', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '8px' }}
-                      title="Edit signature piece"
-                    >
-                      <Edit3 size={11} /> Edit
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('catalog')}
-                    style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
-                  >
-                    View All ({totalProductsCount}) <ArrowUpRight size={12} />
-                  </button>
+          return (
+            <div className={styles.homeAnalyticsWrapper}>
+              {/* 1. Live Hub Telemetry Strip & Time Range Filters */}
+              <div className={styles.telemetryStripCard}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div className={styles.pulseLiveDot} />
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.01em' }}>
+                        Ahmedabad Central Hub #01
+                      </div>
+                      <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 500 }}>
+                        24 Express Riders Active · Avg 8.2m Dispatch
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.timeRangePillTrack}>
+                    {(['today', '7d', '30d', 'all'] as const).map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setAnalyticsRange(r)}
+                        className={`${styles.timeRangeBtn} ${analyticsRange === r ? styles.timeRangeBtnActive : ''}`}
+                      >
+                        {r === 'today' ? 'Today' : r === '7d' ? '7D' : r === '30d' ? '30D' : 'All'}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {activeProducts.length > 0 ? (
-                <div 
-                  onClick={() => handleStartEditProduct(0)}
-                  style={{ display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: '#f8fafc', padding: '12px', borderRadius: '14px', border: '1px solid #e2e8f0', cursor: 'pointer' }}
-                  title="Click to edit"
-                >
-                  {activeProducts[0].image && (
-                    <img
-                      src={activeProducts[0].image}
-                      alt={activeProducts[0].name}
-                      style={{ width: '56px', height: '56px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0, border: '1px solid #cbd5e1' }}
-                    />
-                  )}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h5 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {activeProducts[0].name}
-                    </h5>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#64748b' }}>
-                      {activeProducts[0].tagline || activeProducts[0].volume || 'Signature Creation'}
+              {/* 2. 2x2 Core Performance KPIs */}
+              <div className={styles.analyticsGrid}>
+                {/* KPI 1: Net Sales / GMV */}
+                <div className={styles.statCard}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <span className={styles.statCardLabel}>Net Sales (GMV)</span>
+                    <div className={styles.statCardTrend}>
+                      <TrendingUp size={11} /> {currentAnalytics.gmvTrend}
+                    </div>
+                  </div>
+                  <div className={styles.statCardValue}>
+                    {currentAnalytics.gmv}
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 500 }}>
+                    {currentAnalytics.ordersCount}
+                  </div>
+                </div>
+
+                {/* KPI 2: Doorstep Try-to-Buy Conversion */}
+                <div className={styles.statCard}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <span className={styles.statCardLabel}>Doorstep Trials</span>
+                    <span style={{ fontSize: '9.5px', fontWeight: 800, color: '#16a34a', backgroundColor: '#dcfce7', padding: '2px 6px', borderRadius: '6px' }}>
+                      {currentAnalytics.convRate} Conv.
+                    </span>
+                  </div>
+                  <div className={styles.statCardValue}>
+                    {currentAnalytics.doorstepTrials}
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 500 }}>
+                    {currentAnalytics.tryOnTime}
+                  </div>
+                </div>
+
+                {/* KPI 3: Consignment Stock at Ahmedabad Hub */}
+                <div className={styles.statCard}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <span className={styles.statCardLabel}>Hub Inward Stock</span>
+                    <span style={{ fontSize: '9.5px', fontWeight: 800, color: '#0284c7', backgroundColor: '#e0f2fe', padding: '2px 6px', borderRadius: '6px' }}>
+                      Live SG Hub
+                    </span>
+                  </div>
+                  <div className={styles.statCardValue}>
+                    {currentAnalytics.hubStock}
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 500 }}>
+                    {currentAnalytics.hubShelves}
+                  </div>
+                </div>
+
+                {/* KPI 4: Automated Payout Settlement */}
+                <div className={styles.statCard}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <span className={styles.statCardLabel}>Daily Payout</span>
+                    <span style={{ fontSize: '9.5px', fontWeight: 800, color: '#9333ea', backgroundColor: '#f3e8ff', padding: '2px 6px', borderRadius: '6px' }}>
+                      T+0 Auto
+                    </span>
+                  </div>
+                  <div className={styles.statCardValue}>
+                    {currentAnalytics.payout}
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {currentAnalytics.payoutSubtitle}
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Dynamic Revenue & Fitting Velocity Chart */}
+              <div className={styles.chartContainer}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.01em' }}>
+                      {currentAnalytics.chartTitle}
+                    </h4>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '10.5px', color: '#64748b' }}>
+                      Gross Doorstep Sales &amp; In-Home Conversions
                     </p>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#0284c7' }}>
-                        {activeProducts[0].price ? (activeProducts[0].price.startsWith('$') || activeProducts[0].price.startsWith('₹') ? activeProducts[0].price : `₹${activeProducts[0].price}`) : 'Price upon request'}
+                  </div>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#16a34a', backgroundColor: '#dcfce7', padding: '3px 8px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <Zap size={10} /> {currentAnalytics.peakBadge}
+                  </span>
+                </div>
+
+                <div className={styles.chartBarsRow}>
+                  {currentAnalytics.bars.map((b) => (
+                    <div key={b.day} className={styles.chartBarCol}>
+                      <span style={{ fontSize: '9px', fontWeight: 700, color: b.active ? '#2563eb' : '#94a3b8' }}>
+                        {b.val}
                       </span>
-                      {activeProducts[0].inventory && (
-                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#16a34a', backgroundColor: '#dcfce7', padding: '2px 6px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                          <Package size={10} /> {String(activeProducts[0].inventory).toLowerCase().includes('stock') || String(activeProducts[0].inventory).toLowerCase().includes('unit') ? activeProducts[0].inventory : `${activeProducts[0].inventory} in stock`}
-                        </span>
+                      <div
+                        className={`${styles.chartBarFill} ${b.active ? styles.chartBarFillActive : ''}`}
+                        style={{ height: b.height }}
+                      />
+                      <span className={styles.chartBarLabel} style={{ fontWeight: b.active ? 800 : 600, color: b.active ? '#0f172a' : '#64748b' }}>
+                        {b.day}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4. Doorstep Try-to-Buy Conversion Funnel */}
+              <div className={styles.funnelCard}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                      Doorstep Try-to-Buy Funnel
+                    </h4>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '10.5px', color: '#64748b' }}>
+                      How 10-minute in-home fittings eliminate return costs
+                    </p>
+                  </div>
+                  <span style={{ fontSize: '9.5px', fontWeight: 800, color: '#16a34a', backgroundColor: '#dcfce7', padding: '3px 8px', borderRadius: '8px' }}>
+                    3.9x E-comm Avg
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
+                  {currentAnalytics.funnel.map((fn, idx) => (
+                    <div key={idx} className={styles.funnelStageRow}>
+                      <div className={styles.funnelStageHeader}>
+                        <span style={{ fontWeight: 600, color: '#334155' }}>{fn.stage}</span>
+                        <span style={{ fontWeight: 700, color: '#0f172a' }}>{fn.count} ({fn.pct})</span>
+                      </div>
+                      <div className={styles.funnelStageTrack}>
+                        <div
+                          className={styles.funnelStageFill}
+                          style={{ width: fn.fill, backgroundColor: fn.color }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ marginTop: '10px', padding: '8px 10px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '10px', color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <ShieldCheck size={12} color="#16a34a" />
+                  <span><strong>Zero RTO Loss:</strong> Garments returned by riders are shelved back in the Ahmedabad hub immediately.</span>
+                </div>
+              </div>
+
+              {/* 5. Best Selling Creations Leaderboard */}
+              <div className={styles.skuLeaderboardCard}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                      Best Selling Pieces
+                    </h4>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '10.5px', color: '#64748b' }}>
+                      Ranked by Doorstep Revenue &amp; Trial Conversion
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('catalog')}
+                    style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '11px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px' }}
+                  >
+                    Catalog ({totalProductsCount}) <ArrowUpRight size={12} />
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {topPieces.map((p, idx) => (
+                    <div key={idx} className={styles.skuLeaderboardItem}>
+                      <div className={`${styles.skuRankBadge} ${idx === 0 ? styles.skuRankGold : idx === 1 ? styles.skuRankSilver : styles.skuRankBronze}`}>
+                        #{idx + 1}
+                      </div>
+                      {p.image ? (
+                        <img src={p.image} alt={p.name} className={styles.skuThumb} />
+                      ) : (
+                        <div className={styles.skuThumb} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Package size={16} color="#94a3b8" />
+                        </div>
                       )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {p.name}
+                        </div>
+                        <div style={{ fontSize: '10px', color: '#64748b', display: 'flex', gap: '8px', marginTop: '2px' }}>
+                          <span>{p.price || '₹2,499'}</span>
+                          <span>·</span>
+                          <span style={{ color: '#16a34a', fontWeight: 700 }}>
+                            {idx === 0 ? '84.0% keep rate' : idx === 1 ? '77.8% keep rate' : '73.1% keep rate'}
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a' }}>
+                          {idx === 0 ? '₹1,04,958' : idx === 1 ? '₹89,572' : '₹74,081'}
+                        </div>
+                        <div style={{ fontSize: '9.5px', color: '#64748b' }}>
+                          {idx === 0 ? '42 sold' : idx === 1 ? '28 sold' : '19 sold'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 6. Ahmedabad Neighborhood Delivery Heatmap */}
+              <div className={styles.heatmapCard}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                      Ahmedabad Demand Hotspots
+                    </h4>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '10.5px', color: '#64748b' }}>
+                      Fitting volume &amp; express dispatch ETA by neighborhood
+                    </p>
+                  </div>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#0284c7', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <MapPin size={11} /> 10-Min Radius
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+                  {currentAnalytics.hotspots.map((hs, idx) => (
+                    <div key={idx} className={styles.heatmapRow}>
+                      <div className={styles.heatmapHeader}>
+                        <span style={{ fontWeight: 600, color: '#0f172a' }}>{hs.name}</span>
+                        <span style={{ color: '#64748b', fontSize: '10.5px' }}>
+                          <strong>{hs.share}</strong> · ETA {hs.eta} · <span style={{ color: '#0f172a', fontWeight: 700 }}>{hs.gmv}</span>
+                        </span>
+                      </div>
+                      <div className={styles.heatmapTrack}>
+                        <div className={styles.heatmapFill} style={{ width: hs.fill }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 7. Live 10-Minute Doorstep Fittings Feed */}
+              <div className={styles.darkCardBox} style={{ marginTop: '12px', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div className={styles.pulseLiveDot} />
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
+                      Live Doorstep Trials Feed
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('trials')}
+                    style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: '11px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                  >
+                    View All ({trialOrders.length}) <ArrowUpRight size={12} />
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '10px 12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '10px', fontWeight: 800, color: '#16a34a', backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                        <Clock size={10} /> Doorstep Fitting (6 mins left)
+                      </span>
+                      <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#0f172a' }}>₹2,499</span>
+                    </div>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
+                      Japanese Heavyweight Oversized Tee · L
+                    </div>
+                    <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <MapPin size={10} /> Prahlad Nagar, Ahmedabad · Rider: Ramesh S.
+                    </div>
+                  </div>
+
+                  <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '10px 12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '10px', fontWeight: 800, color: '#7c3aed', backgroundColor: '#f5f3ff', padding: '2px 8px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                        <CheckCircle2 size={10} /> Kept on Spot (Purchased)
+                      </span>
+                      <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#0f172a' }}>₹3,199</span>
+                    </div>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
+                      Resort Cuban Collar Linen Shirt · M
+                    </div>
+                    <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <MapPin size={10} /> Bodakdev, Ahmedabad · Instant UPI Settlement
+                    </div>
+                  </div>
+
+                  <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '10px 12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '10px', fontWeight: 800, color: '#0284c7', backgroundColor: '#e0f2fe', padding: '2px 8px', borderRadius: '9999px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                        <Truck size={10} /> Out for 10-Min Delivery
+                      </span>
+                      <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#0f172a' }}>₹3,899</span>
+                    </div>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
+                      Raw Indigo Relaxed Denim · 32
+                    </div>
+                    <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <MapPin size={10} /> Satellite, Ahmedabad · Rider ETA 4 mins
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div 
+              </div>
+
+              {/* 8. Quick Operations Launchpad */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '12px' }}>
+                <button
+                  type="button"
                   onClick={handleOpenAddModal}
-                  style={{ cursor: 'pointer', textAlign: 'center', padding: '20px 14px', border: '1px dashed #cbd5e1', borderRadius: '14px', backgroundColor: '#f8fafc' }}
+                  className={styles.quickLaunchBtn}
                 >
-                  <p style={{ margin: '0 0 8px 0', fontSize: '12px', color: '#64748b' }}>No pieces listed yet.</p>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: '#0f172a' }}>
-                    <Plus size={13} /> Add First Creation
-                  </span>
+                  <Plus size={14} color="#2563eb" />
+                  <span>Add Product Drop</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowDispatchModal(true)}
+                  className={styles.quickLaunchBtn}
+                >
+                  <Boxes size={14} color="#0284c7" />
+                  <span>Dispatch to Hub</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('payouts')}
+                  className={styles.quickLaunchBtn}
+                >
+                  <Wallet size={14} color="#16a34a" />
+                  <span>Payout Settlements</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onShareClick}
+                  className={styles.quickLaunchBtn}
+                >
+                  <Share2 size={14} color="#9333ea" />
+                  <span>Share Storefront</span>
+                </button>
+              </div>
+
+              {/* 9. Signature Spotlight */}
+              <div className={styles.darkCardBox} style={{ marginBottom: '14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                  <span className={styles.darkCardTag}>Signature Spotlight</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {activeProducts.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleStartEditProduct(0)}
+                        style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#0f172a', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '8px' }}
+                        title="Edit signature piece"
+                      >
+                        <Edit3 size={11} /> Edit
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('catalog')}
+                      style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                    >
+                      View All ({totalProductsCount}) <ArrowUpRight size={12} />
+                    </button>
+                  </div>
                 </div>
-              )}
+
+                {activeProducts.length > 0 ? (
+                  <div 
+                    onClick={() => handleStartEditProduct(0)}
+                    style={{ display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: '#f8fafc', padding: '12px', borderRadius: '14px', border: '1px solid #e2e8f0', cursor: 'pointer' }}
+                    title="Click to edit"
+                  >
+                    {activeProducts[0].image && (
+                      <img
+                        src={activeProducts[0].image}
+                        alt={activeProducts[0].name}
+                        style={{ width: '56px', height: '56px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0, border: '1px solid #cbd5e1' }}
+                      />
+                    )}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <h5 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {activeProducts[0].name}
+                      </h5>
+                      <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#64748b' }}>
+                        {activeProducts[0].tagline || activeProducts[0].volume || 'Signature Creation'}
+                      </p>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: '#0284c7' }}>
+                          {activeProducts[0].price ? (activeProducts[0].price.startsWith('$') || activeProducts[0].price.startsWith('₹') ? activeProducts[0].price : `₹${activeProducts[0].price}`) : 'Price upon request'}
+                        </span>
+                        {activeProducts[0].inventory && (
+                          <span style={{ fontSize: '10px', fontWeight: 700, color: '#16a34a', backgroundColor: '#dcfce7', padding: '2px 6px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                            <Package size={10} /> {String(activeProducts[0].inventory).toLowerCase().includes('stock') || String(activeProducts[0].inventory).toLowerCase().includes('unit') ? activeProducts[0].inventory : `${activeProducts[0].inventory} in stock`}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div 
+                    onClick={handleOpenAddModal}
+                    style={{ cursor: 'pointer', textAlign: 'center', padding: '20px 14px', border: '1px dashed #cbd5e1', borderRadius: '14px', backgroundColor: '#f8fafc' }}
+                  >
+                    <p style={{ margin: '0 0 8px 0', fontSize: '12px', color: '#64748b' }}>No pieces listed yet.</p>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: '#0f172a' }}>
+                      <Plus size={13} /> Add First Creation
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-
-
-
-          </div>
-        )}
+          );
+        })()}
 
         {/* TAB 1: Product Catalog */}
         {activeTab === 'catalog' && (
