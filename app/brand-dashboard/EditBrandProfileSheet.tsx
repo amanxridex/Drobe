@@ -211,6 +211,12 @@ export default function EditBrandProfileSheet({
       return;
     }
 
+    const trimmedIg = formData.instagram?.trim().replace(/^@/, '');
+    if (!trimmedIg) {
+      setErrorMsg('Official Instagram handle is mandatory.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     const updated: BrandProfile = {
@@ -627,7 +633,25 @@ export default function EditBrandProfileSheet({
 
               {/* Instagram */}
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>Instagram Handle</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Instagram Handle</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <span style={{ 
+                    fontSize: '10px', 
+                    color: '#e11d48', 
+                    backgroundColor: '#ffe4e6', 
+                    border: '1px solid #fecdd3', 
+                    padding: '1px 7px', 
+                    borderRadius: '10px', 
+                    fontWeight: 700, 
+                    letterSpacing: '0.02em',
+                    textTransform: 'uppercase'
+                  }}>
+                    Mandatory
+                  </span>
+                </div>
                 <div className={styles.editInputWithIcon}>
                   <div className={styles.editInputLeftIcon}>
                     <InstagramIcon size={15} color="#64748b" />
@@ -640,6 +664,7 @@ export default function EditBrandProfileSheet({
                     className={styles.editTextInputWithIcon}
                   />
                 </div>
+                <span className={styles.editFieldHint}>Required for social verification on DROBE.</span>
               </div>
 
               {/* Inquiries Email */}

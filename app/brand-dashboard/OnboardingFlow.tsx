@@ -318,6 +318,13 @@ export default function OnboardingFlow({
         return false;
       }
     }
+    if (step.id === 'channels') {
+      const igTrimmed = brand.instagram?.trim().replace(/^@/, '') || '';
+      if (!igTrimmed) {
+        setErrorNotice('Official Instagram handle is mandatory to verify your brand presence.');
+        return false;
+      }
+    }
     if (step.id === 'banking') {
       const bank = brand.bankAccount;
       const nameTrimmed = bank?.accountHolderName?.trim();
@@ -1003,14 +1010,36 @@ export default function OnboardingFlow({
               </div>
 
               <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Official Instagram Handle</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Official Instagram Handle</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <span style={{ 
+                    fontSize: '10.5px', 
+                    color: '#e11d48', 
+                    backgroundColor: '#ffe4e6', 
+                    border: '1px solid #fecdd3', 
+                    padding: '2px 8px', 
+                    borderRadius: '12px', 
+                    fontWeight: 700, 
+                    letterSpacing: '0.02em',
+                    textTransform: 'uppercase'
+                  }}>
+                    Mandatory
+                  </span>
+                </div>
                 <input
                   type="text"
                   value={brand.instagram}
                   onChange={(e) => updateField('instagram', e.target.value)}
                   placeholder="@yourbrand"
                   className={styles.ronasInputField}
+                  style={!brand.instagram?.trim() && errorNotice?.includes('Instagram') ? { borderColor: '#e11d48', backgroundColor: '#fff1f2' } : undefined}
                 />
+                <span style={{ fontSize: '11.5px', color: '#64748b', marginTop: '5px', display: 'block' }}>
+                  Mandatory for brand verification and social credibility on DROBE.
+                </span>
               </div>
 
               <div className={styles.ronasInputGroup}>
