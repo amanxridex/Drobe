@@ -18,10 +18,12 @@ import {
   User,
   Compass,
   FileText,
-  Loader2
+  Loader2,
+  Crop
 } from 'lucide-react';
 import { BrandProfile } from './types';
 import { MaleIcon, FemaleIcon, BothIcon } from './OnboardingFlow';
+import ImageCropDrawer from './ImageCropDrawer';
 import styles from './brand-dashboard.module.css';
 import { supabaseUploadMedia } from '../lib/supabaseClient';
 
@@ -51,6 +53,23 @@ export default function EditBrandProfileSheet({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+  const [cropConfig, setCropConfig] = useState<{
+    isOpen: boolean;
+    imageSrc: string | null;
+    targetAspect: number;
+    title: string;
+    aspectLabel: string;
+    shape: 'rect' | 'round';
+    field: 'profileImage' | 'coverImage' | null;
+  }>({
+    isOpen: false,
+    imageSrc: null,
+    targetAspect: 1,
+    title: 'Crop Brand Emblem',
+    aspectLabel: '1:1 Square',
+    shape: 'round',
+    field: null
+  });
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -71,6 +90,69 @@ export default function EditBrandProfileSheet({
       [key]: value
     }));
     if (errorMsg) setErrorMsg(null);
+  };
+
+  const handleFileSelectForCrop = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: 'profileImage' | 'coverImage'
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          setCropConfig({
+            isOpen: true,
+            imageSrc: reader.result,
+            targetAspect: field === 'profileImage' ? 1 : 16 / 9,
+            title: field === 'profileImage' ? 'Crop & Frame Brand Emblem' : 'Crop & Frame Cover Banner',
+            aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Landscape',
+            shape: field === 'profileImage' ? 'round' : 'rect',
+            field
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
+  };
+
+  const handleOpenExistingCrop = (field: 'profileImage' | 'coverImage') => {
+    const currentSrc = field === 'profileImage' ? formData.profileImage : formData.coverImage;
+    if (!currentSrc) return;
+    setCropConfig({
+      isOpen: true,
+      imageSrc: currentSrc,
+      targetAspect: field === 'profileImage' ? 1 : 16 / 9,
+      title: field === 'profileImage' ? 'Adjust Brand Emblem' : 'Adjust Cover Banner',
+      aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Landscape',
+      shape: field === 'profileImage' ? 'round' : 'rect',
+      field
+    });
+  };
+
+  const handleApplyCroppedImage = async (croppedDataUrl: string, blob?: Blob) => {
+    if (!cropConfig.field) return;
+    const field = cropConfig.field;
+    const folder = field === 'profileImage' ? 'brands/logos' : 'brands/banners';
+
+    updateField(field, croppedDataUrl);
+
+    if (blob) {
+      setIsUploadingMedia(true);
+      try {
+        const brandSlug = (formData.name || 'brand').toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const file = new File([blob], `${brandSlug}_${field}_${Date.now()}.jpg`, { type: 'image/jpeg' });
+        const uploadRes = await supabaseUploadMedia(file, folder, `${brandSlug}_${Date.now()}`);
+        if (uploadRes && uploadRes.url) {
+          updateField(field, uploadRes.url);
+        }
+      } catch (err) {
+        console.warn('Background upload error:', err);
+      } finally {
+        setIsUploadingMedia(false);
+      }
+    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'profileImage' | 'coverImage') => {
@@ -232,7 +314,7 @@ export default function EditBrandProfileSheet({
                       type="file"
                       accept="image/*"
                       style={{ display: 'none' }}
-                      onChange={(e) => handleImageUpload(e, 'profileImage')}
+                      onChange={(e) => handleFileSelectForCrop(e, 'profileImage')}
                     />
                     <button
                       type="button"
@@ -240,8 +322,20 @@ export default function EditBrandProfileSheet({
                       className={styles.editUploadPillBtn}
                     >
                       <Upload size={13} />
-                      {formData.profileImage ? 'Change Emblem' : 'Upload Emblem'}
+                      {formData.profileImage ? 'Change & Crop' : 'Upload Emblem'}
                     </button>
+
+                    {formData.profileImage && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenExistingCrop('profileImage')}
+                        className={styles.cropActionBtn}
+                        title="Crop & frame emblem"
+                      >
+                        <Crop size={13} />
+                        <span>Crop &amp; Frame</span>
+                      </button>
+                    )}
 
                     {formData.profileImage && (
                       <button
@@ -281,7 +375,7 @@ export default function EditBrandProfileSheet({
                     type="file"
                     accept="image/*"
                     style={{ display: 'none' }}
-                    onChange={(e) => handleImageUpload(e, 'coverImage')}
+                    onChange={(e) => handleFileSelectForCrop(e, 'coverImage')}
                   />
                   <div className={styles.editBannerOverlayActions}>
                     <button
@@ -290,8 +384,20 @@ export default function EditBrandProfileSheet({
                       className={styles.editUploadPillBtn}
                     >
                       <Upload size={13} />
-                      {formData.coverImage ? 'Replace Banner' : 'Upload Banner'}
+                      {formData.coverImage ? 'Change & Crop' : 'Upload Banner'}
                     </button>
+
+                    {formData.coverImage && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenExistingCrop('coverImage')}
+                        className={styles.cropActionBtn}
+                        title="Crop & frame cover banner"
+                      >
+                        <Crop size={13} />
+                        <span>Crop &amp; Frame</span>
+                      </button>
+                    )}
 
                     {formData.coverImage && (
                       <button
@@ -626,6 +732,18 @@ export default function EditBrandProfileSheet({
           </div>
         </motion.div>
       </div>
+
+      {/* BOTTOM DRAWER FOR IMAGE CROPPING & POSITIONING */}
+      <ImageCropDrawer
+        isOpen={cropConfig.isOpen}
+        imageSrc={cropConfig.imageSrc}
+        targetAspect={cropConfig.targetAspect}
+        title={cropConfig.title}
+        aspectLabel={cropConfig.aspectLabel}
+        shape={cropConfig.shape}
+        onClose={() => setCropConfig((prev) => ({ ...prev, isOpen: false }))}
+        onApplyCrop={handleApplyCroppedImage}
+      />
     </AnimatePresence>
   );
 }

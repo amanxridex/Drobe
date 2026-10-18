@@ -16,11 +16,13 @@ import {
   Loader2,
   Building2,
   CreditCard,
-  ShieldCheck
+  ShieldCheck,
+  Crop
 } from 'lucide-react';
 import { BrandProfile, BrandBankAccount } from './types';
 import { supabaseUploadMedia } from '../lib/supabaseClient';
 import { EmailOtpModal, ForgotPasswordModal } from './AuthModals';
+import ImageCropDrawer from './ImageCropDrawer';
 import styles from './brand-dashboard.module.css';
 
 interface OnboardingFlowProps {
@@ -99,7 +101,25 @@ export default function OnboardingFlow({
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [emailAlreadyExists, setEmailAlreadyExists] = useState(false);
   const [existingBrandName, setExistingBrandName] = useState<string | undefined>(undefined);
+  const [cropConfig, setCropConfig] = useState<{
+    isOpen: boolean;
+    imageSrc: string | null;
+    targetAspect: number;
+    title: string;
+    aspectLabel: string;
+    shape: 'rect' | 'round';
+    field: 'profileImage' | 'coverImage' | null;
+  }>({
+    isOpen: false,
+    imageSrc: null,
+    targetAspect: 1,
+    title: 'Crop & Frame Brand Emblem',
+    aspectLabel: '1:1 Square',
+    shape: 'round',
+    field: null
+  });
   const pillTrackRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     if (pillTrackRef.current) {
@@ -172,6 +192,70 @@ export default function OnboardingFlow({
         [field]: val
       }
     });
+  };
+
+  const handleFileSelectForCrop = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: 'profileImage' | 'coverImage'
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          setCropConfig({
+            isOpen: true,
+            imageSrc: reader.result,
+            targetAspect: field === 'profileImage' ? 1 : 16 / 9,
+            title: field === 'profileImage' ? 'Crop & Frame Brand Emblem' : 'Crop & Frame Cover Panorama Banner',
+            aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Landscape',
+            shape: field === 'profileImage' ? 'round' : 'rect',
+            field
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
+  };
+
+  const handleOpenExistingCrop = (field: 'profileImage' | 'coverImage') => {
+    const currentSrc = field === 'profileImage' ? brand.profileImage : brand.coverImage;
+    if (!currentSrc) return;
+    setCropConfig({
+      isOpen: true,
+      imageSrc: currentSrc,
+      targetAspect: field === 'profileImage' ? 1 : 16 / 9,
+      title: field === 'profileImage' ? 'Adjust Brand Emblem' : 'Adjust Cover Panorama Banner',
+      aspectLabel: field === 'profileImage' ? '1:1 Square' : '16:9 Landscape',
+      shape: field === 'profileImage' ? 'round' : 'rect',
+      field
+    });
+  };
+
+  const handleApplyCroppedImage = async (croppedDataUrl: string, blob?: Blob) => {
+    if (!cropConfig.field) return;
+    const field = cropConfig.field;
+    const folder = field === 'profileImage' ? 'brands/logos' : 'brands/banners';
+
+    // Set cropped data url immediately so user sees the change right away
+    updateField(field, croppedDataUrl);
+
+    if (blob) {
+      setIsUploadingMedia(true);
+      try {
+        const brandSlug = (brand.name || 'brand').toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const file = new File([blob], `${brandSlug}_${field}_${Date.now()}.jpg`, { type: 'image/jpeg' });
+        const uploadRes = await supabaseUploadMedia(file, folder, `${brandSlug}_${Date.now()}`);
+        if (uploadRes && uploadRes.url) {
+          updateField(field, uploadRes.url);
+        }
+      } catch (err) {
+        console.warn('Background storage upload error:', err);
+      } finally {
+        setIsUploadingMedia(false);
+      }
+    }
   };
 
   const handleFileUpload = async (
@@ -710,17 +794,28 @@ export default function OnboardingFlow({
                     )}
 
                     <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', gap: '8px' }}>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         <label className={styles.ronasUploadBtn} style={{ cursor: 'pointer' }}>
                           <Upload size={14} style={{ marginRight: '6px' }} />
-                          Upload Logo
+                          {brand.profileImage ? 'Change & Crop' : 'Upload Logo'}
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => handleFileUpload(e, 'brands/logos', (data) => updateField('profileImage', data))}
+                            onChange={(e) => handleFileSelectForCrop(e, 'profileImage')}
                             style={{ display: 'none' }}
                           />
                         </label>
+
+                        {brand.profileImage && (
+                          <button
+                            type="button"
+                            onClick={() => handleOpenExistingCrop('profileImage')}
+                            className={styles.cropActionBtn}
+                          >
+                            <Crop size={13} />
+                            <span>Crop &amp; Frame (1:1)</span>
+                          </button>
+                        )}
                       </div>
                       <div style={{ marginTop: '8px' }}>
                         <input
@@ -773,14 +868,27 @@ export default function OnboardingFlow({
                   <div className={styles.ronasMediaControlsRow}>
                     <label className={styles.ronasUploadBtn} style={{ cursor: 'pointer', flexShrink: 0 }}>
                       <Upload size={14} style={{ marginRight: '6px' }} />
-                      Upload Banner
+                      {brand.coverImage ? 'Change & Crop' : 'Upload Banner'}
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => handleFileUpload(e, 'brands/banners', (data) => updateField('coverImage', data))}
+                        onChange={(e) => handleFileSelectForCrop(e, 'coverImage')}
                         style={{ display: 'none' }}
                       />
                     </label>
+
+                    {brand.coverImage && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenExistingCrop('coverImage')}
+                        className={styles.cropActionBtn}
+                        style={{ flexShrink: 0 }}
+                      >
+                        <Crop size={13} />
+                        <span>Crop &amp; Frame (16:9)</span>
+                      </button>
+                    )}
+
                     <input
                       type="text"
                       value={brand.coverImage.startsWith('data:') ? '' : brand.coverImage}
@@ -1208,6 +1316,18 @@ export default function OnboardingFlow({
           setShowForgotPasswordModal(false);
           onExit();
         }}
+      />
+
+      {/* 7. BOTTOM DRAWER FOR IMAGE CROPPING & POSITIONING */}
+      <ImageCropDrawer
+        isOpen={cropConfig.isOpen}
+        imageSrc={cropConfig.imageSrc}
+        targetAspect={cropConfig.targetAspect}
+        title={cropConfig.title}
+        aspectLabel={cropConfig.aspectLabel}
+        shape={cropConfig.shape}
+        onClose={() => setCropConfig((prev) => ({ ...prev, isOpen: false }))}
+        onApplyCrop={handleApplyCroppedImage}
       />
     </div>
   );
