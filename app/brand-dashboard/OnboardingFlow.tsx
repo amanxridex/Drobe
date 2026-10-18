@@ -219,8 +219,13 @@ export default function OnboardingFlow({
           <span>{currentStep === 0 ? 'Exit' : 'Back'}</span>
         </button>
 
-        <div className={styles.onboardingStepIndicatorBadge}>
-          Step {currentStep + 1} of {STEPS.length}
+        {/* Center Official DROBE Logo */}
+        <div className={styles.onboardingHeaderLogo}>
+          <img
+            src="/drobe-logo-full.png"
+            alt="DROBE"
+            className={styles.onboardingHeaderLogoImg}
+          />
         </div>
 
         {onSaveDraft ? (
