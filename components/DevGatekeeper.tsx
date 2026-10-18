@@ -44,15 +44,6 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
     (window.location.hostname.startsWith('brands.') ||
      window.location.hostname === 'brands.drobe.one');
 
-  // Automatically redirect any client attempt on production drobe.one/brand-dashboard to brands.drobe.one (skip on localhost)
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !isLocalhost && !window.location.hostname.startsWith('brands.')) {
-      if (pathname?.startsWith('/brand-dashboard')) {
-        const targetPath = pathname.replace(/^\/brand-dashboard/, '') || '/';
-        window.location.replace(`https://brands.drobe.one${targetPath}${window.location.search}`);
-      }
-    }
-  }, [pathname, isLocalhost]);
 
   // Bypassed management routes (admin, portal, delivery partner, bot crawlers, deep links, brand-dashboard, or brands.drobe.one)
   const isBypassedRoute =

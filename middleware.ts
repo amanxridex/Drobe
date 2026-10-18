@@ -247,14 +247,6 @@ export function middleware(request: NextRequest) {
       rewriteResponse.headers.set('X-DROBE-Security-Shield', 'Active');
       return rewriteResponse;
     }
-  } else if (!isLocalhost) {
-    // 6. Explicitly block /brand-dashboard on main drobe.one domain in PRODUCTION -> redirect to brands.drobe.one
-    if (pathname.startsWith('/brand-dashboard')) {
-      const targetPath = pathname.replace(/^\/brand-dashboard/, '') || '/';
-      const redirectUrl = new URL(targetPath, 'https://brands.drobe.one');
-      redirectUrl.search = request.nextUrl.search;
-      return NextResponse.redirect(redirectUrl, 301);
-    }
   }
 
   // 7. Detect and optimize response for verified AI bots (ChatGPT, Claude, Perplexity, etc.)
