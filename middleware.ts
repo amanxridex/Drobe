@@ -214,6 +214,7 @@ export function middleware(request: NextRequest) {
 
   // 5. Subdomain Routing: Map brands.drobe.one -> /brand-dashboard
   const host = (request.headers.get('host') || request.nextUrl.hostname || '').toLowerCase();
+  const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
   const isBrandSubdomain = host.startsWith('brands.') || host === 'brands.drobe.one';
 
   if (isBrandSubdomain) {
@@ -246,8 +247,8 @@ export function middleware(request: NextRequest) {
       rewriteResponse.headers.set('X-DROBE-Security-Shield', 'Active');
       return rewriteResponse;
     }
-  } else {
-    // 6. Explicitly block /brand-dashboard on main drobe.one domain -> redirect to brands.drobe.one
+  } else if (!isLocalhost) {
+    // 6. Explicitly block /brand-dashboard on main drobe.one domain in PRODUCTION -> redirect to brands.drobe.one
     if (pathname.startsWith('/brand-dashboard')) {
       const targetPath = pathname.replace(/^\/brand-dashboard/, '') || '/';
       const redirectUrl = new URL(targetPath, 'https://brands.drobe.one');

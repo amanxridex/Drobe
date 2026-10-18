@@ -17,14 +17,7 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
     return false;
   });
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const h = window.location.hostname.toLowerCase();
-      if (h.startsWith('brands.') || h === 'brands.drobe.one') {
-        setIsBrandSubdomain(true);
-      }
-    }
-  }, []);
+  const isBrandPortal = isBrandSubdomain || (pathname?.startsWith('/brand-dashboard') ?? false);
 
   useEffect(() => {
     const handleViewport = () => {

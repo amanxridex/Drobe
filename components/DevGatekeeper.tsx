@@ -32,26 +32,33 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
     pathname?.startsWith('/brand/') ||
     pathname?.startsWith('/collection/');
 
+  // Check if running locally on localhost
+  const isLocalhost =
+    typeof window !== 'undefined' &&
+    (window.location.hostname.includes('localhost') ||
+     window.location.hostname === '127.0.0.1');
+
   // Check if current host is brands subdomain (brands.drobe.one)
   const isBrandSubdomain =
     typeof window !== 'undefined' &&
     (window.location.hostname.startsWith('brands.') ||
      window.location.hostname === 'brands.drobe.one');
 
-  // Automatically redirect any client attempt on drobe.one/brand-dashboard to brands.drobe.one
+  // Automatically redirect any client attempt on production drobe.one/brand-dashboard to brands.drobe.one (skip on localhost)
   useEffect(() => {
-    if (typeof window !== 'undefined' && !window.location.hostname.startsWith('brands.')) {
+    if (typeof window !== 'undefined' && !isLocalhost && !window.location.hostname.startsWith('brands.')) {
       if (pathname?.startsWith('/brand-dashboard')) {
         const targetPath = pathname.replace(/^\/brand-dashboard/, '') || '/';
         window.location.replace(`https://brands.drobe.one${targetPath}${window.location.search}`);
       }
     }
-  }, [pathname]);
+  }, [pathname, isLocalhost]);
 
-  // Bypassed management routes (admin, portal, delivery partner, bot crawlers, deep links, or brands.drobe.one)
+  // Bypassed management routes (admin, portal, delivery partner, bot crawlers, deep links, brand-dashboard, or brands.drobe.one)
   const isBypassedRoute =
     isBot ||
     isBrandSubdomain ||
+    pathname?.startsWith('/brand-dashboard') ||
     isDirectProductOrBrand ||
     pathname?.startsWith('/admin-dashboard') ||
     pathname?.startsWith('/platform-changes') ||
