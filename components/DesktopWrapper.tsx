@@ -98,7 +98,7 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
           id="mobile-app-frame"
           style={{
             width: '100%',
-            maxWidth: isMobile ? '100%' : '460px',
+            maxWidth: isMobile ? '100%' : '490px',
             height: isMobile ? 'var(--app-height, 100dvh)' : 'min(920px, 96vh)',
             maxHeight: isMobile ? '100%' : '920px',
             backgroundColor: '#ffffff',
