@@ -1605,30 +1605,52 @@
   display: flex;
   background: #e2e8f0;
   border-radius: 9999px;
-  padding: 3px;
-  gap: 3px;
+  padding: 4px;
+  gap: 4px;
   margin-top: 8px;
+  position: relative;
 }
 
 .categoryToggleOption {
   flex: 1;
-  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 8px;
   border-radius: 9999px;
   border: none;
   background: transparent;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
   color: #64748b;
   cursor: pointer;
   font-family: inherit;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: center;
+  user-select: none;
 }
 
-.categoryToggleOptionActive {
-  background: #ffffff !important;
-  color: #0b132b !important;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+.categoryToggleOption:hover {
+  color: #0f172a;
+}
+
+.categoryToggleOptionMaleActive {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+.categoryToggleOptionBothActive {
+  background: linear-gradient(135deg, #2563eb 0%, #ec4899 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.35);
+}
+
+.categoryToggleOptionFemaleActive {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(219, 39, 119, 0.35);
 }
 
 .ronasBannerPreviewBox {
@@ -3282,52 +3304,6 @@
   color: #64748b;
 }
 
-/* 3-Position Category Toggle (Male / Both / Female) */
-.categoryToggleContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-
-.categoryToggleTrack {
-  display: flex;
-  position: relative;
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 4px;
-  user-select: none;
-}
-
-.categoryToggleOption {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 0;
-  border: none;
-  background: transparent;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 2;
-}
-
-.categoryToggleOption:hover {
-  color: #0f172a;
-}
-
-.categoryToggleOptionActive {
-  background-color: #0f172a;
-  color: #ffffff !important;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
-}
 
 .categoryToggleSubtext {
   font-size: 11px;

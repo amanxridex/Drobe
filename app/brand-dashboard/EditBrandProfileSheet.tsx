@@ -21,6 +21,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { BrandProfile } from './types';
+import { MaleIcon, FemaleIcon, BothIcon } from './OnboardingFlow';
 import styles from './brand-dashboard.module.css';
 import { supabaseUploadMedia } from '../lib/supabaseClient';
 
@@ -346,19 +347,29 @@ export default function EditBrandProfileSheet({
                 <label className={styles.editFieldLabel}>Target Client Category</label>
                 <div className={styles.editSegmentedGroup}>
                   {[
-                    { value: 'Male', label: 'Male' },
-                    { value: 'Female', label: 'Female' },
-                    { value: 'Male & Female', label: 'Male & Female' }
-                  ].map(cat => (
-                    <button
-                      key={cat.value}
-                      type="button"
-                      onClick={() => updateField('category', cat.value)}
-                      className={`${styles.editSegmentBtn} ${formData.category === cat.value ? styles.editSegmentBtnActive : ''}`}
-                    >
-                      {cat.label}
-                    </button>
-                  ))}
+                    { value: 'Male', label: 'Male', icon: <MaleIcon size={14} color={formData.category === 'Male' ? '#ffffff' : '#2563eb'} /> },
+                    { value: 'Both', label: 'Both', icon: <BothIcon size={13} color={(formData.category === 'Both' || formData.category === 'Male & Female') ? '#ffffff' : '#6366f1'} /> },
+                    { value: 'Female', label: 'Female', icon: <FemaleIcon size={14} color={formData.category === 'Female' ? '#ffffff' : '#db2777'} /> }
+                  ].map(cat => {
+                    const isSelected = cat.value === 'Both' 
+                      ? (formData.category === 'Both' || formData.category === 'Male & Female')
+                      : formData.category === cat.value;
+                    const activeClass = isSelected
+                      ? (cat.value === 'Male' ? styles.categoryToggleOptionMaleActive : cat.value === 'Female' ? styles.categoryToggleOptionFemaleActive : styles.categoryToggleOptionBothActive)
+                      : '';
+                    return (
+                      <button
+                        key={cat.value}
+                        type="button"
+                        onClick={() => updateField('category', cat.value as any)}
+                        className={`${styles.editSegmentBtn} ${activeClass}`}
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                      >
+                        {cat.icon}
+                        <span>{cat.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

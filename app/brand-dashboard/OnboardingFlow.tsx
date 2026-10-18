@@ -51,6 +51,35 @@ const STEPS = [
   { id: 'launch', num: '06', title: 'Launch', fullTitle: 'Review & submit', sub: 'Verify brand dossier & submit for approval' }
 ];
 
+export function MaleIcon({ size = 15, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+      <circle cx="10" cy="14" r="5" />
+      <path d="M19 5l-5.4 5.4" />
+      <path d="M15 5h4v4" />
+    </svg>
+  );
+}
+
+export function FemaleIcon({ size = 15, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+      <circle cx="12" cy="9" r="5" />
+      <path d="M12 14v7" />
+      <path d="M9 18h6" />
+    </svg>
+  );
+}
+
+export function BothIcon({ size = 14, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+      <MaleIcon size={size} color={color} />
+      <FemaleIcon size={size} color={color} />
+    </span>
+  );
+}
+
 export default function OnboardingFlow({
   brand,
   onChange,
@@ -545,31 +574,57 @@ export default function OnboardingFlow({
               <div className={styles.categoryToggleContainer}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Category</label>
-                  <span style={{ fontSize: '11px', color: '#64748b' }}>
-                    {normalizedCategory === 'Both' ? 'Both (Male & Female)' : normalizedCategory}
-                  </span>
+                  {normalizedCategory === 'Male' && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', fontWeight: 700, color: '#2563eb', backgroundColor: '#eff6ff', padding: '2px 9px', borderRadius: '12px', border: '1px solid #bfdbfe' }}>
+                      <MaleIcon size={12} color="#2563eb" /> Male
+                    </span>
+                  )}
+                  {normalizedCategory === 'Female' && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', fontWeight: 700, color: '#db2777', backgroundColor: '#fdf2f8', padding: '2px 9px', borderRadius: '12px', border: '1px solid #fbcfe8' }}>
+                      <FemaleIcon size={12} color="#db2777" /> Female
+                    </span>
+                  )}
+                  {normalizedCategory === 'Both' && (
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      fontSize: '11.5px',
+                      fontWeight: 700,
+                      background: 'linear-gradient(90deg, #eff6ff 0%, #fdf2f8 100%)',
+                      padding: '2px 9px',
+                      borderRadius: '12px',
+                      border: '1px solid #e0e7ff',
+                      color: '#4338ca'
+                    }}>
+                      <BothIcon size={11} color="#6366f1" /> Both (Male & Female)
+                    </span>
+                  )}
                 </div>
                 <div className={styles.categoryToggleTrack}>
                   <button
                     type="button"
                     onClick={() => updateField('category', 'Male')}
-                    className={`${styles.categoryToggleOption} ${normalizedCategory === 'Male' ? styles.categoryToggleOptionActive : ''}`}
+                    className={`${styles.categoryToggleOption} ${normalizedCategory === 'Male' ? styles.categoryToggleOptionMaleActive : ''}`}
                   >
-                    Male
+                    <MaleIcon size={15} color={normalizedCategory === 'Male' ? '#ffffff' : '#2563eb'} />
+                    <span>Male</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => updateField('category', 'Both')}
-                    className={`${styles.categoryToggleOption} ${normalizedCategory === 'Both' ? styles.categoryToggleOptionActive : ''}`}
+                    className={`${styles.categoryToggleOption} ${normalizedCategory === 'Both' ? styles.categoryToggleOptionBothActive : ''}`}
                   >
-                    Both
+                    <BothIcon size={14} color={normalizedCategory === 'Both' ? '#ffffff' : '#6366f1'} />
+                    <span>Both</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => updateField('category', 'Female')}
-                    className={`${styles.categoryToggleOption} ${normalizedCategory === 'Female' ? styles.categoryToggleOptionActive : ''}`}
+                    className={`${styles.categoryToggleOption} ${normalizedCategory === 'Female' ? styles.categoryToggleOptionFemaleActive : ''}`}
                   >
-                    Female
+                    <FemaleIcon size={15} color={normalizedCategory === 'Female' ? '#ffffff' : '#db2777'} />
+                    <span>Female</span>
                   </button>
                 </div>
               </div>
