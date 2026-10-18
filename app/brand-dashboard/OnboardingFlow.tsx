@@ -209,17 +209,8 @@ export default function OnboardingFlow({
 
   return (
     <div className={styles.mobileContainer}>
-      {/* 1. CLEAN TOP HEADER WITH BACK & DRAFT */}
+      {/* 1. CLEAN CENTERED DROBE HEADER */}
       <div className={styles.onboardingTopNav}>
-        <button
-          type="button"
-          onClick={currentStep === 0 ? onExit : () => setCurrentStep(currentStep - 1)}
-          className={styles.onboardingNavBtn}
-        >
-          <ArrowLeft size={16} />
-          <span>{currentStep === 0 ? 'Exit' : 'Back'}</span>
-        </button>
-
         {/* Center Official DROBE Logo */}
         <div className={styles.onboardingHeaderLogo}>
           {logoFailed ? (
@@ -233,18 +224,6 @@ export default function OnboardingFlow({
             />
           )}
         </div>
-
-        {onSaveDraft ? (
-          <button
-            type="button"
-            onClick={onSaveDraft}
-            className={styles.onboardingSaveDraftBtn}
-          >
-            Save Draft
-          </button>
-        ) : (
-          <div style={{ width: '60px' }} />
-        )}
       </div>
 
       {/* 2. CRISP STEPPER PILL TRACK */}

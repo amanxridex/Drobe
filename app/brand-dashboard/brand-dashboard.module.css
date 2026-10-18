@@ -1240,42 +1240,16 @@
   padding: 0 16px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   background: #ffffff;
   border-bottom: 1px solid #f1f5f9;
   position: relative;
 }
 
-.onboardingNavBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  color: #0f172a;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 9999px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background-color 0.15s ease;
-  z-index: 2;
-}
-
-.onboardingNavBtn:hover {
-  background: #e2e8f0;
-}
-
 .onboardingHeaderLogo {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
 }
 
 .onboardingHeaderLogoImg {
