@@ -65,6 +65,8 @@ export interface BrandProfile {
   password?: string;
   emailVerified?: boolean;
   bankAccount?: BrandBankAccount;
+  warehouse?: string; // 'ahmedabad' | 'chandigarh' | 'gurgaon' | 'lucknow'
+  warehouses?: string[]; // e.g. ['ahmedabad']
   status: 'Published' | 'Under Review' | 'Draft' | 'Approved' | 'Waiting for Approval';
   updatedAt: string;
 }
@@ -119,6 +121,8 @@ export function mapDbBrandToBrandProfile(row: any, prods: any[] = []): BrandProf
       accountType: bank.accountType || row.bank_account_type || 'Current',
       isVerified: Boolean(bank.isVerified ?? row.bank_is_verified)
     },
+    warehouse: row.warehouse || row.dossier_data?.warehouse || 'ahmedabad',
+    warehouses: Array.isArray(row.warehouses) ? row.warehouses : (row.dossier_data?.warehouses || ['ahmedabad']),
     status: (row.status === 'Approved' ? 'Approved' : (row.status === 'Waiting for Approval' ? 'Waiting for Approval' : 'Published')) as any,
     updatedAt: row.updated_at ? new Date(row.updated_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Recent'
   };

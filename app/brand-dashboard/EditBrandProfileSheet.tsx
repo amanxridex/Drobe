@@ -19,11 +19,14 @@ import {
   Compass,
   FileText,
   Loader2,
-  Crop
+  Crop,
+  Warehouse,
+  MapPin
 } from 'lucide-react';
 import { BrandProfile } from './types';
 import { MaleIcon, FemaleIcon, BothIcon, MandatoryBadge, OptionalBadge } from './OnboardingFlow';
 import ImageCropDrawer from './ImageCropDrawer';
+import { DROBE_WAREHOUSES } from './warehousesData';
 import styles from './brand-dashboard.module.css';
 import { supabaseUploadMedia } from '../lib/supabaseClient';
 
@@ -53,6 +56,7 @@ export default function EditBrandProfileSheet({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+  const [lockedWarehouseNotice, setLockedWarehouseNotice] = useState<string | null>(null);
   const [cropConfig, setCropConfig] = useState<{
     isOpen: boolean;
     imageSrc: string | null;
@@ -260,11 +264,19 @@ export default function EditBrandProfileSheet({
       return;
     }
 
+    const selectedWh = (formData.warehouse || 'ahmedabad').trim();
+    if (!selectedWh) {
+      setErrorMsg('Fulfillment Darkstore Warehouse is mandatory.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     const updated: BrandProfile = {
       ...formData,
       name: trimmedName,
+      warehouse: selectedWh,
+      warehouses: Array.isArray(formData.warehouses) && formData.warehouses.length > 0 ? formData.warehouses : [selectedWh],
       updatedAt: new Date().toISOString()
     };
 
@@ -801,7 +813,202 @@ export default function EditBrandProfileSheet({
               </div>
             </div>
 
-            {/* --- SECTION 6: CREDENTIALS --- */}
+            {/* --- SECTION 6: INVENTORY WAREHOUSE HUB --- */}
+            <div className={styles.editSectionCard}>
+              <div className={styles.editSectionHeader}>
+                <Warehouse size={15} className={styles.editSectionIcon} />
+                <div>
+                  <h4 className={styles.editSectionTitle}>Inventory Fulfillment Warehouses</h4>
+                  <p className={styles.editSectionSub}>Darkstore hubs where your brand inventory is inwarded, tagged, and stored</p>
+                </div>
+              </div>
+
+              {lockedWarehouseNotice && (
+                <div style={{
+                  backgroundColor: '#fffbeb',
+                  border: '1px solid #fde68a',
+                  borderRadius: '10px',
+                  padding: '10px 12px',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  gap: '8px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                    <Lock size={15} color="#d97706" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <span style={{ fontSize: '11.5px', color: '#92400e', lineHeight: 1.4 }}>
+                      {lockedWarehouseNotice}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setLockedWarehouseNotice(null)}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#92400e', padding: 0 }}
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Primary Darkstore Warehouse</label>
+                  <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                </div>
+                <MandatoryBadge />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
+                {DROBE_WAREHOUSES.map((wh) => {
+                  const isSelected = (formData.warehouse || 'ahmedabad') === wh.id;
+                  const isAvailable = wh.isAvailable;
+
+                  return (
+                    <div
+                      key={wh.id}
+                      onClick={() => {
+                        if (isAvailable) {
+                          updateField('warehouse', wh.id);
+                          setLockedWarehouseNotice(null);
+                        } else {
+                          setLockedWarehouseNotice(
+                            `Coming out in next phases: ${wh.name} (${wh.city}) is scheduled for ${wh.phase}. Currently, all stock is inwarded through Ahmedabad Mega Darkstore #01. You can add more warehouses later from your profile settings.`
+                          );
+                        }
+                      }}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: '12px',
+                        border: isSelected
+                          ? '2px solid #2563eb'
+                          : isAvailable
+                          ? '1.5px solid #cbd5e1'
+                          : '1.5px solid #e2e8f0',
+                        backgroundColor: isSelected
+                          ? '#eff6ff'
+                          : isAvailable
+                          ? '#ffffff'
+                          : '#f8fafc',
+                        cursor: isAvailable ? 'pointer' : 'not-allowed',
+                        opacity: isAvailable ? 1 : 0.75,
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                          <div style={{
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '8px',
+                            backgroundColor: isSelected ? '#2563eb' : '#f1f5f9',
+                            color: isSelected ? '#ffffff' : '#64748b',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0
+                          }}>
+                            {isAvailable ? <Warehouse size={16} /> : <Lock size={14} />}
+                          </div>
+
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                              <span style={{ fontSize: '13px', fontWeight: 700, color: isSelected ? '#1e3a8a' : '#0f172a' }}>
+                                {wh.name}
+                              </span>
+                              <span style={{
+                                fontSize: '9.5px',
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                padding: '2px 6px',
+                                borderRadius: '5px',
+                                letterSpacing: '0.02em',
+                                backgroundColor: isSelected ? '#dbeafe' : isAvailable ? '#dcfce7' : '#fef3c7',
+                                color: isSelected ? '#1d4ed8' : isAvailable ? '#15803d' : '#b45309',
+                                border: isSelected ? '1px solid #bfdbfe' : isAvailable ? '1px solid #bbf7d0' : '1px solid #fde68a'
+                              }}>
+                                {isAvailable ? (isSelected ? 'Selected · Active' : wh.badge) : 'Coming out in next phases'}
+                              </span>
+                            </div>
+                            <p style={{ fontSize: '11.5px', color: '#64748b', margin: '2px 0 0' }}>
+                              {wh.tagline}
+                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px', fontSize: '10.5px', color: '#94a3b8' }}>
+                              <MapPin size={11} />
+                              <span>{wh.address}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ flexShrink: 0 }}>
+                          {isAvailable ? (
+                            <div style={{
+                              width: '18px',
+                              height: '18px',
+                              borderRadius: '50%',
+                              border: `2px solid ${isSelected ? '#2563eb' : '#cbd5e1'}`,
+                              backgroundColor: isSelected ? '#2563eb' : '#ffffff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}>
+                              {isSelected && <Check size={11} strokeWidth={3} color="#ffffff" />}
+                            </div>
+                          ) : (
+                            <span style={{
+                              fontSize: '9.5px',
+                              fontWeight: 700,
+                              color: '#64748b',
+                              backgroundColor: '#e2e8f0',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '3px'
+                            }}>
+                              <Lock size={9} /> Locked
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {!isAvailable && (
+                        <div style={{
+                          marginTop: '6px',
+                          paddingTop: '6px',
+                          borderTop: '1px dashed #e2e8f0',
+                          fontSize: '10.5px',
+                          color: '#b45309',
+                          fontWeight: 500
+                        }}>
+                          🔒 Coming out in next phases · You can add more warehouses later from your profile settings
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div style={{
+                backgroundColor: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '10px',
+                padding: '10px 12px',
+                fontSize: '11.5px',
+                color: '#475569',
+                lineHeight: 1.45,
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '8px'
+              }}>
+                <span>💡</span>
+                <div>
+                  <strong>Warehouse Expansion:</strong> You can add more warehouses later from your profile settings as regional fulfillment nodes in Chandigarh, Gurgaon, and Lucknow activate in future phases.
+                </div>
+              </div>
+            </div>
+
+            {/* --- SECTION 7: CREDENTIALS --- */}
             <div className={styles.editSectionCard}>
               <div className={styles.editSectionHeader}>
                 <Lock size={15} className={styles.editSectionIcon} />

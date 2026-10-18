@@ -19,13 +19,16 @@ import {
   ShieldCheck,
   Crop,
   Camera,
-  Zap
+  Zap,
+  Warehouse,
+  MapPin
 } from 'lucide-react';
 import { BrandProfile, BrandBankAccount } from './types';
 import { supabaseUploadMedia } from '../lib/supabaseClient';
 import { EmailOtpModal, ForgotPasswordModal } from './AuthModals';
 import ImageCropDrawer from './ImageCropDrawer';
 import { POPULAR_BANKS, ALL_INDIAN_BANKS, POPULAR_UPI_HANDLES } from './indianBanks';
+import { DROBE_WAREHOUSES } from './warehousesData';
 import styles from './brand-dashboard.module.css';
 
 interface OnboardingFlowProps {
@@ -42,8 +45,9 @@ const STEPS = [
   { id: 'basics', num: '02', title: 'Basics', fullTitle: 'Brand basics', sub: 'Name, category & location' },
   { id: 'visuals', num: '03', title: 'Visuals', fullTitle: 'Visual assets', sub: 'Logo emblem, cover banner & story' },
   { id: 'channels', num: '04', title: 'Channels', fullTitle: 'Channels', sub: 'Website, Instagram & concierge email' },
-  { id: 'banking', num: '05', title: 'Banking', fullTitle: 'Payout Banking', sub: 'Settlement account for daily door-trial payouts' },
-  { id: 'launch', num: '06', title: 'Launch', fullTitle: 'Review & submit', sub: 'Verify brand dossier & submit for approval' }
+  { id: 'warehouse', num: '05', title: 'Warehouse', fullTitle: 'Inventory Fulfillment Hub', sub: 'Select darkstore hub to inward & store your stock' },
+  { id: 'banking', num: '06', title: 'Banking', fullTitle: 'Payout Banking', sub: 'Settlement account for daily door-trial payouts' },
+  { id: 'launch', num: '07', title: 'Launch', fullTitle: 'Review & submit', sub: 'Verify brand dossier & submit for approval' }
 ];
 
 export function MaleIcon({ size = 15, color = 'currentColor' }: { size?: number; color?: string }) {
@@ -160,6 +164,7 @@ export default function OnboardingFlow({
   const coverFileInputRef = useRef<HTMLInputElement>(null);
   const [isOtherBankSelected, setIsOtherBankSelected] = useState(false);
   const [customBankName, setCustomBankName] = useState('');
+  const [lockedWarehouseNotice, setLockedWarehouseNotice] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -410,6 +415,14 @@ export default function OnboardingFlow({
       }
     }
 
+    if (step.id === 'warehouse') {
+      const selectedWh = (brand.warehouse || 'ahmedabad').trim();
+      if (!selectedWh) {
+        if (!silent) setErrorNotice('Please select an active fulfillment warehouse hub.');
+        return false;
+      }
+    }
+
     if (step.id === 'banking') {
       const bank = brand.bankAccount;
       const isUpi = bank?.payoutMethod === 'upi';
@@ -488,9 +501,15 @@ export default function OnboardingFlow({
       return false;
     }
 
-    // Step 4: Banking
+    // Step 4: Warehouse
     if (!validateStep(4)) {
       setCurrentStep(4);
+      return false;
+    }
+
+    // Step 5: Banking
+    if (!validateStep(5)) {
+      setCurrentStep(5);
       return false;
     }
 
@@ -607,13 +626,14 @@ export default function OnboardingFlow({
     brand.instagram?.trim().replace(/^@/, '') &&
     (brand.inquiriesEmail || brand.email || '').trim().includes('@')
   );
-  const isStep4Done = Boolean(
+  const isStep4Done = Boolean((brand.warehouse || 'ahmedabad').trim());
+  const isStep5Done = Boolean(
     brand.bankAccount?.payoutMethod === 'upi'
       ? (brand.bankAccount?.accountHolderName?.trim() && (brand.bankAccount?.accountHolderName?.trim().length || 0) >= 3 && brand.bankAccount?.upiId?.trim() && brand.bankAccount.upiId.includes('@'))
       : (brand.bankAccount?.accountHolderName?.trim() && (brand.bankAccount?.accountHolderName?.trim().length || 0) >= 3 && brand.bankAccount?.bankName?.trim() && brand.bankAccount.bankName !== 'Other Bank (Specify Below)' && (brand.bankAccount?.accountNumber || '').trim().length >= 8 && (brand.bankAccount?.ifscCode || '').trim().length === 11)
   );
 
-  const isProfileComplete = isStep0Done && isStep1Done && isStep2Done && isStep3Done && isStep4Done;
+  const isProfileComplete = isStep0Done && isStep1Done && isStep2Done && isStep3Done && isStep4Done && isStep5Done;
 
   const activeStepMeta = STEPS[currentStep];
 
@@ -1308,6 +1328,253 @@ export default function OnboardingFlow({
             </div>
           )}
 
+          {/* STEP 4: Inventory Fulfillment Warehouse Hub */}
+          {activeStepMeta.id === 'warehouse' && (
+            <div className={styles.ronasFormContainer}>
+              {/* Introduction Banner */}
+              <div style={{
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: '12px',
+                padding: '12px 14px',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '10px'
+              }}>
+                <Warehouse size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div style={{ fontSize: '12px', color: '#166534', lineHeight: 1.45 }}>
+                  <strong style={{ color: '#14532d' }}>Central Darkstore Inwarding:</strong> Select the primary darkstore warehouse where your inventory will be dispatched, tagged, and held for 30-minute doorstep trials.
+                </div>
+              </div>
+
+              {/* Locked Warehouse Interactive Alert */}
+              {lockedWarehouseNotice && (
+                <div style={{
+                  backgroundColor: '#fffbeb',
+                  border: '1px solid #fde68a',
+                  borderRadius: '12px',
+                  padding: '12px 14px',
+                  marginBottom: '16px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  gap: '10px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                    <Lock size={16} color="#d97706" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div style={{ fontSize: '12px', color: '#92400e', lineHeight: 1.45 }}>
+                      {lockedWarehouseNotice}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setLockedWarehouseNotice(null)}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#92400e', padding: 0 }}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+
+              {/* Section Header with Mandatory Badge */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>
+                    Select Fulfillment Darkstore Warehouse
+                  </label>
+                  <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                </div>
+                <MandatoryBadge />
+              </div>
+
+              {/* List of 4 Warehouses: Ahmedabad (Default & Active), Chandigarh (Locked), Gurgaon (Locked), Lucknow (Locked) */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
+                {DROBE_WAREHOUSES.map((wh) => {
+                  const isSelected = (brand.warehouse || 'ahmedabad') === wh.id;
+                  const isAvailable = wh.isAvailable;
+
+                  return (
+                    <div
+                      key={wh.id}
+                      onClick={() => {
+                        if (isAvailable) {
+                          updateField('warehouse', wh.id);
+                          setLockedWarehouseNotice(null);
+                        } else {
+                          setLockedWarehouseNotice(
+                            `Coming out in next phases: ${wh.name} (${wh.city}) is scheduled for ${wh.phase}. Currently, all stock is inwarded through Ahmedabad Mega Darkstore #01. You can add more warehouses later from your profile settings.`
+                          );
+                        }
+                      }}
+                      style={{
+                        position: 'relative',
+                        padding: '14px 16px',
+                        borderRadius: '14px',
+                        border: isSelected
+                          ? '2px solid #2563eb'
+                          : isAvailable
+                          ? '1.5px solid #cbd5e1'
+                          : '1.5px solid #e2e8f0',
+                        backgroundColor: isSelected
+                          ? '#eff6ff'
+                          : isAvailable
+                          ? '#ffffff'
+                          : '#f8fafc',
+                        cursor: isAvailable ? 'pointer' : 'not-allowed',
+                        transition: 'all 0.15s ease',
+                        boxShadow: isSelected ? '0 4px 12px rgba(37,99,235,0.08)' : 'none',
+                        opacity: isAvailable ? 1 : 0.75
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                          <div style={{
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '10px',
+                            backgroundColor: isSelected
+                              ? '#2563eb'
+                              : isAvailable
+                              ? '#f1f5f9'
+                              : '#f1f5f9',
+                            color: isSelected
+                              ? '#ffffff'
+                              : isAvailable
+                              ? '#1e293b'
+                              : '#94a3b8',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0
+                          }}>
+                            {isAvailable ? (
+                              <Warehouse size={18} />
+                            ) : (
+                              <Lock size={16} />
+                            )}
+                          </div>
+
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                              <span style={{
+                                fontSize: '13.5px',
+                                fontWeight: 700,
+                                color: isSelected ? '#1e3a8a' : isAvailable ? '#0f172a' : '#64748b'
+                              }}>
+                                {wh.name}
+                              </span>
+                              <span style={{
+                                fontSize: '10px',
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                padding: '2px 7px',
+                                borderRadius: '6px',
+                                letterSpacing: '0.02em',
+                                backgroundColor: isSelected
+                                  ? '#dbeafe'
+                                  : isAvailable
+                                  ? '#dcfce7'
+                                  : '#fef3c7',
+                                color: isSelected
+                                  ? '#1d4ed8'
+                                  : isAvailable
+                                  ? '#15803d'
+                                  : '#b45309',
+                                border: isSelected
+                                  ? '1px solid #bfdbfe'
+                                  : isAvailable
+                                  ? '1px solid #bbf7d0'
+                                  : '1px solid #fde68a'
+                              }}>
+                                {isAvailable ? (isSelected ? 'Selected · Active Hub' : wh.badge) : 'Coming out in next phases'}
+                              </span>
+                            </div>
+
+                            <p style={{ fontSize: '12px', color: isSelected ? '#1e40af' : '#64748b', margin: '3px 0 0', lineHeight: 1.4 }}>
+                              {wh.tagline}
+                            </p>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', fontSize: '11px', color: '#64748b' }}>
+                              <MapPin size={12} color="#94a3b8" />
+                              <span>{wh.address}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ flexShrink: 0, textAlign: 'right' }}>
+                          {isAvailable ? (
+                            <div style={{
+                              width: '20px',
+                              height: '20px',
+                              borderRadius: '50%',
+                              border: `2px solid ${isSelected ? '#2563eb' : '#cbd5e1'}`,
+                              backgroundColor: isSelected ? '#2563eb' : '#ffffff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}>
+                              {isSelected && <Check size={12} strokeWidth={3} color="#ffffff" />}
+                            </div>
+                          ) : (
+                            <span style={{
+                              fontSize: '10px',
+                              fontWeight: 700,
+                              color: '#64748b',
+                              backgroundColor: '#e2e8f0',
+                              padding: '3px 8px',
+                              borderRadius: '6px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}>
+                              <Lock size={10} /> Locked
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {!isAvailable && (
+                        <div style={{
+                          marginTop: '8px',
+                          paddingTop: '8px',
+                          borderTop: '1px dashed #e2e8f0',
+                          fontSize: '11px',
+                          color: '#b45309',
+                          fontWeight: 600,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px'
+                        }}>
+                          <span>🔒 Coming out in next phases · You can add more warehouses later from your profile settings</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Informational Callout */}
+              <div style={{
+                backgroundColor: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '12px 14px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '8px',
+                fontSize: '12px',
+                color: '#475569',
+                lineHeight: 1.45
+              }}>
+                <span style={{ fontSize: '14px' }}>💡</span>
+                <div>
+                  <strong>Multi-Warehouse Network:</strong> By default, your inventory will be stored at the <strong>Ahmedabad Mega Darkstore #01</strong>. <em>You can add more warehouses later from your profile settings</em> as regional hubs unlock across India.
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* STEP 5: Payout Banking & Settlement */}
           {activeStepMeta.id === 'banking' && (
             <div className={styles.ronasFormContainer}>
@@ -1855,7 +2122,8 @@ export default function OnboardingFlow({
                     { step: 1, label: '02. Brand Basics & Leadership Dossier', done: isStep1Done, desc: brand.name ? `${brand.name} · ${brand.founderName || 'Founder'}` : 'Name, category, location, founder required' },
                     { step: 2, label: '03. Visual Assets & Brand Craft', done: isStep2Done, desc: (brand.profileImage && brand.coverImage) ? 'Emblem (1:1), banner (16:9) & story set' : 'Emblem, cover banner & craft story required' },
                     { step: 3, label: '04. Verified Channels & Inquiries', done: isStep3Done, desc: brand.instagram ? `@${brand.instagram.replace(/^@/, '')}` : 'Instagram handle & concierge email required' },
-                    { step: 4, label: '05. Payout Settlement Banking', done: isStep4Done, desc: brand.bankAccount?.payoutMethod === 'upi' ? (brand.bankAccount.upiId || 'UPI VPA') : (brand.bankAccount?.bankName || 'Direct Bank Settlement') }
+                    { step: 4, label: '05. Inventory Warehouse Fulfillment Hub', done: isStep4Done, desc: (brand.warehouse || 'ahmedabad') === 'ahmedabad' ? 'Ahmedabad Mega Darkstore #01 (Operational Hub)' : 'Fulfillment Hub Selected' },
+                    { step: 5, label: '06. Payout Settlement Banking', done: isStep5Done, desc: brand.bankAccount?.payoutMethod === 'upi' ? (brand.bankAccount.upiId || 'UPI VPA') : (brand.bankAccount?.bankName || 'Direct Bank Settlement') }
                   ].map((item) => (
                     <div
                       key={item.step}

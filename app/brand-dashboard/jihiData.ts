@@ -24,6 +24,8 @@ export const EMPTY_BRAND_PROFILE: BrandProfile = {
   inquiriesEmail: '',
   email: '',
   password: '',
+  warehouse: 'ahmedabad',
+  warehouses: ['ahmedabad'],
   status: 'Draft',
   updatedAt: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 };
