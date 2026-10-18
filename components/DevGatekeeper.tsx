@@ -50,6 +50,7 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
     isBot ||
     isBrandSubdomain ||
     pathname?.startsWith('/brand-dashboard') ||
+    pathname?.startsWith('/partner') ||
     isDirectProductOrBrand ||
     pathname?.startsWith('/admin-dashboard') ||
     pathname?.startsWith('/platform-changes') ||

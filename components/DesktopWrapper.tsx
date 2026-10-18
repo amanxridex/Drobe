@@ -70,7 +70,7 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
     );
   }
 
-  if (pathname?.startsWith('/brand-dashboard') || isBrandSubdomain) {
+  if (pathname?.startsWith('/brand-dashboard') || pathname?.startsWith('/partner') || isBrandSubdomain) {
     return (
       <div
         id="app-desktop-wrapper"

@@ -133,11 +133,17 @@ export default function RootLayout({
                   });
                 }
 
-                // Register PWA service worker
-                if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
-                  window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/sw.js').catch(function() {});
-                  });
+                // Register PWA service worker on production only; unregister on localhost
+                if ('serviceWorker' in navigator) {
+                  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    navigator.serviceWorker.getRegistrations().then(function(regs) {
+                      for (var r of regs) { r.unregister(); }
+                    });
+                  } else if (window.location.protocol === 'https:') {
+                    window.addEventListener('load', function() {
+                      navigator.serviceWorker.register('/sw.js').catch(function() {});
+                    });
+                  }
                 }
               })();
             `
