@@ -493,29 +493,6 @@ export default function BrandStartScreen({
               >
                 Brand Log In
               </button>
-
-              <div style={{ display: 'flex', gap: '8px', width: '100%', marginTop: '6px' }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setModalTab('claim');
-                    setShowLoginModal(true);
-                  }}
-                  className={styles.resetFreshBtn}
-                  style={{ flex: 1, padding: '10px 8px', fontSize: '11.5px', marginTop: 0 }}
-                >
-                  🔍 Claim Brand
-                </button>
-
-                <button
-                  type="button"
-                  onClick={onViewLiveDashboard}
-                  className={styles.resetFreshBtn}
-                  style={{ flex: 1, padding: '10px 8px', fontSize: '11.5px', marginTop: 0, color: '#2563eb', borderColor: '#bfdbfe', background: '#eff6ff' }}
-                >
-                  📊 Live Dashboard
-                </button>
-              </div>
             </>
           )}
 
