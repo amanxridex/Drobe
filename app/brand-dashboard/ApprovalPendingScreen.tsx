@@ -379,13 +379,11 @@ export default function ApprovalPendingScreen({
 
             <div style={{ backgroundColor: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '10.5px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', display: 'block' }}>
-                Registered Account
+                Onboarding Activation
               </span>
-              <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#0f172a', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <Mail size={13} color="#0284c7" />
-                <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                  {brand.email || brand.inquiriesEmail || 'Verified Email'}
-                </span>
+              <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#15803d', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <Check size={13} color="#16a34a" strokeWidth={2.6} />
+                <span>₹99 Fee Paid (Razorpay)</span>
               </div>
             </div>
           </div>
@@ -422,10 +420,10 @@ export default function ApprovalPendingScreen({
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0f172a' }}>
-                  1. Brand Dossier &amp; Credentials Filed
+                  1. Brand Dossier &amp; ₹99 Onboarding Activation Paid
                 </div>
                 <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
-                  Legal identity, founder bio, visuals, and settlement payout details registered.
+                  Commercial terms agreed (1% sales commission &amp; 5% user markup fee), ₹99 fee paid via Razorpay, and KYC banking registered.
                 </div>
               </div>
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#15803d', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 8px', borderRadius: '6px' }}>

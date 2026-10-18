@@ -29,6 +29,7 @@ import { EmailOtpModal, ForgotPasswordModal } from './AuthModals';
 import ImageCropDrawer from './ImageCropDrawer';
 import { POPULAR_BANKS, ALL_INDIAN_BANKS, POPULAR_UPI_HANDLES } from './indianBanks';
 import { DROBE_WAREHOUSES } from './warehousesData';
+import OnboardingPaymentModal from './OnboardingPaymentModal';
 import styles from './brand-dashboard.module.css';
 
 interface OnboardingFlowProps {
@@ -165,6 +166,7 @@ export default function OnboardingFlow({
   const [isOtherBankSelected, setIsOtherBankSelected] = useState(false);
   const [customBankName, setCustomBankName] = useState('');
   const [lockedWarehouseNotice, setLockedWarehouseNotice] = useState<string | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
 
   useEffect(() => {
@@ -521,7 +523,13 @@ export default function OnboardingFlow({
     if (!validateFullProfile()) {
       return;
     }
-    onGoLive();
+    // If onboarding fee is already paid, proceed directly to submission
+    if (brand.onboardingPayment?.status === 'paid') {
+      onGoLive();
+    } else {
+      // Prompt for Commercial Agreement & Rs 99 Onboarding Payment via Razorpay
+      setShowPaymentModal(true);
+    }
   };
 
   const handleNext = async () => {
@@ -2099,6 +2107,60 @@ export default function OnboardingFlow({
                 )}
               </div>
 
+              {/* COMMERCIAL PLAN & ACTIVATION TERMS */}
+              <div style={{
+                marginTop: '16px',
+                background: '#ffffff',
+                borderRadius: '14px',
+                border: '1.5px solid #bfdbfe',
+                padding: '16px',
+                boxShadow: '0 4px 14px rgba(37,99,235,0.06)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#1d4ed8', fontWeight: 800 }}>
+                    Commercial Plan &amp; Activation
+                  </span>
+                  {brand.onboardingPayment?.status === 'paid' ? (
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#15803d', backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '6px' }}>
+                      ✓ ₹99 Onboarding Paid
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', backgroundColor: '#eff6ff', padding: '2px 8px', borderRadius: '6px' }}>
+                      ₹99 Activation Fee
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', marginBottom: '10px' }}>
+                  <div style={{ backgroundColor: '#f8fafc', padding: '8px 10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <div style={{ fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>Onboarding Fee</div>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>₹99 One-Time</div>
+                  </div>
+
+                  <div style={{ backgroundColor: '#f0fdf4', padding: '8px 10px', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
+                    <div style={{ fontSize: '10.5px', color: '#166534', fontWeight: 600 }}>Brand Commission</div>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#15803d' }}>1% On Sales</div>
+                  </div>
+
+                  <div style={{ backgroundColor: '#eff6ff', padding: '8px 10px', borderRadius: '8px', border: '1px solid #bfdbfe' }}>
+                    <div style={{ fontSize: '10.5px', color: '#1e40af', fontWeight: 600 }}>User Markup Fee</div>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#1d4ed8' }}>5% From Users</div>
+                  </div>
+                </div>
+
+                <div style={{
+                  fontSize: '11.5px',
+                  color: '#1e40af',
+                  backgroundColor: '#eff6ff',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: '8px',
+                  padding: '8px 10px',
+                  lineHeight: 1.45
+                }}>
+                  <strong>Note:</strong> The 5% platform technology markup fee is charged to <em>consumers</em> at checkout on the DROBE app — <strong>NOT from partner brands!</strong>
+                </div>
+              </div>
+
               {/* MANDATORY DOSSIER CHECKLIST AUDIT */}
               <div style={{ marginTop: '16px', background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
@@ -2249,7 +2311,7 @@ export default function OnboardingFlow({
             ) : currentStep === 0 && !brand.emailVerified ? (
               <>
                 <ShieldCheck size={15} />
-                <span>Verify Email & Continue</span>
+                <span>Verify Email &amp; Continue</span>
                 <ArrowRight size={15} />
               </>
             ) : (
@@ -2266,7 +2328,7 @@ export default function OnboardingFlow({
             className={styles.ronasGoLivePillBtn}
             style={!isProfileComplete ? { backgroundColor: '#475569' } : undefined}
           >
-            <span>Submit Profile for Verification →</span>
+            <span>{brand.onboardingPayment?.status === 'paid' ? 'Submit Profile for Verification →' : 'Review Plan & Pay ₹99 to Submit →'}</span>
           </button>
         )}
       </footer>
@@ -2303,6 +2365,18 @@ export default function OnboardingFlow({
         shape={cropConfig.shape}
         onClose={() => setCropConfig((prev) => ({ ...prev, isOpen: false }))}
         onApplyCrop={handleApplyCroppedImage}
+      />
+
+      {/* 8. COMMERCIAL PLAN & RS 99 ONBOARDING PAYMENT MODAL */}
+      <OnboardingPaymentModal
+        isOpen={showPaymentModal}
+        brand={brand}
+        onClose={() => setShowPaymentModal(false)}
+        onPaymentSuccess={(updatedBrand) => {
+          setShowPaymentModal(false);
+          onChange(updatedBrand);
+          onGoLive();
+        }}
       />
     </div>
   );
