@@ -22,7 +22,7 @@ import {
   Crop
 } from 'lucide-react';
 import { BrandProfile } from './types';
-import { MaleIcon, FemaleIcon, BothIcon } from './OnboardingFlow';
+import { MaleIcon, FemaleIcon, BothIcon, MandatoryBadge, OptionalBadge } from './OnboardingFlow';
 import ImageCropDrawer from './ImageCropDrawer';
 import styles from './brand-dashboard.module.css';
 import { supabaseUploadMedia } from '../lib/supabaseClient';
@@ -199,21 +199,64 @@ export default function EditBrandProfileSheet({
     if (e) e.preventDefault();
     setErrorMsg(null);
 
-    // Validation
+    // Validation: enforce all mandatory details
     const trimmedName = formData.name?.trim();
     if (!trimmedName) {
-      setErrorMsg('Brand Name cannot be empty.');
+      setErrorMsg('Brand Legal / Trade Name is mandatory.');
       return;
     }
 
-    if (formData.email && (!formData.email.includes('@') || !formData.email.includes('.'))) {
-      setErrorMsg('Please enter a valid account email address.');
+    if (!formData.profileImage?.trim()) {
+      setErrorMsg('Brand Logo / Emblem is mandatory.');
+      return;
+    }
+
+    if (!formData.coverImage?.trim()) {
+      setErrorMsg('Cover Panorama Banner is mandatory.');
+      return;
+    }
+
+    if (!formData.basedOutOf?.trim()) {
+      setErrorMsg('Brand Location is mandatory.');
+      return;
+    }
+
+    const yearTrimmed = formData.establishedYear?.trim() || '';
+    if (!yearTrimmed || !/^\d{4}$/.test(yearTrimmed)) {
+      setErrorMsg('Year Founded is mandatory (valid 4-digit year, e.g. 2024).');
+      return;
+    }
+
+    if (!formData.founderName?.trim()) {
+      setErrorMsg('Founder / Creative Director name is mandatory.');
+      return;
+    }
+
+    if (!formData.founderRole?.trim()) {
+      setErrorMsg('Founder Role / Title is mandatory.');
+      return;
+    }
+
+    const aboutTrimmed = formData.about?.trim() || '';
+    if (!aboutTrimmed || aboutTrimmed.length < 20) {
+      setErrorMsg('About the Brand (Story & Craft) is mandatory (minimum 20 characters).');
       return;
     }
 
     const trimmedIg = formData.instagram?.trim().replace(/^@/, '');
     if (!trimmedIg) {
       setErrorMsg('Official Instagram handle is mandatory.');
+      return;
+    }
+
+    const inqTrimmed = (formData.inquiriesEmail || formData.email || '').trim();
+    if (!inqTrimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inqTrimmed)) {
+      setErrorMsg('Concierge & Inquiries Email is mandatory.');
+      return;
+    }
+
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      setErrorMsg('Please enter a valid account email address.');
       return;
     }
 
@@ -302,7 +345,13 @@ export default function EditBrandProfileSheet({
 
               {/* Logo / Profile Image */}
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>Brand Logo</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Brand Logo / Emblem (1:1)</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <div className={styles.editAvatarRow}>
                   <div className={styles.editAvatarPreview}>
                     {formData.profileImage ? (
@@ -365,7 +414,13 @@ export default function EditBrandProfileSheet({
 
               {/* Cover Banner */}
               <div className={styles.editFieldGroup} style={{ marginTop: '16px' }}>
-                <label className={styles.editFieldLabel}>Cover Banner</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Cover Panorama Banner (16:9)</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <div className={styles.editBannerContainer}>
                   {formData.coverImage ? (
                     <img src={formData.coverImage} alt="Cover Banner" className={styles.editBannerImg} />
@@ -437,7 +492,13 @@ export default function EditBrandProfileSheet({
 
               {/* Brand Name */}
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>Brand Name *</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Brand Legal / Trade Name</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <input
                   type="text"
                   value={formData.name || ''}
@@ -449,7 +510,10 @@ export default function EditBrandProfileSheet({
 
               {/* Tagline */}
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>Tagline / Subtitle</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Tagline / Subtitle</label>
+                  <OptionalBadge />
+                </div>
                 <input
                   type="text"
                   value={formData.tagline || ''}
@@ -461,7 +525,13 @@ export default function EditBrandProfileSheet({
 
               {/* Category Segmented Selector */}
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>Target Client Category</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Target Client Category</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <div className={styles.editSegmentedGroup}>
                   {[
                     { value: 'Male', label: 'Male', icon: <MaleIcon size={14} color={formData.category === 'Male' ? '#ffffff' : '#2563eb'} /> },
@@ -493,7 +563,13 @@ export default function EditBrandProfileSheet({
               {/* Two columns: Location & Established Year */}
               <div className={styles.editTwoColRow}>
                 <div className={styles.editFieldGroup}>
-                  <label className={styles.editFieldLabel}>Based Out Of</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Brand Location</label>
+                      <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                    </div>
+                    <MandatoryBadge />
+                  </div>
                   <input
                     type="text"
                     value={formData.basedOutOf || ''}
@@ -504,7 +580,13 @@ export default function EditBrandProfileSheet({
                 </div>
 
                 <div className={styles.editFieldGroup}>
-                  <label className={styles.editFieldLabel}>Established Year</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Established Year</label>
+                      <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                    </div>
+                    <MandatoryBadge />
+                  </div>
                   <input
                     type="text"
                     value={formData.establishedYear || ''}
@@ -528,7 +610,13 @@ export default function EditBrandProfileSheet({
 
               <div className={styles.editTwoColRow}>
                 <div className={styles.editFieldGroup}>
-                  <label className={styles.editFieldLabel}>Founder Name</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Founder Name</label>
+                      <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                    </div>
+                    <MandatoryBadge />
+                  </div>
                   <input
                     type="text"
                     value={formData.founderName || ''}
@@ -539,7 +627,13 @@ export default function EditBrandProfileSheet({
                 </div>
 
                 <div className={styles.editFieldGroup}>
-                  <label className={styles.editFieldLabel}>Founder Role</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Founder Role / Title</label>
+                      <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                    </div>
+                    <MandatoryBadge />
+                  </div>
                   <input
                     type="text"
                     value={formData.founderRole || ''}
@@ -562,7 +656,10 @@ export default function EditBrandProfileSheet({
               </div>
 
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>Signature Founder Quote</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Signature Founder Quote</label>
+                  <OptionalBadge />
+                </div>
                 <input
                   type="text"
                   value={formData.founderQuote || ''}
@@ -584,18 +681,27 @@ export default function EditBrandProfileSheet({
               </div>
 
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>About the Brand</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>About the Brand (Story &amp; Craft)</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <textarea
                   rows={3}
                   value={formData.about || ''}
                   onChange={(e) => updateField('about', e.target.value)}
-                  placeholder="Tell clients the origin story, craftsmanship methods, and materials..."
+                  placeholder="Tell clients the origin story, craftsmanship methods, and materials (min. 20 characters)..."
                   className={styles.editTextarea}
                 />
               </div>
 
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>Mission & Sustainability</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Mission &amp; Sustainability</label>
+                  <OptionalBadge />
+                </div>
                 <textarea
                   rows={2}
                   value={formData.mission || ''}
@@ -618,7 +724,10 @@ export default function EditBrandProfileSheet({
 
               {/* Website */}
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>Official Website</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Official Website</label>
+                  <OptionalBadge />
+                </div>
                 <div className={styles.editInputWithIcon}>
                   <Globe size={15} className={styles.editInputLeftIcon} />
                   <input
@@ -638,19 +747,7 @@ export default function EditBrandProfileSheet({
                     <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Instagram Handle</label>
                     <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
                   </div>
-                  <span style={{ 
-                    fontSize: '10px', 
-                    color: '#e11d48', 
-                    backgroundColor: '#ffe4e6', 
-                    border: '1px solid #fecdd3', 
-                    padding: '1px 7px', 
-                    borderRadius: '10px', 
-                    fontWeight: 700, 
-                    letterSpacing: '0.02em',
-                    textTransform: 'uppercase'
-                  }}>
-                    Mandatory
-                  </span>
+                  <MandatoryBadge />
                 </div>
                 <div className={styles.editInputWithIcon}>
                   <div className={styles.editInputLeftIcon}>
@@ -669,7 +766,13 @@ export default function EditBrandProfileSheet({
 
               {/* Inquiries Email */}
               <div className={styles.editFieldGroup}>
-                <label className={styles.editFieldLabel}>Concierge & Inquiries Email</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.editFieldLabel} style={{ marginBottom: 0 }}>Concierge &amp; Inquiries Email</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <div className={styles.editInputWithIcon}>
                   <Mail size={15} className={styles.editInputLeftIcon} />
                   <input

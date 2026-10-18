@@ -75,6 +75,50 @@ export function BothIcon({ size = 14, color = 'currentColor' }: { size?: number;
   );
 }
 
+export function MandatoryBadge() {
+  return (
+    <span style={{
+      fontSize: '10px',
+      color: '#e11d48',
+      backgroundColor: '#ffe4e6',
+      border: '1px solid #fecdd3',
+      padding: '2px 7px',
+      borderRadius: '10px',
+      fontWeight: 700,
+      letterSpacing: '0.02em',
+      textTransform: 'uppercase',
+      lineHeight: '1',
+      display: 'inline-flex',
+      alignItems: 'center',
+      flexShrink: 0
+    }}>
+      Mandatory
+    </span>
+  );
+}
+
+export function OptionalBadge() {
+  return (
+    <span style={{
+      fontSize: '10px',
+      color: '#94a3b8',
+      backgroundColor: '#f1f5f9',
+      border: '1px solid #e2e8f0',
+      padding: '2px 7px',
+      borderRadius: '10px',
+      fontWeight: 600,
+      letterSpacing: '0.02em',
+      textTransform: 'uppercase',
+      lineHeight: '1',
+      display: 'inline-flex',
+      alignItems: 'center',
+      flexShrink: 0
+    }}>
+      Optional
+    </span>
+  );
+}
+
 export default function OnboardingFlow({
   brand,
   onChange,
@@ -293,32 +337,79 @@ export default function OnboardingFlow({
     }
   };
 
-  const validateStep = (stepIdx: number): boolean => {
+  const validateStep = (stepIdx: number, silent = false): boolean => {
     const step = STEPS[stepIdx];
+    if (!step) return true;
+
     if (step.id === 'account') {
       const emailTrimmed = brand.email?.trim() || '';
-      if (!emailTrimmed || !emailTrimmed.includes('@')) {
-        setErrorNotice('Please enter a valid brand email address to continue.');
+      if (!emailTrimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
+        if (!silent) setErrorNotice('Please enter a valid brand email address (e.g. founder@yourbrand.com).');
         return false;
       }
       if (!brand.password || brand.password.length < 6) {
-        setErrorNotice('Password must be at least 6 characters.');
+        if (!silent) setErrorNotice('Password is mandatory and must be at least 6 characters.');
         return false;
       }
     }
+
     if (step.id === 'basics') {
       if (!brand.name?.trim()) {
-        setErrorNotice('Please enter your Brand Name to continue.');
+        if (!silent) setErrorNotice('Brand Legal / Trade Name is mandatory to proceed.');
+        return false;
+      }
+      if (!brand.category?.trim()) {
+        if (!silent) setErrorNotice('Please select your brand category (Male, Female, or Both).');
+        return false;
+      }
+      if (!brand.basedOutOf?.trim()) {
+        if (!silent) setErrorNotice('Brand Location / City is mandatory (e.g. Ahmedabad, Mumbai, Paris).');
+        return false;
+      }
+      const yearTrimmed = brand.establishedYear?.trim() || '';
+      if (!yearTrimmed || !/^\d{4}$/.test(yearTrimmed)) {
+        if (!silent) setErrorNotice('Year Founded is mandatory (please enter a valid 4-digit year, e.g. 2024).');
+        return false;
+      }
+      if (!brand.founderName?.trim()) {
+        if (!silent) setErrorNotice('Founder / Creative Director name is mandatory.');
+        return false;
+      }
+      if (!brand.founderRole?.trim()) {
+        if (!silent) setErrorNotice('Founder Role / Title is mandatory (e.g. Founder & Creative Director).');
         return false;
       }
     }
+
+    if (step.id === 'visuals') {
+      if (!brand.profileImage?.trim()) {
+        if (!silent) setErrorNotice('Brand Logo / Emblem (1:1) is mandatory. Please upload a logo or enter an image URL.');
+        return false;
+      }
+      if (!brand.coverImage?.trim()) {
+        if (!silent) setErrorNotice('Cover Panorama Banner (16:9) is mandatory. Please upload a banner or enter an image URL.');
+        return false;
+      }
+      const aboutTrimmed = brand.about?.trim() || '';
+      if (!aboutTrimmed || aboutTrimmed.length < 20) {
+        if (!silent) setErrorNotice('Brand Story & Craft is mandatory (minimum 20 characters explaining your brand philosophy and craftsmanship).');
+        return false;
+      }
+    }
+
     if (step.id === 'channels') {
       const igTrimmed = brand.instagram?.trim().replace(/^@/, '') || '';
       if (!igTrimmed) {
-        setErrorNotice('Official Instagram handle is mandatory to verify your brand presence.');
+        if (!silent) setErrorNotice('Official Instagram handle is mandatory to verify your brand presence.');
+        return false;
+      }
+      const inqTrimmed = (brand.inquiriesEmail || brand.email || '').trim();
+      if (!inqTrimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inqTrimmed)) {
+        if (!silent) setErrorNotice('Concierge & Inquiries Email is mandatory for customer support and order coordination.');
         return false;
       }
     }
+
     if (step.id === 'banking') {
       const bank = brand.bankAccount;
       const isUpi = bank?.payoutMethod === 'upi';
@@ -326,43 +417,92 @@ export default function OnboardingFlow({
       if (isUpi) {
         const nameTrimmed = bank?.accountHolderName?.trim();
         if (!nameTrimmed || nameTrimmed.length < 3) {
-          setErrorNotice('Please enter the Beneficiary / Legal Entity Name registered with your UPI.');
+          if (!silent) setErrorNotice('Beneficiary / Entity Name registered with your UPI is mandatory.');
           return false;
         }
         const upiTrimmed = bank?.upiId?.trim() || '';
         if (!upiTrimmed || !upiTrimmed.includes('@') || upiTrimmed.length < 5) {
-          setErrorNotice('Please enter a valid UPI ID (e.g. yourbrand@okhdfcbank or business@upi).');
+          if (!silent) setErrorNotice('UPI ID / VPA is mandatory (e.g. yourbrand@okhdfcbank or business@upi).');
           return false;
         }
       } else {
         const nameTrimmed = bank?.accountHolderName?.trim();
         if (!nameTrimmed || nameTrimmed.length < 3) {
-          setErrorNotice('Please enter the Account Holder Name matching your bank account.');
+          if (!silent) setErrorNotice('Account Holder Name matching your bank account is mandatory.');
           return false;
         }
-        if (!bank?.bankName?.trim() || bank.bankName === 'Other Bank (Specify Below)') {
-          setErrorNotice('Please select or specify your Bank Name.');
+        const finalBank = isOtherBankSelected ? (customBankName.trim() || bank?.bankName?.trim()) : bank?.bankName?.trim();
+        if (!finalBank || finalBank === 'Other Bank (Specify Below)') {
+          if (!silent) setErrorNotice('Please select or specify your Bank Name.');
           return false;
         }
         const accTrimmed = (bank?.accountNumber || '').trim().replace(/\s/g, '');
         if (!accTrimmed || accTrimmed.length < 8) {
-          setErrorNotice('Please enter a valid Bank Account Number (at least 8 digits).');
+          if (!silent) setErrorNotice('Bank Account Number is mandatory (at least 8 digits).');
           return false;
         }
         const confirmTrimmed = confirmAccountNumber.trim().replace(/\s/g, '');
         if (confirmTrimmed && accTrimmed !== confirmTrimmed) {
-          setErrorNotice('Bank Account Numbers do not match. Please verify your entries.');
+          if (!silent) setErrorNotice('Bank Account Numbers do not match. Please verify your entries.');
           return false;
         }
         const ifscTrimmed = (bank?.ifscCode || '').trim().toUpperCase();
-        if (!ifscTrimmed || ifscTrimmed.length < 8) {
-          setErrorNotice('Please enter a valid Bank IFSC Code (e.g. HDFC0001842).');
+        if (!ifscTrimmed || ifscTrimmed.length !== 11) {
+          if (!silent) setErrorNotice('Bank IFSC Code is mandatory (11-character alpha-numeric code, e.g. HDFC0001842).');
           return false;
         }
       }
     }
+
+    if (!silent) setErrorNotice(null);
+    return true;
+  };
+
+  const validateFullProfile = (): boolean => {
+    // Step 0: Account
+    if (!validateStep(0)) {
+      setCurrentStep(0);
+      return false;
+    }
+    if (!brand.emailVerified) {
+      setCurrentStep(0);
+      setErrorNotice('Your brand email must be verified via OTP before submitting your profile.');
+      return false;
+    }
+
+    // Step 1: Basics
+    if (!validateStep(1)) {
+      setCurrentStep(1);
+      return false;
+    }
+
+    // Step 2: Visuals
+    if (!validateStep(2)) {
+      setCurrentStep(2);
+      return false;
+    }
+
+    // Step 3: Channels
+    if (!validateStep(3)) {
+      setCurrentStep(3);
+      return false;
+    }
+
+    // Step 4: Banking
+    if (!validateStep(4)) {
+      setCurrentStep(4);
+      return false;
+    }
+
     setErrorNotice(null);
     return true;
+  };
+
+  const handleFinalSubmit = () => {
+    if (!validateFullProfile()) {
+      return;
+    }
+    onGoLive();
   };
 
   const handleNext = async () => {
@@ -430,11 +570,50 @@ export default function OnboardingFlow({
     setCurrentStep(1); // Advance to Basics step
   };
 
-
   const handleStepClick = (idx: number) => {
-    if (idx > currentStep && !validateStep(currentStep)) return;
+    if (idx > currentStep) {
+      for (let s = currentStep; s < idx; s++) {
+        if (!validateStep(s)) {
+          setCurrentStep(s);
+          return;
+        }
+        if (s === 0 && !brand.emailVerified) {
+          setCurrentStep(0);
+          setErrorNotice('Please verify your email before proceeding to subsequent steps.');
+          return;
+        }
+      }
+    }
+    setErrorNotice(null);
     setCurrentStep(idx);
   };
+  const isStep0Done = Boolean(brand.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(brand.email.trim()) && brand.password && brand.password.length >= 6 && brand.emailVerified);
+  const isStep1Done = Boolean(
+    brand.name?.trim() &&
+    brand.category?.trim() &&
+    brand.basedOutOf?.trim() &&
+    brand.establishedYear?.trim() &&
+    /^\d{4}$/.test(brand.establishedYear.trim()) &&
+    brand.founderName?.trim() &&
+    brand.founderRole?.trim()
+  );
+  const isStep2Done = Boolean(
+    brand.profileImage?.trim() &&
+    brand.coverImage?.trim() &&
+    brand.about?.trim() &&
+    brand.about.trim().length >= 20
+  );
+  const isStep3Done = Boolean(
+    brand.instagram?.trim().replace(/^@/, '') &&
+    (brand.inquiriesEmail || brand.email || '').trim().includes('@')
+  );
+  const isStep4Done = Boolean(
+    brand.bankAccount?.payoutMethod === 'upi'
+      ? (brand.bankAccount?.accountHolderName?.trim() && (brand.bankAccount?.accountHolderName?.trim().length || 0) >= 3 && brand.bankAccount?.upiId?.trim() && brand.bankAccount.upiId.includes('@'))
+      : (brand.bankAccount?.accountHolderName?.trim() && (brand.bankAccount?.accountHolderName?.trim().length || 0) >= 3 && brand.bankAccount?.bankName?.trim() && brand.bankAccount.bankName !== 'Other Bank (Specify Below)' && (brand.bankAccount?.accountNumber || '').trim().length >= 8 && (brand.bankAccount?.ifscCode || '').trim().length === 11)
+  );
+
+  const isProfileComplete = isStep0Done && isStep1Done && isStep2Done && isStep3Done && isStep4Done;
 
   const activeStepMeta = STEPS[currentStep];
 
@@ -528,12 +707,17 @@ export default function OnboardingFlow({
           {activeStepMeta.id === 'account' && (
             <div className={styles.ronasFormContainer}>
               <div className={styles.ronasInputGroup}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label className={styles.ronasInputLabel}>Brand Email *</label>
-                  {brand.emailVerified && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Brand Email</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  {brand.emailVerified ? (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#15803d', fontWeight: 700, backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '12px' }}>
                       <Check size={11} strokeWidth={3} /> Verified
                     </span>
+                  ) : (
+                    <MandatoryBadge />
                   )}
                 </div>
                 <div style={{ position: 'relative' }}>
@@ -620,7 +804,13 @@ export default function OnboardingFlow({
               </div>
 
               <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Password *</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Password</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <div style={{ position: 'relative' }}>
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -652,7 +842,13 @@ export default function OnboardingFlow({
           {activeStepMeta.id === 'basics' && (
             <div className={styles.ronasFormContainer}>
               <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Brand Name *</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Brand Legal / Trade Name</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <input
                   type="text"
                   value={brand.name}
@@ -664,7 +860,10 @@ export default function OnboardingFlow({
               </div>
 
               <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Tagline or Philosophy</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Tagline or Philosophy</label>
+                  <OptionalBadge />
+                </div>
                 <input
                   type="text"
                   value={brand.tagline}
@@ -675,34 +874,40 @@ export default function OnboardingFlow({
               </div>
 
               <div className={styles.categoryToggleContainer}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Category</label>
-                  {normalizedCategory === 'Male' && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', fontWeight: 700, color: '#2563eb', backgroundColor: '#eff6ff', padding: '2px 9px', borderRadius: '12px', border: '1px solid #bfdbfe' }}>
-                      <MaleIcon size={12} color="#2563eb" /> Male
-                    </span>
-                  )}
-                  {normalizedCategory === 'Female' && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', fontWeight: 700, color: '#db2777', backgroundColor: '#fdf2f8', padding: '2px 9px', borderRadius: '12px', border: '1px solid #fbcfe8' }}>
-                      <FemaleIcon size={12} color="#db2777" /> Female
-                    </span>
-                  )}
-                  {normalizedCategory === 'Both' && (
-                    <span style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      fontSize: '11.5px',
-                      fontWeight: 700,
-                      background: 'linear-gradient(90deg, #eff6ff 0%, #fdf2f8 100%)',
-                      padding: '2px 9px',
-                      borderRadius: '12px',
-                      border: '1px solid #e0e7ff',
-                      color: '#4338ca'
-                    }}>
-                      <BothIcon size={11} color="#6366f1" /> Both (Male & Female)
-                    </span>
-                  )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Target Category</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <MandatoryBadge />
+                    {normalizedCategory === 'Male' && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', fontWeight: 700, color: '#2563eb', backgroundColor: '#eff6ff', padding: '2px 9px', borderRadius: '12px', border: '1px solid #bfdbfe' }}>
+                        <MaleIcon size={12} color="#2563eb" /> Male
+                      </span>
+                    )}
+                    {normalizedCategory === 'Female' && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', fontWeight: 700, color: '#db2777', backgroundColor: '#fdf2f8', padding: '2px 9px', borderRadius: '12px', border: '1px solid #fbcfe8' }}>
+                        <FemaleIcon size={12} color="#db2777" /> Female
+                      </span>
+                    )}
+                    {normalizedCategory === 'Both' && (
+                      <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '11.5px',
+                        fontWeight: 700,
+                        background: 'linear-gradient(90deg, #eff6ff 0%, #fdf2f8 100%)',
+                        padding: '2px 9px',
+                        borderRadius: '12px',
+                        border: '1px solid #e0e7ff',
+                        color: '#4338ca'
+                      }}>
+                        <BothIcon size={11} color="#6366f1" /> Both (Male & Female)
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className={styles.categoryToggleTrack}>
                   <button
@@ -734,7 +939,13 @@ export default function OnboardingFlow({
 
               <div className={styles.ronasRowTwo}>
                 <div className={styles.ronasInputGroup}>
-                  <label className={styles.ronasInputLabel}>Brand Location</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Brand Location</label>
+                      <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                    </div>
+                    <MandatoryBadge />
+                  </div>
                   <input
                     type="text"
                     value={brand.basedOutOf}
@@ -745,7 +956,13 @@ export default function OnboardingFlow({
                 </div>
 
                 <div className={styles.ronasInputGroup}>
-                  <label className={styles.ronasInputLabel}>Year Founded</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Year Founded</label>
+                      <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                    </div>
+                    <MandatoryBadge />
+                  </div>
                   <input
                     type="text"
                     value={brand.establishedYear}
@@ -758,7 +975,13 @@ export default function OnboardingFlow({
 
               <div className={styles.ronasRowTwo}>
                 <div className={styles.ronasInputGroup}>
-                  <label className={styles.ronasInputLabel}>Founder / Creative Director</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Founder / Creative Director</label>
+                      <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                    </div>
+                    <MandatoryBadge />
+                  </div>
                   <input
                     type="text"
                     value={brand.founderName}
@@ -769,7 +992,13 @@ export default function OnboardingFlow({
                 </div>
 
                 <div className={styles.ronasInputGroup}>
-                  <label className={styles.ronasInputLabel}>Founder Role / Title</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Founder Role / Title</label>
+                      <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                    </div>
+                    <MandatoryBadge />
+                  </div>
                   <input
                     type="text"
                     value={brand.founderRole}
@@ -787,7 +1016,13 @@ export default function OnboardingFlow({
             <div className={styles.ronasFormContainer}>
               {/* Logo Emblem */}
               <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Brand Logo / Emblem (1:1)</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Brand Logo / Emblem (1:1)</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <div className={styles.ronasEmblemPreviewBox}>
                   <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
                     {brand.profileImage ? (
@@ -858,17 +1093,23 @@ export default function OnboardingFlow({
 
               {/* Cover Banner */}
               <div className={styles.ronasInputGroup}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                  <label className={styles.ronasInputLabel}>Cover Panorama Banner (16:9)</label>
-                  {brand.coverImage && (
-                    <button
-                      type="button"
-                      onClick={() => updateField('coverImage', '')}
-                      style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
-                    >
-                      Remove
-                    </button>
-                  )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Cover Panorama Banner (16:9)</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {brand.coverImage && (
+                      <button
+                        type="button"
+                        onClick={() => updateField('coverImage', '')}
+                        style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        Remove
+                      </button>
+                    )}
+                    <MandatoryBadge />
+                  </div>
                 </div>
 
                 <div className={styles.ronasBannerPreviewBox}>
@@ -978,18 +1219,27 @@ export default function OnboardingFlow({
 
               {/* Brand Story & Ethos */}
               <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Brand Story &amp; Craft</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Brand Story &amp; Craft</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <textarea
                   value={brand.about}
                   onChange={(e) => updateField('about', e.target.value)}
-                  placeholder="Share your brand's philosophy, artisanal processes, materials, and origin..."
+                  placeholder="Share your brand's philosophy, artisanal processes, materials, and origin (min. 20 characters)..."
                   className={styles.ronasInputField}
                   style={{ minHeight: '80px', lineHeight: '1.45' }}
                 />
               </div>
 
               <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Founder Quote / Statement</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Founder Quote / Statement</label>
+                  <OptionalBadge />
+                </div>
                 <input
                   type="text"
                   value={brand.founderQuote}
@@ -1007,7 +1257,7 @@ export default function OnboardingFlow({
               <div className={styles.ronasInputGroup}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                   <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Official Website URL</label>
-                  <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}>Optional</span>
+                  <OptionalBadge />
                 </div>
                 <input
                   type="text"
@@ -1024,19 +1274,7 @@ export default function OnboardingFlow({
                     <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Official Instagram Handle</label>
                     <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
                   </div>
-                  <span style={{ 
-                    fontSize: '10.5px', 
-                    color: '#e11d48', 
-                    backgroundColor: '#ffe4e6', 
-                    border: '1px solid #fecdd3', 
-                    padding: '2px 8px', 
-                    borderRadius: '12px', 
-                    fontWeight: 700, 
-                    letterSpacing: '0.02em',
-                    textTransform: 'uppercase'
-                  }}>
-                    Mandatory
-                  </span>
+                  <MandatoryBadge />
                 </div>
                 <input
                   type="text"
@@ -1052,7 +1290,13 @@ export default function OnboardingFlow({
               </div>
 
               <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Concierge &amp; Inquiries Email</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Concierge &amp; Inquiries Email</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <input
                   type="email"
                   value={brand.inquiriesEmail || brand.email || ''}
@@ -1069,9 +1313,13 @@ export default function OnboardingFlow({
             <div className={styles.ronasFormContainer}>
               {/* Payout Method Toggle */}
               <div style={{ marginBottom: '16px' }}>
-                <label className={styles.ronasInputLabel} style={{ marginBottom: '8px' }}>
-                  Settlement Payout Method *
-                </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Settlement Payout Method</label>
+                    <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                  </div>
+                  <MandatoryBadge />
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <button
                     type="button"
@@ -1142,7 +1390,13 @@ export default function OnboardingFlow({
 
                   {/* Beneficiary Name */}
                   <div className={styles.ronasInputGroup}>
-                    <label className={styles.ronasInputLabel}>Beneficiary / Entity Name *</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Beneficiary / Entity Name</label>
+                        <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                      </div>
+                      <MandatoryBadge />
+                    </div>
                     <input
                       type="text"
                       value={brand.bankAccount?.accountHolderName || ''}
@@ -1159,12 +1413,18 @@ export default function OnboardingFlow({
                   {/* UPI ID / VPA */}
                   <div className={styles.ronasInputGroup}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                      <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>UPI ID / VPA *</label>
-                      {brand.bankAccount?.upiId && brand.bankAccount.upiId.includes('@') && (
-                        <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          <Check size={12} /> Valid VPA format
-                        </span>
-                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>UPI ID / VPA</label>
+                        <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {brand.bankAccount?.upiId && brand.bankAccount.upiId.includes('@') && (
+                          <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <Check size={12} /> Valid VPA
+                          </span>
+                        )}
+                        <MandatoryBadge />
+                      </div>
                     </div>
                     <input
                       type="text"
@@ -1229,7 +1489,13 @@ export default function OnboardingFlow({
 
                   {/* Account Holder Name */}
                   <div className={styles.ronasInputGroup}>
-                    <label className={styles.ronasInputLabel}>Account Holder / Business Entity Name *</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Account Holder / Entity Name</label>
+                        <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                      </div>
+                      <MandatoryBadge />
+                    </div>
                     <input
                       type="text"
                       value={brand.bankAccount?.accountHolderName || ''}
@@ -1287,8 +1553,11 @@ export default function OnboardingFlow({
                   {/* Bank Name with Full Indian Banks Dropdown and Other Option */}
                   <div className={styles.ronasInputGroup}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                      <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Select Bank *</label>
-                      <span style={{ fontSize: '11px', color: '#64748b' }}>All Indian Banks supported</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Select Bank</label>
+                        <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                      </div>
+                      <MandatoryBadge />
                     </div>
 
                     {/* Popular Bank Chips */}
@@ -1394,7 +1663,13 @@ export default function OnboardingFlow({
 
                   {/* Bank Account Number */}
                   <div className={styles.ronasInputGroup}>
-                    <label className={styles.ronasInputLabel}>Bank Account Number *</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Bank Account Number</label>
+                        <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                      </div>
+                      <MandatoryBadge />
+                    </div>
                     <input
                       type="password"
                       value={brand.bankAccount?.accountNumber || ''}
@@ -1407,7 +1682,13 @@ export default function OnboardingFlow({
 
                   {/* Confirm Bank Account Number */}
                   <div className={styles.ronasInputGroup}>
-                    <label className={styles.ronasInputLabel}>Re-enter Bank Account Number *</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Re-enter Bank Account Number</label>
+                        <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                      </div>
+                      <MandatoryBadge />
+                    </div>
                     <input
                       type="text"
                       value={confirmAccountNumber}
@@ -1437,7 +1718,13 @@ export default function OnboardingFlow({
 
                   {/* IFSC Code */}
                   <div className={styles.ronasInputGroup}>
-                    <label className={styles.ronasInputLabel}>Bank IFSC Code *</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Bank IFSC Code</label>
+                        <span style={{ color: '#e11d48', fontWeight: 800 }}>*</span>
+                      </div>
+                      <MandatoryBadge />
+                    </div>
                     <input
                       type="text"
                       value={brand.bankAccount?.ifscCode || ''}
@@ -1545,9 +1832,113 @@ export default function OnboardingFlow({
                 )}
               </div>
 
+              {/* MANDATORY DOSSIER CHECKLIST AUDIT */}
+              <div style={{ marginTop: '16px', background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748b', fontWeight: 800 }}>
+                    Mandatory Dossier Checklist
+                  </span>
+                  {isProfileComplete ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, color: '#15803d', backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '12px' }}>
+                      <Check size={11} strokeWidth={3} /> 100% Complete
+                    </span>
+                  ) : (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, color: '#dc2626', backgroundColor: '#fee2e2', padding: '2px 8px', borderRadius: '12px' }}>
+                      <AlertCircle size={11} strokeWidth={3} /> Incomplete Dossier
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {[
+                    { step: 0, label: '01. Account Credentials & Email Verified', done: isStep0Done, desc: brand.emailVerified ? brand.email : 'Email verification required' },
+                    { step: 1, label: '02. Brand Basics & Leadership Dossier', done: isStep1Done, desc: brand.name ? `${brand.name} · ${brand.founderName || 'Founder'}` : 'Name, category, location, founder required' },
+                    { step: 2, label: '03. Visual Assets & Brand Craft', done: isStep2Done, desc: (brand.profileImage && brand.coverImage) ? 'Emblem (1:1), banner (16:9) & story set' : 'Emblem, cover banner & craft story required' },
+                    { step: 3, label: '04. Verified Channels & Inquiries', done: isStep3Done, desc: brand.instagram ? `@${brand.instagram.replace(/^@/, '')}` : 'Instagram handle & concierge email required' },
+                    { step: 4, label: '05. Payout Settlement Banking', done: isStep4Done, desc: brand.bankAccount?.payoutMethod === 'upi' ? (brand.bankAccount.upiId || 'UPI VPA') : (brand.bankAccount?.bankName || 'Direct Bank Settlement') }
+                  ].map((item) => (
+                    <div
+                      key={item.step}
+                      onClick={() => setCurrentStep(item.step)}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '9px 12px',
+                        borderRadius: '10px',
+                        backgroundColor: item.done ? '#f8fafc' : '#fef2f2',
+                        border: `1px solid ${item.done ? '#e2e8f0' : '#fecaca'}`,
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                      title={`Click to review ${item.label}`}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '50%',
+                          backgroundColor: item.done ? '#dcfce7' : '#fee2e2',
+                          color: item.done ? '#15803d' : '#dc2626',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '11px',
+                          fontWeight: 800,
+                          flexShrink: 0
+                        }}>
+                          {item.done ? '✓' : '!'}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: item.done ? '#0f172a' : '#991b1b' }}>
+                            {item.label}
+                          </div>
+                          <div style={{ fontSize: '10.5px', color: '#64748b' }}>
+                            {item.desc}
+                          </div>
+                        </div>
+                      </div>
+
+                      <span style={{
+                        fontSize: '10px',
+                        fontWeight: 700,
+                        color: item.done ? '#15803d' : '#dc2626',
+                        backgroundColor: '#ffffff',
+                        border: `1px solid ${item.done ? '#bbf7d0' : '#fca5a5'}`,
+                        padding: '3px 8px',
+                        borderRadius: '6px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.02em'
+                      }}>
+                        {item.done ? 'Complete ✓' : 'Fix Step →'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {!isProfileComplete && (
+                <div style={{
+                  marginTop: '12px',
+                  backgroundColor: '#fef2f2',
+                  border: '1px solid #fecaca',
+                  borderRadius: '12px',
+                  padding: '11px 14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: '#991b1b',
+                  fontSize: '12px',
+                  fontWeight: 600
+                }}>
+                  <AlertCircle size={15} color="#dc2626" style={{ flexShrink: 0 }} />
+                  <span>Profile Incomplete: All mandatory details must be provided before your brand can be submitted for darkstore onboarding.</span>
+                </div>
+              )}
+
               <div className={styles.ronasReadyNotice}>
                 <Check size={16} color="#2563eb" />
-                <span>Everything is verified. Tap &ldquo;Submit Profile for Verification&rdquo;. Once your brand is approved, you will be authorized to dispatch physical inventory to the Ahmedabad Darkstore Hub.</span>
+                <span>Once all details are verified and approved, you will be authorized to dispatch physical inventory to the Ahmedabad Darkstore Hub.</span>
               </div>
             </div>
           )}
@@ -1603,8 +1994,9 @@ export default function OnboardingFlow({
         ) : (
           <button
             type="button"
-            onClick={onGoLive}
+            onClick={handleFinalSubmit}
             className={styles.ronasGoLivePillBtn}
+            style={!isProfileComplete ? { backgroundColor: '#475569' } : undefined}
           >
             <span>Submit Profile for Verification →</span>
           </button>
