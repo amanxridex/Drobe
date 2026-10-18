@@ -721,10 +721,14 @@ export async function supabaseUpsertBrand(brand: DarkstoreBrand | any): Promise<
   if (!supabase) return false;
   try {
     const bank = brand.bankAccount || {};
+    const brandId = (brand.id && String(brand.id).trim().length > 0)
+      ? String(brand.id).trim()
+      : (brand.name ? slugify(brand.name) : `brand-${Date.now()}`);
+
     const { error } = await supabase
       .from('drobe_brands')
       .upsert({
-        id: brand.id,
+        id: brandId,
         name: brand.name,
         tagline: brand.tagline || brand.about?.slice(0, 120) || '',
         category: brand.category || 'Male & Female',
@@ -742,10 +746,10 @@ export async function supabaseUpsertBrand(brand: DarkstoreBrand | any): Promise<
         phone: brand.phone || '',
         based_out_of: brand.basedOutOf || brand.based_out_of || 'Ahmedabad',
         established_year: brand.establishedYear || brand.established_year || '',
-        status: brand.status,
+        status: brand.status || 'Draft',
         profile_image: brand.profileImage || brand.profile_image || '',
         cover_image: brand.coverImage || brand.cover_image || '',
-        total_products_count: brand.totalProductsCount || (Array.isArray(brand.products) ? brand.products.length : 0),
+        total_products_count: brand.totalProductsCount ?? (Array.isArray(brand.products) ? brand.products.filter((p: any) => p && (p.name || p.title)).length : 0),
         inwarded_units_count: brand.inwardedUnitsCount || 0,
         bank_account_holder: bank.accountHolderName || brand.bank_account_holder || '',
         bank_name: bank.bankName || brand.bank_name || '',
@@ -757,62 +761,99 @@ export async function supabaseUpsertBrand(brand: DarkstoreBrand | any): Promise<
         updated_at: new Date().toISOString()
       });
 
-    if (!error) {
-      await Promise.allSettled([
-        invalidateCacheKey('drobe:cache:brands:all'),
-        brand.id ? invalidateBrandCache(brand.id) : Promise.resolve(),
-        brand.name ? invalidateBrandCache(brand.name) : Promise.resolve()
-      ]);
+    if (error) {
+      console.warn('Supabase upsert brand error:', error.message);
+      return false;
     }
 
-    return !error;
-  } catch {
+    await Promise.allSettled([
+      invalidateCacheKey('drobe:cache:brands:all'),
+      brandId ? invalidateBrandCache(brandId) : Promise.resolve(),
+      brand.name ? invalidateBrandCache(brand.name) : Promise.resolve()
+    ]);
+
+    return true;
+  } catch (err) {
+    console.warn('supabaseUpsertBrand exception:', err);
     return false;
   }
 }
 
 // Upsert product to Supabase
-export async function supabaseUpsertProduct(product: DarkstoreProduct): Promise<boolean> {
+export async function supabaseUpsertProduct(product: DarkstoreProduct | any): Promise<boolean> {
   if (!supabase) return false;
   try {
+    const brandIdVal = product.brandId || (product.brandName ? slugify(product.brandName) : 'brand-active-01');
+    const prodId = (product.id && String(product.id).trim().length > 0)
+      ? String(product.id).trim()
+      : `${brandIdVal}-prod-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+
     const { error } = await supabase
       .from('drobe_products')
       .upsert({
-        id: product.id,
-        sku: product.sku,
-        sku_serial: product.skuSerial,
-        name: product.name,
-        brand_id: product.brandId,
+        id: prodId,
+        sku: product.sku || `DR-${prodId.slice(-4)}`,
+        sku_serial: product.skuSerial || null,
+        name: product.name || product.title,
+        title: product.name || product.title,
+        brand_id: brandIdVal,
         brand_name: product.brandName,
-        category: product.category,
-        price: product.price,
+        category: product.category || 'Apparel',
+        price: typeof product.price === 'string' ? product.price : `₹${product.price || '0'}`,
         brand_base_price: product.brandBasePrice || null,
         markup_amount: product.markupAmount || null,
         markup_percentage: product.markupPercentage || null,
-        volume: product.volume,
-        declared_inventory: product.inventory || 20,
-        inward_units: product.inwardUnits || 0,
-        units_in_trial: product.unitsInTrial || 0,
-        units_sold: product.unitsSold || 0,
-        tagline: product.tagline,
-        description: product.description,
-        images: product.images || [],
-        inward_status: product.inwardStatus,
-        shelf_code: product.warehouseLocation?.code,
-        shelf_details: product.warehouseLocation,
-        is_live: Boolean(product.isLive),
+        volume: product.volume || 'M',
+        declared_inventory: product.inventory || product.declared_inventory || 20,
+        inward_units: product.inwardUnits || product.inward_units || 0,
+        units_in_trial: product.unitsInTrial || product.units_in_trial || 0,
+        units_sold: product.unitsSold || product.units_sold || 0,
+        tagline: product.tagline || '',
+        description: product.description || '',
+        images: product.images && product.images.length > 0 ? product.images : (product.image ? [product.image] : []),
+        thumbnail: product.thumbnail || (product.images && product.images[0]) || product.image || '',
+        inward_status: product.inwardStatus || product.inward_status || 'Pending Stock Dispatch',
+        shelf_code: product.warehouseLocation?.code || product.shelf_code || null,
+        shelf_details: product.warehouseLocation || product.shelf_details || null,
+        is_live: Boolean(product.isLive ?? product.is_live ?? true),
         updated_at: new Date().toISOString()
       });
 
-    if (!error) {
-      await Promise.allSettled([
-        invalidateCacheKey(CACHE_KEYS.ACTIVE_PRODUCTS_ALL),
-        product.brandId ? invalidateBrandCache(product.brandId) : Promise.resolve()
-      ]);
+    if (error) {
+      console.warn('Supabase upsert product error:', error.message);
+      return false;
     }
 
-    return !error;
-  } catch {
+    await Promise.allSettled([
+      invalidateCacheKey(CACHE_KEYS.ACTIVE_PRODUCTS_ALL),
+      brandIdVal ? invalidateBrandCache(brandIdVal) : Promise.resolve()
+    ]);
+
+    return true;
+  } catch (err) {
+    console.warn('supabaseUpsertProduct exception:', err);
+    return false;
+  }
+}
+
+// Delete product from Supabase
+export async function supabaseDeleteProduct(productId: string): Promise<boolean> {
+  if (!supabase || !productId) return false;
+  try {
+    const { error } = await supabase
+      .from('drobe_products')
+      .delete()
+      .eq('id', productId);
+
+    if (error) {
+      console.warn('Supabase delete product error:', error.message);
+      return false;
+    }
+
+    await invalidateCacheKey(CACHE_KEYS.ACTIVE_PRODUCTS_ALL);
+    return true;
+  } catch (err) {
+    console.warn('supabaseDeleteProduct exception:', err);
     return false;
   }
 }
@@ -932,6 +973,47 @@ export function subscribeToRealtimeOrders(onNewOrUpdatedOrder: (order: any) => v
     supabase.removeChannel(channel);
   };
 }
+
+// Real-time listener for inbound shipments
+export function subscribeToRealtimeShipments(onNewOrUpdatedShipment: (shipment: any) => void) {
+  if (!supabase) return () => {};
+
+  const channel = supabase
+    .channel('drobe_shipments_channel')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'drobe_inbound_shipments' },
+      payload => {
+        onNewOrUpdatedShipment(payload.new);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}
+
+// Real-time listener for specific brand profile updates (e.g. approval status changes)
+export function subscribeToRealtimeBrand(brandId: string, onUpdatedBrand: (brand: any) => void) {
+  if (!supabase || !brandId) return () => {};
+
+  const channel = supabase
+    .channel(`drobe_brand_${brandId}_channel`)
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'drobe_brands', filter: `id=eq.${brandId}` },
+      payload => {
+        onUpdatedBrand(payload.new);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}
+
 
 // ==============================================================================
 // STOREFRONT DATABASE CONSUMPTION HELPERS (Live Supabase Catalog & Brands)
@@ -1054,10 +1136,10 @@ export async function supabaseFetchProductById(id: string): Promise<Product | nu
   }
 }
 
-export async function supabaseFetchBrandById(brandIdOrSlug: string): Promise<any | null> {
+export async function supabaseFetchBrandById(brandIdOrSlug: string, bypassCache: boolean = false): Promise<any | null> {
   if (!supabase || !brandIdOrSlug) return null;
-  const cacheKey = CACHE_KEYS.BRAND_PROFILE(brandIdOrSlug);
-  return cacheRemember(cacheKey, CACHE_TTL.LONG, async () => {
+
+  const fetcher = async () => {
     try {
       const normalized = slugify(brandIdOrSlug);
       const stripped = normalized.replace(/^home-discover-brand-/, '').replace(/-men$|-women$/, '');
@@ -1088,22 +1170,34 @@ export async function supabaseFetchBrandById(brandIdOrSlug: string): Promise<any
       console.warn('Supabase fetch brand exception:', err);
       return null;
     }
-  });
+  };
+
+  if (bypassCache) {
+    return fetcher();
+  }
+
+  const cacheKey = CACHE_KEYS.BRAND_PROFILE(brandIdOrSlug);
+  return cacheRemember(cacheKey, CACHE_TTL.LONG, fetcher);
 }
 
-export async function supabaseFetchBrandProducts(brandIdOrSlug: string, brandName?: string): Promise<Product[] | null> {
+export async function supabaseFetchBrandProducts(
+  brandIdOrSlug: string, 
+  brandName?: string, 
+  bypassCache: boolean = false,
+  includeAllStatus: boolean = false
+): Promise<Product[] | null> {
   if (!supabase || !brandIdOrSlug) return null;
-  const cacheKey = CACHE_KEYS.BRAND_PRODUCTS(brandIdOrSlug);
-  return cacheRemember(cacheKey, CACHE_TTL.MEDIUM, async () => {
+
+  const fetcher = async () => {
     try {
       const slug = slugify(brandIdOrSlug);
       const stripped = slug.replace(/^home-discover-brand-/, '').replace(/-men$|-women$/, '');
       const cleanBrandName = (brandName || stripped.replace(/-/g, ' ')).trim();
 
-      let query = supabase
-        .from('drobe_products')
-        .select('*')
-        .eq('is_live', true);
+      let query = supabase.from('drobe_products').select('*');
+      if (!includeAllStatus) {
+        query = query.eq('is_live', true);
+      }
 
       const orClauses: string[] = [
         `brand_id.eq.${slug}`,
@@ -1143,7 +1237,14 @@ export async function supabaseFetchBrandProducts(brandIdOrSlug: string, brandNam
       console.warn('Supabase fetch brand products exception:', err);
       return null;
     }
-  });
+  };
+
+  if (bypassCache) {
+    return fetcher();
+  }
+
+  const cacheKey = CACHE_KEYS.BRAND_PRODUCTS(brandIdOrSlug);
+  return cacheRemember(cacheKey, CACHE_TTL.MEDIUM, fetcher);
 }
 
 export async function supabaseFetchStorefrontCategories(gender?: string): Promise<any[] | null> {

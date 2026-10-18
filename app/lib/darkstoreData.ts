@@ -1049,6 +1049,10 @@ export function brandDispatchStock({
       return p;
     });
     saveDarkstoreProducts(updatedProducts);
+    const targetProduct = updatedProducts.find(p => p.id === productId || p.name === productName);
+    if (targetProduct) {
+      try { supabaseUpsertProduct(targetProduct); } catch {}
+    }
   } else {
     // Add product to darkstore products
     const newProd: DarkstoreProduct = {
@@ -1067,6 +1071,7 @@ export function brandDispatchStock({
       isLive: false
     };
     saveDarkstoreProducts([newProd, ...products]);
+    try { supabaseUpsertProduct(newProd); } catch {}
   }
 
   if (typeof window !== 'undefined') {

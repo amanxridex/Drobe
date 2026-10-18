@@ -4,7 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { BrandProfile, mapDbBrandToBrandProfile } from './types';
 import { EMPTY_BRAND_PROFILE } from './jihiData';
 import { registerBrandApplication } from '../lib/darkstoreData';
-import { supabaseFetchBrandById, supabaseFetchBrandProducts } from '../lib/supabaseClient';
+import { 
+  supabaseFetchBrandById, 
+  supabaseFetchBrandProducts, 
+  supabaseUpsertBrand, 
+  supabaseUpsertProduct 
+} from '../lib/supabaseClient';
 import BrandStartScreen from './BrandStartScreen';
 import OnboardingFlow from './OnboardingFlow';
 import BrandProfileView from './BrandProfileView';
@@ -58,9 +63,9 @@ export default function BrandDashboardPage() {
 
       // 4. Direct Brand Link Support (e.g. /brand-dashboard?brand=underrated-club)
       if (brandParam) {
-        supabaseFetchBrandById(brandParam).then(async (dbBrand) => {
+        supabaseFetchBrandById(brandParam, true).then(async (dbBrand) => {
           if (dbBrand) {
-            const dbProducts = await supabaseFetchBrandProducts(brandParam, dbBrand.name);
+            const dbProducts = await supabaseFetchBrandProducts(brandParam, dbBrand.name, true, true);
             const mapped = mapDbBrandToBrandProfile(dbBrand, dbProducts || []);
             setBrand(mapped);
             try {
@@ -85,6 +90,32 @@ export default function BrandDashboardPage() {
           if (viewParam === 'profile' || viewParam === 'dashboard' || viewParam === 'analytics') {
             setActiveView('profile');
           }
+
+          // Live Supabase DB sync & hydration (seamless background update from Postgres)
+          const lookupKey = parsed.id || parsed.name;
+          supabaseFetchBrandById(lookupKey, true).then(async (dbBrand) => {
+            if (dbBrand) {
+              const dbProducts = await supabaseFetchBrandProducts(lookupKey, dbBrand.name, true, true);
+              const mapped = mapDbBrandToBrandProfile(dbBrand, dbProducts || []);
+              setBrand((prev) => {
+                const mergedProducts = (mapped.products && mapped.products.length > 0)
+                  ? mapped.products
+                  : prev.products;
+                const merged: BrandProfile = {
+                  ...prev,
+                  ...mapped,
+                  status: (dbBrand.status as any) || prev.status,
+                  products: mergedProducts
+                };
+                try {
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+                } catch {}
+                return merged;
+              });
+            }
+          }).catch((err) => {
+            console.warn('Live DB brand hydration error:', err);
+          });
         }
       }
     } catch {
@@ -112,6 +143,34 @@ export default function BrandDashboardPage() {
       } catch (e) {
         console.warn('Failed to register brand application:', e);
       }
+
+      // Live Supabase DB sync
+      supabaseUpsertBrand(updated).catch((err) => {
+        console.warn('supabaseUpsertBrand async error:', err);
+      });
+
+      // Also persist products to drobe_products in Supabase
+      if (Array.isArray(updated.products) && updated.products.length > 0) {
+        updated.products.forEach((prod) => {
+          if (!prod.name?.trim()) return;
+          supabaseUpsertProduct({
+            id: prod.id,
+            sku: prod.sku,
+            name: prod.name,
+            brandId: updated.id,
+            brandName: updated.name,
+            category: updated.category,
+            price: prod.price || '₹0',
+            volume: prod.volume || 'M',
+            inventory: Number(prod.inventory) || 0,
+            tagline: prod.tagline || '',
+            description: prod.description || '',
+            images: prod.images && prod.images.length > 0 ? prod.images : (prod.image ? [prod.image] : []),
+            inwardStatus: prod.inwardStatus || 'Pending Stock Dispatch',
+            isLive: prod.isLive ?? true
+          }).catch(() => {});
+        });
+      }
     }
   };
 
@@ -123,6 +182,7 @@ export default function BrandDashboardPage() {
     };
     handleBrandChange(submittedBrand);
     registerBrandApplication(submittedBrand);
+    await supabaseUpsertBrand(submittedBrand);
 
     // Fire celebratory confetti for profile filing submission
     try {
