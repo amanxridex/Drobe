@@ -51,8 +51,8 @@ const DEFAULT_SHOWCASE_BRAND: BrandProfile = {
 };
 
 export default function BrandDashboardPage() {
-  const [brand, setBrand] = useState<BrandProfile>(DEFAULT_SHOWCASE_BRAND);
-  const [activeView, setActiveView] = useState<'start' | 'filing' | 'profile'>('profile');
+  const [brand, setBrand] = useState<BrandProfile>(EMPTY_BRAND_PROFILE);
+  const [activeView, setActiveView] = useState<'start' | 'filing' | 'profile'>('start');
   const [openEditOnProfile, setOpenEditOnProfile] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -76,7 +76,12 @@ export default function BrandDashboardPage() {
         return;
       }
 
-      // 3. Direct Brand Link Support (e.g. /brand-dashboard?brand=underrated-club)
+      // 3. Direct Dashboard / Analytics View
+      if (viewParam === 'profile' || viewParam === 'dashboard' || viewParam === 'analytics') {
+        setActiveView('profile');
+      }
+
+      // 4. Direct Brand Link Support (e.g. /brand-dashboard?brand=underrated-club)
       if (brandParam) {
         supabaseFetchBrandById(brandParam).then(async (dbBrand) => {
           if (dbBrand) {
@@ -102,16 +107,13 @@ export default function BrandDashboardPage() {
         const parsed = JSON.parse(saved);
         if (parsed.name && parsed.name.trim().length > 0) {
           setBrand(parsed);
-        } else {
-          setBrand(DEFAULT_SHOWCASE_BRAND);
+          if (viewParam === 'profile' || viewParam === 'dashboard' || viewParam === 'analytics') {
+            setActiveView('profile');
+          }
         }
-      } else {
-        setBrand(DEFAULT_SHOWCASE_BRAND);
       }
-      setActiveView('profile');
     } catch {
-      setBrand(DEFAULT_SHOWCASE_BRAND);
-      setActiveView('profile');
+      // Keep default start screen
     }
   }, []);
 
