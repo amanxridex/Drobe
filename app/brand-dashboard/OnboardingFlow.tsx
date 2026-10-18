@@ -18,12 +18,14 @@ import {
   CreditCard,
   ShieldCheck,
   Crop,
-  Camera
+  Camera,
+  Zap
 } from 'lucide-react';
 import { BrandProfile, BrandBankAccount } from './types';
 import { supabaseUploadMedia } from '../lib/supabaseClient';
 import { EmailOtpModal, ForgotPasswordModal } from './AuthModals';
 import ImageCropDrawer from './ImageCropDrawer';
+import { POPULAR_BANKS, ALL_INDIAN_BANKS, POPULAR_UPI_HANDLES } from './indianBanks';
 import styles from './brand-dashboard.module.css';
 
 interface OnboardingFlowProps {
@@ -34,16 +36,6 @@ interface OnboardingFlowProps {
   onSaveDraft?: () => void;
 }
 
-const POPULAR_BANKS = [
-  'HDFC Bank',
-  'ICICI Bank',
-  'State Bank of India',
-  'Axis Bank',
-  'Kotak Mahindra Bank',
-  'Punjab National Bank',
-  'Bank of Baroda',
-  'IndusInd Bank'
-];
 
 const STEPS = [
   { id: 'account', num: '01', title: 'Account', fullTitle: 'Account credentials', sub: 'Brand email & secure password' },
@@ -122,6 +114,8 @@ export default function OnboardingFlow({
   const pillTrackRef = useRef<HTMLDivElement>(null);
   const logoFileInputRef = useRef<HTMLInputElement>(null);
   const coverFileInputRef = useRef<HTMLInputElement>(null);
+  const [isOtherBankSelected, setIsOtherBankSelected] = useState(false);
+  const [customBankName, setCustomBankName] = useState('');
 
 
   useEffect(() => {
@@ -327,29 +321,44 @@ export default function OnboardingFlow({
     }
     if (step.id === 'banking') {
       const bank = brand.bankAccount;
-      const nameTrimmed = bank?.accountHolderName?.trim();
-      if (!nameTrimmed || nameTrimmed.length < 3) {
-        setErrorNotice('Please enter the Account Holder Name matching your bank account.');
-        return false;
-      }
-      if (!bank?.bankName?.trim()) {
-        setErrorNotice('Please select or enter your Bank Name.');
-        return false;
-      }
-      const accTrimmed = (bank?.accountNumber || '').trim().replace(/\s/g, '');
-      if (!accTrimmed || accTrimmed.length < 8) {
-        setErrorNotice('Please enter a valid Bank Account Number (at least 8 digits).');
-        return false;
-      }
-      const confirmTrimmed = confirmAccountNumber.trim().replace(/\s/g, '');
-      if (confirmTrimmed && accTrimmed !== confirmTrimmed) {
-        setErrorNotice('Bank Account Numbers do not match. Please verify your entries.');
-        return false;
-      }
-      const ifscTrimmed = (bank?.ifscCode || '').trim().toUpperCase();
-      if (!ifscTrimmed || ifscTrimmed.length < 8) {
-        setErrorNotice('Please enter a valid Bank IFSC Code (e.g. HDFC0001842).');
-        return false;
+      const isUpi = bank?.payoutMethod === 'upi';
+
+      if (isUpi) {
+        const nameTrimmed = bank?.accountHolderName?.trim();
+        if (!nameTrimmed || nameTrimmed.length < 3) {
+          setErrorNotice('Please enter the Beneficiary / Legal Entity Name registered with your UPI.');
+          return false;
+        }
+        const upiTrimmed = bank?.upiId?.trim() || '';
+        if (!upiTrimmed || !upiTrimmed.includes('@') || upiTrimmed.length < 5) {
+          setErrorNotice('Please enter a valid UPI ID (e.g. yourbrand@okhdfcbank or business@upi).');
+          return false;
+        }
+      } else {
+        const nameTrimmed = bank?.accountHolderName?.trim();
+        if (!nameTrimmed || nameTrimmed.length < 3) {
+          setErrorNotice('Please enter the Account Holder Name matching your bank account.');
+          return false;
+        }
+        if (!bank?.bankName?.trim() || bank.bankName === 'Other Bank (Specify Below)') {
+          setErrorNotice('Please select or specify your Bank Name.');
+          return false;
+        }
+        const accTrimmed = (bank?.accountNumber || '').trim().replace(/\s/g, '');
+        if (!accTrimmed || accTrimmed.length < 8) {
+          setErrorNotice('Please enter a valid Bank Account Number (at least 8 digits).');
+          return false;
+        }
+        const confirmTrimmed = confirmAccountNumber.trim().replace(/\s/g, '');
+        if (confirmTrimmed && accTrimmed !== confirmTrimmed) {
+          setErrorNotice('Bank Account Numbers do not match. Please verify your entries.');
+          return false;
+        }
+        const ifscTrimmed = (bank?.ifscCode || '').trim().toUpperCase();
+        if (!ifscTrimmed || ifscTrimmed.length < 8) {
+          setErrorNotice('Please enter a valid Bank IFSC Code (e.g. HDFC0001842).');
+          return false;
+        }
       }
     }
     setErrorNotice(null);
@@ -1055,177 +1064,394 @@ export default function OnboardingFlow({
             </div>
           )}
 
-          {/* STEP 5: Payout Banking */}
+          {/* STEP 5: Payout Banking & Settlement */}
           {activeStepMeta.id === 'banking' && (
             <div className={styles.ronasFormContainer}>
-              {/* Trust & RBI compliance notice */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '10px',
-                background: '#f8fafc',
-                border: '1px solid #e2e8f0',
-                borderRadius: '12px',
-                padding: '12px 14px',
-                marginBottom: '16px'
-              }}>
-                <ShieldCheck size={18} color="#2563eb" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.45 }}>
-                  <strong style={{ color: '#0f172a' }}>RBI Direct NEFT / RTGS Settlement:</strong> Door-trial purchases and customer retentions are automatically transferred to this verified account within 24 hours of trial completion.
-                </div>
-              </div>
-
-              {/* Account Holder Name */}
-              <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Account Holder / Business Entity Name *</label>
-                <input
-                  type="text"
-                  value={brand.bankAccount?.accountHolderName || ''}
-                  onChange={(e) => updateBankField('accountHolderName', e.target.value)}
-                  placeholder="Legal name as registered with your bank"
-                  className={styles.ronasInputField}
-                  autoFocus
-                />
-                <span className={styles.ronasInputHelper}>
-                  Must match the entity name on your bank passbook, statement or GSTIN.
-                </span>
-              </div>
-
-              {/* Account Type Toggle */}
-              <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Account Type</label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              {/* Payout Method Toggle */}
+              <div style={{ marginBottom: '16px' }}>
+                <label className={styles.ronasInputLabel} style={{ marginBottom: '8px' }}>
+                  Settlement Payout Method *
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <button
                     type="button"
-                    onClick={() => updateBankField('accountType', 'Current')}
+                    onClick={() => updateBankField('payoutMethod', 'bank')}
                     style={{
-                      padding: '10px',
-                      borderRadius: '10px',
-                      border: `1.5px solid ${brand.bankAccount?.accountType !== 'Savings' ? '#2563eb' : '#e2e8f0'}`,
-                      background: brand.bankAccount?.accountType !== 'Savings' ? '#eff6ff' : '#ffffff',
-                      color: brand.bankAccount?.accountType !== 'Savings' ? '#1d4ed8' : '#64748b',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '12px 14px',
+                      borderRadius: '12px',
+                      border: `2px solid ${brand.bankAccount?.payoutMethod !== 'upi' ? '#2563eb' : '#e2e8f0'}`,
+                      backgroundColor: brand.bankAccount?.payoutMethod !== 'upi' ? '#eff6ff' : '#ffffff',
+                      color: brand.bankAccount?.payoutMethod !== 'upi' ? '#1d4ed8' : '#64748b',
                       fontWeight: 700,
                       fontSize: '13px',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    Current Account (Recommended)
+                    <Building2 size={16} />
+                    <span>Bank Transfer (NEFT/RTGS)</span>
                   </button>
+
                   <button
                     type="button"
-                    onClick={() => updateBankField('accountType', 'Savings')}
+                    onClick={() => updateBankField('payoutMethod', 'upi')}
                     style={{
-                      padding: '10px',
-                      borderRadius: '10px',
-                      border: `1.5px solid ${brand.bankAccount?.accountType === 'Savings' ? '#2563eb' : '#e2e8f0'}`,
-                      background: brand.bankAccount?.accountType === 'Savings' ? '#eff6ff' : '#ffffff',
-                      color: brand.bankAccount?.accountType === 'Savings' ? '#1d4ed8' : '#64748b',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '12px 14px',
+                      borderRadius: '12px',
+                      border: `2px solid ${brand.bankAccount?.payoutMethod === 'upi' ? '#7c3aed' : '#e2e8f0'}`,
+                      backgroundColor: brand.bankAccount?.payoutMethod === 'upi' ? '#f5f3ff' : '#ffffff',
+                      color: brand.bankAccount?.payoutMethod === 'upi' ? '#6d28d9' : '#64748b',
                       fontWeight: 700,
                       fontSize: '13px',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    Savings Account
+                    <Zap size={16} color={brand.bankAccount?.payoutMethod === 'upi' ? '#7c3aed' : '#94a3b8'} />
+                    <span>UPI ID / VPA (Instant)</span>
                   </button>
                 </div>
               </div>
 
-              {/* Bank Name */}
-              <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Bank Name *</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
-                  {POPULAR_BANKS.map(bank => {
-                    const isSelected = brand.bankAccount?.bankName === bank;
-                    return (
+              {brand.bankAccount?.payoutMethod === 'upi' ? (
+                /* --- UPI PAYOUT OPTION --- */
+                <>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                    background: '#f5f3ff',
+                    border: '1px solid #ddd6fe',
+                    borderRadius: '12px',
+                    padding: '12px 14px',
+                    marginBottom: '16px'
+                  }}>
+                    <Zap size={18} color="#7c3aed" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div style={{ fontSize: '12px', color: '#5b21b6', lineHeight: 1.45 }}>
+                      <strong style={{ color: '#4c1d95' }}>Instant UPI Settlement:</strong> Door-trial purchases and customer retentions are automatically transferred directly to your verified UPI VPA handle.
+                    </div>
+                  </div>
+
+                  {/* Beneficiary Name */}
+                  <div className={styles.ronasInputGroup}>
+                    <label className={styles.ronasInputLabel}>Beneficiary / Entity Name *</label>
+                    <input
+                      type="text"
+                      value={brand.bankAccount?.accountHolderName || ''}
+                      onChange={(e) => updateBankField('accountHolderName', e.target.value)}
+                      placeholder="Legal entity name or beneficiary name registered with UPI"
+                      className={styles.ronasInputField}
+                      autoFocus
+                    />
+                    <span className={styles.ronasInputHelper}>
+                      Must match the name registered on your UPI handle or bank account.
+                    </span>
+                  </div>
+
+                  {/* UPI ID / VPA */}
+                  <div className={styles.ronasInputGroup}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>UPI ID / VPA *</label>
+                      {brand.bankAccount?.upiId && brand.bankAccount.upiId.includes('@') && (
+                        <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          <Check size={12} /> Valid VPA format
+                        </span>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={brand.bankAccount?.upiId || ''}
+                      onChange={(e) => updateBankField('upiId', e.target.value.trim().toLowerCase())}
+                      placeholder="e.g. brandname@okhdfcbank or business@upi"
+                      className={styles.ronasInputField}
+                    />
+
+                    {/* Quick Handle Suggestions */}
+                    <div style={{ marginTop: '8px' }}>
+                      <span style={{ fontSize: '11px', color: '#64748b', display: 'block', marginBottom: '5px' }}>
+                        Quick UPI Handles:
+                      </span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                        {POPULAR_UPI_HANDLES.map(handle => (
+                          <button
+                            key={handle}
+                            type="button"
+                            onClick={() => {
+                              const current = brand.bankAccount?.upiId || '';
+                              const prefix = current.split('@')[0] || (brand.name ? brand.name.toLowerCase().replace(/[^a-z0-9]/g, '') : 'brand');
+                              updateBankField('upiId', `${prefix}${handle}`);
+                            }}
+                            style={{
+                              fontSize: '11px',
+                              padding: '4px 8px',
+                              borderRadius: '6px',
+                              border: '1px solid #e2e8f0',
+                              background: '#f8fafc',
+                              color: '#6d28d9',
+                              fontWeight: 600,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {handle}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* --- DIRECT BANK TRANSFER OPTION --- */
+                <>
+                  {/* Trust & RBI compliance notice */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '12px',
+                    padding: '12px 14px',
+                    marginBottom: '16px'
+                  }}>
+                    <ShieldCheck size={18} color="#2563eb" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.45 }}>
+                      <strong style={{ color: '#0f172a' }}>RBI Direct NEFT / RTGS Settlement:</strong> Door-trial purchases and customer retentions are automatically transferred to this verified account within 24 hours of trial completion.
+                    </div>
+                  </div>
+
+                  {/* Account Holder Name */}
+                  <div className={styles.ronasInputGroup}>
+                    <label className={styles.ronasInputLabel}>Account Holder / Business Entity Name *</label>
+                    <input
+                      type="text"
+                      value={brand.bankAccount?.accountHolderName || ''}
+                      onChange={(e) => updateBankField('accountHolderName', e.target.value)}
+                      placeholder="Legal name as registered with your bank"
+                      className={styles.ronasInputField}
+                      autoFocus
+                    />
+                    <span className={styles.ronasInputHelper}>
+                      Must match the entity name on your bank passbook, statement or GSTIN.
+                    </span>
+                  </div>
+
+                  {/* Account Type Toggle */}
+                  <div className={styles.ronasInputGroup}>
+                    <label className={styles.ronasInputLabel}>Account Type</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                       <button
-                        key={bank}
                         type="button"
-                        onClick={() => updateBankField('bankName', bank)}
+                        onClick={() => updateBankField('accountType', 'Current')}
+                        style={{
+                          padding: '10px',
+                          borderRadius: '10px',
+                          border: `1.5px solid ${brand.bankAccount?.accountType !== 'Savings' ? '#2563eb' : '#e2e8f0'}`,
+                          background: brand.bankAccount?.accountType !== 'Savings' ? '#eff6ff' : '#ffffff',
+                          color: brand.bankAccount?.accountType !== 'Savings' ? '#1d4ed8' : '#64748b',
+                          fontWeight: 700,
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        Current Account (Recommended)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateBankField('accountType', 'Savings')}
+                        style={{
+                          padding: '10px',
+                          borderRadius: '10px',
+                          border: `1.5px solid ${brand.bankAccount?.accountType === 'Savings' ? '#2563eb' : '#e2e8f0'}`,
+                          background: brand.bankAccount?.accountType === 'Savings' ? '#eff6ff' : '#ffffff',
+                          color: brand.bankAccount?.accountType === 'Savings' ? '#1d4ed8' : '#64748b',
+                          fontWeight: 700,
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        Savings Account
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Bank Name with Full Indian Banks Dropdown and Other Option */}
+                  <div className={styles.ronasInputGroup}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label className={styles.ronasInputLabel} style={{ marginBottom: 0 }}>Select Bank *</label>
+                      <span style={{ fontSize: '11px', color: '#64748b' }}>All Indian Banks supported</span>
+                    </div>
+
+                    {/* Popular Bank Chips */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+                      {POPULAR_BANKS.map(bank => {
+                        const isSelected = brand.bankAccount?.bankName === bank && !isOtherBankSelected;
+                        return (
+                          <button
+                            key={bank}
+                            type="button"
+                            onClick={() => {
+                              setIsOtherBankSelected(false);
+                              updateBankField('bankName', bank);
+                            }}
+                            style={{
+                              fontSize: '11px',
+                              padding: '5px 9px',
+                              borderRadius: '6px',
+                              border: isSelected ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
+                              background: isSelected ? '#eff6ff' : '#f8fafc',
+                              color: isSelected ? '#2563eb' : '#475569',
+                              fontWeight: isSelected ? 700 : 500,
+                              cursor: 'pointer',
+                              transition: 'all 0.1s ease'
+                            }}
+                          >
+                            {bank}
+                          </button>
+                        );
+                      })}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsOtherBankSelected(true);
+                          updateBankField('bankName', customBankName || 'Other Bank (Specify Below)');
+                        }}
                         style={{
                           fontSize: '11px',
                           padding: '5px 9px',
                           borderRadius: '6px',
-                          border: isSelected ? '1px solid #2563eb' : '1px solid #e2e8f0',
-                          background: isSelected ? '#eff6ff' : '#f8fafc',
-                          color: isSelected ? '#2563eb' : '#475569',
-                          fontWeight: isSelected ? 700 : 500,
+                          border: isOtherBankSelected ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
+                          background: isOtherBankSelected ? '#eff6ff' : '#f8fafc',
+                          color: isOtherBankSelected ? '#2563eb' : '#475569',
+                          fontWeight: isOtherBankSelected ? 700 : 500,
                           cursor: 'pointer'
                         }}
                       >
-                        {bank}
+                        + Other Bank
                       </button>
-                    );
-                  })}
-                </div>
-                <input
-                  type="text"
-                  value={brand.bankAccount?.bankName || ''}
-                  onChange={(e) => updateBankField('bankName', e.target.value)}
-                  placeholder="Or enter bank name..."
-                  className={styles.ronasInputField}
-                />
-              </div>
+                    </div>
 
-              {/* Bank Account Number */}
-              <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Bank Account Number *</label>
-                <input
-                  type="password"
-                  value={brand.bankAccount?.accountNumber || ''}
-                  onChange={(e) => updateBankField('accountNumber', e.target.value.replace(/[^0-9]/g, ''))}
-                  placeholder="Enter bank account number"
-                  className={styles.ronasInputField}
-                  maxLength={22}
-                />
-              </div>
+                    {/* All Indian Banks Dropdown */}
+                    <div style={{ marginBottom: isOtherBankSelected ? '8px' : '0' }}>
+                      <select
+                        value={isOtherBankSelected ? 'Other Bank (Specify Below)' : (brand.bankAccount?.bankName || '')}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === 'Other Bank (Specify Below)') {
+                            setIsOtherBankSelected(true);
+                            updateBankField('bankName', customBankName || '');
+                          } else {
+                            setIsOtherBankSelected(false);
+                            updateBankField('bankName', val);
+                          }
+                        }}
+                        className={styles.ronasInputField}
+                        style={{
+                          appearance: 'auto',
+                          fontWeight: 600,
+                          color: '#0f172a',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="" disabled>-- Select from All Banks in India --</option>
+                        {ALL_INDIAN_BANKS.map((b) => (
+                          <option key={b} value={b}>
+                            {b}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-              {/* Confirm Bank Account Number */}
-              <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Re-enter Bank Account Number *</label>
-                <input
-                  type="text"
-                  value={confirmAccountNumber}
-                  onChange={(e) => setConfirmAccountNumber(e.target.value.replace(/[^0-9]/g, ''))}
-                  placeholder="Confirm bank account number"
-                  className={styles.ronasInputField}
-                  maxLength={22}
-                />
-                {confirmAccountNumber && brand.bankAccount?.accountNumber && (
-                  <span style={{
-                    fontSize: '11px',
-                    marginTop: '4px',
-                    fontWeight: 600,
-                    color: confirmAccountNumber === brand.bankAccount.accountNumber ? '#16a34a' : '#dc2626',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}>
-                    {confirmAccountNumber === brand.bankAccount.accountNumber ? (
-                      <>✓ Account numbers match</>
-                    ) : (
-                      <>✕ Numbers do not match</>
+                    {/* Custom Bank Name Input when Other is selected */}
+                    {isOtherBankSelected && (
+                      <div style={{ marginTop: '8px' }}>
+                        <label style={{ fontSize: '11px', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '4px' }}>
+                          Specify Bank Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={customBankName}
+                          onChange={(e) => {
+                            setCustomBankName(e.target.value);
+                            updateBankField('bankName', e.target.value);
+                          }}
+                          placeholder="Type your bank name, e.g. Saraswat Bank, Cosmos Bank, DCB..."
+                          className={styles.ronasInputField}
+                          autoFocus
+                        />
+                      </div>
                     )}
-                  </span>
-                )}
-              </div>
+                  </div>
 
-              {/* IFSC Code */}
-              <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Bank IFSC Code *</label>
-                <input
-                  type="text"
-                  value={brand.bankAccount?.ifscCode || ''}
-                  onChange={(e) => updateBankField('ifscCode', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
-                  placeholder="e.g. HDFC0001842"
-                  className={styles.ronasInputField}
-                  maxLength={11}
-                />
-                <span className={styles.ronasInputHelper}>
-                  11-character alpha-numeric code found on your chequebook or mobile banking app.
-                </span>
-              </div>
+                  {/* Bank Account Number */}
+                  <div className={styles.ronasInputGroup}>
+                    <label className={styles.ronasInputLabel}>Bank Account Number *</label>
+                    <input
+                      type="password"
+                      value={brand.bankAccount?.accountNumber || ''}
+                      onChange={(e) => updateBankField('accountNumber', e.target.value.replace(/[^0-9]/g, ''))}
+                      placeholder="Enter bank account number"
+                      className={styles.ronasInputField}
+                      maxLength={22}
+                    />
+                  </div>
+
+                  {/* Confirm Bank Account Number */}
+                  <div className={styles.ronasInputGroup}>
+                    <label className={styles.ronasInputLabel}>Re-enter Bank Account Number *</label>
+                    <input
+                      type="text"
+                      value={confirmAccountNumber}
+                      onChange={(e) => setConfirmAccountNumber(e.target.value.replace(/[^0-9]/g, ''))}
+                      placeholder="Confirm bank account number"
+                      className={styles.ronasInputField}
+                      maxLength={22}
+                    />
+                    {confirmAccountNumber && brand.bankAccount?.accountNumber && (
+                      <span style={{
+                        fontSize: '11px',
+                        marginTop: '4px',
+                        fontWeight: 600,
+                        color: confirmAccountNumber === brand.bankAccount.accountNumber ? '#16a34a' : '#dc2626',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}>
+                        {confirmAccountNumber === brand.bankAccount.accountNumber ? (
+                          <>✓ Account numbers match</>
+                        ) : (
+                          <>✕ Numbers do not match</>
+                        )}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* IFSC Code */}
+                  <div className={styles.ronasInputGroup}>
+                    <label className={styles.ronasInputLabel}>Bank IFSC Code *</label>
+                    <input
+                      type="text"
+                      value={brand.bankAccount?.ifscCode || ''}
+                      onChange={(e) => updateBankField('ifscCode', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                      placeholder="e.g. HDFC0001842"
+                      className={styles.ronasInputField}
+                      maxLength={11}
+                    />
+                    <span className={styles.ronasInputHelper}>
+                      11-character alpha-numeric code found on your chequebook or mobile banking app.
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           )}
 
@@ -1284,7 +1510,7 @@ export default function OnboardingFlow({
                 </div>
 
                 {/* Settlement Account Summary Box */}
-                {brand.bankAccount?.accountNumber && (
+                {(brand.bankAccount?.accountNumber || brand.bankAccount?.upiId) && (
                   <div style={{
                     marginTop: '14px',
                     padding: '10px 12px',
@@ -1296,18 +1522,24 @@ export default function OnboardingFlow({
                     alignItems: 'center'
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Building2 size={16} color="#2563eb" />
+                      {brand.bankAccount.payoutMethod === 'upi' ? (
+                        <Zap size={16} color="#7c3aed" />
+                      ) : (
+                        <Building2 size={16} color="#2563eb" />
+                      )}
                       <div>
                         <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
-                          {brand.bankAccount.bankName || 'Settlement Bank'}
+                          {brand.bankAccount.payoutMethod === 'upi' ? 'UPI Payout VPA' : (brand.bankAccount.bankName || 'Settlement Bank')}
                         </div>
                         <div style={{ fontSize: '11px', color: '#64748b' }}>
-                          •••• {brand.bankAccount.accountNumber.slice(-4)} · {brand.bankAccount.ifscCode || 'IFSC'}
+                          {brand.bankAccount.payoutMethod === 'upi' 
+                            ? (brand.bankAccount.upiId || 'UPI VPA Set')
+                            : `•••• ${brand.bankAccount.accountNumber ? brand.bankAccount.accountNumber.slice(-4) : '••••'} · ${brand.bankAccount.ifscCode || 'IFSC'}`}
                         </div>
                       </div>
                     </div>
                     <span style={{ fontSize: '10px', background: '#dcfce7', color: '#15803d', fontWeight: 700, padding: '3px 7px', borderRadius: '5px' }}>
-                      VERIFIED
+                      {brand.bankAccount.payoutMethod === 'upi' ? 'INSTANT UPI' : 'RBI DIRECT'}
                     </span>
                   </div>
                 )}

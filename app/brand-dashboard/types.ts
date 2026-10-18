@@ -31,6 +31,8 @@ export interface BrandProductHighlight {
 }
 
 export interface BrandBankAccount {
+  payoutMethod?: 'bank' | 'upi';
+  upiId?: string;
   accountHolderName: string;
   bankName: string;
   accountNumber: string;
@@ -108,6 +110,8 @@ export function mapDbBrandToBrandProfile(row: any, prods: any[] = []): BrandProf
     inquiriesEmail: row.inquiries_email || row.inquiriesEmail || row.email || '',
     email: row.email || row.inquiries_email || row.inquiriesEmail || '',
     bankAccount: {
+      payoutMethod: bank.payoutMethod || row.payout_method || (bank.upiId || row.upi_id ? 'upi' : 'bank'),
+      upiId: bank.upiId || row.upi_id || row.dossier_data?.bankAccount?.upiId || '',
       accountHolderName: bank.accountHolderName || row.bank_account_holder || '',
       bankName: bank.bankName || row.bank_name || 'HDFC Bank',
       accountNumber: bank.accountNumber || row.bank_account_number || '',

@@ -385,7 +385,11 @@ export default function BrandProfileView({
     }
 
     if (onToast) {
-      onToast(`Bank account updated: ${account.bankName} (•••• ${account.accountNumber.slice(-4)})`);
+      onToast(
+        account.payoutMethod === 'upi'
+          ? `Payout destination updated: Instant UPI (${account.upiId})`
+          : `Bank account updated: ${account.bankName} (•••• ${account.accountNumber.slice(-4)})`
+      );
     }
   };
 
@@ -1805,10 +1809,18 @@ export default function BrandProfileView({
                   type="button"
                   onClick={() => setShowBankModal(true)}
                   className={styles.payoutTomorrowBadge}
-                  title="Update linked bank account"
+                  title="Update linked payout destination"
                 >
-                  <Building2 size={12} color="#0284c7" />
-                  <span>{currentBankAccount.bankName} (•••• {currentBankAccount.accountNumber.slice(-4)})</span>
+                  {currentBankAccount.payoutMethod === 'upi' ? (
+                    <Zap size={12} color="#7c3aed" />
+                  ) : (
+                    <Building2 size={12} color="#0284c7" />
+                  )}
+                  <span>
+                    {currentBankAccount.payoutMethod === 'upi'
+                      ? `UPI: ${currentBankAccount.upiId || 'Instant VPA'}`
+                      : `${currentBankAccount.bankName} (•••• ${(currentBankAccount.accountNumber || '').slice(-4)})`}
+                  </span>
                   <ChevronRight size={12} color="#94a3b8" />
                 </button>
               </div>
@@ -2011,21 +2023,37 @@ export default function BrandProfileView({
               <div className={styles.profileBankCard}>
                 <div className={styles.profileBankTop}>
                   <span className={styles.profileBankName}>
-                    <Building2 size={16} color="#0284c7" />
-                    {currentBankAccount.bankName}
+                    {currentBankAccount.payoutMethod === 'upi' ? (
+                      <>
+                        <Zap size={16} color="#7c3aed" />
+                        UPI Instant Settlement
+                      </>
+                    ) : (
+                      <>
+                        <Building2 size={16} color="#0284c7" />
+                        {currentBankAccount.bankName}
+                      </>
+                    )}
                   </span>
-                  <span className={styles.profileBankBadge}>
-                    <ShieldCheck size={11} /> Verified IMPS
+                  <span 
+                    className={styles.profileBankBadge}
+                    style={currentBankAccount.payoutMethod === 'upi' ? { backgroundColor: '#f5f3ff', color: '#6d28d9', borderColor: '#ddd6fe' } : undefined}
+                  >
+                    <ShieldCheck size={11} /> {currentBankAccount.payoutMethod === 'upi' ? 'Instant UPI' : 'Verified IMPS'}
                   </span>
                 </div>
 
                 <div className={styles.profileBankNumber}>
-                  •••• •••• {currentBankAccount.accountNumber.slice(-4)}
+                  {currentBankAccount.payoutMethod === 'upi'
+                    ? (currentBankAccount.upiId || 'VPA Configured')
+                    : `•••• •••• ${(currentBankAccount.accountNumber || '').slice(-4)}`}
                 </div>
 
                 <div className={styles.profileBankMeta}>
                   <span>Beneficiary: <strong>{currentBankAccount.accountHolderName}</strong></span>
-                  <span>IFSC: <strong>{currentBankAccount.ifscCode}</strong> ({currentBankAccount.accountType})</span>
+                  {currentBankAccount.payoutMethod !== 'upi' && (
+                    <span>IFSC: <strong>{currentBankAccount.ifscCode}</strong> ({currentBankAccount.accountType})</span>
+                  )}
                 </div>
               </div>
             </div>
