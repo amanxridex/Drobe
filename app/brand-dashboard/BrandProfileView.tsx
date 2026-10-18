@@ -727,16 +727,6 @@ export default function BrandProfileView({
 
   return (
     <div className={styles.darkProfileContainer}>
-      {/* 0. Brand Review Banner */}
-      {brand.status === 'Waiting for Approval' ? (
-        <div style={{ background: '#fffbeb', borderBottom: '1px solid #fef3c7', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Clock size={14} color="#d97706" />
-          <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#b45309' }}>
-            ⏳ Application Under Review · Consignment stock dispatch unlocks upon approval
-          </span>
-        </div>
-      ) : null}
-
       {/* 1. Header with Brand Emblem & Actions */}
       <header className={styles.darkProfileHeader}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

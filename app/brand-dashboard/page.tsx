@@ -13,6 +13,7 @@ import {
 import BrandStartScreen from './BrandStartScreen';
 import OnboardingFlow from './OnboardingFlow';
 import BrandProfileView from './BrandProfileView';
+import ApprovalPendingScreen from './ApprovalPendingScreen';
 import styles from './brand-dashboard.module.css';
 
 const STORAGE_KEY = 'drobe_brand_profile_v1';
@@ -235,7 +236,7 @@ export default function BrandDashboardPage() {
   };
 
   const handleLoginSuccess = (email: string) => {
-    if (brand.status === 'Published' && brand.name?.trim()) {
+    if ((brand.status === 'Published' || brand.status === 'Approved' || brand.status === 'Waiting for Approval') && brand.name?.trim()) {
       setActiveView('profile');
       triggerToast(`Welcome back to ${brand.name}`);
     } else {
@@ -292,16 +293,31 @@ export default function BrandDashboardPage() {
         />
       )}
 
-      {/* 3. REAL LIVE BRAND PROFILE: Displays actual entered products, prices & channels */}
+      {/* 3. REAL LIVE BRAND PROFILE / APPROVAL PENDING SCREEN */}
       {activeView === 'profile' && (
-        <BrandProfileView
-          brand={brand}
-          initialOpenEdit={openEditOnProfile}
-          onShareClick={handleShareClick}
-          onUpdateBrand={handleBrandChange}
-          onToast={triggerToast}
-          onSignOut={() => setActiveView('start')}
-        />
+        (brand.status === 'Waiting for Approval' || brand.status === 'Under Review') ? (
+          <ApprovalPendingScreen
+            brand={brand}
+            onUpdateBrand={handleBrandChange}
+            onApproveSuccess={() => {
+              const approvedBrand: BrandProfile = { ...brand, status: 'Approved' };
+              handleBrandChange(approvedBrand);
+              supabaseUpsertBrand(approvedBrand);
+              triggerToast('🎉 Brand Approved! Live Dashboard Unlocked.');
+            }}
+            onSignOut={() => setActiveView('start')}
+            onToast={triggerToast}
+          />
+        ) : (
+          <BrandProfileView
+            brand={brand}
+            initialOpenEdit={openEditOnProfile}
+            onShareClick={handleShareClick}
+            onUpdateBrand={handleBrandChange}
+            onToast={triggerToast}
+            onSignOut={() => setActiveView('start')}
+          />
+        )
       )}
 
       {/* Floating Apple-Style Toast */}

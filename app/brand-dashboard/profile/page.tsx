@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { BrandProfile, mapDbBrandToBrandProfile } from '../types';
 import { EMPTY_BRAND_PROFILE } from '../jihiData';
 import { registerBrandApplication } from '../../lib/darkstoreData';
-import { supabaseFetchBrandById, supabaseFetchBrandProducts } from '../../lib/supabaseClient';
+import { supabaseFetchBrandById, supabaseFetchBrandProducts, supabaseUpsertBrand } from '../../lib/supabaseClient';
 import BrandProfileView from '../BrandProfileView';
+import ApprovalPendingScreen from '../ApprovalPendingScreen';
 
 const STORAGE_KEY = 'drobe_brand_profile_v1';
 
@@ -66,6 +67,35 @@ export default function StandaloneProfilePage() {
       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#ffffff', color: '#64748b', fontSize: '13px' }}>
         Loading Brand Profile...
       </div>
+    );
+  }
+
+  if (brand.status === 'Waiting for Approval' || brand.status === 'Under Review') {
+    return (
+      <ApprovalPendingScreen
+        brand={brand}
+        onUpdateBrand={(updated) => {
+          setBrand(updated);
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+          } catch {}
+          if (updated.name && updated.name.trim().length > 0) {
+            registerBrandApplication(updated);
+          }
+        }}
+        onApproveSuccess={() => {
+          const approved: BrandProfile = { ...brand, status: 'Approved' };
+          setBrand(approved);
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(approved));
+          } catch {}
+          supabaseUpsertBrand(approved);
+        }}
+        onSignOut={() => {
+          const isBrands = typeof window !== 'undefined' && window.location.hostname.startsWith('brands.');
+          router.push(isBrands ? '/' : '/brand-dashboard');
+        }}
+      />
     );
   }
 
