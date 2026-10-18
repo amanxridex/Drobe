@@ -9,6 +9,22 @@ import CouponModal from './CouponModal';
 export default function DesktopWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
+  const [isBrandSubdomain, setIsBrandSubdomain] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const h = window.location.hostname.toLowerCase();
+      return h.startsWith('brands.') || h === 'brands.drobe.one';
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const h = window.location.hostname.toLowerCase();
+      if (h.startsWith('brands.') || h === 'brands.drobe.one') {
+        setIsBrandSubdomain(true);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleViewport = () => {
@@ -61,7 +77,7 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
     );
   }
 
-  if (pathname?.startsWith('/brand-dashboard')) {
+  if (pathname?.startsWith('/brand-dashboard') || isBrandSubdomain) {
     return (
       <div
         id="app-desktop-wrapper"
@@ -82,7 +98,7 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
           id="mobile-app-frame"
           style={{
             width: '100%',
-            maxWidth: isMobile ? '100%' : '440px',
+            maxWidth: isMobile ? '100%' : '460px',
             height: isMobile ? 'var(--app-height, 100dvh)' : 'min(920px, 96vh)',
             maxHeight: isMobile ? '100%' : '920px',
             backgroundColor: '#ffffff',

@@ -231,7 +231,8 @@ export function middleware(request: NextRequest) {
       !pathname.startsWith('/brand-dashboard') &&
       !pathname.startsWith('/api') &&
       !pathname.startsWith('/assets') &&
-      !pathname.startsWith('/_next')
+      !pathname.startsWith('/_next') &&
+      !pathname.includes('.')
     ) {
       rewritePath = `/brand-dashboard${pathname}`;
     }
@@ -289,7 +290,9 @@ export const config = {
      * Match all request paths except for:
      * - _next/static (static files)
      * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - static files with extensions (e.g. .png, .jpg, .webp, .svg, .ico, .txt, .json)
      */
-    '/((?!_next/static|_next/image).*)'
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|json|xml)$).*)'
   ]
 };

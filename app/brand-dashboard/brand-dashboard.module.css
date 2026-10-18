@@ -1310,35 +1310,30 @@
   flex-direction: column;
   position: relative;
   z-index: 10;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.stepperWrapper::-webkit-scrollbar {
-  display: none;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .stepperPillTrack {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;
   border-radius: 9999px;
-  padding: 3px 4px;
+  padding: 3px;
   gap: 2px;
   width: 100%;
-  min-width: max-content;
+  max-width: 100%;
   box-sizing: border-box;
 }
 
 .stepPillItem {
   position: relative;
-  flex: 1 1 0;
-  min-width: max-content;
-  height: 34px;
+  flex: 0 0 auto;
+  min-width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1350,14 +1345,16 @@
   font-family: inherit;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #64748b;
 }
 
 .stepPillItemActive {
+  flex: 1 0 auto;
   background: #2563eb !important;
   color: #ffffff !important;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.28);
-  padding: 0 10px;
+  padding: 0 12px;
 }
 
 .stepPillItemDone {
@@ -1369,7 +1366,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
   white-space: nowrap;
 }
 
@@ -1378,7 +1375,7 @@
 }
 
 .stepPillNum {
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 0.02em;
   opacity: 0.85;
@@ -1386,17 +1383,26 @@
 
 .stepPillItemActive .stepPillNum {
   color: #ffffff;
+  opacity: 1;
 }
 
 .stepPillLabel {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
   letter-spacing: -0.01em;
+  display: none;
 }
 
 .stepPillItemActive .stepPillLabel {
+  display: inline-block;
   color: #ffffff;
+}
+
+@media (min-width: 520px) {
+  .stepPillLabel {
+    display: inline-block;
+  }
 }
 
 @media (max-width: 440px) {
@@ -1404,15 +1410,19 @@
     padding: 8px 10px 4px 10px;
   }
   .stepperPillTrack {
-    padding: 3px;
+    padding: 2.5px;
     gap: 2px;
   }
   .stepPillItem {
-    height: 32px;
+    height: 30px;
+    min-width: 28px;
     padding: 0 6px;
   }
+  .stepPillItemActive {
+    padding: 0 10px;
+  }
   .stepPillNum {
-    font-size: 9.5px;
+    font-size: 10px;
   }
   .stepPillLabel {
     font-size: 10px;

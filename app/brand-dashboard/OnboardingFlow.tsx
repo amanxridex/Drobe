@@ -62,6 +62,7 @@ export default function OnboardingFlow({
   const [showPassword, setShowPassword] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
   const [confirmAccountNumber, setConfirmAccountNumber] = useState(brand.bankAccount?.accountNumber || '');
+  const [logoFailed, setLogoFailed] = useState(false);
   const pillTrackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -221,11 +222,16 @@ export default function OnboardingFlow({
 
         {/* Center Official DROBE Logo */}
         <div className={styles.onboardingHeaderLogo}>
-          <img
-            src="/drobe-logo-full.png"
-            alt="DROBE"
-            className={styles.onboardingHeaderLogoImg}
-          />
+          {logoFailed ? (
+            <span className={styles.brandWordmark}>DROBE</span>
+          ) : (
+            <img
+              src="/drobe-logo-full.png"
+              alt="DROBE"
+              className={styles.onboardingHeaderLogoImg}
+              onError={() => setLogoFailed(true)}
+            />
+          )}
         </div>
 
         {onSaveDraft ? (
