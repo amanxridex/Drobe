@@ -38,13 +38,22 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
     (window.location.hostname.startsWith('brands.') ||
      window.location.hostname === 'brands.drobe.one');
 
-  // Bypassed management routes (admin, brand dashboard, portal, etc.) or bot crawlers / deep links / brand subdomain
+  // Automatically redirect any client attempt on drobe.one/brand-dashboard to brands.drobe.one
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !window.location.hostname.startsWith('brands.')) {
+      if (pathname?.startsWith('/brand-dashboard')) {
+        const targetPath = pathname.replace(/^\/brand-dashboard/, '') || '/';
+        window.location.replace(`https://brands.drobe.one${targetPath}${window.location.search}`);
+      }
+    }
+  }, [pathname]);
+
+  // Bypassed management routes (admin, portal, delivery partner, bot crawlers, deep links, or brands.drobe.one)
   const isBypassedRoute =
     isBot ||
     isBrandSubdomain ||
     isDirectProductOrBrand ||
     pathname?.startsWith('/admin-dashboard') ||
-    pathname?.startsWith('/brand-dashboard') ||
     pathname?.startsWith('/platform-changes') ||
     pathname?.startsWith('/order-portal') ||
     pathname?.startsWith('/delivery-partner');
