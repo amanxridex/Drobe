@@ -135,15 +135,18 @@ export default function BrandDashboardPage() {
 
   const handleShareClick = () => {
     if (typeof window !== 'undefined') {
-      const shareUrl = `${window.location.origin}/brand-dashboard/profile`;
+      const isBrandsSubdomain = window.location.hostname.startsWith('brands.');
+      const shareUrl = isBrandsSubdomain
+        ? `${window.location.origin}/profile`
+        : `${window.location.origin}/brand-dashboard/profile`;
       if (navigator.clipboard) {
         navigator.clipboard.writeText(shareUrl).then(() => {
           triggerToast('Profile link copied to clipboard');
         }).catch(() => {
-          triggerToast('Link: /brand-dashboard/profile');
+          triggerToast(`Link: ${shareUrl}`);
         });
       } else {
-        triggerToast('Link: /brand-dashboard/profile');
+        triggerToast(`Link: ${shareUrl}`);
       }
     }
   };

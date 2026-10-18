@@ -32,9 +32,16 @@ export default function DevGatekeeper({ children }: { children: React.ReactNode 
     pathname?.startsWith('/brand/') ||
     pathname?.startsWith('/collection/');
 
-  // Bypassed management routes (admin, brand dashboard, portal, etc.) or bot crawlers / deep links
+  // Check if current host is brands subdomain (brands.drobe.one)
+  const isBrandSubdomain =
+    typeof window !== 'undefined' &&
+    (window.location.hostname.startsWith('brands.') ||
+     window.location.hostname === 'brands.drobe.one');
+
+  // Bypassed management routes (admin, brand dashboard, portal, etc.) or bot crawlers / deep links / brand subdomain
   const isBypassedRoute =
     isBot ||
+    isBrandSubdomain ||
     isDirectProductOrBrand ||
     pathname?.startsWith('/admin-dashboard') ||
     pathname?.startsWith('/brand-dashboard') ||

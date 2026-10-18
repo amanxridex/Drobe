@@ -212,7 +212,42 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // 5. Detect and optimize response for verified AI bots (ChatGPT, Claude, Perplexity, etc.)
+  // 5. Subdomain Routing: Map brands.drobe.one -> /brand-dashboard
+  const host = (request.headers.get('host') || request.nextUrl.hostname || '').toLowerCase();
+  const isBrandSubdomain = host.startsWith('brands.') || host === 'brands.drobe.one';
+
+  if (isBrandSubdomain) {
+    let rewritePath = pathname;
+    const url = request.nextUrl.clone();
+
+    if (pathname === '/') {
+      rewritePath = '/brand-dashboard';
+    } else if (pathname === '/profile') {
+      rewritePath = '/brand-dashboard/profile';
+    } else if (pathname === '/onboard' || pathname === '/onboarding') {
+      rewritePath = '/brand-dashboard';
+      url.searchParams.set('onboard', 'true');
+    } else if (
+      !pathname.startsWith('/brand-dashboard') &&
+      !pathname.startsWith('/api') &&
+      !pathname.startsWith('/assets') &&
+      !pathname.startsWith('/_next')
+    ) {
+      rewritePath = `/brand-dashboard${pathname}`;
+    }
+
+    if (rewritePath !== pathname || url.searchParams.has('onboard')) {
+      url.pathname = rewritePath;
+      const rewriteResponse = NextResponse.rewrite(url);
+      rewriteResponse.headers.set('X-DROBE-Subdomain', 'brands');
+      rewriteResponse.headers.set('X-Content-Type-Options', 'nosniff');
+      rewriteResponse.headers.set('X-Frame-Options', 'SAMEORIGIN');
+      rewriteResponse.headers.set('X-DROBE-Security-Shield', 'Active');
+      return rewriteResponse;
+    }
+  }
+
+  // 6. Detect and optimize response for verified AI bots (ChatGPT, Claude, Perplexity, etc.)
   let isAIBot = false;
   for (const bot of VERIFIED_AI_BOTS) {
     if (userAgent.includes(bot)) {

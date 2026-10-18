@@ -56,7 +56,8 @@ export default function StandaloneProfilePage() {
         // Local storage read error
       }
       // If no brand exists, send to brand onboarding
-      router.replace('/brand-dashboard?onboard=true');
+      const isBrands = typeof window !== 'undefined' && window.location.hostname.startsWith('brands.');
+      router.replace(isBrands ? '/?onboard=true' : '/brand-dashboard?onboard=true');
     }
   }, [router]);
 
@@ -72,7 +73,10 @@ export default function StandaloneProfilePage() {
     <div style={{ width: '100%', height: '100%' }}>
       <BrandProfileView
         brand={brand}
-        onEditClick={() => router.push('/brand-dashboard')}
+        onEditClick={() => {
+          const isBrands = typeof window !== 'undefined' && window.location.hostname.startsWith('brands.');
+          router.push(isBrands ? '/' : '/brand-dashboard');
+        }}
         onShareClick={() => {
           if (typeof window !== 'undefined' && navigator.clipboard) {
             navigator.clipboard.writeText(window.location.href);
