@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { BrandProfile, mapDbBrandToBrandProfile } from './types';
 import { supabaseFetchBrands, supabaseFetchBrandById, supabaseFetchBrandProducts } from '../lib/supabaseClient';
+import { ForgotPasswordModal } from './AuthModals';
 import styles from './brand-dashboard.module.css';
 
 interface BrandStartScreenProps {
@@ -65,15 +66,18 @@ export default function BrandStartScreen({
 }: BrandStartScreenProps) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [modalTab, setModalTab] = useState<'login' | 'claim'>('claim');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [allBrands, setAllBrands] = useState<BrandProfile[]>([]);
   const [isLoadingBrands, setIsLoadingBrands] = useState(false);
   const [isOpeningBrand, setIsOpeningBrand] = useState(false);
+
 
   // Auto-advance carousel smoothly every 5 seconds
   useEffect(() => {
@@ -101,11 +105,11 @@ export default function BrandStartScreen({
   const isWaitingApproval = brand.status === 'Waiting for Approval' && Boolean(brand.name?.trim());
   const hasDraft = Boolean(brand.name?.trim()) && !isApprovedOrPublished && !isWaitingApproval;
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError(null);
 
-    const emailTrimmed = loginEmail.trim();
+    const emailTrimmed = loginEmail.trim().toLowerCase();
     if (!emailTrimmed || !emailTrimmed.includes('@')) {
       setLoginError('Please enter a valid brand email address.');
       return;
@@ -116,24 +120,50 @@ export default function BrandStartScreen({
       return;
     }
 
-    // Check if matching email exists in Supabase brands
-    const matchedBrand = allBrands.find(b => 
-      (b.email && b.email.toLowerCase().trim() === emailTrimmed.toLowerCase()) ||
-      (b.inquiriesEmail && b.inquiriesEmail.toLowerCase().trim() === emailTrimmed.toLowerCase())
-    );
+    setIsSubmittingLogin(true);
 
-    if (matchedBrand && onSelectBrand) {
-      onSelectBrand(matchedBrand);
-      setShowLoginModal(false);
-      return;
-    }
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: emailTrimmed,
+          password: loginPassword
+        })
+      });
 
-    if (onLoginSuccess) {
-      onLoginSuccess(emailTrimmed);
-    } else {
-      onStartOnboarding();
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setShowLoginModal(false);
+        if (data.brand && onSelectBrand) {
+          const prods = await supabaseFetchBrandProducts(data.brand.id || data.brand.name, data.brand.name);
+          const mapped = mapDbBrandToBrandProfile(data.brand, prods || []);
+          onSelectBrand(mapped);
+        } else if (onLoginSuccess) {
+          onLoginSuccess(emailTrimmed);
+        }
+        return;
+      }
+
+      // Check if local brand matches (fallback)
+      const matchedBrand = allBrands.find(b => 
+        (b.email && b.email.toLowerCase().trim() === emailTrimmed) ||
+        (b.inquiriesEmail && b.inquiriesEmail.toLowerCase().trim() === emailTrimmed)
+      );
+
+      if (matchedBrand && onSelectBrand) {
+        onSelectBrand(matchedBrand);
+        setShowLoginModal(false);
+        return;
+      }
+
+      setLoginError(data.message || 'Incorrect email or password. Please try again or reset your password.');
+    } catch {
+      setLoginError('Network error authenticating. Please try again.');
+    } finally {
+      setIsSubmittingLogin(false);
     }
-    setShowLoginModal(false);
   };
 
   const handleSelectSearchedBrand = async (b: BrandProfile) => {
@@ -584,9 +614,32 @@ export default function BrandStartScreen({
             </div>
 
             {loginError && (
-              <div className={styles.loginErrorBanner}>
-                <AlertCircle size={15} />
-                <span>{loginError}</span>
+              <div className={styles.loginErrorBanner} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <AlertCircle size={15} />
+                  <span>{loginError}</span>
+                </div>
+                {(loginError.toLowerCase().includes('password') || loginError.toLowerCase().includes('incorrect')) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowLoginModal(false);
+                      setShowForgotPasswordModal(true);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#b91c1c',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                      padding: 0
+                    }}
+                  >
+                    Forgot your password? Click here to reset with OTP →
+                  </button>
+                )}
               </div>
             )}
 
@@ -745,7 +798,7 @@ export default function BrandStartScreen({
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '20px' }}>
+                <div style={{ marginBottom: '8px' }}>
                   <label className={styles.loginInputLabel}>
                     Password
                   </label>
@@ -770,11 +823,41 @@ export default function BrandStartScreen({
                   </div>
                 </div>
 
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '18px' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowLoginModal(false);
+                      setShowForgotPasswordModal(true);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#dc2626',
+                      fontSize: '12.5px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      padding: '2px 0'
+                    }}
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+
                 <button
                   type="submit"
+                  disabled={isSubmittingLogin}
                   className={styles.loginSubmitBtn}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 >
-                  Log In
+                  {isSubmittingLogin ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      <span>Signing In...</span>
+                    </>
+                  ) : (
+                    <span>Log In</span>
+                  )}
                 </button>
 
                 <div style={{ marginTop: '14px', textAlign: 'center' }}>
@@ -797,6 +880,19 @@ export default function BrandStartScreen({
           </div>
         </div>
       )}
+
+      {/* FORGOT PASSWORD MODAL */}
+      <ForgotPasswordModal
+        isOpen={showForgotPasswordModal}
+        initialEmail={loginEmail}
+        onClose={() => setShowForgotPasswordModal(false)}
+        onSuccess={(email) => {
+          setLoginEmail(email);
+          setShowForgotPasswordModal(false);
+          setShowLoginModal(true);
+          setModalTab('login');
+        }}
+      />
     </div>
   );
 }

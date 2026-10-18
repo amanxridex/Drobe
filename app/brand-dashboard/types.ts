@@ -61,6 +61,7 @@ export interface BrandProfile {
   inquiriesEmail: string;
   email?: string;
   password?: string;
+  emailVerified?: boolean;
   bankAccount?: BrandBankAccount;
   status: 'Published' | 'Under Review' | 'Draft' | 'Approved' | 'Waiting for Approval';
   updatedAt: string;
@@ -71,6 +72,7 @@ export function mapDbBrandToBrandProfile(row: any, prods: any[] = []): BrandProf
   return {
     id: row.id || '',
     name: row.name || 'Untitled Brand',
+    emailVerified: Boolean(row.dossier_data?.emailVerified || row.email_verified),
     tagline: row.tagline || row.about?.slice(0, 90) || 'Artisanal Modern Brand',
     category: row.category || 'Male & Female',
     basedOutOf: row.based_out_of || row.basedOutOf || 'Ahmedabad Darkstore Hub',

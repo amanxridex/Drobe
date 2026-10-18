@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { BrandProfile, BrandBankAccount } from './types';
 import { supabaseUploadMedia } from '../lib/supabaseClient';
+import { EmailOtpModal, ForgotPasswordModal } from './AuthModals';
 import styles from './brand-dashboard.module.css';
 
 interface OnboardingFlowProps {
@@ -63,6 +64,12 @@ export default function OnboardingFlow({
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
   const [confirmAccountNumber, setConfirmAccountNumber] = useState(brand.bankAccount?.accountNumber || '');
   const [logoFailed, setLogoFailed] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [devOtpHint, setDevOtpHint] = useState<string | undefined>(undefined);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [emailAlreadyExists, setEmailAlreadyExists] = useState(false);
+  const [existingBrandName, setExistingBrandName] = useState<string | undefined>(undefined);
   const pillTrackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -80,10 +87,43 @@ export default function OnboardingFlow({
 
   const updateField = <K extends keyof BrandProfile>(key: K, value: BrandProfile[K]) => {
     setErrorNotice(null);
+    if (key === 'email') {
+      setEmailAlreadyExists(false);
+      if (brand.emailVerified && value !== brand.email) {
+        onChange({
+          ...brand,
+          [key]: value,
+          emailVerified: false
+        });
+        return;
+      }
+    }
     onChange({
       ...brand,
       [key]: value
     });
+  };
+
+  const handleCheckEmailExists = async (emailToCheck: string) => {
+    const clean = emailToCheck.trim().toLowerCase();
+    if (!clean || !clean.includes('@')) return false;
+
+    try {
+      const res = await fetch(`/api/auth/check-email?email=${encodeURIComponent(clean)}`);
+      const data = await res.json();
+      if (data.exists) {
+        setEmailAlreadyExists(true);
+        setExistingBrandName(data.brandName);
+        setErrorNotice(`This email is already registered with brand "${data.brandName || 'Partner'}". Please log in or reset your password.`);
+        return true;
+      } else {
+        setEmailAlreadyExists(false);
+        setExistingBrandName(undefined);
+        return false;
+      }
+    } catch {
+      return false;
+    }
   };
 
   const updateBankField = (field: keyof BrandBankAccount, val: any) => {
@@ -193,12 +233,71 @@ export default function OnboardingFlow({
     return true;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!validateStep(currentStep)) return;
+
+    // STEP 0: Account Credentials Email Verification
+    if (currentStep === 0 && !brand.emailVerified) {
+      setIsSendingOtp(true);
+      setErrorNotice(null);
+
+      try {
+        const res = await fetch('/api/auth/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: brand.email?.trim().toLowerCase(),
+            purpose: 'signup'
+          })
+        });
+
+        const data = await res.json();
+
+        if (res.status === 409 || data.error === 'already_exists') {
+          setEmailAlreadyExists(true);
+          setExistingBrandName(data.brandName);
+          setErrorNotice(data.message || 'This email is already registered in DROBE. Please log in or reset your password.');
+          setIsSendingOtp(false);
+          return;
+        }
+
+        if (!res.ok) {
+          setErrorNotice(data.message || 'Failed to dispatch verification email from verify@drobe.one. Please try again.');
+          setIsSendingOtp(false);
+          return;
+        }
+
+        if (data.devOtp) {
+          setDevOtpHint(data.devOtp);
+        }
+        setShowOtpModal(true);
+      } catch {
+        setErrorNotice('Network error requesting verification OTP. Please try again.');
+      } finally {
+        setIsSendingOtp(false);
+      }
+      return;
+    }
+
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
+
+  const handleOtpVerified = (savedBrand?: any) => {
+    setShowOtpModal(false);
+    setErrorNotice(null);
+    setEmailAlreadyExists(false);
+
+    const updated: BrandProfile = {
+      ...brand,
+      emailVerified: true,
+      ...(savedBrand?.id ? { id: savedBrand.id } : {})
+    };
+    onChange(updated);
+    setCurrentStep(1); // Advance to Basics step
+  };
+
 
   const handleStepClick = (idx: number) => {
     if (idx > currentStep && !validateStep(currentStep)) return;
@@ -297,21 +396,95 @@ export default function OnboardingFlow({
           {activeStepMeta.id === 'account' && (
             <div className={styles.ronasFormContainer}>
               <div className={styles.ronasInputGroup}>
-                <label className={styles.ronasInputLabel}>Brand Email *</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className={styles.ronasInputLabel}>Brand Email *</label>
+                  {brand.emailVerified && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#15803d', fontWeight: 700, backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '12px' }}>
+                      <Check size={11} strokeWidth={3} /> Verified
+                    </span>
+                  )}
+                </div>
                 <div style={{ position: 'relative' }}>
                   <input
                     type="email"
                     value={brand.email || ''}
                     onChange={(e) => updateField('email', e.target.value)}
+                    onBlur={() => handleCheckEmailExists(brand.email || '')}
                     placeholder="founder@yourbrand.com"
                     className={styles.ronasInputField}
                     autoFocus
                   />
                   <Mail size={16} color="#94a3b8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                 </div>
-                <span className={styles.ronasInputHelper}>
-                  Used to log in, receive partner notices, and customer inquiries.
-                </span>
+
+                {/* Email Verification Status */}
+                {brand.emailVerified ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', color: '#16a34a', fontSize: '12px', fontWeight: 600 }}>
+                    <ShieldCheck size={14} color="#16a34a" />
+                    <span>Email verified by verify@drobe.one (Inbox protected)</span>
+                  </div>
+                ) : (
+                  <span className={styles.ronasInputHelper}>
+                    A 6-digit verification code will be sent to this email from <strong style={{ color: '#0f172a' }}>verify@drobe.one</strong>.
+                  </span>
+                )}
+
+                {/* Already Exists in Database Alert Banner */}
+                {emailAlreadyExists && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{
+                      backgroundColor: '#fef2f2',
+                      border: '1px solid #fecaca',
+                      borderRadius: '12px',
+                      padding: '12px 14px',
+                      marginTop: '10px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: '#991b1b', fontSize: '12.5px', fontWeight: 600 }}>
+                      <AlertCircle size={15} color="#dc2626" />
+                      <span>Account already exists in DROBE{existingBrandName ? ` for "${existingBrandName}"` : ''}.</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={onExit}
+                        style={{
+                          backgroundColor: '#0f172a',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: '9999px',
+                          padding: '6px 14px',
+                          fontSize: '11.5px',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Sign In to Existing Account →
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowForgotPasswordModal(true)}
+                        style={{
+                          backgroundColor: '#ffffff',
+                          color: '#dc2626',
+                          border: '1px solid #fca5a5',
+                          borderRadius: '9999px',
+                          padding: '6px 14px',
+                          fontSize: '11.5px',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Forgot Password? Reset OTP
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
               </div>
 
               <div className={styles.ronasInputGroup}>
@@ -927,10 +1100,27 @@ export default function OnboardingFlow({
           <button
             type="button"
             onClick={handleNext}
+            disabled={isSendingOtp}
             className={styles.ronasContinuePillBtn}
+            style={currentStep === 0 && !brand.emailVerified ? { backgroundColor: '#dc2626', color: '#ffffff' } : undefined}
           >
-            <span>Continue</span>
-            <ArrowRight size={15} />
+            {isSendingOtp ? (
+              <>
+                <Loader2 size={15} className="animate-spin" />
+                <span>Sending Code...</span>
+              </>
+            ) : currentStep === 0 && !brand.emailVerified ? (
+              <>
+                <ShieldCheck size={15} />
+                <span>Verify Email & Continue</span>
+                <ArrowRight size={15} />
+              </>
+            ) : (
+              <>
+                <span>Continue</span>
+                <ArrowRight size={15} />
+              </>
+            )}
           </button>
         ) : (
           <button
@@ -942,6 +1132,29 @@ export default function OnboardingFlow({
           </button>
         )}
       </footer>
+
+      {/* 5. EMAIL OTP VERIFICATION MODAL */}
+      <EmailOtpModal
+        isOpen={showOtpModal}
+        email={brand.email || ''}
+        password={brand.password}
+        brandData={brand}
+        onClose={() => setShowOtpModal(false)}
+        onVerified={handleOtpVerified}
+        initialDevOtp={devOtpHint}
+      />
+
+      {/* 6. FORGOT PASSWORD MODAL */}
+      <ForgotPasswordModal
+        isOpen={showForgotPasswordModal}
+        initialEmail={brand.email || ''}
+        onClose={() => setShowForgotPasswordModal(false)}
+        onSuccess={() => {
+          setShowForgotPasswordModal(false);
+          onExit();
+        }}
+      />
     </div>
   );
 }
+
