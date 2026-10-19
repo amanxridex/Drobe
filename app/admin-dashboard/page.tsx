@@ -106,6 +106,18 @@ import {
   slugify 
 } from '../lib/supabaseClient';
 import styles from './admin.module.css';
+import StockInwardingTab from './components/StockInwardingTab';
+import SkuInventoryTab from './components/SkuInventoryTab';
+import FloorPlanTab from './components/FloorPlanTab';
+import BrandApprovalsTab from './components/BrandApprovalsTab';
+import DoorstepTrialsTab from './components/DoorstepTrialsTab';
+import WholesaleSettlementTab from './components/WholesaleSettlementTab';
+import ShopperTelemetryTab from './components/ShopperTelemetryTab';
+import DatabaseMatrixTab from './components/DatabaseMatrixTab';
+
+import { toast } from 'sonner';
+import NumberFlow from '@number-flow/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<'inwarding' | 'inventory' | 'shelves' | 'trials' | 'approvals' | 'settlement' | 'users' | 'database'>('inwarding');
@@ -165,16 +177,14 @@ export default function AdminDashboardPage() {
         if (data.sql) {
           await navigator.clipboard.writeText(data.sql);
           setCopiedSql(true);
-          setToastMessage('✅ Complete 27-Table SQL Schema copied! Paste in Supabase SQL editor & click Run.');
+          triggerToast('✅ Complete 27-Table SQL Schema copied! Paste in Supabase SQL editor & click Run.');
           setTimeout(() => {
             setCopiedSql(false);
-            setToastMessage(null);
           }, 4500);
         }
       }
     } catch {
-      setToastMessage('❌ Failed to copy SQL to clipboard.');
-      setTimeout(() => setToastMessage(null), 3000);
+      triggerToast('❌ Failed to copy SQL to clipboard.');
     }
   };
 
@@ -268,10 +278,15 @@ export default function AdminDashboardPage() {
   const [selectedBin, setSelectedBin] = useState('Bin 04');
 
   const triggerToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 3500);
+    if (msg.startsWith('✅') || msg.startsWith('✓') || msg.startsWith('🎉')) {
+      toast.success(msg.replace(/^[✅✓🎉]\s*/, ''));
+    } else if (msg.startsWith('❌') || msg.startsWith('⚠️')) {
+      toast.error(msg.replace(/^[❌⚠️]\s*/, ''));
+    } else if (msg.startsWith('⚡') || msg.startsWith('📦') || msg.startsWith('🖨️') || msg.startsWith('💬') || msg.startsWith('↩')) {
+      toast.info(msg);
+    } else {
+      toast(msg);
+    }
   };
 
   const loadAllData = async () => {
@@ -1244,7 +1259,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
             )}
           </button>
 
-          <div className={styles.sidebarSectionTitle} style={{ marginTop: '12px' }}>
+          <div className={styles.sidebarSectionTitle} style={{ marginTop: '14px' }}>
             External Hub Portals
           </div>
 
@@ -1252,53 +1267,46 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
             href="/order-portal"
             target="_blank"
             className={styles.sidebarNavItem}
-            style={{ textDecoration: 'none', background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.25)' }}
+            style={{ textDecoration: 'none' }}
           >
             <div className={styles.navItemLeft}>
               <Activity size={16} color="#d97706" />
-              <span style={{ color: '#d97706', fontWeight: 700 }}>Hub Order Portal</span>
+              <span>Hub Order Portal</span>
             </div>
-            <ExternalLink size={12} color="#d97706" />
+            <ExternalLink size={12} color="#94a3b8" />
           </Link>
 
           <Link
             href="/delivery-partner"
             target="_blank"
             className={styles.sidebarNavItem}
-            style={{ textDecoration: 'none', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)' }}
+            style={{ textDecoration: 'none' }}
           >
             <div className={styles.navItemLeft}>
               <Navigation size={16} color="#2563eb" />
-              <span style={{ color: '#2563eb', fontWeight: 700 }}>Delivery Partner App</span>
+              <span>Delivery Partner App</span>
             </div>
-            <ExternalLink size={12} color="#2563eb" />
+            <ExternalLink size={12} color="#94a3b8" />
+          </Link>
+
+          <Link
+            href="/brand-dashboard"
+            target="_blank"
+            className={styles.sidebarNavItem}
+            style={{ textDecoration: 'none' }}
+          >
+            <div className={styles.navItemLeft}>
+              <Store size={16} color="#7e22ce" />
+              <span>Brand Partner Portal</span>
+            </div>
+            <ExternalLink size={12} color="#94a3b8" />
           </Link>
         </nav>
 
         <div className={styles.sidebarFooter}>
           <div className={styles.hubStatusPill}>
             <span className={styles.livePulseDot} />
-            <span>30-Min Network Live</span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <Link href="/order-portal" target="_blank" className={styles.switchBrandLink} style={{ background: '#fef3c7', borderColor: '#fde68a' }}>
-              <Package size={13} color="#d97706" />
-              <span style={{ color: '#92400e', fontWeight: 700 }}>Open Hub Order Portal</span>
-              <ExternalLink size={11} color="#d97706" />
-            </Link>
-
-            <Link href="/delivery-partner" target="_blank" className={styles.switchBrandLink} style={{ background: '#eff6ff', borderColor: '#bfdbfe' }}>
-              <Truck size={13} color="#2563eb" />
-              <span style={{ color: '#1e40af', fontWeight: 700 }}>Open Delivery App</span>
-              <ExternalLink size={11} color="#2563eb" />
-            </Link>
-
-            <Link href="/brand-dashboard" target="_blank" className={styles.switchBrandLink}>
-              <Store size={13} />
-              <span>Open Brand Portal</span>
-              <ExternalLink size={11} color="#64748b" />
-            </Link>
+            <span>30-Min SLA Live · Ahmedabad Hub #01</span>
           </div>
         </div>
       </aside>
@@ -1346,45 +1354,14 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
             </div>
 
             <Link
-              href="/order-portal"
+              href="/"
               target="_blank"
-              style={{
-                textDecoration: 'none',
-                background: '#fef3c7',
-                border: '1px solid #fde68a',
-                color: '#92400e',
-                fontWeight: 700,
-                fontSize: '12px',
-                padding: '7px 11px',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px'
-              }}
+              className={styles.actionPillLink}
+              title="Open Live Drobe Customer Storefront"
             >
-              <span>⚡</span>
-              <span>Hub Order Portal</span>
-            </Link>
-
-            <Link
-              href="/delivery-partner"
-              target="_blank"
-              style={{
-                textDecoration: 'none',
-                background: '#eff6ff',
-                border: '1px solid #bfdbfe',
-                color: '#1e40af',
-                fontWeight: 700,
-                fontSize: '12px',
-                padding: '7px 11px',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px'
-              }}
-            >
-              <span>🛵</span>
-              <span>Delivery App</span>
+              <ShoppingBag size={13} color="#0284c7" />
+              <span style={{ color: '#0369a1', fontWeight: 700 }}>Customer Store</span>
+              <ExternalLink size={11} color="#0284c7" />
             </Link>
 
             <button
@@ -1394,3106 +1371,685 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                 handleOpenInwardModal(pending);
               }}
               className={styles.btnPrimary}
-              style={{ padding: '8px 14px', fontSize: '12px', gap: '6px' }}
             >
               <Boxes size={14} /> + Inward Stock
             </button>
 
-            <div className={styles.telemetryTag} style={{ background: '#ecfdf5', borderColor: '#a7f3d0', color: '#047857' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
-              <span>Supabase Cloud Synced</span>
+            <div className={styles.telemetryTag}>
+              <span className={styles.livePulseDot} style={{ width: '6px', height: '6px' }} />
+              <span>Cloud Synced</span>
             </div>
 
             <div className={styles.telemetryTag}>
               <Activity size={13} color="#16a34a" />
-              <span>18 Delivery Partners Active · SG Highway</span>
+              <span>18 Active Riders</span>
             </div>
           </div>
         </header>
 
         {/* DESKTOP MAIN CANVAS */}
-        <main className={styles.desktopContent}>
-          {/* KPI STATS TILES (LIGHT THEME) */}
-          <div className={styles.kpiGrid}>
-            <div className={styles.kpiCard}>
-              <div>
-                <div className={styles.kpiLabel}>Brands Awaiting Approval</div>
-                <div className={styles.kpiVal} style={{ color: waitingBrandsCount > 0 ? '#d97706' : '#0f172a' }}>
-                  {waitingBrandsCount}
+                <main className={styles.desktopContent}>
+          {/* CONTEXTUAL DOMAIN HERO & ADAPTIVE LIVE KPI BAR (ANTI-CLUTTER & APPLE DESIGN) */}
+          <div className={styles.domainHero}>
+            <div className={styles.domainHeroTop}>
+              <div className={styles.domainHeroLeft}>
+                <div className={styles.domainHeroIconWrap}>
+                  {activeTab === 'inwarding' && <Boxes size={22} />}
+                  {activeTab === 'inventory' && <Barcode size={22} />}
+                  {activeTab === 'shelves' && <Layers size={22} />}
+                  {activeTab === 'trials' && <Truck size={22} />}
+                  {activeTab === 'approvals' && <UserCheck size={22} />}
+                  {activeTab === 'settlement' && <Receipt size={22} />}
+                  {activeTab === 'users' && <Users size={22} />}
+                  {activeTab === 'database' && <Database size={22} />}
                 </div>
-                <div className={styles.kpiSub}>{approvedBrandsCount} approved & listed</div>
-              </div>
-              <div className={styles.kpiIconWrap} style={{ background: '#fef3c7', color: '#d97706' }}>
-                <UserCheck size={22} />
-              </div>
-            </div>
-
-            <div className={styles.kpiCard}>
-              <div>
-                <div className={styles.kpiLabel}>Parcels to Inward</div>
-                <div className={styles.kpiVal} style={{ color: pendingInwardsCount > 0 ? '#0284c7' : '#0f172a' }}>
-                  {pendingInwardsCount}
-                </div>
-                <div className={styles.kpiSub}>Inspect & assign shelf</div>
-              </div>
-              <div className={styles.kpiIconWrap} style={{ background: '#e0f2fe', color: '#0284c7' }}>
-                <Boxes size={22} />
-              </div>
-            </div>
-
-            <div className={styles.kpiCard}>
-              <div>
-                <div className={styles.kpiLabel}>Live SKUs on Shelves</div>
-                <div className={styles.kpiVal} style={{ color: '#16a34a' }}>
-                  {liveSkusCount}
-                </div>
-                <div className={styles.kpiSub}>Assigned DR1, DR2... on racks</div>
-              </div>
-              <div className={styles.kpiIconWrap} style={{ background: '#dcfce7', color: '#16a34a' }}>
-                <Barcode size={22} />
-              </div>
-            </div>
-
-            <div className={styles.kpiCard}>
-              <div>
-                <div className={styles.kpiLabel}>Active Doorstep Trials</div>
-                <div className={styles.kpiVal} style={{ color: '#7e22ce' }}>
-                  {activeTrialsCount}
-                </div>
-                <div className={styles.kpiSub}>Delivery partner waiting at door · On-spot return</div>
-              </div>
-              <div className={styles.kpiIconWrap} style={{ background: '#f3e8ff', color: '#7e22ce' }}>
-                <Truck size={22} />
-              </div>
-            </div>
-          </div>
-
-          {/* HUB TELEMETRY RIBBON */}
-          <div className={styles.hubRibbon}>
-            <div className={styles.hubRibbonLeft}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span className={styles.hubStatusLiveDot} />
-                <span style={{ fontSize: '12px', fontWeight: 800, color: '#0f172a' }}>
-                  Koteshwar Hub #01 Online
-                </span>
-                <span style={{ fontSize: '11px', color: '#64748b' }}>· Express 30-Min Radius Active</span>
-              </div>
-
-              <div style={{ width: '1px', height: '20px', background: '#e2e8f0' }} />
-
-              <div className={styles.hubMetricItem}>
-                <span className={styles.hubMetricLabel}>Shelf Capacity</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span className={styles.hubMetricVal}>34 / 96 Shelves</span>
-                  <div className={styles.capacityProgressBar}>
-                    <div className={styles.capacityProgressFill} style={{ width: '35%' }} />
-                  </div>
-                  <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 700 }}>35%</span>
-                </div>
-              </div>
-
-              <div style={{ width: '1px', height: '20px', background: '#e2e8f0' }} />
-
-              <div className={styles.hubMetricItem}>
-                <span className={styles.hubMetricLabel}>Live Consignment Value</span>
-                <span className={styles.hubMetricVal} style={{ color: '#0284c7' }}>₹12,48,500</span>
-              </div>
-
-              <div style={{ width: '1px', height: '20px', background: '#e2e8f0' }} />
-
-              <div className={styles.hubMetricItem}>
-                <span className={styles.hubMetricLabel}>30-Min SLA Rate</span>
-                <span className={styles.hubMetricVal} style={{ color: '#16a34a' }}>98.6%</span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button
-                type="button"
-                onClick={() => setActiveTab('inventory')}
-                className={styles.btnSecondary}
-                style={{ padding: '6px 12px', fontSize: '11.5px', gap: '5px' }}
-              >
-                <Barcode size={13} /> View Barcode Matrix
-              </button>
-            </div>
-          </div>
-
-          {/* TAB 1: STOCK INWARDING & PHYSICAL SHELF ALLOCATION */}
-          {activeTab === 'inwarding' && (
-            <div>
-              {/* Inbound Parcels from Brands */}
-              <div className={styles.sectionCard}>
-                <div className={styles.sectionHeader}>
-                  <div>
-                    <h3 className={styles.sectionTitle}>
-                      <Truck size={17} color="#0284c7" />
-                      Inbound Consignments Sent by Brands
-                    </h3>
-                    <p className={styles.sectionDesc}>
-                      Physical parcels arriving at Ahmedabad Darkstore Hub #01 (Shivam Bungalows 1, Koteshwar Road). Verify parcel count and allocate shelf to publish live.
-                    </p>
-                  </div>
-                </div>
-
-                <div style={{ overflowX: 'auto' }}>
-                  <table className={styles.lightTable}>
-                    <thead>
-                      <tr>
-                        <th>Consignment ID</th>
-                        <th>Brand Name</th>
-                        <th>Creation</th>
-                        <th>Units</th>
-                        <th>Logistics / Courier</th>
-                        <th>Dispatched</th>
-                        <th>Hub Status</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {inbounds.map((ship) => {
-                        const relatedProduct = products.find(p => p.id === ship.productId || p.name === ship.productName);
-                        const isVerified = ship.status === 'Verified & Shelved';
-
-                        return (
-                          <tr key={ship.id}>
-                            <td style={{ fontWeight: 800, color: '#0284c7' }}>{ship.id}</td>
-                            <td style={{ fontWeight: 700 }}>{ship.brandName}</td>
-                            <td style={{ fontWeight: 600 }}>{ship.productName}</td>
-                            <td>
-                              <span style={{ fontWeight: 800, color: '#0f172a' }}>{ship.units} pcs</span>
-                            </td>
-                            <td>
-                              <div style={{ fontWeight: 600 }}>{ship.courierPartner}</div>
-                              <div style={{ fontFamily: 'monospace', fontSize: '11px', color: '#64748b' }}>{ship.trackingNumber}</div>
-                            </td>
-                            <td>{ship.dispatchDate}</td>
-                            <td>
-                              {isVerified ? (
-                                <span className={`${styles.statusChip} ${styles.statusLive}`}>
-                                  <CheckCircle2 size={11} /> Shelved ({ship.assignedSku})
-                                </span>
-                              ) : (
-                                <span className={`${styles.statusChip} ${styles.statusTransit}`}>
-                                  <Clock size={11} /> {ship.status}
-                                </span>
-                              )}
-                            </td>
-                            <td>
-                              {isVerified ? (
-                                <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  <Check size={13} /> {ship.assignedShelf}
-                                </span>
-                              ) : (
-                                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
-                                  {ship.status === 'In Transit' && (
-                                    <button
-                                      type="button"
-                                      onClick={() => handleMarkArrived(ship.id, ship.productName)}
-                                      className={styles.btnSecondary}
-                                      style={{ padding: '5px 8px', fontSize: '11px', gap: '4px' }}
-                                      title="Mark arrived at Shivam Bungalows 1, Koteshwar Road"
-                                    >
-                                      <Building2 size={12} color="#0284c7" /> Mark Arrived
-                                    </button>
-                                  )}
-                                  <button
-                                    type="button"
-                                    onClick={() => handleDirectAutoInward(ship, relatedProduct)}
-                                    className={styles.btnSuccess}
-                                    style={{ padding: '5px 9px', fontSize: '11px', gap: '4px', fontWeight: 700 }}
-                                    title="Automatically assign next available shelf and publish live"
-                                  >
-                                    <Sparkles size={12} /> Auto-Assign Shelf & Live
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleOpenInwardModal(relatedProduct || {
-                                      id: ship.productId,
-                                      name: ship.productName,
-                                      brandId: ship.brandId,
-                                      brandName: ship.brandName,
-                                      price: '₹1200',
-                                      inventory: ship.units,
-                                      inwardUnits: 0,
-                                      unitsInTrial: 0,
-                                      unitsSold: 0,
-                                      images: [],
-                                      inwardStatus: 'Received & Verifying at Hub',
-                                      isLive: false
-                                    }, ship)}
-                                    className={styles.btnSecondary}
-                                    style={{ padding: '5px 8px', fontSize: '11px', gap: '4px' }}
-                                    title="Open shelf allocation details"
-                                  >
-                                    <CheckCircle2 size={12} /> Inspect
-                                  </button>
-                                </div>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Unverified Creations Awaiting Stock Arrival */}
-              <div className={styles.sectionCard}>
-                <div className={styles.sectionHeader}>
-                  <div>
-                    <h3 className={styles.sectionTitle}>
-                      <Boxes size={17} color="#0284c7" />
-                      Products Awaiting Stock Inwarding
-                    </h3>
-                    <p className={styles.sectionDesc}>
-                      Creations added by listed brands. Once physical pieces are verified at Ahmedabad Darkstore, assign sequential SKU (DR1, DR2...) and shelf location.
-                    </p>
-                  </div>
-                </div>
-
-                {/* DROBE 5% PLATFORM MARKUP & CHARM 9 PRICING MODEL BANNER */}
-                <div style={{
-                  background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(2, 132, 199, 0.08) 100%)',
-                  border: '1px solid rgba(16, 185, 129, 0.25)',
-                  borderRadius: '14px',
-                  padding: '14px 18px',
-                  marginBottom: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: '12px'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
-                      ⚡
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#0f172a' }}>
-                        Drobe 5% Dynamic Markup &amp; Charm 9 Pricing Model
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', maxWidth: '640px', lineHeight: 1.5 }}>
-                        Brands list products at base wholesale price (e.g. ₹600). The platform adds a <strong>5% markup fee</strong> and rounds to the nearest figure ending in <strong>9</strong> (e.g. ₹600 + 5% = ₹630 → <strong>₹629</strong>, ₹621 → <strong>₹619</strong>, ₹626 → <strong>₹629</strong>). Below, admin can inspect the actual added markup and decimal percentage.
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '6px 12px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Model Rule</div>
-                      <div style={{ fontSize: '14px', fontWeight: 900, color: '#0284c7' }}>+5% → Ends in 9</div>
-                    </div>
-                    <div style={{ background: '#ffffff', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '6px 12px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '10px', color: '#166534', textTransform: 'uppercase', fontWeight: 700 }}>Avg Margin</div>
-                      <div style={{ fontSize: '14px', fontWeight: 900, color: '#15803d' }}>+4.88%</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ overflowX: 'auto' }}>
-                  <table className={styles.lightTable}>
-                    <thead>
-                      <tr>
-                        <th>Product & Photos</th>
-                        <th>Brand Name</th>
-                        <th>Wholesale vs Selling Price (Markup)</th>
-                        <th>Inward Status</th>
-                        <th>Assigned SKU</th>
-                        <th>Stored Warehouse Shelf</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredProducts.map((prod) => {
-                        const isLive = prod.isLive;
-                        const pricing = getProductPricingInfo(prod);
-
-                        return (
-                          <tr key={prod.id}>
-                            <td>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                {prod.images && prod.images[0] ? (
-                                  <img
-                                    src={prod.images[0]}
-                                    alt={prod.name}
-                                    style={{ width: '44px', height: '44px', borderRadius: '10px', objectFit: 'cover', border: '1px solid #e2e8f0' }}
-                                  />
-                                ) : (
-                                  <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
-                                    <Package size={20} />
-                                  </div>
-                                )}
-                                <div>
-                                  <div style={{ fontWeight: 700, color: '#0f172a' }}>{prod.name}</div>
-                                  <div style={{ fontSize: '11px', color: '#64748b' }}>{prod.tagline || 'Signature Brand Item'}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td style={{ fontWeight: 600 }}>{prod.brandName}</td>
-                            <td>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span style={{ fontWeight: 900, color: '#0f172a', fontSize: '13px' }}>
-                                  ₹{pricing.sellingPrice}
-                                </span>
-                                <span style={{ fontSize: '10px', fontWeight: 800, background: '#ecfdf5', color: '#059669', padding: '1px 6px', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
-                                  {pricing.formattedPercentage}
-                                </span>
-                              </div>
-                              <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px' }}>
-                                Brand: <strong>₹{pricing.brandBasePrice}</strong> (+₹{pricing.markupAmount})
-                              </div>
-                              <div style={{ fontSize: '10px', color: '#94a3b8' }}>Size: {prod.volume || 'Standard'}</div>
-                            </td>
-                            <td>
-                              {isLive ? (
-                                <span className={`${styles.statusChip} ${styles.statusLive}`}>
-                                  <CheckCircle2 size={11} /> Live ({prod.inwardUnits} units)
-                                </span>
-                              ) : (
-                                <span className={`${styles.statusChip} ${styles.statusTransit}`}>
-                                  <Clock size={11} /> {prod.inwardStatus}
-                                </span>
-                              )}
-                            </td>
-                            <td>
-                              {prod.sku ? (
-                                <span style={{ fontWeight: 800, color: '#16a34a', background: '#dcfce7', padding: '3px 8px', borderRadius: '6px', fontSize: '12px' }}>
-                                  {prod.sku}
-                                </span>
-                              ) : (
-                                <span style={{ fontSize: '11.5px', color: '#94a3b8' }}>Pending Inward</span>
-                              )}
-                            </td>
-                            <td>
-                              {prod.warehouseLocation ? (
-                                <div>
-                                  <span style={{ fontWeight: 700, color: '#0284c7', fontSize: '12px' }}>
-                                    {prod.warehouseLocation.code}
-                                  </span>
-                                  <div style={{ fontSize: '11px', color: '#64748b' }}>
-                                    {prod.warehouseLocation.rack} · {prod.warehouseLocation.shelf}
-                                  </div>
-                                </div>
-                              ) : (
-                                <span style={{ fontSize: '11.5px', color: '#94a3b8' }}>Not on shelf yet</span>
-                              )}
-                            </td>
-                            <td>
-                              {isLive ? (
-                                <button
-                                  type="button"
-                                  onClick={() => handleOpenInwardModal(prod)}
-                                  className={styles.btnSecondary}
-                                >
-                                  Edit Shelf
-                                </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => handleOpenInwardModal(prod)}
-                                  className={styles.btnSuccess}
-                                >
-                                  <CheckCircle2 size={13} /> Verify & Assign Shelf
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 2: LIVE DARKSTORE SKU INVENTORY MATRIX & BARCODE STATION */}
-          {activeTab === 'inventory' && (
-            <div className={styles.sectionCard}>
-              <div className={styles.sectionHeader}>
                 <div>
-                  <h3 className={styles.sectionTitle}>
-                    <Barcode size={17} color="#0284c7" />
-                    Ahmedabad Darkstore SKU Inventory & Barcode Station
-                  </h3>
-                  <p className={styles.sectionDesc}>
-                    Live physical stock stationed on SG Highway darkstore racks. Manage sequential SKUs (DR1, DR2...), print thermal barcodes for delivery partner bags, and adjust shelf stock in real-time.
+                  <h1 className={styles.domainHeroTitle}>
+                    {activeTab === 'inwarding' && 'Stock Inwarding & Physical Shelf Allocation'}
+                    {activeTab === 'inventory' && 'Darkstore Live SKU Matrix & Barcodes'}
+                    {activeTab === 'shelves' && 'Warehouse Floor Plan & Rack Matrix'}
+                    {activeTab === 'trials' && 'Doorstep Fitting & Instant Return Room'}
+                    {activeTab === 'approvals' && 'Brand Partner Onboarding & Approvals'}
+                    {activeTab === 'settlement' && 'Wholesale Settlement & 5% Margin Ledger'}
+                    {activeTab === 'users' && 'Shopper Telemetry & AI Intelligence'}
+                    {activeTab === 'database' && 'System Tables & Telemetry Matrix (27 Tables)'}
+                  </h1>
+                  <p className={styles.domainHeroSubtitle}>
+                    {activeTab === 'inwarding' && 'Ahmedabad Darkstore Hub #01 (Koteshwar Road) · Verify arriving consignments and assign rack coordinates'}
+                    {activeTab === 'inventory' && 'Live SKU inventory levels, barcode label generation, and automated wholesale vs retail markup pricing'}
+                    {activeTab === 'shelves' && 'Interactive floor plan across Zones A, B, and C with 6 physical racks and 96 allocated storage bins'}
+                    {activeTab === 'trials' && 'Real-time 6-minute doorstep trial management, delivery runner dispatch, and on-spot restock workflows'}
+                    {activeTab === 'approvals' && 'Review brand verification dossiers, trademark certificates, wholesale terms, and live product catalogs'}
+                    {activeTab === 'settlement' && 'Automated wholesale ledger, 5% Drobe commission accounting, and bank payout reconciliation'}
+                    {activeTab === 'users' && 'Real-time customer browsing events, cart hesitation telemetry, and autonomous AI shopper demand forecasting'}
+                    {activeTab === 'database' && 'Supabase PostgreSQL 27-table relational schema health, realtime socket listeners, and migration status'}
                   </p>
                 </div>
-
-                <div className={styles.filterPillGroup}>
-                  <button
-                    type="button"
-                    onClick={() => setInventoryFilter('all')}
-                    className={`${styles.filterPill} ${inventoryFilter === 'all' ? styles.filterPillActive : ''}`}
-                  >
-                    All SKUs ({products.length})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setInventoryFilter('in_stock')}
-                    className={`${styles.filterPill} ${inventoryFilter === 'in_stock' ? styles.filterPillActive : ''}`}
-                  >
-                    In Stock ({products.filter(p => (p.inwardUnits || 0) > 0).length})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setInventoryFilter('low_stock')}
-                    className={`${styles.filterPill} ${inventoryFilter === 'low_stock' ? styles.filterPillActive : ''}`}
-                  >
-                    Low Stock &lt; 5 pcs ({products.filter(p => (p.inwardUnits || 0) < 5 && (p.inwardUnits || 0) > 0).length})
-                  </button>
-                </div>
               </div>
 
-              <div style={{ overflowX: 'auto' }}>
-                <table className={styles.lightTable}>
-                  <thead>
-                    <tr>
-                      <th>Sequential SKU</th>
-                      <th>Product Creation</th>
-                      <th>Brand Partner</th>
-                      <th>Warehouse Location</th>
-                      <th>Stock on Shelf</th>
-                      <th>Doorstep Trials</th>
-                      <th>Units Sold</th>
-                      <th>Barcode & Label</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredProducts.map((prod) => {
-                      const isLive = prod.inwardStatus === 'Inwarded & Live' || Boolean(prod.sku);
-                      const isLowStock = (prod.inwardUnits || 0) < 5 && (prod.inwardUnits || 0) > 0;
-
-                      return (
-                        <tr key={prod.id}>
-                          <td>
-                            {prod.sku ? (
-                              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                                <span style={{ fontWeight: 900, color: '#16a34a', background: '#dcfce7', padding: '4px 10px', borderRadius: '8px', fontSize: '13px', letterSpacing: '0.04em' }}>
-                                  {prod.sku}
-                                </span>
-                              </div>
-                            ) : (
-                              <span style={{ fontSize: '11px', color: '#94a3b8', fontStyle: 'italic' }}>Pending SKU</span>
-                            )}
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                              {prod.images && prod.images[0] ? (
-                                <img
-                                  src={prod.images[0]}
-                                  alt={prod.name}
-                                  style={{ width: '42px', height: '42px', borderRadius: '10px', objectFit: 'cover', border: '1px solid #e2e8f0' }}
-                                />
-                              ) : (
-                                <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <Package size={18} color="#94a3b8" />
-                                </div>
-                              )}
-                              <div>
-                                <div style={{ fontWeight: 800, color: '#0f172a' }}>{prod.name}</div>
-                                {(() => {
-                                  const pPricing = getProductPricingInfo(prod);
-                                  return (
-                                    <div style={{ fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px', flexWrap: 'wrap' }}>
-                                      <span>Size: {prod.volume || 'Standard'}</span>
-                                      <span>·</span>
-                                      <span style={{ fontWeight: 800, color: '#0f172a' }}>₹{pPricing.sellingPrice}</span>
-                                      <span style={{ fontSize: '9.5px', fontWeight: 800, background: '#ecfdf5', color: '#047857', padding: '1px 6px', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
-                                        +{pPricing.markupAmount} ({pPricing.formattedPercentage})
-                                      </span>
-                                    </div>
-                                  );
-                                })()}
-                              </div>
-                            </div>
-                          </td>
-                          <td style={{ fontWeight: 700, color: '#334155' }}>
-                            {prod.brandName}
-                          </td>
-                          <td>
-                            {prod.warehouseLocation ? (
-                              <div>
-                                <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '12px', letterSpacing: '0.03em' }}>
-                                  {prod.warehouseLocation.code}
-                                </div>
-                                <div style={{ fontSize: '11px', color: '#64748b' }}>
-                                  {prod.warehouseLocation.rack} · {prod.warehouseLocation.shelf} · {prod.warehouseLocation.bin}
-                                </div>
-                              </div>
-                            ) : (
-                              <span style={{ fontSize: '11px', color: '#94a3b8' }}>Unallocated</span>
-                            )}
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <div className={styles.stockAdjustWrap}>
-                                <button
-                                  type="button"
-                                  onClick={() => handleAdjustStock(prod.id, -1, prod.name)}
-                                  className={styles.stockAdjustBtn}
-                                  title="Reduce 1 unit (shelf audit)"
-                                >
-                                  -
-                                </button>
-                                <span className={styles.stockAdjustCount}>
-                                  {prod.inwardUnits || 0}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => handleAdjustStock(prod.id, 1, prod.name)}
-                                  className={styles.stockAdjustBtn}
-                                  title="Add 1 unit to shelf"
-                                >
-                                  +
-                                </button>
-                              </div>
-                              {isLowStock && (
-                                <span style={{ fontSize: '10px', color: '#b45309', background: '#fef3c7', padding: '2px 6px', borderRadius: '6px', fontWeight: 700 }}>
-                                  Low
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td>
-                            <span style={{ fontWeight: 700, color: prod.unitsInTrial ? '#7e22ce' : '#64748b', background: prod.unitsInTrial ? '#f3e8ff' : '#f8fafc', padding: '3px 8px', borderRadius: '6px', fontSize: '11.5px' }}>
-                              {prod.unitsInTrial || 0} in trial
-                            </span>
-                          </td>
-                          <td>
-                            <span style={{ fontWeight: 800, color: '#16a34a', fontSize: '12px' }}>
-                              {prod.unitsSold || 0} sold
-                            </span>
-                          </td>
-                          <td>
-                            <button
-                              type="button"
-                              onClick={() => handleOpenBarcodeModal(prod)}
-                              className={styles.btnSecondary}
-                              style={{ padding: '6px 10px', fontSize: '11.5px', gap: '5px' }}
-                              title="Generate and print thermal barcode sticker"
-                            >
-                              <Barcode size={13} color="#0284c7" /> Print Label
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: BRAND APPROVALS */}
-          {activeTab === 'approvals' && (
-            <div className={styles.sectionCard}>
-              <div className={styles.sectionHeader}>
-                <div>
-                  <h3 className={styles.sectionTitle}>
-                    <UserCheck size={17} color="#0284c7" />
-                    Brand Applications & Verification
-                  </h3>
-                  <p className={styles.sectionDesc}>
-                    Review newly submitted brand registrations. Once approved, the brand is listed on Drobe and authorized to dispatch physical inventory to the Ahmedabad hub.
-                  </p>
-                </div>
-
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    onClick={() => setBrandFilter('all')}
-                    className={brandFilter === 'all' ? styles.btnPrimary : styles.btnSecondary}
-                  >
-                    All Brands ({brands.length})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBrandFilter('with_products')}
-                    className={brandFilter === 'with_products' ? styles.btnPrimary : styles.btnSecondary}
-                    style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
-                  >
-                    <Package size={13} /> With Products in DB ({brandsWithProductsCount})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBrandFilter('awaiting_products')}
-                    className={brandFilter === 'awaiting_products' ? styles.btnPrimary : styles.btnSecondary}
-                  >
-                    Awaiting Stock ({brandsAwaitingCount})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBrandFilter('waiting')}
-                    className={brandFilter === 'waiting' ? styles.btnPrimary : styles.btnSecondary}
-                  >
-                    Waiting Approval ({waitingBrandsCount})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBrandFilter('approved')}
-                    className={brandFilter === 'approved' ? styles.btnPrimary : styles.btnSecondary}
-                  >
-                    Approved & Listed ({approvedBrandsCount})
-                  </button>
-                </div>
-              </div>
-
-              <div style={{ overflowX: 'auto' }}>
-                <table className={styles.lightTable}>
-                  <thead>
-                    <tr>
-                      <th>Brand Name</th>
-                      <th>Category</th>
-                      <th>Founder & Contact</th>
-                      <th>Application Date</th>
-                      <th>Inventory Overview</th>
-                      <th>Approval Status</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredBrands.map((brand) => {
-                      const isApproved = brand.status === 'Approved';
-                      const isWaiting = brand.status === 'Waiting for Approval';
-
-                      return (
-                        <tr key={brand.id}>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                              {brand.profileImage ? (
-                                <img
-                                  src={brand.profileImage}
-                                  alt={brand.name}
-                                  style={{ width: '44px', height: '44px', borderRadius: '12px', objectFit: 'contain', border: '1px solid #e2e8f0', background: '#ffffff', padding: '3px' }}
-                                />
-                              ) : (
-                                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
-                                  {brand.name.slice(0, 1)}
-                                </div>
-                              )}
-                              <div>
-                                <div style={{ fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span>{brand.name}</span>
-                                  {brand.status === 'Approved' && (
-                                    <span style={{ color: '#0284c7', fontSize: '11px' }} title="Verified Partner">✓</span>
-                                  )}
-                                </div>
-                                <div style={{ fontSize: '11px', color: '#64748b' }}>
-                                  {brand.basedOutOf} · ID: <code>{brand.id}</code>
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <span style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '3px 9px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 600 }}>
-                              {brand.category}
-                            </span>
-                          </td>
-                          <td>
-                            <div style={{ fontWeight: 600 }}>{brand.founderName}</div>
-                            <div style={{ fontSize: '11px', color: '#64748b' }}>{brand.email}</div>
-                          </td>
-                          <td>{brand.appliedDate}</td>
-                          <td>
-                            <div>
-                              {brand.totalProductsCount > 0 ? (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedBrandForProducts(brand);
-                                    setBrandProductsSearch('');
-                                  }}
-                                  style={{
-                                    background: '#e0f2fe',
-                                    color: '#0369a1',
-                                    border: '1px solid #bae6fd',
-                                    borderRadius: '8px',
-                                    padding: '4px 10px',
-                                    fontSize: '12px',
-                                    fontWeight: 800,
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    cursor: 'pointer'
-                                  }}
-                                  title={`Click to inspect all ${brand.totalProductsCount} products for ${brand.name}`}
-                                >
-                                  <Package size={13} color="#0284c7" />
-                                  <span>{brand.totalProductsCount} Products in DB</span>
-                                </button>
-                              ) : (
-                                <span style={{ fontSize: '11.5px', color: '#94a3b8', fontStyle: 'italic' }}>
-                                  0 products (Awaiting Dispatch)
-                                </span>
-                              )}
-                              <div style={{ fontSize: '11px', color: brand.inwardedUnitsCount > 0 ? '#16a34a' : '#64748b', fontWeight: 600, marginTop: '4px' }}>
-                                {brand.inwardedUnitsCount > 0 
-                                  ? `${brand.inwardedUnitsCount} pcs stored in Ahmedabad hub` 
-                                  : 'No consignment on shelves yet'}
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            {isApproved ? (
-                              <span className={`${styles.statusChip} ${styles.statusLive}`}>
-                                <CheckCircle2 size={11} /> Approved & Listed
-                              </span>
-                            ) : isWaiting ? (
-                              <span className={`${styles.statusChip} ${styles.statusTransit}`}>
-                                <Clock size={11} /> Waiting for Approval
-                              </span>
-                            ) : (
-                              <span className={`${styles.statusChip} ${styles.statusPending}`}>
-                                <AlertCircle size={11} /> {brand.status}
-                              </span>
-                            )}
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                              {brand.totalProductsCount > 0 && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedBrandForProducts(brand);
-                                    setBrandProductsSearch('');
-                                  }}
-                                  className={styles.btnPrimary}
-                                  style={{ padding: '5px 9px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px', background: '#0284c7' }}
-                                  title="View full list of live products for this brand"
-                                >
-                                  <Package size={12} color="#ffffff" /> View Products ({brand.totalProductsCount})
-                                </button>
-                              )}
-                              <button
-                                type="button"
-                                onClick={() => setSelectedBrandForDossier(brand)}
-                                className={styles.btnSecondary}
-                                style={{ padding: '5px 9px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}
-                                title="View full brand dossier, founder, bank details and products"
-                              >
-                                <Eye size={12} color="#0284c7" /> View Dossier
-                              </button>
-                              <Link
-                                href={`/brand/${slugify(brand.id || brand.name)}`}
-                                target="_blank"
-                                className={styles.btnSecondary}
-                                style={{ padding: '5px 9px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}
-                                title="Open live Brand Page on storefront"
-                              >
-                                <ExternalLink size={11} color="#475569" /> Storefront
-                              </Link>
-                              {isWaiting && (
-                                <>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleApproveBrand(brand.id, brand.name)}
-                                    className={styles.btnSuccess}
-                                    style={{ padding: '5px 9px', fontSize: '11px' }}
-                                  >
-                                    <Check size={12} /> Approve
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRejectBrand(brand.id, brand.name)}
-                                    className={styles.btnDanger}
-                                    style={{ padding: '5px 9px', fontSize: '11px' }}
-                                  >
-                                    Reject
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                {filteredBrands.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '48px 24px', color: '#64748b' }}>
-                    <Building2 size={36} color="#94a3b8" style={{ margin: '0 auto 12px auto' }} />
-                    <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>No Brand Submissions Yet</div>
-                    <p style={{ fontSize: '13px', maxWidth: '440px', margin: '6px auto 0 auto', lineHeight: 1.5 }}>
-                      When brands onboard at <code>/brand-dashboard</code> and upload their company dossier, their profile, founder details, verified bank account, and creation catalog will appear here live from Supabase.
-                    </p>
-                  </div>
+              <div className={styles.domainHeroActions}>
+                {activeTab === 'inwarding' && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const pending = products.find(p => p.inwardStatus !== 'Inwarded & Live') || products[0];
+                        handleOpenInwardModal(pending);
+                      }}
+                      className={styles.btnPrimary}
+                      style={{ padding: '8px 14px', fontSize: '12px' }}
+                    >
+                      <Boxes size={14} /> Inward New Parcel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        syncDarkstoreWithSupabase().then(() => loadAllData());
+                        triggerToast('Syncing darkstore with live Supabase database...');
+                      }}
+                      className={styles.btnSecondary}
+                      style={{ padding: '8px 12px', fontSize: '12px' }}
+                    >
+                      <RotateCcw size={13} /> Sync Supabase
+                    </button>
+                  </>
                 )}
-              </div>
-            </div>
-          )}
 
-          {/* TAB 3: WAREHOUSE FLOOR PLAN & SHELF MATRIX */}
-          {activeTab === 'shelves' && (
-            <div>
-              <div className={styles.sectionCard}>
-                <div className={styles.sectionHeader}>
-                  <div>
-                    <h3 className={styles.sectionTitle}>
-                      <Layers size={17} color="#0284c7" />
-                      Ahmedabad Central Darkstore Floor Plan & Shelf Matrix
-                    </h3>
-                    <p className={styles.sectionDesc}>
-                      Visual matrix of designated racks at SG Highway Hub. Darkstore pickers and delivery partners can pinpoint exact shelves for 30-minute rapid pick-and-pack.
-                    </p>
-                  </div>
-                </div>
+                {activeTab === 'inventory' && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const pending = products.find(p => p.inwardStatus !== 'Inwarded & Live') || products[0];
+                        handleOpenInwardModal(pending);
+                      }}
+                      className={styles.btnPrimary}
+                      style={{ padding: '8px 14px', fontSize: '12px' }}
+                    >
+                      <Boxes size={14} /> Inward SKU
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const csv = 'SKU,Product,Brand,Category,Stock,Wholesale,Retail,Shelf\n' +
+                          products.map(p => `"${p.sku || p.id}","${p.name}","${(p as any).brand || p.brandId}","${p.category}",${(p as any).stock_count || p.inwardUnits || 0},${(p as any).baseWholesalePrice || (p as any).brandBasePrice || 0},${(p as any).customerPrice || (p as any).price || 0},"${(p as any).shelfLocation || p.warehouseLocation?.code || ''}"`).join('\n');
+                        const blob = new Blob([csv], { type: 'text/csv' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `drobe_skus_${Date.now()}.csv`;
+                        a.click();
+                      }}
+                      className={styles.btnSecondary}
+                      style={{ padding: '8px 12px', fontSize: '12px' }}
+                    >
+                      <Download size={13} /> Export CSV
+                    </button>
+                  </>
+                )}
 
-                <div className={styles.floorGrid}>
-                  {['Rack A-01', 'Rack A-02', 'Rack A-03', 'Rack B-01', 'Rack B-02', 'Rack C-01'].map((rackId, rIdx) => {
-                    const rackProducts = filteredProducts.filter(p => p.warehouseLocation?.rack === rackId);
+                {activeTab === 'trials' && (
+                  <>
+                    <Link
+                      href="/order-portal"
+                      target="_blank"
+                      className={styles.btnSecondary}
+                      style={{ padding: '8px 12px', fontSize: '12px' }}
+                    >
+                      <Activity size={13} color="#d97706" /> Hub Orders Screen <ExternalLink size={11} />
+                    </Link>
+                    <Link
+                      href="/delivery-partner"
+                      target="_blank"
+                      className={styles.btnPrimary}
+                      style={{ padding: '8px 14px', fontSize: '12px' }}
+                    >
+                      <Truck size={14} /> Delivery Partner App <ExternalLink size={11} />
+                    </Link>
+                  </>
+                )}
 
-                    return (
-                      <div key={rIdx} className={styles.rackCard}>
-                        <div className={styles.rackHeader}>
-                          <div>
-                            <span className={styles.rackBadge}>{rackId}</span>
-                            <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>
-                              {rackId.startsWith('Rack A') ? 'Zone A · Outerwear & Jackets' : rackId.startsWith('Rack B') ? 'Zone B · Tops & Tees' : 'Zone C · Bottoms & Denims'}
-                            </div>
-                          </div>
-                          <span style={{ fontSize: '11.5px', fontWeight: 700, color: rackProducts.length > 0 ? '#16a34a' : '#94a3b8' }}>
-                            {rackProducts.length} Assigned
-                          </span>
-                        </div>
-
-                        {rackProducts.length > 0 ? (
-                          <div>
-                            {rackProducts.map((p) => (
-                              <div key={p.id} className={styles.shelfRow}>
-                                <div>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <span style={{ fontWeight: 800, color: '#16a34a', fontSize: '11.5px' }}>{p.sku}</span>
-                                    <span style={{ fontWeight: 700, fontSize: '12.5px', color: '#0f172a' }}>{p.name}</span>
-                                  </div>
-                                  <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
-                                    {p.brandName} · {p.warehouseLocation?.shelf} · {p.warehouseLocation?.bin}
-                                  </div>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#0284c7' }}>
-                                    {p.inwardUnits} pcs
-                                  </span>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleOpenBarcodeModal(p)}
-                                    style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '3px 6px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                                    title="View Barcode"
-                                  >
-                                    <Barcode size={12} color="#0284c7" />
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8', fontSize: '12px', border: '1px dashed #cbd5e1', borderRadius: '10px' }}>
-                            Empty Rack Tier Available
-                          </div>
-                        )}
-
-                        {/* Interactive Bin Slots (Visual Darkstore Matrix) */}
-                        <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                            <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, letterSpacing: '0.05em' }}>
-                              Physical Shelf Slots
-                            </span>
-                            <span style={{ fontSize: '10.5px', color: '#0284c7', fontWeight: 600 }}>
-                              {rackProducts.length} occupied · {8 - rackProducts.length} free
-                            </span>
-                          </div>
-
-                          <div className={styles.binGrid}>
-                            {Array.from({ length: 8 }).map((_, bIdx) => {
-                              const binName = bIdx < 9 ? `Bin 0${bIdx + 1}` : `Bin ${bIdx + 1}`;
-                              const occupant = rackProducts.find(p => p.warehouseLocation?.bin === binName);
-                              return (
-                                <div
-                                  key={bIdx}
-                                  onClick={() => {
-                                    if (occupant) {
-                                      handleOpenBarcodeModal(occupant);
-                                    } else {
-                                      const unassigned = products.find(p => !p.warehouseLocation) || products[0];
-                                      setSelectedRack(rackId);
-                                      setSelectedBin(binName);
-                                      handleOpenInwardModal(unassigned);
-                                    }
-                                  }}
-                                  className={`${styles.binSlot} ${occupant ? styles.binSlotOccupied : ''}`}
-                                  title={occupant ? `${occupant.sku}: ${occupant.name} (${occupant.inwardUnits} pcs) · Click for Barcode` : `Empty slot ${binName} · Click to allocate`}
-                                >
-                                  <div>{binName}</div>
-                                  {occupant ? (
-                                    <div style={{ fontWeight: 800, fontSize: '9.5px', color: '#047857', marginTop: '2px' }}>
-                                      {occupant.sku}
-                                    </div>
-                                  ) : (
-                                    <div style={{ fontSize: '9px', color: '#94a3b8', marginTop: '2px' }}>
-                                      Free
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 4: ORDERS & RETURNS MANAGEMENT (Auto Stock Deduction & Addition) */}
-          {activeTab === 'trials' && (
-            <div className={styles.sectionCard}>
-              <div className={styles.sectionHeader}>
-                <div>
-                  <h3 className={styles.sectionTitle}>
-                    <Truck size={17} color="#0284c7" />
-                    Orders & Returns Management · Live DB Auto Stock Sync
-                  </h3>
-                  <p className={styles.sectionDesc}>
-                    Quick-commerce orders in Ahmedabad darkstore. When an order is placed or leaves the store, 1 stock unit is <strong>automatically deducted from DB inventory</strong>. If delivered &amp; kept, stock remains permanently deducted. When marked returned, <strong>+1 stock is immediately added back to the shelf in Supabase DB</strong>.
-                  </p>
-                </div>
-              </div>
-
-              {/* REAL-TIME DIVERTER & PORTAL SHORTCUTS */}
-              <div style={{
-                background: 'linear-gradient(90deg, rgba(245, 158, 11, 0.12), rgba(59, 130, 246, 0.12))',
-                border: '1px solid rgba(245, 158, 11, 0.3)',
-                borderRadius: '12px',
-                padding: '12px 16px',
-                marginBottom: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '12px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '20px' }}>⚡</span>
-                  <div>
-                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>
-                      Auto Stock Sync &amp; Doorstep Returns Active
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#64748b' }}>
-                      Orders placed by customers immediately deduct physical units from warehouse shelves. Mark returns below to instantly restore stock to the database and issue refunds.
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '8px' }}>
+                {activeTab === 'approvals' && (
                   <Link
-                    href="/order-portal"
+                    href="/brand-dashboard"
                     target="_blank"
-                    style={{
-                      background: '#d97706',
-                      color: '#fff',
-                      padding: '7px 12px',
-                      borderRadius: '8px',
-                      fontSize: '11.5px',
-                      fontWeight: 700,
-                      textDecoration: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px'
-                    }}
+                    className={styles.btnPrimary}
+                    style={{ padding: '8px 14px', fontSize: '12px' }}
                   >
-                    <span>📦 Hub Order Portal</span>
+                    <Store size={14} /> Open Brand Portal <ExternalLink size={11} />
                   </Link>
+                )}
 
-                  <Link
-                    href="/delivery-partner"
-                    target="_blank"
-                    style={{
-                      background: '#2563eb',
-                      color: '#fff',
-                      padding: '7px 12px',
-                      borderRadius: '8px',
-                      fontSize: '11.5px',
-                      fontWeight: 700,
-                      textDecoration: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px'
-                    }}
-                  >
-                    <span>🚴 Delivery Partner App</span>
-                  </Link>
-                </div>
-              </div>
-
-              {/* STOCK & ORDERS TELEMETRY METRICS */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                gap: '12px',
-                marginBottom: '16px'
-              }}>
-                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Total Orders in DB</div>
-                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', marginTop: '4px' }}>{trialOrders.length}</div>
-                  <div style={{ fontSize: '10.5px', color: '#94a3b8' }}>Live synchronized</div>
-                </div>
-
-                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#1d4ed8', fontWeight: 700, textTransform: 'uppercase' }}>Out / Doorstep</div>
-                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#1d4ed8', marginTop: '4px' }}>{orderCountActive + orderCountDoorstep}</div>
-                  <div style={{ fontSize: '10.5px', color: '#60a5fa' }}>⚠️ Stock deducted (-1)</div>
-                </div>
-
-                <div style={{ background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: '10px', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#7e22ce', fontWeight: 700, textTransform: 'uppercase' }}>Return In-Transit</div>
-                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#7e22ce', marginTop: '4px' }}>{orderCountReturning}</div>
-                  <div style={{ fontSize: '10.5px', color: '#a855f7' }}>↩ Heading back to hub</div>
-                </div>
-
-                <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '10px', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#047857', fontWeight: 700, textTransform: 'uppercase' }}>Delivered &amp; Kept</div>
-                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#047857', marginTop: '4px' }}>{orderCountKept}</div>
-                  <div style={{ fontSize: '10.5px', color: '#34d399' }}>✓ Kept deducted in DB</div>
-                </div>
-
-                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '12px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#15803d', fontWeight: 700, textTransform: 'uppercase' }}>Restocked to Shelf</div>
-                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#15803d', marginTop: '4px' }}>{orderCountRestocked}</div>
-                  <div style={{ fontSize: '10.5px', color: '#22c55e' }}>✓ +1 Stock added to DB</div>
-                </div>
-              </div>
-
-              {/* FILTER BUTTONS & SEARCH BAR */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    onClick={() => setOrdersFilter('all')}
-                    className={ordersFilter === 'all' ? styles.filterBtnActive : styles.filterBtn}
-                  >
-                    All Orders ({trialOrders.length})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOrdersFilter('active')}
-                    className={ordersFilter === 'active' ? styles.filterBtnActive : styles.filterBtn}
-                  >
-                    Out for Delivery ({orderCountActive})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOrdersFilter('doorstep')}
-                    className={ordersFilter === 'doorstep' ? styles.filterBtnActive : styles.filterBtn}
-                  >
-                    Doorstep Fitting ({orderCountDoorstep})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOrdersFilter('returning')}
-                    className={ordersFilter === 'returning' ? styles.filterBtnActive : styles.filterBtn}
-                  >
-                    Return In-Transit ({orderCountReturning})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOrdersFilter('kept')}
-                    className={ordersFilter === 'kept' ? styles.filterBtnActive : styles.filterBtn}
-                  >
-                    Delivered &amp; Kept ({orderCountKept})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOrdersFilter('restocked')}
-                    className={ordersFilter === 'restocked' ? styles.filterBtnActive : styles.filterBtn}
-                  >
-                    Restocked ({orderCountRestocked})
-                  </button>
-                </div>
-
-                <div style={{ position: 'relative', minWidth: '240px' }}>
-                  <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                  <input
-                    type="text"
-                    value={ordersSearch}
-                    onChange={(e) => setOrdersSearch(e.target.value)}
-                    placeholder="Search Order #, customer, SKU..."
-                    style={{
-                      width: '100%',
-                      padding: '7px 10px 7px 32px',
-                      borderRadius: '8px',
-                      border: '1px solid #cbd5e1',
-                      fontSize: '12px'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* ORDERS LIST */}
-              {filteredTrialOrders.length > 0 ? (
-                <div className={styles.trialGrid}>
-                  {filteredTrialOrders.map((ord) => {
-                    const isDoorstepFitting = ord.status.includes('Doorstep Fitting');
-                    const isOut = ord.status === 'Out for 30-Min Delivery';
-                    const isKept = ord.status === 'Kept on Spot (Purchased)';
-                    const isRiderHeadingBack = ord.status.includes('Returned on Spot');
-                    const isRestocked = ord.status === 'Restocked to Warehouse Shelf';
-
-                    const matchedProduct = products.find(p => p.id === ord.productId || p.sku === ord.productSku);
-                    const prodImage = matchedProduct?.images?.[0] || matchedProduct?.thumbnail;
-
-                    return (
-                      <div key={ord.id} className={styles.trialCard} style={{ border: isRestocked ? '1px solid #bbf7d0' : isKept ? '1px solid #a7f3d0' : '1px solid #e2e8f0' }}>
-                        {/* Card Header */}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                          <div>
-                            <span style={{ fontWeight: 800, color: '#0284c7', fontSize: '14px' }}>
-                              {ord.orderNumber}
-                            </span>
-                            <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '8px' }}>
-                              {ord.receivedAt || 'Today'}
-                            </span>
-                          </div>
-
-                          {isDoorstepFitting ? (
-                            <span className={`${styles.statusChip} ${styles.statusTrial}`}>
-                              <Clock size={11} /> Partner Waiting Outside ({ord.doorstepTimerMinutesLeft || 7}m)
-                            </span>
-                          ) : isOut ? (
-                            <span className={`${styles.statusChip} ${styles.statusTransit}`}>
-                              <Truck size={11} /> Out for 30-Min Delivery
-                            </span>
-                          ) : isKept ? (
-                            <span className={`${styles.statusChip} ${styles.statusLive}`}>
-                              <CheckCircle2 size={11} /> Kept on Spot (Purchased)
-                            </span>
-                          ) : isRiderHeadingBack ? (
-                            <span className={`${styles.statusChip} ${styles.statusPending}`}>
-                              <RotateCcw size={11} /> Return In-Transit
-                            </span>
-                          ) : (
-                            <span className={`${styles.statusChip} ${styles.statusLive}`} style={{ background: '#ecfdf5', color: '#059669', borderColor: '#a7f3d0' }}>
-                              <CheckCircle2 size={11} /> Restocked to Shelf &amp; Refunded
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Advance Payment & Split Decision Badges */}
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
-                          <span style={{ fontSize: '10.5px', fontWeight: 800, background: '#eff6ff', color: '#1d4ed8', padding: '3px 8px', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
-                            ⚡ 100% Pre-Paid: {ord.price}
-                          </span>
-                          {(ord.keptAmount !== undefined && ord.keptAmount > 0) && (
-                            <span style={{ fontSize: '10.5px', fontWeight: 800, background: '#ecfdf5', color: '#047857', padding: '3px 8px', borderRadius: '6px', border: '1px solid #a7f3d0' }}>
-                              Kept: ₹{ord.keptAmount}
-                            </span>
-                          )}
-                          {(ord.refundAmount !== undefined && ord.refundAmount > 0) && (
-                            <span style={{
-                              fontSize: '10.5px',
-                              fontWeight: 800,
-                              background: ord.refundStatus === 'Refund Processed Instantly' ? '#ecfdf5' : '#fffbeb',
-                              color: ord.refundStatus === 'Refund Processed Instantly' ? '#047857' : '#b45309',
-                              padding: '3px 8px',
-                              borderRadius: '6px',
-                              border: ord.refundStatus === 'Refund Processed Instantly' ? '1px solid #a7f3d0' : '1px solid #fde68a'
-                            }}>
-                              Refund: ₹{ord.refundAmount} {ord.refundStatus === 'Refund Processed Instantly' ? '(Credited ✓)' : '(Pending Hub)'}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Product & SKU Box */}
-                        <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '12px', marginBottom: '12px', border: '1px solid #e2e8f0' }}>
-                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            {prodImage ? (
-                              <img
-                                src={prodImage}
-                                alt={ord.productName}
-                                style={{ width: '46px', height: '46px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e2e8f0' }}
-                              />
-                            ) : (
-                              <div style={{ width: '46px', height: '46px', borderRadius: '8px', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
-                                <Package size={22} />
-                              </div>
-                            )}
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontWeight: 800, fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                {ord.productName}
-                              </div>
-                              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
-                                Brand: <strong>{ord.brandName}</strong> · Size: <strong>{ord.size}</strong> · SKU: <strong style={{ color: '#16a34a' }}>{ord.productSku}</strong>
-                              </div>
-                            </div>
-                            <div style={{ textAlign: 'right' }}>
-                              <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '13.5px' }}>
-                                {ord.price}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Multi-Item Breakdown inside Trial Bag */}
-                          {ord.items && ord.items.length > 1 && (
-                            <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed #cbd5e1', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                              <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>
-                                Bag Outfits ({ord.items.length} Fits)
-                              </div>
-                              {ord.items.map((it, iIdx) => (
-                                <div key={iIdx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', background: '#ffffff', padding: '4px 8px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <span style={{ fontWeight: 700, color: '#0f172a' }}>{it.productName}</span>
-                                    <span style={{ color: '#64748b' }}>({it.size})</span>
-                                    <span style={{ color: '#0284c7', fontSize: '10px' }}>📍 {it.shelfLocation}</span>
-                                  </div>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ fontWeight: 800, color: '#0f172a' }}>{it.price}</span>
-                                    <span style={{
-                                      fontSize: '9.5px',
-                                      fontWeight: 800,
-                                      padding: '1px 6px',
-                                      borderRadius: '4px',
-                                      background: it.status === 'kept' ? '#ecfdf5' : it.status === 'returned' ? '#fef2f2' : '#f1f5f9',
-                                      color: it.status === 'kept' ? '#059669' : it.status === 'returned' ? '#dc2626' : '#64748b'
-                                    }}>
-                                      {it.status === 'kept' ? '✓ Kept' : it.status === 'returned' ? '↩ Return' : 'In Trial'}
-                                    </span>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Shelf & Location Bar */}
-                          <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #e2e8f0', fontSize: '11px', color: '#334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
-                            <span>📍 Shelf: <strong style={{ color: '#0284c7' }}>{ord.shelfLocation}</strong></span>
-                            <span style={{ color: '#475569' }}>
-                              📦 DB Stock: <strong style={{ color: (matchedProduct?.inwardUnits || 0) > 0 ? '#16a34a' : '#ef4444' }}>{matchedProduct?.inwardUnits ?? '—'} pcs</strong> on shelf
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* LIVE STOCK STATUS BANNER */}
-                        <div style={{
-                          padding: '8px 10px',
-                          borderRadius: '8px',
-                          fontSize: '11px',
-                          fontWeight: 700,
-                          marginBottom: '12px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          background: isRestocked 
-                            ? '#ecfdf5' 
-                            : isKept 
-                            ? '#f0fdf4' 
-                            : isRiderHeadingBack 
-                            ? '#faf5ff' 
-                            : '#eff6ff',
-                          color: isRestocked 
-                            ? '#047857' 
-                            : isKept 
-                            ? '#15803d' 
-                            : isRiderHeadingBack 
-                            ? '#7e22ce' 
-                            : '#1d4ed8',
-                          border: isRestocked 
-                            ? '1px solid #a7f3d0' 
-                            : isKept 
-                            ? '1px solid #bbf7d0' 
-                            : isRiderHeadingBack 
-                            ? '1px solid #e9d5ff' 
-                            : '1px solid #bfdbfe'
-                        }}>
-                          {isRestocked ? (
-                            <>
-                              <CheckCircle2 size={13} />
-                              <span>✓ Stock Added Back (+1 Unit to DB) · Restored to shelf {ord.shelfLocation}</span>
-                            </>
-                          ) : isKept ? (
-                            <>
-                              <Check size={13} />
-                              <span>✓ Stock Kept Deducted · Purchase finalized in Supabase DB</span>
-                            </>
-                          ) : isRiderHeadingBack ? (
-                            <>
-                              <RotateCcw size={13} />
-                              <span>↩ Return In-Transit · Sealed in tamper bag, awaiting hub shelf restock</span>
-                            </>
-                          ) : (
-                            <>
-                              <AlertCircle size={13} />
-                              <span>⚠️ Stock Deducted (-1 Unit) · Physically leaves warehouse with delivery partner</span>
-                            </>
-                          )}
-                        </div>
-
-                        {/* Customer & Delivery Partner Details */}
-                        <div style={{ fontSize: '11.5px', color: '#64748b', marginBottom: '12px', lineHeight: 1.5 }}>
-                          <div><strong>Client:</strong> {ord.customerName} ({ord.customerPhone || '+91 98250 88123'})</div>
-                          <div style={{ color: '#475569', fontSize: '11px' }}>{ord.customerAddress}</div>
-                          <div style={{ marginTop: '4px' }}><strong>Delivery Partner:</strong> {ord.riderName || 'Meet Dave'} ({ord.riderVehicle || 'Ather 450X'})</div>
-                        </div>
-
-                        {/* Refund status badge */}
-                        {ord.instantRefundStatus && (
-                          <div style={{ fontSize: '11px', color: '#047857', background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '6px 10px', borderRadius: '8px', marginBottom: '10px' }}>
-                            ⚡ <strong>Refund:</strong> {ord.instantRefundStatus}
-                          </div>
-                        )}
-
-                        {ord.returnReason && (
-                          <div style={{ fontSize: '11px', color: '#64748b', background: '#f1f5f9', padding: '6px 10px', borderRadius: '8px', marginBottom: '10px' }}>
-                            <strong>Return Reason:</strong> {ord.returnReason}
-                          </div>
-                        )}
-
-                        {/* ADMIN ORDER ACTION BUTTONS */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '10px', borderTop: '1px solid #f1f5f9' }}>
-                          {/* If not restocked yet, give Admin option to mark Returned & Restock */}
-                          {!isRestocked && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setReturningOrderModal(ord);
-                                setSelectedReturnReason(ord.returnReason || 'Size / fit did not suit at doorstep');
-                                setCustomReturnNotes('');
-                              }}
-                              className={styles.btnPrimary}
-                              style={{
-                                background: '#059669',
-                                borderColor: '#047857',
-                                justifyContent: 'center',
-                                padding: '8px 12px',
-                                fontSize: '11.5px',
-                                fontWeight: 800
-                              }}
-                              title="Mark as Returned, issue refund, and add +1 stock back to darkstore shelf in DB"
-                            >
-                              <RotateCcw size={13} />
-                              <span>Mark as Returned &amp; Restock (+1 Stock to DB)</span>
-                            </button>
-                          )}
-
-                          {/* Quick delivery / kept button if order is active or doorstep */}
-                          {(isDoorstepFitting || isOut) && (
-                            <div style={{ display: 'flex', gap: '6px' }}>
-                              <button
-                                type="button"
-                                onClick={() => handleMarkDelivered(ord.id)}
-                                className={styles.btnSuccess}
-                                style={{ flex: 1, justifyContent: 'center', fontSize: '11px' }}
-                                title="Client completes doorstep trial and keeps garment. Keeps stock deducted."
-                              >
-                                <Check size={12} /> Mark Delivered &amp; Kept
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => handleOrderAction(ord.id, 'Returned on Spot (Delivery Partner Heading to Hub)')}
-                                className={styles.btnDanger}
-                                style={{ flex: 1, justifyContent: 'center', fontSize: '11px' }}
-                                title="Handed back to delivery partner at doorstep"
-                              >
-                                <RotateCcw size={12} /> Return to Partner
-                              </button>
-                            </div>
-                          )}
-
-                          {/* If delivery partner is heading back, direct 1-click restock & instant refund */}
-                          {isRiderHeadingBack && (
-                            <button
-                              type="button"
-                              onClick={() => handleMarkReturned(ord.id, ord.returnReason || 'Doorstep return', 'Delivery partner reached hub dispatch bay')}
-                              className={styles.btnPrimary}
-                              style={{ width: '100%', justifyContent: 'center', fontSize: '11.5px', fontWeight: 800, background: '#059669', borderColor: '#047857' }}
-                            >
-                              <CheckCircle2 size={13} /> Partner Reached Hub · Restock &amp; Refund ₹{ord.refundAmount || ord.price} Instantly
-                            </button>
-                          )}
-
-                          {/* Footer links: Storefront & Barcode */}
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
-                            <Link
-                              href={`/product/${ord.productId}`}
-                              target="_blank"
-                              style={{ fontSize: '11px', color: '#0284c7', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '3px' }}
-                            >
-                              <ExternalLink size={11} /> View on Storefront
-                            </Link>
-                            {matchedProduct && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setSelectedProductForBarcode(matchedProduct);
-                                  setBarcodeModalOpen(true);
-                                }}
-                                style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
-                              >
-                                <Barcode size={11} /> Barcode
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div style={{ textAlign: 'center', padding: '40px 20px', color: '#94a3b8' }}>
-                  <Package size={36} color="#cbd5e1" style={{ margin: '0 auto 8px auto' }} />
-                  <div style={{ fontWeight: 700, color: '#475569' }}>No orders found matching filter</div>
-                  <p style={{ fontSize: '12px', margin: '4px 0 0 0' }}>
-                    {ordersSearch ? 'Try a different search query or clear the filter.' : 'All incoming orders from customer checkout will appear here with automated stock sync.'}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB 6: BRAND WHOLESALE SETTLEMENT & MARGIN LEDGER */}
-          {activeTab === 'settlement' && (
-            <div className={styles.sectionCard}>
-              <div className={styles.sectionHeader} style={{ flexWrap: 'wrap', gap: '12px', alignItems: 'flex-start' }}>
-                <div>
-                  <h3 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Receipt size={18} color="#059669" />
-                    Brand Wholesale Settlement &amp; Platform Margin Ledger
-                  </h3>
-                  <p className={styles.sectionDesc}>
-                    Dual-entry accounting view for Drobe hub administrators. Reconciles 100% upfront pre-paid GMV, instant customer return refunds, net wholesale payouts due to brand partners (<em>B</em> × units kept), and Drobe&apos;s retained 5% dynamic markup fee (+4.83% avg net margin).
-                  </p>
-                </div>
-
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                {activeTab === 'settlement' && (
                   <button
                     type="button"
                     onClick={handleExportSettlementCsv}
-                    className={styles.btnSecondary}
-                    style={{ background: '#f8fafc', borderColor: '#cbd5e1', color: '#0f172a', fontWeight: 800, fontSize: '11.5px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    className={styles.btnPrimary}
+                    style={{ padding: '8px 14px', fontSize: '12px' }}
                   >
-                    <Download size={13} color="#0284c7" /> Export Settlement CSV
+                    <Download size={14} /> Export Settlement CSV
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      syncDarkstoreWithSupabase().then(() => loadAllData());
-                      triggerToast('Syncing latest settlements with live Supabase database...');
-                    }}
-                    className={styles.btnSecondary}
-                    style={{ fontSize: '11.5px', padding: '7px 12px' }}
-                  >
-                    <RotateCcw size={12} /> Sync DB Ledger
-                  </button>
-                </div>
-              </div>
+                )}
 
-              {/* 1. TOP 4 EXECUTIVE KPI CARDS */}
-              <div className={styles.kpiGrid} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', marginBottom: '20px' }}>
-                {/* KPI 1: Advance GMV */}
-                <div className={styles.kpiCard} style={{ borderLeft: '4px solid #0284c7' }}>
-                  <div>
-                    <div className={styles.kpiLabel}>Total Advance GMV Collected</div>
-                    <div className={styles.kpiVal} style={{ color: '#0284c7' }}>
-                      ₹{financialLedger.totalAdvanceGMV.toLocaleString('en-IN')}
-                    </div>
-                    <div className={styles.kpiSub}>100% Pre-funded prior to dispatch</div>
-                  </div>
-                  <div className={styles.kpiIconWrap} style={{ background: '#e0f2fe', color: '#0284c7' }}>
-                    <Wallet size={20} />
-                  </div>
-                </div>
-
-                {/* KPI 2: Instant Refunds */}
-                <div className={styles.kpiCard} style={{ borderLeft: '4px solid #f59e0b' }}>
-                  <div>
-                    <div className={styles.kpiLabel}>Instant Customer Refunds</div>
-                    <div className={styles.kpiVal} style={{ color: '#d97706' }}>
-                      ₹{financialLedger.totalInstantRefunds.toLocaleString('en-IN')}
-                    </div>
-                    <div className={styles.kpiSub}>{financialLedger.totalUnitsReturned} returned pieces credited to UPI</div>
-                  </div>
-                  <div className={styles.kpiIconWrap} style={{ background: '#fef3c7', color: '#d97706' }}>
-                    <RotateCcw size={20} />
-                  </div>
-                </div>
-
-                {/* KPI 3: Net Brand Payouts Due (B x kept) */}
-                <div className={styles.kpiCard} style={{ borderLeft: '4px solid #6366f1' }}>
-                  <div>
-                    <div className={styles.kpiLabel}>Net Brand Payouts Due</div>
-                    <div className={styles.kpiVal} style={{ color: '#4f46e5' }}>
-                      ₹{financialLedger.totalBrandPayoutsDue.toLocaleString('en-IN')}
-                    </div>
-                    <div className={styles.kpiSub}>Formula: B × {financialLedger.totalUnitsKept} kept units</div>
-                  </div>
-                  <div className={styles.kpiIconWrap} style={{ background: '#e0e7ff', color: '#4f46e5' }}>
-                    <Building2 size={20} />
-                  </div>
-                </div>
-
-                {/* KPI 4: Drobe Net Platform Earnings */}
-                <div className={styles.kpiCard} style={{ borderLeft: '4px solid #10b981', background: 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)' }}>
-                  <div>
-                    <div className={styles.kpiLabel} style={{ color: '#166534', fontWeight: 800 }}>
-                      ⚡ Net Platform Earnings
-                    </div>
-                    <div className={styles.kpiVal} style={{ color: '#15803d' }}>
-                      +₹{financialLedger.netPlatformEarnings.toLocaleString('en-IN')}
-                    </div>
-                    <div className={styles.kpiSub} style={{ color: '#166534', fontWeight: 700 }}>
-                      +{financialLedger.avgMarkupPct}% Markup (+₹{financialLedger.totalDrobeMarkupEarnings}) {financialLedger.totalOvertimeFees > 0 ? `+ ₹${financialLedger.totalOvertimeFees} OT` : ''}
-                    </div>
-                  </div>
-                  <div className={styles.kpiIconWrap} style={{ background: '#dcfce7', color: '#15803d' }}>
-                    <TrendingUp size={20} />
-                  </div>
-                </div>
-              </div>
-
-              {/* 2. DROBE BUSINESS & PRICING MODEL BANNER */}
-              <div style={{
-                background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-                border: '1px solid #cbd5e1',
-                borderRadius: '14px',
-                padding: '14px 18px',
-                marginBottom: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '12px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#ecfdf5', border: '1px solid #a7f3d0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
-                    <ShieldCheck size={20} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#0f172a' }}>
-                      Drobe 5% Platform Markup &amp; Wholesale Payout Architecture
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', lineHeight: '16px' }}>
-                      Brands sell garments at Base Wholesale <strong>B</strong> (e.g. ₹600). Drobe adds 5% markup rounded to Charm 9 (Retail: <strong>₹629</strong>).
-                      When a garment is kept, <strong>₹600</strong> is disbursed to the brand partner while Drobe retains <strong>+₹29 (+4.83%)</strong> as net service revenue.
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <span style={{ fontSize: '10.5px', fontWeight: 800, background: '#dcfce7', color: '#15803d', padding: '4px 10px', borderRadius: '6px', border: '1px solid #86efac' }}>
-                    Conversion: {financialLedger.conversionRate}% Kept
-                  </span>
-                  <span style={{ fontSize: '10.5px', fontWeight: 800, background: '#e0f2fe', color: '#0369a1', padding: '4px 10px', borderRadius: '6px', border: '1px solid #7dd3fc' }}>
-                    {financialLedger.totalUnitsKept} Kept / {financialLedger.totalUnitsDispatched} Dispatched
-                  </span>
-                </div>
-              </div>
-
-              {/* 3. BRAND WHOLESALE SETTLEMENT TABLE */}
-              <div style={{ marginBottom: '28px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-                  <div>
-                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>
-                      Brand Partner Payout Ledger ({financialLedger.brandLedgerRows.length} Brands)
-                    </h4>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#64748b' }}>
-                      Wholesale base disbursements due to partner labels calculated per kept SKU on doorstep fittings.
-                    </p>
-                  </div>
-
-                  {/* Search within brands */}
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <div style={{ position: 'relative' }}>
-                      <Search size={13} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                      <input
-                        type="text"
-                        value={settlementSearch}
-                        onChange={(e) => setSettlementSearch(e.target.value)}
-                        placeholder="Filter brand label..."
-                        style={{
-                          padding: '6px 10px 6px 30px',
-                          borderRadius: '8px',
-                          border: '1px solid #cbd5e1',
-                          fontSize: '11.5px',
-                          width: '180px'
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.tableResponsive}>
-                  <table className={styles.adminTable}>
-                    <thead>
-                      <tr>
-                        <th>Brand Label</th>
-                        <th>Trial Dispatches</th>
-                        <th>Kept vs Returned (Ratio)</th>
-                        <th>Base Wholesale (B)</th>
-                        <th>Net Brand Payout Due (B × Kept)</th>
-                        <th>Drobe 5% Markup Retained</th>
-                        <th>Settlement Status</th>
-                        <th style={{ textAlign: 'right' }}>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {financialLedger.brandLedgerRows
-                        .filter(b => !settlementSearch || b.brandName.toLowerCase().includes(settlementSearch.toLowerCase()) || b.brandId.includes(settlementSearch.toLowerCase()))
-                        .map((b) => {
-                          const isSettled = !!settledBrands[b.brandId];
-                          const keptRatio = b.dispatchedUnits > 0 ? Math.round((b.keptUnits / b.dispatchedUnits) * 100) : 0;
-
-                          return (
-                            <tr key={b.brandId}>
-                              <td>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                  <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#0f172a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '12px' }}>
-                                    {b.brandName.slice(0, 2).toUpperCase()}
-                                  </div>
-                                  <div>
-                                    <div style={{ fontWeight: 800, fontSize: '12.5px', color: '#0f172a' }}>
-                                      {b.brandName}
-                                    </div>
-                                    <div style={{ fontSize: '10.5px', color: '#64748b' }}>
-                                      {b.category || 'Apparel'} · ID: <span style={{ fontFamily: 'monospace' }}>{b.brandId}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </td>
-
-                              <td>
-                                <div style={{ fontWeight: 800, fontSize: '12px', color: '#0f172a' }}>
-                                  {b.dispatchedUnits} units
-                                </div>
-                                <div style={{ fontSize: '10px', color: '#64748b' }}>
-                                  Gross GMV: ₹{b.grossGmv.toLocaleString('en-IN')}
-                                </div>
-                              </td>
-
-                              <td>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                                  <span style={{ fontSize: '10px', fontWeight: 800, background: '#ecfdf5', color: '#059669', padding: '1px 6px', borderRadius: '4px' }}>
-                                    {b.keptUnits} Kept
-                                  </span>
-                                  <span style={{ fontSize: '10px', fontWeight: 800, background: '#fef2f2', color: '#dc2626', padding: '1px 6px', borderRadius: '4px' }}>
-                                    {b.returnedUnits} Ret
-                                  </span>
-                                </div>
-                                <div style={{ width: '100px', height: '5px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                                  <div style={{ width: `${keptRatio}%`, height: '100%', background: '#10b981' }} />
-                                </div>
-                              </td>
-
-                              <td>
-                                <div style={{ fontWeight: 700, color: '#334155', fontSize: '12px' }}>
-                                  ₹{b.avgBaseWholesale}
-                                </div>
-                                <div style={{ fontSize: '10px', color: '#64748b' }}>
-                                  per kept garment
-                                </div>
-                              </td>
-
-                              <td>
-                                <div style={{ fontWeight: 900, fontSize: '13.5px', color: b.wholesalePayoutDue > 0 ? (isSettled ? '#059669' : '#1e40af') : '#64748b' }}>
-                                  ₹{b.wholesalePayoutDue.toLocaleString('en-IN')}
-                                </div>
-                                <div style={{ fontSize: '10px', color: '#64748b' }}>
-                                  {b.keptUnits} units × ₹{b.avgBaseWholesale}
-                                </div>
-                              </td>
-
-                              <td>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                  <span style={{ fontWeight: 800, color: '#047857', fontSize: '12px' }}>
-                                    +₹{b.drobeMarkup.toLocaleString('en-IN')}
-                                  </span>
-                                  <span style={{ fontSize: '9px', fontWeight: 800, background: '#dcfce7', color: '#15803d', padding: '1px 5px', borderRadius: '4px', border: '1px solid #86efac' }}>
-                                    +4.83%
-                                  </span>
-                                </div>
-                                <div style={{ fontSize: '10px', color: '#64748b' }}>
-                                  Drobe Retained Fee
-                                </div>
-                              </td>
-
-                              <td>
-                                {isSettled ? (
-                                  <div>
-                                    <span style={{ fontSize: '10px', fontWeight: 900, background: '#ecfdf5', color: '#059669', padding: '2px 8px', borderRadius: '6px', border: '1px solid #a7f3d0', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                      <span>✓ Disbursed</span>
-                                    </span>
-                                    <div style={{ fontSize: '9.5px', color: '#64748b', fontFamily: 'monospace', marginTop: '2px' }}>
-                                      {settledBrands[b.brandId].utr}
-                                    </div>
-                                  </div>
-                                ) : b.wholesalePayoutDue > 0 ? (
-                                  <span style={{ fontSize: '10px', fontWeight: 800, background: '#eff6ff', color: '#1d4ed8', padding: '2px 8px', borderRadius: '6px', border: '1px solid #bfdbfe', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2563eb' }} />
-                                    <span>Ready for Transfer</span>
-                                  </span>
-                                ) : (
-                                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>
-                                    Zero Balance Due
-                                  </span>
-                                )}
-                              </td>
-
-                              <td style={{ textAlign: 'right' }}>
-                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                                  {b.wholesalePayoutDue > 0 && !isSettled ? (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setSettlementModalBrand(b);
-                                        setPayoutUtrRef(`NEFT-DRB-${Date.now().toString().slice(-6)}`);
-                                      }}
-                                      className={styles.btnPrimary}
-                                      style={{ padding: '5px 10px', fontSize: '11px', background: '#0284c7', borderColor: '#0369a1', fontWeight: 800 }}
-                                    >
-                                      Disburse ₹{b.wholesalePayoutDue.toLocaleString('en-IN')}
-                                    </button>
-                                  ) : isSettled ? (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        triggerToast(`Settlement Record: ₹${settledBrands[b.brandId].amount} transferred on ${settledBrands[b.brandId].date} (Ref: ${settledBrands[b.brandId].utr})`);
-                                      }}
-                                      className={styles.btnSecondary}
-                                      style={{ padding: '5px 8px', fontSize: '10.5px' }}
-                                    >
-                                      View Voucher
-                                    </button>
-                                  ) : (
-                                    <span style={{ fontSize: '11px', color: '#cbd5e1' }}>—</span>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* 4. ITEMIZED ORDER-BY-ORDER SETTLEMENT AUDIT LOG */}
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-                  <div>
-                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>
-                      Itemized Order Settlement Audit Log ({trialOrders.length} Orders)
-                    </h4>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#64748b' }}>
-                      Transaction ledger displaying exact GMV pre-paid, customer refund disbursed, brand wholesale share, and Drobe platform markup for each doorstep fitting session.
-                    </p>
-                  </div>
-                </div>
-
-                <div className={styles.tableResponsive}>
-                  <table className={styles.adminTable}>
-                    <thead>
-                      <tr>
-                        <th>Order &amp; Customer</th>
-                        <th>Trial Items &amp; Split Decision</th>
-                        <th>Advance Pre-Paid (GMV)</th>
-                        <th>Instant Refund Disbursed</th>
-                        <th>Overtime Fee</th>
-                        <th>Brand Wholesale Due (B)</th>
-                        <th>Drobe Platform Markup</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {trialOrders.map((ord) => {
-                        const items = ord.items && ord.items.length > 0 ? ord.items : [];
-                        const advance = ord.advancePaidAmount ?? (parseFloat(ord.price.replace(/[^0-9.]/g, '')) || 0);
-                        const refund = ord.netRefundAmount ?? ord.refundAmount ?? 0;
-                        const otFee = ord.overtimeFee || 0;
-                        const keptItems = items.filter(it => it.status === 'kept');
-                        const brandWholesale = keptItems.reduce((acc, it) => {
-                          const p = getProductPricingInfo(it);
-                          return acc + (p.brandBasePrice || Math.round(it.priceNum / 1.05));
-                        }, 0);
-                        const drobeMarkup = keptItems.reduce((acc, it) => {
-                          const p = getProductPricingInfo(it);
-                          return acc + (p.markupAmount || (it.priceNum - Math.round(it.priceNum / 1.05)));
-                        }, 0);
-
-                        return (
-                          <tr key={ord.id}>
-                            <td>
-                              <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '12.5px' }}>
-                                {ord.orderNumber}
-                              </div>
-                              <div style={{ fontSize: '11px', color: '#64748b' }}>
-                                {ord.customerName} · <span style={{ color: '#0284c7' }}>{ord.customerPhone}</span>
-                              </div>
-                            </td>
-
-                            <td>
-                              {items.length > 0 ? (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                                  {items.map((it, idx) => (
-                                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10.5px' }}>
-                                      <span style={{ fontWeight: 700, color: '#0f172a' }}>{it.productName}</span>
-                                      <span style={{ color: '#64748b' }}>({it.price})</span>
-                                      <span style={{
-                                        fontSize: '9px',
-                                        fontWeight: 800,
-                                        padding: '1px 5px',
-                                        borderRadius: '3px',
-                                        background: it.status === 'kept' ? '#ecfdf5' : it.status === 'returned' ? '#fef2f2' : '#f1f5f9',
-                                        color: it.status === 'kept' ? '#059669' : it.status === 'returned' ? '#dc2626' : '#64748b'
-                                      }}>
-                                        {it.status === 'kept' ? '✓ Kept' : it.status === 'returned' ? '↩ Return' : 'In Trial'}
-                                      </span>
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : (
-                                <div style={{ fontSize: '11px', color: '#0f172a' }}>
-                                  {ord.productName} ({ord.price})
-                                </div>
-                              )}
-                            </td>
-
-                            <td>
-                              <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '12.5px' }}>
-                                ₹{advance}
-                              </div>
-                              <div style={{ fontSize: '9.5px', color: '#64748b' }}>
-                                100% Upfront Deposit
-                              </div>
-                            </td>
-
-                            <td>
-                              <div style={{ fontWeight: 800, color: refund > 0 ? '#d97706' : '#94a3b8', fontSize: '12px' }}>
-                                {refund > 0 ? `₹${refund}` : '₹0'}
-                              </div>
-                              <div style={{ fontSize: '9.5px', color: '#64748b' }}>
-                                {ord.refundStatus || 'No Refund'}
-                              </div>
-                            </td>
-
-                            <td>
-                              {otFee > 0 ? (
-                                <div style={{ color: '#dc2626', fontWeight: 800, fontSize: '11.5px' }}>
-                                  +₹{otFee} ({ord.overtimeMinutes || 1}m)
-                                </div>
-                              ) : (
-                                <span style={{ color: '#94a3b8', fontSize: '11px' }}>₹0</span>
-                              )}
-                            </td>
-
-                            <td>
-                              <div style={{ fontWeight: 800, color: '#4f46e5', fontSize: '12.5px' }}>
-                                ₹{brandWholesale}
-                              </div>
-                              <div style={{ fontSize: '9.5px', color: '#64748b' }}>
-                                {keptItems.length} kept × B
-                              </div>
-                            </td>
-
-                            <td>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <span style={{ fontWeight: 800, color: '#059669', fontSize: '12px' }}>
-                                  +₹{drobeMarkup}
-                                </span>
-                                {drobeMarkup > 0 && (
-                                  <span style={{ fontSize: '9px', fontWeight: 800, background: '#dcfce7', color: '#15803d', padding: '1px 4px', borderRadius: '3px' }}>
-                                    +4.83%
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-
-                            <td>
-                              <span style={{
-                                fontSize: '10px',
-                                fontWeight: 800,
-                                padding: '2px 8px',
-                                borderRadius: '6px',
-                                background: ord.status === 'Restocked to Warehouse Shelf' ? '#ecfdf5' : '#f0f9ff',
-                                color: ord.status === 'Restocked to Warehouse Shelf' ? '#047857' : '#0369a1',
-                                border: '1px solid',
-                                borderColor: ord.status === 'Restocked to Warehouse Shelf' ? '#a7f3d0' : '#bae6fd'
-                              }}>
-                                {ord.status === 'Restocked to Warehouse Shelf' ? 'Settled & Restocked' : ord.status}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 7: CUSTOMER PROFILES & REAL-TIME LIVE ACTIVITY TELEMETRY */}
-          {activeTab === 'users' && (
-            <div>
-              {/* Header Ribbon & Control Bar */}
-              <div className={styles.sectionCard} style={{ marginBottom: '16px' }}>
-                <div className={styles.sectionHeader} style={{ flexWrap: 'wrap', gap: '12px' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span className={styles.hubStatusLiveDot} />
-                      <h3 className={styles.sectionTitle} style={{ margin: 0 }}>
-                        <Users size={18} color="#0284c7" />
-                        Customer Intelligence & Live Activity Telemetry
-                      </h3>
-                      <span style={{ fontSize: '10.5px', background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '2px 8px', borderRadius: '12px', fontWeight: 800 }}>
-                        Live Supabase Sync
-                      </span>
-                    </div>
-                    <p className={styles.sectionDesc} style={{ marginTop: '4px' }}>
-                      Real-time database monitor of registered shoppers on DROBE, sizing profiles, doorstep trial conversion metrics, live screen presence, and real-time activity stream.
-                    </p>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <button
-                      type="button"
-                      onClick={() => setCopilotModalOpen(true)}
-                      className={styles.btnSecondary}
-                      style={{
-                        padding: '7px 13px',
-                        fontSize: '11.5px',
-                        gap: '6px',
-                        background: '#0f172a',
-                        borderColor: '#334155',
-                        color: '#76b900',
-                        fontWeight: 800,
-                        boxShadow: '0 2px 8px rgba(118, 185, 0, 0.25)'
-                      }}
-                      title="Open NVIDIA Meta Muse-Glimmer AI Reasoning Console"
-                    >
-                      <Bot size={14} color="#76b900" />
-                      <span>NVIDIA AI Copilot</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setApiKeyModalOpen(true)}
-                      className={styles.btnSecondary}
-                      style={{ padding: '7px 12px', fontSize: '11.5px', gap: '6px', background: aiApiKey ? '#f0fdf4' : '#fffbeb', borderColor: aiApiKey ? '#86efac' : '#fde68a', color: aiApiKey ? '#15803d' : '#92400e', fontWeight: 800 }}
-                      title="Configure AI API Key for 2-Minute Drop-off Intelligence"
-                    >
-                      <KeyRound size={14} color={aiApiKey ? '#16a34a' : '#d97706'} />
-                      <span>{aiApiKey ? 'AI Key Active' : 'Provide AI Key'}</span>
-                    </button>
-
+                {activeTab === 'users' && (
+                  <>
                     <button
                       type="button"
                       onClick={() => runAIShopperSynthesis()}
                       disabled={isAiGenerating}
                       className={styles.btnPrimary}
-                      style={{ padding: '7px 14px', fontSize: '11.5px', gap: '6px', fontWeight: 800, background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', border: 'none' }}
-                      title="Run on-demand AI analysis of why shoppers are dropping off"
+                      style={{ padding: '8px 14px', fontSize: '12px' }}
                     >
-                      <Zap size={14} className={isAiGenerating ? styles.spinAnimation : ''} />
-                      <span>{isAiGenerating ? 'Synthesizing...' : 'Run AI Pulse Now'}</span>
+                      <Sparkles size={14} /> {isAiGenerating ? 'Synthesizing...' : '⚡ Generate AI Report'}
                     </button>
-
-                    <button
-                      type="button"
-                      onClick={handleExportUsersCsv}
-                      className={styles.btnSecondary}
-                      style={{ padding: '7px 12px', fontSize: '11.5px', gap: '6px', fontWeight: 700 }}
-                    >
-                      <Download size={14} />
-                      <span>Export Shoppers CSV</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 4 Dedicated Telemetry KPI Cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '12px', marginTop: '16px' }}>
-                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px 14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
-                        Total Registered Shoppers
-                      </span>
-                      <Users size={16} color="#0284c7" />
-                    </div>
-                    <div style={{ fontSize: '24px', fontWeight: 900, color: '#0f172a', marginTop: '4px' }}>
-                      {totalRegisteredUsers}
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#0284c7', fontWeight: 600, marginTop: '2px' }}>
-                      Ahmedabad Hub Network
-                    </div>
-                  </div>
-
-                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '12px 14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '11px', color: '#166534', fontWeight: 700, textTransform: 'uppercase' }}>
-                        Active Online Now
-                      </span>
-                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
-                    </div>
-                    <div style={{ fontSize: '24px', fontWeight: 900, color: '#15803d', marginTop: '4px' }}>
-                      {onlineUsersCount}
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#166534', fontWeight: 600, marginTop: '2px' }}>
-                      Browsing catalog or in fitting
-                    </div>
-                  </div>
-
-                  <div style={{ background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: '12px', padding: '12px 14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '11px', color: '#6b21a8', fontWeight: 700, textTransform: 'uppercase' }}>
-                        In Doorstep Trial Window
-                      </span>
-                      <Truck size={16} color="#9333ea" />
-                    </div>
-                    <div style={{ fontSize: '24px', fontWeight: 900, color: '#7e22ce', marginTop: '4px' }}>
-                      {doorstepUsersCount}
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#7e22ce', fontWeight: 600, marginTop: '2px' }}>
-                      6-min fitting trial with delivery partner waiting outside
-                    </div>
-                  </div>
-
-                  <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '12px 14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '11px', color: '#92400e', fontWeight: 700, textTransform: 'uppercase' }}>
-                        Platform Kept Ratio
-                      </span>
-                      <TrendingUp size={16} color="#d97706" />
-                    </div>
-                    <div style={{ fontSize: '24px', fontWeight: 900, color: '#b45309', marginTop: '4px' }}>
-                      {(userProfiles.reduce((acc, u) => acc + (u.keptRatioPercentage || 0), 0) / (userProfiles.length || 1)).toFixed(0)}%
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#b45309', fontWeight: 600, marginTop: '2px' }}>
-                      ₹{userProfiles.reduce((acc, u) => acc + (u.totalSpentInr || 0), 0).toLocaleString('en-IN')} cumulative spend
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* AI SHOPPER INTELLIGENCE COMMAND CENTER: 2-MINUTE HEARTBEAT PULSE & DROP-OFF DIAGNOSIS */}
-              <div
-                style={{
-                  background: 'linear-gradient(135deg, #090d16 0%, #0f172a 45%, #1e1b4b 100%)',
-                  border: '1px solid rgba(99, 102, 241, 0.3)',
-                  borderRadius: '16px',
-                  padding: '22px 24px',
-                  marginBottom: '18px',
-                  color: '#ffffff',
-                  boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-                }}
-              >
-                {/* Header Row */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '16px' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{
-                        background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-                        color: '#ffffff',
-                        fontSize: '10.5px',
-                        fontWeight: 900,
-                        padding: '3px 9px',
-                        borderRadius: '20px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '5px',
-                        letterSpacing: '0.04em'
-                      }}>
-                        <Sparkles size={12} /> AI BEHAVIORAL INTELLIGENCE
-                      </span>
-                      <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#f8fafc', letterSpacing: '-0.02em' }}>
-                        Shopper Drop-Off &amp; Hesitation Radar
-                      </h3>
-                    </div>
-                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#94a3b8' }}>
-                      Synthesizing why shoppers are backing off, out-of-stock friction points, and doorstep trial hesitation every 2 minutes.
-                    </p>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    {/* 2-Min Live Countdown Ticker */}
-                    <div style={{
-                      background: 'rgba(15, 23, 42, 0.75)',
-                      border: '1px solid rgba(99, 102, 241, 0.35)',
-                      borderRadius: '12px',
-                      padding: '6px 14px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}>
-                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 8px #22c55e' }} />
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontSize: '9px', textTransform: 'uppercase', color: '#94a3b8', fontWeight: 800, letterSpacing: '0.05em' }}>
-                          Next 2-Min AI Pulse
-                        </span>
-                        <span style={{ fontSize: '14px', fontWeight: 900, color: '#38bdf8', fontFamily: 'monospace' }}>
-                          {formatCountdown(aiCountdown)}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* NVIDIA Copilot Trigger Button */}
                     <button
                       type="button"
                       onClick={() => setCopilotModalOpen(true)}
-                      style={{
-                        background: 'rgba(118, 185, 0, 0.15)',
-                        border: '1px solid rgba(118, 185, 0, 0.45)',
-                        color: '#76b900',
-                        borderRadius: '10px',
-                        padding: '8px 14px',
-                        fontSize: '11.5px',
-                        fontWeight: 800,
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        transition: 'all 0.2s',
-                        boxShadow: '0 2px 10px rgba(118, 185, 0, 0.15)'
-                      }}
-                      title="Open NVIDIA Meta Muse-Glimmer Reasoning Copilot"
+                      className={styles.btnSecondary}
+                      style={{ padding: '8px 12px', fontSize: '12px' }}
                     >
-                      <Bot size={13} color="#76b900" />
-                      <span>NVIDIA AI Copilot</span>
+                      <Bot size={13} color="#0284c7" /> Ask Copilot AI
                     </button>
-
-                    {/* Configure Key Button */}
                     <button
                       type="button"
                       onClick={() => setApiKeyModalOpen(true)}
-                      style={{
-                        background: aiApiKey ? 'rgba(34, 197, 94, 0.15)' : 'rgba(255, 255, 255, 0.08)',
-                        border: `1px solid ${aiApiKey ? 'rgba(34, 197, 94, 0.4)' : 'rgba(255, 255, 255, 0.15)'}`,
-                        color: aiApiKey ? '#4ade80' : '#e2e8f0',
-                        borderRadius: '10px',
-                        padding: '8px 14px',
-                        fontSize: '11.5px',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      <KeyRound size={13} />
-                      <span>{aiApiKey ? 'AI Key Active' : 'Provide AI Key'}</span>
-                    </button>
-
-                    {/* Run Now Trigger Button */}
-                    <button
-                      type="button"
-                      onClick={() => runAIShopperSynthesis()}
-                      disabled={isAiGenerating}
-                      style={{
-                        background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                        color: '#ffffff',
-                        border: 'none',
-                        borderRadius: '10px',
-                        padding: '8px 16px',
-                        fontSize: '11.5px',
-                        fontWeight: 800,
-                        cursor: isAiGenerating ? 'not-allowed' : 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        boxShadow: '0 4px 12px rgba(79, 70, 229, 0.35)',
-                        opacity: isAiGenerating ? 0.7 : 1
-                      }}
-                    >
-                      <RefreshCw size={13} className={isAiGenerating ? styles.spinAnimation : ''} />
-                      <span>{isAiGenerating ? 'Analyzing Telemetry...' : '⚡ Run AI Pulse Now'}</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Executive Summary Banner */}
-                <div
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '12px',
-                    padding: '14px 16px',
-                    marginBottom: '16px'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap', gap: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Bot size={15} color="#818cf8" />
-                      <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#818cf8', fontWeight: 800 }}>
-                        Executive Diagnostic Briefing
-                      </span>
-                    </div>
-                    <span style={{ fontSize: '10px', color: '#64748b', background: 'rgba(0, 0, 0, 0.3)', padding: '2px 8px', borderRadius: '10px' }}>
-                      Model: <span style={{ color: '#38bdf8' }}>{aiReport.modelUsed}</span> · Synced {aiReport.timestamp}
-                    </span>
-                  </div>
-                  <p style={{ margin: 0, fontSize: '12.5px', lineHeight: 1.55, color: '#e2e8f0', fontWeight: 500 }}>
-                    {aiReport.executiveSummary}
-                  </p>
-                </div>
-
-                {/* 3-Column Diagnostic Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
-                  {/* Panel 1: Why Shoppers Back Off (Root Causes) */}
-                  <div style={{ background: 'rgba(15, 23, 42, 0.65)', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: '12px', padding: '14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <AlertTriangle size={15} color="#f87171" />
-                        <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#fca5a5', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                          Why Shoppers Back Off
-                        </span>
-                      </div>
-                      <span style={{ fontSize: '10px', background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', padding: '1px 7px', borderRadius: '10px', fontWeight: 800 }}>
-                        {aiReport.dropoffRootCauses.length} Bottlenecks
-                      </span>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {aiReport.dropoffRootCauses.map((rc, idx) => (
-                        <div key={idx} style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', padding: '9px 10px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
-                            <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#ffffff' }}>
-                              {rc.user}
-                            </span>
-                            <span style={{
-                              fontSize: '9.5px',
-                              fontWeight: 800,
-                              padding: '1px 6px',
-                              borderRadius: '4px',
-                              background: rc.riskLevel === 'Critical' ? '#7f1d1d' : rc.riskLevel === 'High' ? '#7c2d12' : '#713f12',
-                              color: rc.riskLevel === 'Critical' ? '#fecaca' : rc.riskLevel === 'High' ? '#fed7aa' : '#fef08a'
-                            }}>
-                              {rc.riskLevel}
-                            </span>
-                          </div>
-                          <div style={{ fontSize: '10px', color: '#38bdf8', fontWeight: 700, marginBottom: '2px' }}>
-                            📍 Funnel Stage: {rc.stage}
-                          </div>
-                          <div style={{ fontSize: '11px', color: '#cbd5e1', lineHeight: 1.35 }}>
-                            {rc.trigger}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Panel 2: Recommended Tactical Actions */}
-                  <div style={{ background: 'rgba(15, 23, 42, 0.65)', border: '1px solid rgba(34, 197, 94, 0.25)', borderRadius: '12px', padding: '14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Zap size={15} color="#4ade80" />
-                        <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#86efac', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                          Tactical Interventions
-                        </span>
-                      </div>
-                      <span style={{ fontSize: '10px', background: 'rgba(34, 197, 94, 0.2)', color: '#86efac', padding: '1px 7px', borderRadius: '10px', fontWeight: 800 }}>
-                        {aiReport.recommendedActions.length} Suggested
-                      </span>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {aiReport.recommendedActions.map((act, idx) => (
-                        <div key={idx} style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', padding: '9px 10px' }}>
-                          <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#4ade80', marginBottom: '2px' }}>
-                            🎯 Target: {act.target}
-                          </div>
-                          <div style={{ fontSize: '11px', color: '#ffffff', fontWeight: 600, lineHeight: 1.35 }}>
-                            {act.action}
-                          </div>
-                          <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px', fontStyle: 'italic' }}>
-                            ⚡ Impact: {act.impact}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Panel 3: Live Shopper Intent Radar */}
-                  <div style={{ background: 'rgba(15, 23, 42, 0.65)', border: '1px solid rgba(129, 140, 248, 0.25)', borderRadius: '12px', padding: '14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Activity size={15} color="#818cf8" />
-                        <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#c7d2fe', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                          Shopper Intent Radar
-                        </span>
-                      </div>
-                      <span style={{ fontSize: '10px', background: 'rgba(129, 140, 248, 0.2)', color: '#c7d2fe', padding: '1px 7px', borderRadius: '10px', fontWeight: 800 }}>
-                        {aiReport.liveTrafficCount} Monitored
-                      </span>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 700, marginBottom: '4px' }}>
-                          <span style={{ color: '#4ade80' }}>🟢 High Purchase Intent</span>
-                          <span>{aiReport.shopperIntentBreakdown.highIntentCount} shoppers ({aiReport.shopperIntentBreakdown.highIntentPct}%)</span>
-                        </div>
-                        <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
-                          <div style={{ width: `${aiReport.shopperIntentBreakdown.highIntentPct}%`, height: '100%', background: '#22c55e' }} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 700, marginBottom: '4px' }}>
-                          <span style={{ color: '#f87171' }}>🔴 At-Risk of Dropping Off</span>
-                          <span>{aiReport.shopperIntentBreakdown.atRiskDropoffCount} shoppers ({aiReport.shopperIntentBreakdown.atRiskPct}%)</span>
-                        </div>
-                        <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
-                          <div style={{ width: `${aiReport.shopperIntentBreakdown.atRiskPct}%`, height: '100%', background: '#ef4444' }} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 700, marginBottom: '4px' }}>
-                          <span style={{ color: '#38bdf8' }}>🔵 Window / Casual Browsing</span>
-                          <span>{aiReport.shopperIntentBreakdown.windowShoppersCount} shoppers</span>
-                        </div>
-                        <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
-                          <div style={{ width: `${Math.max(10, 100 - aiReport.shopperIntentBreakdown.highIntentPct - aiReport.shopperIntentBreakdown.atRiskPct)}%`, height: '100%', background: '#38bdf8' }} />
-                        </div>
-                      </div>
-
-                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '10px', marginTop: '4px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', textAlign: 'center' }}>
-                        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '6px', borderRadius: '6px' }}>
-                          <div style={{ fontSize: '16px', fontWeight: 900, color: '#c084fc' }}>{aiReport.activeDoorstepTrials}</div>
-                          <div style={{ fontSize: '9.5px', color: '#94a3b8' }}>Doorstep Trials Active</div>
-                        </div>
-                        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '6px', borderRadius: '6px' }}>
-                          <div style={{ fontSize: '16px', fontWeight: 900, color: '#fbbf24' }}>
-                            ₹{userProfiles.filter(u => u.dropoffRisk === 'High' || u.dropoffRisk === 'Immediate Dropoff').reduce((acc, u) => acc + (u.cartTotalInr || 0), 0).toLocaleString('en-IN')}
-                          </div>
-                          <div style={{ fontSize: '9.5px', color: '#94a3b8' }}>Cart Value at Risk</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Two-Column Split Layout: Shoppers Directory Table (Left) + Live Telemetry Stream (Right) */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.8fr) minmax(360px, 1.2fr)', gap: '16px', alignItems: 'start' }}>
-                {/* LEFT: Customer Profiles Directory */}
-                <div className={styles.sectionCard} style={{ margin: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
-                    {/* Filter Pills */}
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                      <button
-                        type="button"
-                        onClick={() => setUsersFilter('all')}
-                        className={`${styles.filterBtn} ${usersFilter === 'all' ? styles.filterBtnActive : ''}`}
-                        style={{ padding: '5px 10px', fontSize: '11.5px' }}
-                      >
-                        All Shoppers ({userProfiles.length})
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setUsersFilter('online')}
-                        className={`${styles.filterBtn} ${usersFilter === 'online' ? styles.filterBtnActive : ''}`}
-                        style={{ padding: '5px 10px', fontSize: '11.5px' }}
-                      >
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
-                        Online Now ({onlineUsersCount})
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setUsersFilter('trial')}
-                        className={`${styles.filterBtn} ${usersFilter === 'trial' ? styles.filterBtnActive : ''}`}
-                        style={{ padding: '5px 10px', fontSize: '11.5px' }}
-                      >
-                        In Fitting Trial ({doorstepUsersCount})
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setUsersFilter('offline')}
-                        className={`${styles.filterBtn} ${usersFilter === 'offline' ? styles.filterBtnActive : ''}`}
-                        style={{ padding: '5px 10px', fontSize: '11.5px' }}
-                      >
-                        Offline ({userProfiles.filter(u => u.currentStatus === 'Offline').length})
-                      </button>
-                    </div>
-
-                    {/* Filter Search Input */}
-                    <div style={{ position: 'relative', width: '240px' }}>
-                      <Search size={13} color="#94a3b8" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
-                      <input
-                        type="text"
-                        value={usersSearch}
-                        onChange={(e) => setUsersSearch(e.target.value)}
-                        placeholder="Search name, phone, size..."
-                        style={{
-                          width: '100%',
-                          padding: '6px 10px 6px 30px',
-                          borderRadius: '8px',
-                          border: '1px solid #cbd5e1',
-                          fontSize: '11.5px',
-                          outline: 'none',
-                          background: '#f8fafc'
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Customer Profiles Directory Table */}
-                  <div style={{ overflowX: 'auto' }}>
-                    <table className={styles.lightTable}>
-                      <thead>
-                        <tr>
-                          <th>Shopper Profile</th>
-                          <th>Fashion Sizing</th>
-                          <th>⚠️ Drop-Off Risk &amp; Reason</th>
-                          <th>Live Status &amp; Screen</th>
-                          <th>Spend &amp; Kept Ratio</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredUserProfiles.map((u) => {
-                          const isOnline = u.currentStatus === 'Active Browsing';
-                          const isInTrial = u.currentStatus === 'In Doorstep Trial';
-
-                          return (
-                            <tr key={u.id}>
-                              <td>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                  {u.avatar ? (
-                                    <img
-                                      src={u.avatar}
-                                      alt={u.name}
-                                      style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid #cbd5e1' }}
-                                    />
-                                  ) : (
-                                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#0284c7', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '14px' }}>
-                                      {u.name.slice(0, 1)}
-                                    </div>
-                                  )}
-                                  <div>
-                                    <div style={{ fontWeight: 800, fontSize: '13px', color: '#0f172a' }}>
-                                      {u.name}
-                                    </div>
-                                    <div style={{ fontSize: '10.5px', color: '#64748b' }}>
-                                      {u.phone} · <span style={{ color: '#0284c7' }}>{u.email}</span>
-                                    </div>
-                                    <div style={{ fontSize: '9.5px', color: '#94a3b8', marginTop: '2px' }}>
-                                      📍 {u.hubZone}
-                                    </div>
-                                  </div>
-                                </div>
-                              </td>
-
-                              <td>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                                  <div style={{ display: 'flex', gap: '4px' }}>
-                                    <span style={{ fontSize: '9.5px', fontWeight: 800, background: '#eff6ff', color: '#1e40af', padding: '1px 6px', borderRadius: '4px', border: '1px solid #bfdbfe' }}>
-                                      Top: {u.topSize}
-                                    </span>
-                                    <span style={{ fontSize: '9.5px', fontWeight: 800, background: '#f5f3ff', color: '#6b21a8', padding: '1px 6px', borderRadius: '4px', border: '1px solid #ddd6fe' }}>
-                                      Bottom: {u.bottomSize}
-                                    </span>
-                                  </div>
-                                  <div style={{ display: 'flex', gap: '4px' }}>
-                                    <span style={{ fontSize: '9px', fontWeight: 700, background: '#f1f5f9', color: '#475569', padding: '1px 5px', borderRadius: '4px' }}>
-                                      Shoes: {u.footwearSize}
-                                    </span>
-                                    <span style={{ fontSize: '9px', fontWeight: 700, background: '#fef3c7', color: '#92400e', padding: '1px 5px', borderRadius: '4px' }}>
-                                      Fit: {u.preferredFit}
-                                    </span>
-                                  </div>
-                                </div>
-                              </td>
-
-                              <td>
-                                <div>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-                                    <span style={{
-                                      fontSize: '9.5px',
-                                      fontWeight: 800,
-                                      padding: '2px 7px',
-                                      borderRadius: '12px',
-                                      background: u.dropoffRisk === 'Immediate Dropoff' ? '#fee2e2' : u.dropoffRisk === 'High' ? '#ffedd5' : u.dropoffRisk === 'Medium' ? '#fef9c3' : '#dcfce7',
-                                      color: u.dropoffRisk === 'Immediate Dropoff' ? '#991b1b' : u.dropoffRisk === 'High' ? '#9a3412' : u.dropoffRisk === 'Medium' ? '#854d0e' : '#166534',
-                                      border: `1px solid ${u.dropoffRisk === 'Immediate Dropoff' ? '#fca5a5' : u.dropoffRisk === 'High' ? '#fdba74' : u.dropoffRisk === 'Medium' ? '#fde047' : '#86efac'}`
-                                    }}>
-                                      {u.dropoffRisk === 'Immediate Dropoff' ? '🚨 Immediate Back-Off' : u.dropoffRisk === 'High' ? '⚠️ High Risk' : u.dropoffRisk === 'Medium' ? '🟡 Moderate Risk' : '🟢 Low Risk'}
-                                    </span>
-                                    <span style={{ fontSize: '9.5px', color: '#64748b', fontWeight: 700 }}>
-                                      {u.funnelDropoffStage || 'Active'}
-                                    </span>
-                                  </div>
-                                  {u.cartTotalInr && u.cartTotalInr > 0 ? (
-                                    <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#dc2626' }}>
-                                      Cart: ₹{u.cartTotalInr.toLocaleString('en-IN')} ({u.cartItemCount || 1} items)
-                                    </div>
-                                  ) : null}
-                                  <div style={{ fontSize: '10px', color: '#475569', lineHeight: 1.3, maxWidth: '210px', marginTop: '2px' }}>
-                                    {u.lastHesitationReason || 'Active browsing with zero back-off friction.'}
-                                  </div>
-                                </div>
-                              </td>
-
-                              <td>
-                                <div>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                    {isOnline ? (
-                                      <span className={`${styles.statusChip} ${styles.statusLive}`} style={{ padding: '2px 7px', fontSize: '10px' }}>
-                                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-                                        Active Browsing
-                                      </span>
-                                    ) : isInTrial ? (
-                                      <span style={{ background: '#faf5ff', color: '#7e22ce', border: '1px solid #d8b4fe', padding: '2px 7px', borderRadius: '12px', fontSize: '10px', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                        <Truck size={10} /> In Doorstep Trial
-                                      </span>
-                                    ) : (
-                                      <span style={{ background: '#f1f5f9', color: '#64748b', border: '1px solid #cbd5e1', padding: '2px 7px', borderRadius: '12px', fontSize: '10px', fontWeight: 700 }}>
-                                        Offline
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#0f172a', marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '170px' }}>
-                                    {u.currentScreen}
-                                  </div>
-                                  <div style={{ fontSize: '9.5px', color: '#64748b' }}>
-                                    {u.deviceInfo} · <span style={{ color: '#0284c7' }}>{u.lastActiveAt}</span>
-                                  </div>
-                                </div>
-                              </td>
-
-                              <td>
-                                <div>
-                                  <div style={{ fontWeight: 800, fontSize: '12.5px', color: '#0f172a' }}>
-                                    ₹{u.totalSpentInr.toLocaleString('en-IN')}
-                                  </div>
-                                  <div style={{ fontSize: '10px', color: '#64748b' }}>
-                                    {u.totalOrdersCount} Orders · {u.doorstepTrialsCount} Trials
-                                  </div>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                                    <div style={{ width: '50px', height: '5px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                                      <div style={{ width: `${u.keptRatioPercentage}%`, height: '100%', background: u.keptRatioPercentage >= 80 ? '#10b981' : '#f59e0b' }} />
-                                    </div>
-                                    <span style={{ fontSize: '9.5px', fontWeight: 800, color: u.keptRatioPercentage >= 80 ? '#047857' : '#d97706' }}>
-                                      {u.keptRatioPercentage}% Kept
-                                    </span>
-                                  </div>
-                                </div>
-                              </td>
-
-                              <td>
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedCustomerModal(u)}
-                                  className={styles.btnSecondary}
-                                  style={{ padding: '5px 10px', fontSize: '11px', gap: '4px', fontWeight: 700 }}
-                                >
-                                  <Eye size={12} /> Inspect
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* RIGHT: Real-time Live Activity Telemetry Radar */}
-                <div className={styles.sectionCard} style={{ margin: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span className={styles.hubStatusLiveDot} />
-                        <h4 style={{ margin: 0, fontSize: '13.5px', fontWeight: 800, color: '#0f172a' }}>
-                          Live Activity Stream
-                        </h4>
-                      </div>
-                      <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '2px' }}>
-                        Realtime Supabase Telemetry Broadcast
-                      </div>
-                    </div>
-
-                    {/* Drop-Off Filter Toggle */}
-                    <div style={{ display: 'flex', gap: '4px' }}>
-                      <button
-                        type="button"
-                        onClick={() => setActivityFilter('all')}
-                        style={{
-                          fontSize: '10px',
-                          fontWeight: 700,
-                          padding: '3px 8px',
-                          borderRadius: '6px',
-                          border: '1px solid',
-                          background: activityFilter === 'all' ? '#0284c7' : '#ffffff',
-                          color: activityFilter === 'all' ? '#ffffff' : '#475569',
-                          borderColor: activityFilter === 'all' ? '#0284c7' : '#cbd5e1',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        All ({userActivities.length})
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setActivityFilter('dropoffs')}
-                        style={{
-                          fontSize: '10px',
-                          fontWeight: 700,
-                          padding: '3px 8px',
-                          borderRadius: '6px',
-                          border: '1px solid',
-                          background: activityFilter === 'dropoffs' ? '#ef4444' : '#ffffff',
-                          color: activityFilter === 'dropoffs' ? '#ffffff' : '#b91c1c',
-                          borderColor: activityFilter === 'dropoffs' ? '#ef4444' : '#fca5a5',
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '3px'
-                        }}
-                      >
-                        <AlertTriangle size={11} />
-                        Drop-Offs ({userActivities.filter(a => a.isDropoffSignal || a.activityType === 'CHECKOUT_BACKOUT' || a.activityType === 'CART_ABANDON' || a.activityType === 'PRICE_HESITATION' || a.activityType === 'SIZE_UNAVAILABLE').length})
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Activity List Container */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '680px', overflowY: 'auto', paddingRight: '4px' }}>
-                    {userActivities
-                      .filter(act => activityFilter === 'all' || act.isDropoffSignal || act.activityType === 'CHECKOUT_BACKOUT' || act.activityType === 'CART_ABANDON' || act.activityType === 'PRICE_HESITATION' || act.activityType === 'SIZE_UNAVAILABLE')
-                      .map((act) => {
-                      const isDropoff = act.isDropoffSignal || 
-                        act.activityType === 'CHECKOUT_BACKOUT' || 
-                        act.activityType === 'CART_ABANDON' || 
-                        act.activityType === 'PRICE_HESITATION' || 
-                        act.activityType === 'SIZE_UNAVAILABLE';
-
-                      let typeBg = '#eff6ff';
-                      let typeColor = '#1d4ed8';
-                      let typeLabel = 'Activity';
-
-                      if (isDropoff) {
-                        typeBg = '#fee2e2';
-                        typeColor = '#991b1b';
-                        typeLabel = act.activityType === 'CHECKOUT_BACKOUT' ? 'Checkout Backout' : 
-                                    act.activityType === 'SIZE_UNAVAILABLE' ? 'Size OOS Bounce' : 
-                                    act.activityType === 'PRICE_HESITATION' ? 'Price Hesitation' : 'Drop-off Signal';
-                      } else if (act.activityType === 'PRODUCT_CLICK') {
-                        typeBg = '#fff7ed';
-                        typeColor = '#c2410c';
-                        typeLabel = 'Product Click';
-                      } else if (act.activityType === 'DOORSTEP_TRIAL_START') {
-                        typeBg = '#faf5ff';
-                        typeColor = '#7e22ce';
-                        typeLabel = 'Doorstep Fitting';
-                      } else if (act.activityType === 'WISHLIST_ADD') {
-                        typeBg = '#fdf2f8';
-                        typeColor = '#be185d';
-                        typeLabel = 'Wishlist';
-                      } else if (act.activityType === 'PROFILE_EDIT') {
-                        typeBg = '#f0fdf4';
-                        typeColor = '#15803d';
-                        typeLabel = 'Profile Edit';
-                      } else if (act.activityType === 'PAGE_VIEW') {
-                        typeBg = '#ecfeff';
-                        typeColor = '#0e7490';
-                        typeLabel = 'Browse View';
-                      }
-
-                      return (
-                        <div
-                          key={act.id}
-                          style={{
-                            background: isDropoff ? '#fff5f5' : '#ffffff',
-                            border: `1px solid ${isDropoff ? '#fca5a5' : '#e2e8f0'}`,
-                            borderRadius: '10px',
-                            padding: '10px 12px',
-                            boxShadow: isDropoff ? '0 2px 6px rgba(239, 68, 68, 0.08)' : '0 1px 3px rgba(0,0,0,0.03)'
-                          }}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <span style={{ fontSize: '9.5px', fontWeight: 800, background: typeBg, color: typeColor, padding: '1px 6px', borderRadius: '4px' }}>
-                                {typeLabel}
-                              </span>
-                              <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#0f172a' }}>
-                                {act.userName}
-                              </span>
-                            </div>
-                            <span style={{ fontSize: '10px', color: '#94a3b8' }}>
-                              {act.timestamp}
-                            </span>
-                          </div>
-
-                          <div style={{ fontSize: '11.5px', color: isDropoff ? '#991b1b' : '#334155', fontWeight: 700, lineHeight: 1.4 }}>
-                            {act.title}
-                          </div>
-
-                          {/* Drop-off Diagnosis Callout */}
-                          {isDropoff && (act.hesitationReason || act.aiRiskScore) && (
-                            <div style={{
-                              background: '#fef2f2',
-                              borderLeft: '3px solid #ef4444',
-                              padding: '6px 8px',
-                              borderRadius: '0 6px 6px 0',
-                              marginTop: '6px',
-                              fontSize: '10.5px'
-                            }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                                <span style={{ fontWeight: 800, color: '#b91c1c' }}>
-                                  🚨 Back-Off Reason:
-                                </span>
-                                {act.aiRiskScore ? (
-                                  <span style={{ fontSize: '9.5px', fontWeight: 800, color: '#dc2626', background: '#fee2e2', padding: '1px 5px', borderRadius: '3px' }}>
-                                    Risk: {act.aiRiskScore}/100
-                                  </span>
-                                ) : null}
-                              </div>
-                              <div style={{ color: '#7f1d1d', lineHeight: 1.35 }}>
-                                {act.hesitationReason}
-                              </div>
-                              {act.dwellSeconds ? (
-                                <div style={{ fontSize: '9.5px', color: '#991b1b', marginTop: '3px', fontWeight: 600 }}>
-                                  ⏱️ Dwell time on screen: {act.dwellSeconds}s (Stage: {act.dropoffStage || 'Checkout'})
-                                </div>
-                              ) : null}
-                            </div>
-                          )}
-
-                          {act.details && Object.keys(act.details).length > 0 && !isDropoff && (
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '6px' }}>
-                              {Object.entries(act.details).map(([k, v]) => (
-                                <span key={k} style={{ fontSize: '9.5px', background: '#f8fafc', border: '1px solid #e2e8f0', padding: '1px 6px', borderRadius: '4px', color: '#475569' }}>
-                                  <strong>{k}:</strong> {String(v)}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid #f1f5f9', fontSize: '10px', color: '#64748b' }}>
-                            <span>📱 {act.device || 'Mobile App'}</span>
-                            <span style={{ color: isDropoff ? '#b91c1c' : '#0284c7', fontWeight: 600 }}>{act.screen || 'App'}</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 8: MASTER DATABASE MATRIX & TRACKING TABLES (27 TABLES) */}
-          {activeTab === 'database' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {/* Database Hero Summary Card */}
-              <div
-                style={{
-                  background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                  borderRadius: '18px',
-                  padding: '24px 28px',
-                  color: '#ffffff',
-                  boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.3)',
-                  border: '1px solid rgba(255,255,255,0.1)'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-                  <div style={{ maxWidth: '640px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <span style={{ background: '#38bdf8', color: '#0f172a', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', padding: '2px 8px', borderRadius: '6px' }}>
-                        PostgreSQL · Supabase Realtime
-                      </span>
-                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-                        Project: <code>eswnhehlnzasiaybjikh</code> · Hub: AMD-DARKSTORE-01
-                      </span>
-                    </div>
-
-                    <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '0 0 8px 0', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <Database size={24} color="#38bdf8" /> Master System Database &amp; Tracking Tables Matrix
-                    </h2>
-                    <p style={{ margin: 0, fontSize: '13px', color: '#cbd5e1', lineHeight: 1.5 }}>
-                      Comprehensive audit and live synchronization status of all 27 PostgreSQL database tables covering darkstore physical racks, wholesale settlements, margin ledgers, customer sizing profiles, hesitation signals, and AI pulse diagnostics.
-                    </p>
-                  </div>
-
-                  {/* Quick Action Buttons */}
-                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    <button
-                      type="button"
-                      onClick={fetchDbStatus}
-                      disabled={isDbStatusLoading}
                       className={styles.btnSecondary}
-                      style={{
-                        background: 'rgba(255,255,255,0.1)',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        color: '#ffffff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '10px 16px',
-                        fontWeight: 700
-                      }}
+                      style={{ padding: '8px 12px', fontSize: '12px' }}
                     >
-                      <RefreshCw size={14} className={isDbStatusLoading ? 'animate-spin' : ''} />
-                      {isDbStatusLoading ? 'Scanning Tables...' : 'Re-Scan DB Live'}
+                      <KeyRound size={13} /> AI Key
                     </button>
+                  </>
+                )}
 
+                {activeTab === 'database' && (
+                  <>
                     <button
                       type="button"
                       onClick={copyCompleteSql}
                       className={styles.btnPrimary}
-                      style={{
-                        background: copiedSql ? '#16a34a' : 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)',
-                        border: 'none',
-                        color: '#ffffff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '10px 18px',
-                        fontWeight: 800,
-                        boxShadow: '0 4px 14px rgba(2, 132, 199, 0.4)'
-                      }}
+                      style={{ padding: '8px 14px', fontSize: '12px' }}
                     >
-                      {copiedSql ? <Check size={16} /> : <Copy size={16} />}
-                      {copiedSql ? 'Schema Copied!' : 'Copy Master SQL Schema'}
+                      <Copy size={14} /> {copiedSql ? '✓ Copied SQL!' : 'Copy Migration SQL'}
                     </button>
-
-                    <a
-                      href="https://supabase.com/dashboard/project/eswnhehlnzasiaybjikh/sql/new"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.btnPrimary}
-                      style={{
-                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                        border: 'none',
-                        color: '#ffffff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '10px 18px',
-                        fontWeight: 800,
-                        textDecoration: 'none',
-                        boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)'
-                      }}
+                    <button
+                      type="button"
+                      onClick={fetchDbStatus}
+                      className={styles.btnSecondary}
+                      style={{ padding: '8px 12px', fontSize: '12px' }}
                     >
-                      <ExternalLink size={16} /> Open Supabase SQL Editor
-                    </a>
-                  </div>
-                </div>
-
-                {/* Database Metrics Grid */}
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                    gap: '12px',
-                    marginTop: '22px',
-                    paddingTop: '20px',
-                    borderTop: '1px solid rgba(255,255,255,0.12)'
-                  }}
-                >
-                  <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '12px 16px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '26px', fontWeight: 900, color: '#38bdf8' }}>
-                      {dbStatusData?.summary.totalTables ?? 27}
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
-                      Defined Tables
-                    </div>
-                  </div>
-
-                  <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '12px 16px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '26px', fontWeight: 900, color: '#4ade80' }}>
-                      {dbStatusData?.summary.onlineCount ?? '...'}
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
-                      Live in Supabase
-                    </div>
-                  </div>
-
-                  <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '12px 16px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '26px', fontWeight: 900, color: (dbStatusData?.summary.missingCount ?? 0) > 0 ? '#f87171' : '#4ade80' }}>
-                      {dbStatusData?.summary.missingCount ?? '...'}
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
-                      Pending Creation
-                    </div>
-                  </div>
-
-                  <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '12px 16px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '26px', fontWeight: 900, color: '#fbbf24' }}>
-                      {dbStatusData?.summary.healthPercentage ? `${dbStatusData.summary.healthPercentage}%` : '...'}
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
-                      Schema Coverage
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Execution Guidance Notice */}
-              {dbStatusData && dbStatusData.summary.missingCount > 0 && (
-                <div
-                  style={{
-                    background: '#fffbeb',
-                    border: '1px solid #fde68a',
-                    borderRadius: '14px',
-                    padding: '16px 20px',
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '14px'
-                  }}
-                >
-                  <AlertTriangle size={22} color="#d97706" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 800, color: '#92400e' }}>
-                      {dbStatusData.summary.missingCount} Tables Awaiting 1-Time SQL Execution in Supabase
-                    </h4>
-                    <p style={{ margin: 0, fontSize: '12.5px', color: '#b45309', lineHeight: 1.5 }}>
-                      The frontend uses automatic local fallback caching for all operations, but to persist tracking, settlements, and hesitation logs permanently on your live Postgres cluster:
-                      <strong> Click &apos;Copy Master SQL Schema&apos;</strong>, click <strong>&apos;Open Supabase SQL Editor&apos;</strong>, paste the SQL, and click <strong>&apos;Run&apos;</strong>. Then hit &apos;Re-Scan DB Live&apos; to verify!
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Section Filters */}
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b' }}>Filter by Domain:</span>
-                {[
-                  'all',
-                  'Darkstore Operations',
-                  'Brand Ecosystem',
-                  'Catalog & Inventory',
-                  'Fleet & Dispatch',
-                  '30-Min Fitting Trial',
-                  'Customer Profiles & Tracking',
-                  'AI Telemetry & Diagnostics',
-                  'Wholesale & Financials',
-                  'CRM & Operations'
-                ].map((sec) => (
-                  <button
-                    key={sec}
-                    type="button"
-                    onClick={() => setDbSectionFilter(sec)}
-                    style={{
-                      background: dbSectionFilter === sec ? '#0f172a' : '#f1f5f9',
-                      color: dbSectionFilter === sec ? '#ffffff' : '#475569',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      padding: '6px 12px',
-                      fontSize: '11.5px',
-                      fontWeight: 700,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {sec === 'all' ? 'All (27 Tables)' : sec}
-                  </button>
-                ))}
-              </div>
-
-              {/* Tables Matrix List */}
-              <div
-                style={{
-                  background: '#ffffff',
-                  borderRadius: '16px',
-                  border: '1px solid #e2e8f0',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                  overflow: 'hidden'
-                }}
-              >
-                <div style={{ padding: '16px 20px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ fontWeight: 800, fontSize: '14px', color: '#0f172a' }}>
-                    PostgreSQL Tables Specification &amp; Telemetry Status
-                  </div>
-                  <span style={{ fontSize: '11.5px', color: '#64748b' }}>
-                    PostgREST REST API v1 · Public RLS Enabled
-                  </span>
-                </div>
-
-                <div style={{ overflowX: 'auto' }}>
-                  <table className={styles.table}>
-                    <thead>
-                      <tr>
-                        <th>Table Name</th>
-                        <th>Domain / Section</th>
-                        <th>Description &amp; Purpose</th>
-                        <th>Remote Status</th>
-                        <th>Rows in DB</th>
-                        <th>RLS &amp; Realtime</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(dbStatusData?.tables || [])
-                        .filter(t => dbSectionFilter === 'all' || t.section === dbSectionFilter)
-                        .map((tbl) => (
-                          <tr key={tbl.table}>
-                            <td>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <Database size={15} color={tbl.exists ? '#0284c7' : '#94a3b8'} />
-                                <code style={{ fontSize: '12.5px', fontWeight: 800, color: tbl.exists ? '#0f172a' : '#64748b' }}>
-                                  {tbl.table}
-                                </code>
-                              </div>
-                            </td>
-
-                            <td>
-                              <span style={{ fontSize: '11px', fontWeight: 700, background: '#f1f5f9', color: '#334155', padding: '2px 8px', borderRadius: '6px' }}>
-                                {tbl.section}
-                              </span>
-                            </td>
-
-                            <td style={{ fontSize: '11.5px', color: '#64748b', maxWidth: '320px' }}>
-                              {tbl.description}
-                            </td>
-
-                            <td>
-                              {tbl.exists ? (
-                                <span className={`${styles.badgePill} ${styles.badgeGreen}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                  <CheckCircle2 size={12} color="#16a34a" /> Online
-                                </span>
-                              ) : (
-                                <span className={`${styles.badgePill} ${styles.badgeAmber}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                  <Clock size={12} color="#d97706" /> Pending SQL Run
-                                </span>
-                              )}
-                            </td>
-
-                            <td>
-                              <strong style={{ fontSize: '12px', color: tbl.exists ? '#0f172a' : '#94a3b8' }}>
-                                {tbl.exists ? `${tbl.rowCount} rows` : '—'}
-                              </strong>
-                            </td>
-
-                            <td>
-                              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10px', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                                  🛡️ RLS Public
-                                </span>
-                                {[
-                                  'drobe_trial_orders',
-                                  'drobe_products',
-                                  'drobe_brands',
-                                  'drobe_runners',
-                                  'drobe_user_profiles',
-                                  'drobe_user_activities',
-                                  'drobe_user_hesitation_logs',
-                                  'drobe_ai_telemetry_reports'
-                                ].includes(tbl.table) && (
-                                  <span style={{ fontSize: '10px', background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                                    ⚡ Realtime
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
+                      <RefreshCw size={13} className={isDbStatusLoading ? styles.spinAnimation : ''} /> Refresh Health
+                    </button>
+                  </>
+                )}
               </div>
             </div>
-          )}
+
+            {/* ADAPTIVE LIVE KPI METRICS STRIP */}
+            <div className={styles.domainKpiGrid}>
+              {activeTab === 'inwarding' && (
+                <>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Parcels to Inward</span>
+                      <Boxes size={14} color="#0284c7" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: pendingInwardsCount > 0 ? '#0284c7' : '#0f172a' }}>
+                      <NumberFlow value={pendingInwardsCount} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Inspect and assign shelf</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Live Shipments</span>
+                      <Truck size={14} color="#6366f1" />
+                    </div>
+                    <div className={styles.domainKpiVal}>
+                      <NumberFlow value={inbounds.length} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Partner consignments</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Shelf Capacity</span>
+                      <Layers size={14} color="#10b981" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#16a34a' }}>
+                      34 / 96
+                    </div>
+                    <div className={styles.domainKpiSub}>35% darkstore occupancy</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Inward SLA</span>
+                      <Clock size={14} color="#d97706" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#d97706' }}>
+                      98.6%
+                    </div>
+                    <div className={styles.domainKpiSub}>Within 30-min window</div>
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'inventory' && (
+                <>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Live SKUs</span>
+                      <Barcode size={14} color="#16a34a" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#16a34a' }}>
+                      <NumberFlow value={liveSkusCount} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Allocated on DR shelves</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>In-Stock Units</span>
+                      <Package size={14} color="#0284c7" />
+                    </div>
+                    <div className={styles.domainKpiVal}>
+                      <NumberFlow value={products.reduce((acc, p) => acc + ((p as any).stock_count || p.inwardUnits || 0), 0)} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Garments ready for dispatch</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Consignment Valuation</span>
+                      <DollarSign size={14} color="#6366f1" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#0284c7' }}>
+                      ₹12,48,500
+                    </div>
+                    <div className={styles.domainKpiSub}>Wholesale inventory value</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Active Brands</span>
+                      <Store size={14} color="#7e22ce" />
+                    </div>
+                    <div className={styles.domainKpiVal}>
+                      <NumberFlow value={brands.filter(b => b.status === 'Approved' || (b.status as any) === 'approved').length} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Supplying merchandise</div>
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'shelves' && (
+                <>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Active Racks</span>
+                      <Layers size={14} color="#0284c7" />
+                    </div>
+                    <div className={styles.domainKpiVal}>6 Racks</div>
+                    <div className={styles.domainKpiSub}>Zones A, B, and C</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Configured Shelves</span>
+                      <Boxes size={14} color="#6366f1" />
+                    </div>
+                    <div className={styles.domainKpiVal}>24 Shelves</div>
+                    <div className={styles.domainKpiSub}>4 vertical tiers per rack</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Occupied Bins</span>
+                      <CheckCircle2 size={14} color="#16a34a" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#16a34a' }}>34 / 96</div>
+                    <div className={styles.domainKpiSub}>35% utilized capacity</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Pick SLA</span>
+                      <Zap size={14} color="#d97706" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#d97706' }}>1.8 mins</div>
+                    <div className={styles.domainKpiSub}>Average runner retrieval</div>
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'trials' && (
+                <>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Active Doorstep Trials</span>
+                      <Truck size={14} color="#7e22ce" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#7e22ce' }}>
+                      <NumberFlow value={activeTrialsCount} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Runners waiting at doors</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Out for Fitting</span>
+                      <Activity size={14} color="#0284c7" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#0284c7' }}>
+                      <NumberFlow value={trialOrders.filter(o => (o.status as any) === 'out_for_trial' || o.status === 'Out for 30-Min Delivery' || o.status.includes('Doorstep Fitting')).length} />
+                    </div>
+                    <div className={styles.domainKpiSub}>In-transit or fitting</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Instant Restocked</span>
+                      <RotateCcw size={14} color="#f59e0b" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#d97706' }}>
+                      <NumberFlow value={trialOrders.filter(o => (o.status as any) === 'returned' || o.status.includes('Returned on Spot') || o.status === 'Restocked to Warehouse Shelf').length} />
+                    </div>
+                    <div className={styles.domainKpiSub}>On-spot returns added to stock</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Delivered & Kept</span>
+                      <CheckCircle2 size={14} color="#16a34a" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#16a34a' }}>
+                      <NumberFlow value={trialOrders.filter(o => (o.status as any) === 'delivered' || o.status.includes('Kept on Spot')).length} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Converted purchases</div>
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'approvals' && (
+                <>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Awaiting Approval</span>
+                      <AlertCircle size={14} color="#d97706" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: waitingBrandsCount > 0 ? '#d97706' : '#0f172a' }}>
+                      <NumberFlow value={waitingBrandsCount} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Urgent compliance review</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Approved Brands</span>
+                      <ShieldCheck size={14} color="#16a34a" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#16a34a' }}>
+                      <NumberFlow value={approvedBrandsCount} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Active on customer app</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Total Registered</span>
+                      <Store size={14} color="#0284c7" />
+                    </div>
+                    <div className={styles.domainKpiVal}>
+                      <NumberFlow value={brands.length} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Partner entities</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Review SLA</span>
+                      <Clock size={14} color="#6366f1" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#6366f1' }}>&lt; 4 Hours</div>
+                    <div className={styles.domainKpiSub}>Target verification speed</div>
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'settlement' && (
+                <>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Advance GMV Collected</span>
+                      <Wallet size={14} color="#0284c7" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#0284c7' }}>
+                      ₹<NumberFlow value={financialLedger.totalAdvanceGMV} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Pre-funded before dispatch</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Instant UPI Refunds</span>
+                      <RotateCcw size={14} color="#d97706" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#d97706' }}>
+                      ₹<NumberFlow value={financialLedger.totalInstantRefunds} />
+                    </div>
+                    <div className={styles.domainKpiSub}>{financialLedger.totalUnitsReturned} returned pieces credited</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Net Wholesale Payable</span>
+                      <Receipt size={14} color="#6366f1" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#6366f1' }}>
+                      ₹<NumberFlow value={financialLedger.totalBrandPayoutsDue} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Payable to brand partners</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Drobe 5% Margin</span>
+                      <TrendingUp size={14} color="#16a34a" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#16a34a' }}>
+                      ₹<NumberFlow value={financialLedger.totalDrobeMarkupEarnings} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Net commission retained</div>
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'users' && (
+                <>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Active Shoppers</span>
+                      <Radio size={14} color="#16a34a" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#16a34a' }}>
+                      <NumberFlow value={onlineUsersCount} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Realtime live sessions</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Total Shopper Profiles</span>
+                      <Users size={14} color="#0284c7" />
+                    </div>
+                    <div className={styles.domainKpiVal}>
+                      <NumberFlow value={totalRegisteredUsers} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Ahmedabad customers</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Telemetry Events</span>
+                      <Activity size={14} color="#6366f1" />
+                    </div>
+                    <div className={styles.domainKpiVal}>
+                      <NumberFlow value={userActivities.length} />
+                    </div>
+                    <div className={styles.domainKpiSub}>Hesitation & click traces</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>AI Intelligence</span>
+                      <Sparkles size={14} color="#7e22ce" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#7e22ce' }}>Active</div>
+                    <div className={styles.domainKpiSub}>Heuristic demand engine</div>
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'database' && (
+                <>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Database Tables</span>
+                      <Database size={14} color="#0284c7" />
+                    </div>
+                    <div className={styles.domainKpiVal}>
+                      <NumberFlow value={dbStatusData?.summary?.totalTables || 27} />
+                    </div>
+                    <div className={styles.domainKpiSub}>DROBE production schema</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Operational Tables</span>
+                      <CheckCircle2 size={14} color="#16a34a" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#16a34a' }}>
+                      <NumberFlow value={dbStatusData?.summary?.onlineCount || 27} /> / {dbStatusData?.summary?.totalTables || 27}
+                    </div>
+                    <div className={styles.domainKpiSub}>Supabase PostgreSQL connected</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Realtime Channels</span>
+                      <Zap size={14} color="#f59e0b" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#d97706' }}>6 Active</div>
+                    <div className={styles.domainKpiSub}>Postgres change listeners</div>
+                  </div>
+                  <div className={styles.domainKpiCard}>
+                    <div className={styles.domainKpiLabel}>
+                      <span>Schema Integrity</span>
+                      <ShieldCheck size={14} color="#10b981" />
+                    </div>
+                    <div className={styles.domainKpiVal} style={{ color: '#10b981' }}>
+                      <NumberFlow value={dbStatusData?.summary?.healthPercentage || 100} />%
+                    </div>
+                    <div className={styles.domainKpiSub}>Foreign keys & RLS active</div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          <AnimatePresence mode="wait">
+<motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+            >
+              {activeTab === 'inwarding' && (
+                <StockInwardingTab
+                  inbounds={inbounds}
+                  products={products}
+                  brands={brands}
+                  onOpenInwardModal={handleOpenInwardModal}
+                  onMarkArrived={handleMarkArrived}
+                  onDirectAutoInward={handleDirectAutoInward}
+                  onSync={() => syncDarkstoreWithSupabase().then(() => loadAllData())}
+                />
+              )}
+
+              {activeTab === 'inventory' && (
+                <SkuInventoryTab
+                  products={products}
+                  brands={brands}
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                  inventoryFilter={inventoryFilter}
+                  onFilterChange={(cat: string) => setInventoryFilter(cat as any)}
+                  brandFilter={brandFilter}
+                  onBrandFilterChange={(b: string) => setBrandFilter(b as any)}
+                  onAdjustStock={handleAdjustStock}
+                  onOpenBarcodeModal={handleOpenBarcodeModal}
+                  onOpenInwardModal={handleOpenInwardModal}
+                />
+              )}
+
+              {activeTab === 'shelves' && (
+                <FloorPlanTab
+                  products={products}
+                  onOpenInwardModal={handleOpenInwardModal}
+                />
+              )}
+
+              {activeTab === 'approvals' && (
+                <BrandApprovalsTab
+                  brands={brands}
+                  onSelectBrandForDossier={setSelectedBrandForDossier}
+                  onSelectBrandForProducts={setSelectedBrandForProducts}
+                  onApproveBrand={handleApproveBrand}
+                  onRejectBrand={handleRejectBrand}
+                />
+              )}
+
+              {activeTab === 'trials' && (
+                <DoorstepTrialsTab
+                  trialOrders={trialOrders}
+                  ordersFilter={ordersFilter}
+                  onFilterChange={setOrdersFilter}
+                  ordersSearch={ordersSearch}
+                  onSearchChange={setOrdersSearch}
+                  onOrderAction={handleOrderAction}
+                  onMarkDelivered={handleMarkDelivered}
+                  onOpenReturnModal={setReturningOrderModal}
+                />
+              )}
+
+              {activeTab === 'settlement' && (
+                <WholesaleSettlementTab
+                  financialLedger={financialLedger as any}
+                  brands={brands}
+                  settledBrands={Object.keys(settledBrands || {})}
+                  settlementSearch={settlementSearch}
+                  onSearchChange={setSettlementSearch}
+                  settlementBrandFilter={settlementBrandFilter}
+                  onFilterChange={setSettlementBrandFilter}
+                  onOpenPayoutModal={setSettlementModalBrand}
+                  onExportCsv={handleExportSettlementCsv}
+                  onSyncLedger={() => {
+                    syncDarkstoreWithSupabase().then(() => loadAllData());
+                    triggerToast('Syncing latest settlements with live Supabase database...');
+                  }}
+                />
+              )}
+
+              {activeTab === 'users' && (
+                <ShopperTelemetryTab
+                  userProfiles={userProfiles}
+                  userActivities={userActivities}
+                  usersFilter={usersFilter}
+                  onFilterChange={setUsersFilter}
+                  usersSearch={usersSearch}
+                  onSearchChange={setUsersSearch}
+                  onSelectCustomer={setSelectedCustomerModal}
+                  aiReport={aiReport}
+                  aiCountdown={aiCountdown}
+                  isAiGenerating={isAiGenerating}
+                  onRunAISynthesis={runAIShopperSynthesis}
+                  onOpenCopilot={() => setCopilotModalOpen(true)}
+                  onOpenApiKey={() => setApiKeyModalOpen(true)}
+                  onExportUsersCsv={handleExportUsersCsv}
+                />
+              )}
+
+              {activeTab === 'database' && (
+                <DatabaseMatrixTab
+                  dbStatusData={dbStatusData}
+                  isDbStatusLoading={isDbStatusLoading}
+                  dbSectionFilter={dbSectionFilter}
+                  onSectionFilterChange={setDbSectionFilter}
+                  copiedSql={copiedSql}
+                  onCopySql={copyCompleteSql}
+                  onRefresh={fetchDbStatus}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 
@@ -4802,7 +2358,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                   <div key={i} className={styles.barcodeLine} style={{ width: `${w * 1.8}px` }} />
                 ))}
               </div>
-              <div style={{ fontFamily: 'monospace', fontSize: '11px', color: '#475569', letterSpacing: '0.15em', fontWeight: 700 }}>
+              <div style={{ fontFamily: 'var(--font-apple-mono)', fontSize: '11px', color: '#475569', letterSpacing: '0.15em', fontWeight: 700 }}>
                 *{selectedProductForBarcode.sku || 'DR1'}*AMD*
               </div>
 
@@ -4978,131 +2534,113 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
               </div>
 
               {filteredCurrentBrandProducts.length > 0 ? (
-                <div style={{ overflowX: 'auto' }}>
-                  <table className={styles.lightTable}>
-                    <thead>
-                      <tr>
-                        <th>Product Details</th>
-                        <th>Category</th>
-                        <th>Wholesale vs Selling Price (Markup)</th>
-                        <th>Sizes Available</th>
-                        <th>Inward Stock</th>
-                        <th>Shelf Location</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredCurrentBrandProducts.map((p) => {
-                        const img = (p.images && p.images[0]) || p.thumbnail;
-                        return (
-                          <tr key={p.id}>
-                            <td>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                {img ? (
-                                  <img 
-                                    src={img} 
-                                    alt={p.name}
-                                    style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e2e8f0' }}
-                                  />
-                                ) : (
-                                  <div style={{ width: '42px', height: '42px', borderRadius: '8px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
-                                    <Package size={18} />
-                                  </div>
-                                )}
-                                <div>
-                                  <div style={{ fontWeight: 700, fontSize: '12.5px', color: '#0f172a' }}>{p.name}</div>
-                                  <div style={{ fontSize: '10.5px', color: '#64748b' }}>
-                                    ID: <code>{p.id}</code> · SKU: <strong>{p.sku || `DR-${p.id}`}</strong>
-                                  </div>
-                                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px', maxHeight: '55vh', overflowY: 'auto', padding: '4px' }}>
+                  {filteredCurrentBrandProducts.map((p) => {
+                    const img = (p.images && p.images[0]) || p.thumbnail;
+                    const bp = getProductPricingInfo(p);
+                    return (
+                      <div 
+                        key={p.id}
+                        style={{
+                          background: '#ffffff',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '14px',
+                          padding: '14px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          gap: '10px',
+                          boxShadow: '0 1px 4px rgba(15, 23, 42, 0.04)'
+                        }}
+                      >
+                        <div>
+                          <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
+                            {img ? (
+                              <img 
+                                src={img} 
+                                alt={p.name}
+                                style={{ width: '44px', height: '44px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e2e8f0', flexShrink: 0 }}
+                              />
+                            ) : (
+                              <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', flexShrink: 0 }}>
+                                <Package size={20} />
                               </div>
-                            </td>
-                            <td>
-                              <span style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 600 }}>
+                            )}
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ fontWeight: 800, fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
+                              <div style={{ fontSize: '11px', color: '#64748b' }}>
+                                SKU: <strong style={{ fontFamily: 'var(--font-apple-mono)' }}>{p.sku || `DR-${p.id}`}</strong>
+                              </div>
+                              <span style={{ display: 'inline-block', marginTop: '4px', background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 600, color: '#475569' }}>
                                 {p.category || 'Apparel'}
                               </span>
-                            </td>
-                            <td>
-                              {(() => {
-                                const bp = getProductPricingInfo(p);
-                                return (
-                                  <div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                      <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '13px' }}>
-                                        ₹{bp.sellingPrice}
-                                      </span>
-                                      <span style={{ fontSize: '9.5px', fontWeight: 800, background: '#ecfdf5', color: '#047857', padding: '1px 5px', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
-                                        {bp.formattedPercentage}
-                                      </span>
-                                    </div>
-                                    <div style={{ fontSize: '10px', color: '#64748b', marginTop: '2px' }}>
-                                      Base: <strong>₹{bp.brandBasePrice}</strong> (+₹{bp.markupAmount})
-                                    </div>
-                                  </div>
-                                );
-                              })()}
-                            </td>
-                            <td>
-                              <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                                {(p.sizes && p.sizes.length > 0 ? p.sizes : [p.volume || 'M']).map((sz: string, sIdx: number) => (
-                                  <span key={sIdx} style={{ background: '#e2e8f0', color: '#334155', fontSize: '10px', fontWeight: 700, padding: '1px 5px', borderRadius: '4px' }}>
-                                    {sz}
-                                  </span>
-                                ))}
+                            </div>
+                          </div>
+
+                          {/* Pricing breakdown */}
+                          <div style={{ background: '#f8fafc', padding: '8px 10px', borderRadius: '8px', marginBottom: '8px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: '11px', color: '#64748b' }}>Retail Price:</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '13px' }}>₹{bp.sellingPrice}</span>
+                                <span style={{ fontSize: '9.5px', fontWeight: 800, background: '#ecfdf5', color: '#047857', padding: '1px 5px', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
+                                  {bp.formattedPercentage}
+                                </span>
                               </div>
-                            </td>
-                            <td>
-                              <div style={{ fontWeight: 700, fontSize: '12px', color: '#16a34a' }}>
-                                {p.inwardUnits || 32} pcs inwarded
-                              </div>
-                              <div style={{ fontSize: '10.5px', color: '#64748b' }}>
-                                {p.inventory || 40} pcs declared
-                              </div>
-                            </td>
-                            <td>
-                              <div style={{ fontWeight: 700, color: '#0284c7', fontSize: '11.5px' }}>
-                                {p.warehouseLocation?.code || 'AMD-RA01-S1-B01'}
-                              </div>
-                              <div style={{ fontSize: '10px', color: '#64748b' }}>
-                                {p.warehouseLocation?.rack || 'Rack A-01'}
-                              </div>
-                            </td>
-                            <td>
-                              <span className={`${styles.statusChip} ${styles.statusLive}`}>
-                                <CheckCircle2 size={11} /> Inwarded & Live
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#64748b', marginTop: '2px' }}>
+                              <span>Wholesale Base:</span>
+                              <span>₹{bp.brandBasePrice} (+₹{bp.markupAmount} margin)</span>
+                            </div>
+                          </div>
+
+                          {/* Shelf & Stock */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '8px' }}>
+                            <span style={{ color: '#16a34a', fontWeight: 700 }}>
+                              {p.inwardUnits || 32} pcs in stock
+                            </span>
+                            <span style={{ color: '#0284c7', fontWeight: 700, fontFamily: 'var(--font-apple-mono)' }}>
+                              {p.warehouseLocation?.code || 'AMD-RA01-S1'}
+                            </span>
+                          </div>
+
+                          {/* Sizes */}
+                          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                            {(p.sizes && p.sizes.length > 0 ? p.sizes : [p.volume || 'M']).map((sz: string, sIdx: number) => (
+                              <span key={sIdx} style={{ background: '#e2e8f0', color: '#334155', fontSize: '10px', fontWeight: 700, padding: '1px 5px', borderRadius: '4px' }}>
+                                {sz}
                               </span>
-                            </td>
-                            <td>
-                              <div style={{ display: 'flex', gap: '6px' }}>
-                                <Link
-                                  href={`/product/${p.id}`}
-                                  target="_blank"
-                                  className={styles.btnSecondary}
-                                  style={{ padding: '4px 8px', fontSize: '10.5px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '3px' }}
-                                  title="View product on storefront"
-                                >
-                                  <ExternalLink size={11} /> Store
-                                </Link>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedProductForBarcode(p);
-                                    setBarcodeModalOpen(true);
-                                  }}
-                                  className={styles.btnSecondary}
-                                  style={{ padding: '4px 8px', fontSize: '10.5px' }}
-                                  title="Print thermal barcode label"
-                                >
-                                  <Barcode size={11} /> Barcode
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div style={{ display: 'flex', gap: '6px', paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
+                          <Link
+                            href={`/product/${p.id}`}
+                            target="_blank"
+                            className={styles.btnSecondary}
+                            style={{ flex: 1, padding: '6px 8px', fontSize: '11px', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                            title="View product on storefront"
+                          >
+                            <ExternalLink size={12} /> Storefront
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedProductForBarcode(p);
+                              setBarcodeModalOpen(true);
+                            }}
+                            className={styles.btnSecondary}
+                            style={{ flex: 1, padding: '6px 8px', fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                            title="Print thermal barcode label"
+                          >
+                            <Barcode size={12} /> Barcode
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div style={{ textAlign: 'center', padding: '36px 0', color: '#94a3b8' }}>
@@ -5603,7 +3141,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                   borderRadius: '10px',
                   border: '1px solid #cbd5e1',
                   fontSize: '12px',
-                  fontFamily: 'inherit',
+                  fontFamily: 'var(--font-apple-text)',
                   resize: 'none'
                 }}
               />
@@ -5717,7 +3255,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                     borderRadius: '10px',
                     border: '1px solid #cbd5e1',
                     fontSize: '13px',
-                    fontFamily: 'monospace',
+                    fontFamily: 'var(--font-apple-mono)',
                     fontWeight: 700,
                     background: '#ffffff',
                     color: '#0f172a'
@@ -6167,7 +3705,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                       borderRadius: '10px',
                       border: '1px solid #cbd5e1',
                       fontSize: '13px',
-                      fontFamily: 'monospace',
+                      fontFamily: 'var(--font-apple-mono)',
                       background: '#ffffff',
                       color: '#0f172a'
                     }}
@@ -6306,7 +3844,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 8px #22c55e' }} />
                 <span><strong>Live Context:</strong> Ahmedabad Hub · {trialOrders.length} Orders · {userProfiles.length} Shoppers · {products.length} SKUs</span>
               </div>
-              <span style={{ fontSize: '10.5px', color: '#76b900', fontFamily: 'monospace', fontWeight: 700 }}>
+              <span style={{ fontSize: '10.5px', color: '#76b900', fontFamily: 'var(--font-apple-mono)', fontWeight: 700 }}>
                 Temp: 1.0 · Top-P: 0.95
               </span>
             </div>
@@ -6373,7 +3911,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                     background: '#1e293b',
                     color: '#f8fafc',
                     fontSize: '13px',
-                    fontFamily: 'system-ui, -apple-system, sans-serif',
+                    fontFamily: 'var(--font-apple-text)',
                     resize: 'vertical',
                     outline: 'none',
                     boxSizing: 'border-box'
@@ -6487,7 +4025,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                   lineHeight: '1.65',
                   color: '#f1f5f9',
                   whiteSpace: 'pre-wrap',
-                  fontFamily: 'system-ui, -apple-system, sans-serif'
+                  fontFamily: 'var(--font-apple-text)'
                 }}>
                   {copilotResult.content}
                 </div>
@@ -6530,7 +4068,7 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
                         fontSize: '12px',
                         lineHeight: '1.6',
                         color: '#94a3b8',
-                        fontFamily: 'monospace',
+                        fontFamily: 'var(--font-apple-mono)',
                         whiteSpace: 'pre-wrap',
                         maxHeight: '320px',
                         overflowY: 'auto'
@@ -6546,12 +4084,6 @@ Catalog SKUs: ${products.length} products across Zone A, Zone B, Zone C, Zone D`
         </div>
       )}
 
-      {/* FLOATING TOAST NOTIFICATION */}
-      {toastMessage && (
-        <div className={styles.adminToast}>
-          {toastMessage}
-        </div>
-      )}
     </div>
   );
 }

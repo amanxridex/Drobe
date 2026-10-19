@@ -5,6 +5,7 @@ import DesktopWrapper from '@/components/DesktopWrapper';
 import SecurityShield from '@/components/SecurityShield';
 
 import DevGatekeeper from '@/components/DevGatekeeper';
+import { Toaster } from 'sonner';
 
 export const viewport: Viewport = {
   themeColor: '#E5002B',
@@ -326,6 +327,7 @@ export default function RootLayout({
             </DevGatekeeper>
           </DesktopWrapper>
         </AppProvider>
+        <Toaster richColors position="top-right" closeButton />
       </body>
     </html>
   );

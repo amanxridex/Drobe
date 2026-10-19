@@ -42,3 +42,12 @@ next-env.d.ts
 /pages*.md
 scripts/*.png
 scripts/*.webp
+
+# Agent skills and tool directories (do not push to git)
+.agents/
+.claude/
+agent/
+data/skills/
+skills/
+skills-lock.json
+

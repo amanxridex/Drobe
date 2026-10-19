@@ -12,7 +12,7 @@ import {
 } from '../lib/supabaseClient';
 import BrandStartScreen from './BrandStartScreen';
 import OnboardingFlow from './OnboardingFlow';
-import BrandProfileView from './BrandProfileView';
+import BrandDashboard from './BrandDashboard';
 import ApprovalPendingScreen from './ApprovalPendingScreen';
 import styles from './brand-dashboard.module.css';
 
@@ -217,24 +217,6 @@ export default function BrandDashboardPage() {
     setActiveView('filing');
   };
 
-  const handleShareClick = () => {
-    if (typeof window !== 'undefined') {
-      const isBrandsSubdomain = window.location.hostname.startsWith('brands.');
-      const shareUrl = isBrandsSubdomain
-        ? `${window.location.origin}/profile`
-        : `${window.location.origin}/brand-dashboard/profile`;
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(shareUrl).then(() => {
-          triggerToast('Profile link copied to clipboard');
-        }).catch(() => {
-          triggerToast(`Link: ${shareUrl}`);
-        });
-      } else {
-        triggerToast(`Link: ${shareUrl}`);
-      }
-    }
-  };
-
   const handleLoginSuccess = (email: string) => {
     if ((brand.status === 'Published' || brand.status === 'Approved' || brand.status === 'Waiting for Approval') && brand.name?.trim()) {
       setActiveView('profile');
@@ -309,13 +291,10 @@ export default function BrandDashboardPage() {
             onToast={triggerToast}
           />
         ) : (
-          <BrandProfileView
+          <BrandDashboard
             brand={brand}
-            initialOpenEdit={openEditOnProfile}
-            onShareClick={handleShareClick}
-            onUpdateBrand={handleBrandChange}
-            onToast={triggerToast}
             onSignOut={() => setActiveView('start')}
+            onToast={triggerToast}
           />
         )
       )}
