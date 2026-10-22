@@ -3,7 +3,10 @@
    Inspired by Apple HIG, Claymorphism, Squircle Bento & Floating Docks
    ========================================================== */
 
-.mobileContainer {
+.mobileContainer,
+.obStartContainer,
+.obFlowContainer,
+.obPendingContainer {
   --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", "Plus Jakarta Sans", system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   
@@ -12,8 +15,8 @@
   --c-card-subtle: #F8FAFD;
   --c-text-primary: #0F172A;
   --c-text-secondary: #475569;
-  --c-text-muted: #94A3B8;
-  --c-border-subtle: rgba(148, 163, 184, 0.15);
+  --c-text-muted: #64748B;
+  --c-border-subtle: rgba(148, 163, 184, 0.2);
   
   --c-accent-blue: #2F69FE;
   --c-accent-blue-soft: #EEF3FF;
@@ -31,11 +34,14 @@
   --shadow-orange-glow: 0 16px 36px -6px rgba(255, 107, 0, 0.32), 0 6px 16px -4px rgba(255, 107, 0, 0.18);
   --shadow-purple-glow: 0 16px 36px -6px rgba(124, 58, 237, 0.30), 0 6px 16px -4px rgba(124, 58, 237, 0.18);
 
+  color: #0F172A !important;
+  background-color: #F4F6FB;
+}
+
+.mobileContainer {
   width: 100%;
   height: 100%;
   max-height: 100%;
-  background: var(--c-bg);
-  color: var(--c-text-primary);
   font-family: var(--font-display);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -1172,7 +1178,7 @@
   font-size: 16px;
   font-weight: 900;
   letter-spacing: 0.1em;
-  color: var(--c-text-primary);
+  color: #0F172A !important;
 }
 
 .obPartnerTag {
@@ -1180,7 +1186,7 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   background: var(--c-accent-blue-soft);
-  color: var(--c-accent-blue);
+  color: #2F69FE !important;
   padding: 3px 8px;
   border-radius: 9999px;
   border: 1px solid rgba(47, 105, 254, 0.18);
@@ -1205,7 +1211,7 @@
 
 .obPillDotActive {
   width: 26px;
-  background: var(--c-accent-blue);
+  background: #2F69FE;
   box-shadow: 0 2px 8px rgba(47, 105, 254, 0.4);
 }
 
@@ -1214,8 +1220,8 @@
   padding: 0 16px;
   border-radius: 9999px;
   background: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  color: var(--c-accent-blue);
+  border: 1.5px solid rgba(148, 163, 184, 0.25);
+  color: #2F69FE !important;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -1251,9 +1257,9 @@
 /* Tactile 3D Soft-UI Hero Showcase Card */
 .obHeroCard {
   width: 100%;
-  height: 230px;
+  height: 250px;
   background: #FFFFFF;
-  border-radius: 32px;
+  border-radius: 28px;
   box-shadow: var(--shadow-card-elevated);
   border: 1.5px solid rgba(255, 255, 255, 0.9);
   position: relative;
@@ -1262,7 +1268,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .obHeroCardGlow {
@@ -1272,20 +1278,22 @@
 }
 
 .obHeroTitle {
-  font-size: 30px;
+  font-size: 26px;
   font-weight: 850;
   letter-spacing: -0.035em;
   line-height: 1.15;
-  color: var(--c-text-primary);
-  margin: 0 0 10px 0;
+  color: #0F172A !important;
+  margin: 0 0 8px 0;
+  text-align: center;
 }
 
 .obHeroSubtitle {
   font-size: 13.5px;
-  color: var(--c-text-secondary);
+  color: #475569 !important;
   line-height: 1.5;
   margin: 0 auto;
   max-width: 320px;
+  text-align: center;
 }
 
 /* Floating Bottom Action Dock */
@@ -1307,7 +1315,7 @@
   height: 54px;
   border-radius: 9999px;
   background: linear-gradient(135deg, #2F69FE 0%, #1D4ED8 100%);
-  color: #FFFFFF;
+  color: #FFFFFF !important;
   font-size: 15.5px;
   font-weight: 700;
   border: none;
@@ -1331,8 +1339,8 @@
   height: 50px;
   border-radius: 9999px;
   background: #FFFFFF;
-  border: 1.5px solid rgba(148, 163, 184, 0.2);
-  color: var(--c-text-primary);
+  border: 1.5px solid rgba(148, 163, 184, 0.25);
+  color: #0F172A !important;
   font-size: 14.5px;
   font-weight: 700;
   cursor: pointer;
@@ -1353,7 +1361,7 @@
 
 .obTermsText {
   font-size: 11px;
-  color: var(--c-text-muted);
+  color: #64748B !important;
   text-align: center;
   line-height: 1.45;
   margin: 4px auto 0 auto;

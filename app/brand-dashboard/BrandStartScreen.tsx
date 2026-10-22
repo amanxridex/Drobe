@@ -12,12 +12,7 @@ import {
   Search,
   ArrowRight,
   Loader2,
-  CheckCircle2,
-  Sparkles,
-  Zap,
-  ShieldCheck,
-  Building2,
-  Clock
+  Sparkles
 } from 'lucide-react';
 import { BrandProfile, mapDbBrandToBrandProfile } from './types';
 import { supabaseFetchBrands, supabaseFetchBrandById, supabaseFetchBrandProducts } from '../lib/supabaseClient';
@@ -40,16 +35,22 @@ const CAROUSEL_SLIDES = [
     badge: 'CURATED LUXURY',
     titleLine1: 'Build your luxury',
     titleLine2: 'brand space.',
-    subtitle: 'Showcase your signature collections directly to discerning clients on DROBE.',
-    accent: 'blue'
+    subtitle: 'Showcase signature collections directly to discerning clients on DROBE.',
+    accent: 'blue',
+    image: '/brands/jihi/cover.jpg',
+    chipTitle: 'Curated Brand Space',
+    chipSub: 'Exclusive Verified Merchant Tier'
   },
   {
     id: 'try',
     badge: '10-MIN RAPID DISPATCH',
     titleLine1: '10-minute doorstep',
     titleLine2: 'try before you buy.',
-    subtitle: 'Ahmedabad darkstore riders deliver your garments to doorsteps in 10 minutes so clients try on first.',
-    accent: 'orange'
+    subtitle: 'Ahmedabad darkstore riders deliver your garments in 10 minutes so clients try on first.',
+    accent: 'orange',
+    image: '/assets/real/products/8712/angle_1.jpg',
+    chipTitle: 'Ahmedabad Hub #01',
+    chipSub: '10-Min Doorstep Trial Dispatch'
   },
   {
     id: 'control',
@@ -57,7 +58,10 @@ const CAROUSEL_SLIDES = [
     titleLine1: 'Direct payouts.',
     titleLine2: 'Total brand control.',
     subtitle: 'Real-time darkstore inventory telemetry, 1% sales fee, and automated daily payouts.',
-    accent: 'purple'
+    accent: 'purple',
+    image: '/assets/real/women/asset_62_brand_vasavi_vs076_s_1.jpg',
+    chipTitle: 'Instant Settlement Banking',
+    chipSub: '1% Platform Fee · Daily UPI Payouts'
   }
 ];
 
@@ -210,7 +214,7 @@ export default function BrandStartScreen({
       {/* 1. TOP HEADER & NAVIGATION */}
       <header className={styles.obTopNav}>
         <div className={styles.obBrandEmblemGroup}>
-          <span className={styles.obBrandWordmark}>DROBE</span>
+          <span className={styles.obBrandWordmark} style={{ color: '#0F172A' }}>DROBE</span>
           <span className={styles.obPartnerTag}>PARTNER</span>
         </div>
 
@@ -239,6 +243,7 @@ export default function BrandStartScreen({
             setShowLoginModal(true);
           }}
           className={styles.obTopLoginBtn}
+          style={{ color: '#2F69FE' }}
         >
           {isApprovedOrPublished ? 'Dashboard' : 'Sign In'}
         </button>
@@ -255,204 +260,91 @@ export default function BrandStartScreen({
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className={styles.obCarouselSlide}
           >
-            {/* Tactile 3D Soft-UI Visual Presentation */}
-            <div className={styles.obHeroCard}>
-              <div 
-                className={styles.obHeroCardGlow}
+            {/* Tactile Luxury Presentation Card */}
+            <div className={styles.obHeroCard} style={{ position: 'relative' }}>
+              <img
+                src={slide.image}
+                alt={slide.titleLine1}
                 style={{
-                  background: slide.accent === 'blue'
-                    ? 'radial-gradient(circle at 50% 40%, rgba(47, 105, 254, 0.14) 0%, transparent 70%)'
-                    : slide.accent === 'orange'
-                    ? 'radial-gradient(circle at 50% 40%, rgba(255, 107, 0, 0.14) 0%, transparent 70%)'
-                    : 'radial-gradient(circle at 50% 40%, rgba(124, 58, 237, 0.14) 0%, transparent 70%)'
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
                 }}
               />
+              {/* Soft Gradient Scrim Overlay */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.72) 100%)'
+              }} />
 
-              {/* SLIDE 1: BRAND SPACE */}
-              {slide.id === 'space' && (
-                <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  {/* Floating Luxury Garment Badge */}
-                  <div style={{
-                    width: '74px',
-                    height: '74px',
-                    borderRadius: '24px',
-                    background: 'linear-gradient(135deg, #2F69FE 0%, #1D4ED8 100%)',
-                    boxShadow: '0 16px 32px -4px rgba(47, 105, 254, 0.42)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#FFFFFF',
-                    marginBottom: '14px',
-                    position: 'relative'
-                  }}>
-                    <Sparkles size={34} strokeWidth={2.2} />
-                    <span style={{
-                      position: 'absolute',
-                      bottom: '-4px',
-                      right: '-4px',
-                      width: '18px',
-                      height: '18px',
-                      borderRadius: '50%',
-                      background: '#10B981',
-                      border: '2px solid #FFFFFF'
-                    }} />
+              {/* Floating Top Badge */}
+              <div style={{
+                position: 'absolute',
+                top: '16px',
+                left: '16px',
+                background: slide.accent === 'blue' ? 'rgba(47, 105, 254, 0.92)' : slide.accent === 'orange' ? 'rgba(255, 107, 0, 0.92)' : 'rgba(124, 58, 237, 0.92)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                color: '#FFFFFF',
+                padding: '5px 12px',
+                borderRadius: '9999px',
+                fontSize: '10.5px',
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+              }}>
+                {slide.badge}
+              </div>
+
+              {/* Floating Bottom Glass Chip */}
+              <div style={{
+                position: 'absolute',
+                bottom: '16px',
+                left: '16px',
+                right: '16px',
+                background: 'rgba(255, 255, 255, 0.94)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                borderRadius: '18px',
+                padding: '12px 14px',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                textAlign: 'left'
+              }}>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A' }}>
+                    {slide.chipTitle}
                   </div>
-
-                  {/* Tactile Floating Tags */}
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <div style={{
-                      background: '#F8FAFD',
-                      border: '1px solid rgba(148, 163, 184, 0.2)',
-                      padding: '5px 12px',
-                      borderRadius: '9999px',
-                      fontSize: '11px',
-                      fontWeight: 800,
-                      color: '#0F172A',
-                      boxShadow: '0 2px 8px rgba(24, 39, 75, 0.04)'
-                    }}>
-                      Exclusive Collections
-                    </div>
-                    <div style={{
-                      background: '#EEF3FF',
-                      border: '1px solid rgba(47, 105, 254, 0.2)',
-                      padding: '5px 12px',
-                      borderRadius: '9999px',
-                      fontSize: '11px',
-                      fontWeight: 800,
-                      color: '#2F69FE'
-                    }}>
-                      Verified Partner Tier
-                    </div>
+                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>
+                    {slide.chipSub}
                   </div>
                 </div>
-              )}
-
-              {/* SLIDE 2: 10-MINUTE TRY-AT-HOME */}
-              {slide.id === 'try' && (
-                <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  {/* Glowing 10-Minute Dispatch Pill */}
-                  <div style={{
-                    background: 'linear-gradient(135deg, #FF6B00 0%, #EA580C 100%)',
-                    padding: '8px 20px',
-                    borderRadius: '9999px',
-                    color: '#FFFFFF',
-                    fontSize: '13px',
-                    fontWeight: 900,
-                    letterSpacing: '0.04em',
-                    boxShadow: '0 12px 28px -4px rgba(255, 107, 0, 0.42)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    marginBottom: '16px'
-                  }}>
-                    <Zap size={14} />
-                    <span>10-MIN TRY AT HOME</span>
-                  </div>
-
-                  {/* Courier Darkstore Tag */}
-                  <div style={{
-                    background: '#FFFFFF',
-                    border: '1.5px solid rgba(148, 163, 184, 0.18)',
-                    borderRadius: '20px',
-                    padding: '12px 18px',
-                    boxShadow: '0 8px 24px rgba(24, 39, 75, 0.06)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px'
-                  }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '10px',
-                      background: '#FFF2EA',
-                      color: '#FF6B00',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 800
-                    }}>
-                      <Clock size={16} />
-                    </div>
-                    <div style={{ textAlign: 'left' }}>
-                      <div style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A' }}>
-                        Ahmedabad Mega Darkstore #01
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>
-                        Doorstep Fitting &amp; Instant Return Rider
-                      </div>
-                    </div>
-                  </div>
+                <div style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '9999px',
+                  background: slide.accent === 'blue' ? '#EEF3FF' : slide.accent === 'orange' ? '#FFF2EA' : '#F5F3FF',
+                  color: slide.accent === 'blue' ? '#2F69FE' : slide.accent === 'orange' ? '#FF6B00' : '#7C3AED',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  <Sparkles size={14} />
                 </div>
-              )}
-
-              {/* SLIDE 3: CONTROL & PAYOUTS */}
-              {slide.id === 'control' && (
-                <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  {/* Luxury Payout Titanium Card */}
-                  <div style={{
-                    width: '210px',
-                    height: '92px',
-                    borderRadius: '20px',
-                    background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
-                    boxShadow: '0 16px 36px -6px rgba(15, 23, 42, 0.35)',
-                    padding: '14px 16px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    color: '#FFFFFF',
-                    marginBottom: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.15)'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '10px', letterSpacing: '0.08em', fontWeight: 800, color: '#94A3B8' }}>
-                        AUTOMATED SETTLEMENTS
-                      </span>
-                      <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10B981' }} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '12px', letterSpacing: '0.1em', fontWeight: 700, fontFamily: 'monospace' }}>
-                        •••• •••• •••• 4289
-                      </div>
-                      <div style={{ fontSize: '9.5px', color: '#38BDF8', fontWeight: 700, marginTop: '2px' }}>
-                        DIRECT UPI &amp; BANK TRANSFERS
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Micro Commercial Tag */}
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <span style={{
-                      background: '#F5F3FF',
-                      border: '1px solid rgba(124, 58, 237, 0.2)',
-                      padding: '4px 12px',
-                      borderRadius: '9999px',
-                      fontSize: '11px',
-                      fontWeight: 800,
-                      color: '#7C3AED'
-                    }}>
-                      1% Low Brand Sales Fee
-                    </span>
-                    <span style={{
-                      background: '#ECFDF5',
-                      border: '1px solid rgba(16, 185, 129, 0.2)',
-                      padding: '4px 12px',
-                      borderRadius: '9999px',
-                      fontSize: '11px',
-                      fontWeight: 800,
-                      color: '#065F46'
-                    }}>
-                      T+1 Automated Payouts
-                    </span>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
 
-            {/* Typography Display */}
-            <h1 className={styles.obHeroTitle}>
+            {/* Bold High-Contrast Typography */}
+            <h1 className={styles.obHeroTitle} style={{ color: '#0F172A', margin: '0 0 8px 0' }}>
               {slide.titleLine1}<br />{slide.titleLine2}
             </h1>
-            <p className={styles.obHeroSubtitle}>
+            <p className={styles.obHeroSubtitle} style={{ color: '#475569', margin: '0 auto' }}>
               {slide.subtitle}
             </p>
           </motion.div>
@@ -476,6 +368,7 @@ export default function BrandStartScreen({
               type="button"
               onClick={onEditLiveBrand || onViewLiveDashboard}
               className={styles.obBtnSecondary}
+              style={{ color: '#0F172A' }}
             >
               <span>Edit Brand Profile</span>
             </button>
@@ -486,7 +379,11 @@ export default function BrandStartScreen({
               type="button"
               onClick={onViewLiveDashboard}
               className={styles.obBtnPrimary}
-              style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', boxShadow: '0 14px 28px -4px rgba(245, 158, 11, 0.35)' }}
+              style={{
+                background: 'linear-gradient(135deg, #FF6B00 0%, #EA580C 100%)',
+                boxShadow: '0 14px 28px -4px rgba(255, 107, 0, 0.35)',
+                color: '#FFFFFF'
+              }}
             >
               <span>View Review Status ({brand.name})</span>
               <ArrowRight size={16} />
@@ -496,9 +393,30 @@ export default function BrandStartScreen({
               type="button"
               onClick={onStartOnboarding}
               className={styles.obBtnSecondary}
+              style={{ color: '#0F172A' }}
             >
               <span>Review Submitted Dossier</span>
             </button>
+
+            {onResetBrand && (
+              <button
+                type="button"
+                onClick={onResetBrand}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#64748B',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  padding: '4px',
+                  fontFamily: 'inherit',
+                  textDecoration: 'underline'
+                }}
+              >
+                Switch Brand / Start New Application
+              </button>
+            )}
           </>
         ) : hasDraft ? (
           <>
@@ -518,6 +436,7 @@ export default function BrandStartScreen({
                 setShowLoginModal(true);
               }}
               className={styles.obBtnSecondary}
+              style={{ color: '#0F172A' }}
             >
               <span>Brand Sign In</span>
             </button>
@@ -529,12 +448,13 @@ export default function BrandStartScreen({
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#94A3B8',
+                  color: '#64748B',
                   fontSize: '12px',
                   fontWeight: 600,
                   cursor: 'pointer',
                   padding: '4px',
-                  fontFamily: 'inherit'
+                  fontFamily: 'inherit',
+                  textDecoration: 'underline'
                 }}
               >
                 Discard Draft &amp; Start Fresh
@@ -559,13 +479,14 @@ export default function BrandStartScreen({
                 setShowLoginModal(true);
               }}
               className={styles.obBtnSecondary}
+              style={{ color: '#0F172A' }}
             >
               <span>Partner Sign In</span>
             </button>
           </>
         )}
 
-        <p className={styles.obTermsText}>
+        <p className={styles.obTermsText} style={{ color: '#64748B' }}>
           Protected by DROBE Luxury Commerce &amp; Merchant Curation Standards.
         </p>
       </footer>
@@ -742,7 +663,7 @@ export default function BrandStartScreen({
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search brand name (e.g. Jihi, Underrated Club...)"
                     className={styles.obInputField}
-                    style={{ paddingLeft: '40px' }}
+                    style={{ paddingLeft: '40px', color: '#0F172A' }}
                     autoFocus
                   />
                   <Search size={16} color="#94A3B8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
@@ -854,7 +775,7 @@ export default function BrandStartScreen({
             {modalTab === 'login' && (
               <form onSubmit={handleLoginSubmit}>
                 <div className={styles.obInputGroup}>
-                  <label className={styles.obInputLabel} style={{ display: 'block', marginBottom: '6px' }}>
+                  <label className={styles.obInputLabel} style={{ display: 'block', marginBottom: '6px', color: '#0F172A' }}>
                     Brand Email
                   </label>
                   <div style={{ position: 'relative' }}>
@@ -865,14 +786,14 @@ export default function BrandStartScreen({
                       placeholder="founder@yourbrand.com"
                       required
                       className={styles.obInputField}
-                      style={{ paddingLeft: '40px' }}
+                      style={{ paddingLeft: '40px', color: '#0F172A' }}
                     />
                     <Mail size={16} color="#94A3B8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
                   </div>
                 </div>
 
                 <div className={styles.obInputGroup}>
-                  <label className={styles.obInputLabel} style={{ display: 'block', marginBottom: '6px' }}>
+                  <label className={styles.obInputLabel} style={{ display: 'block', marginBottom: '6px', color: '#0F172A' }}>
                     Password
                   </label>
                   <div style={{ position: 'relative' }}>
@@ -883,7 +804,7 @@ export default function BrandStartScreen({
                       placeholder="Enter your password"
                       required
                       className={styles.obInputField}
-                      style={{ paddingLeft: '40px', paddingRight: '44px' }}
+                      style={{ paddingLeft: '40px', paddingRight: '44px', color: '#0F172A' }}
                     />
                     <Lock size={16} color="#94A3B8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
                     <button
