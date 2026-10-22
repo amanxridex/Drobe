@@ -23,11 +23,9 @@ export default function DesktopWrapper({ children }: { children: React.ReactNode
     const handleViewport = () => {
       const mobile = window.innerWidth < 550;
       setIsMobile(mobile);
-      if (mobile) {
-        const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-        document.documentElement.style.setProperty('--app-height', `${vh}px`);
-        document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
-      }
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      document.documentElement.style.setProperty('--app-height', `${vh}px`);
+      document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
     };
 
     handleViewport();

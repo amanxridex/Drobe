@@ -100,7 +100,7 @@ export default function StandaloneProfilePage() {
   }
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <div style={{ width: '100%', height: '100%', minHeight: 'var(--app-height, 100dvh)', flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <BrandProfileView
         brand={brand}
         onEditClick={() => {

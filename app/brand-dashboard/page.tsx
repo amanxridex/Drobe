@@ -232,7 +232,7 @@ export default function BrandDashboardPage() {
   };
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff' }}>
+    <div style={{ width: '100%', height: '100%', minHeight: 'var(--app-height, 100dvh)', flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff' }}>
       {/* 1. START SCREEN: Clean Drobe Logo & Entry Actions */}
       {activeView === 'start' && (
         <BrandStartScreen

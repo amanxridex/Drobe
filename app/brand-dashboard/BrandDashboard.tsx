@@ -247,6 +247,33 @@ export default function BrandDashboard({
     };
   }, [brand.id, brand.name]);
 
+  // Robust viewport measurement for dynamic mobile toolbars & safe area anchoring
+  useEffect(() => {
+    const handleViewport = () => {
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      document.documentElement.style.setProperty('--app-height', `${vh}px`);
+      document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
+    };
+
+    handleViewport();
+    window.addEventListener('resize', handleViewport, { passive: true });
+    window.addEventListener('orientationchange', handleViewport, { passive: true });
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewport);
+      window.visualViewport.addEventListener('scroll', handleViewport);
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleViewport);
+      window.removeEventListener('orientationchange', handleViewport);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleViewport);
+        window.visualViewport.removeEventListener('scroll', handleViewport);
+      }
+    };
+  }, []);
+
   // Real Dynamic Trajectory Chart Points
   const chartPoints = useMemo(() => {
     if (selectedRange === 'today') {
