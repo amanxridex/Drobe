@@ -77,16 +77,11 @@ export default function BrandStartScreen({
   const [activeSlide, setActiveSlide] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
-  const [modalTab, setModalTab] = useState<'login' | 'claim'>('claim');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [allBrands, setAllBrands] = useState<BrandProfile[]>([]);
-  const [isLoadingBrands, setIsLoadingBrands] = useState(false);
-  const [isOpeningBrand, setIsOpeningBrand] = useState(false);
 
   // Auto-advance carousel smoothly every 5.5 seconds
   useEffect(() => {
@@ -94,20 +89,6 @@ export default function BrandStartScreen({
       setActiveSlide((prev) => (prev + 1) % CAROUSEL_SLIDES.length);
     }, 5500);
     return () => clearInterval(timer);
-  }, []);
-
-  // Fetch live brands from Supabase
-  useEffect(() => {
-    setIsLoadingBrands(true);
-    supabaseFetchBrands().then((brandsList) => {
-      if (brandsList && brandsList.length > 0) {
-        setAllBrands(brandsList.map(b => mapDbBrandToBrandProfile(b, b.products)));
-      }
-    }).catch((err) => {
-      console.warn('Failed to load brands from Supabase:', err);
-    }).finally(() => {
-      setIsLoadingBrands(false);
-    });
   }, []);
 
   const isApprovedOrPublished = (brand.status === 'Published' || brand.status === 'Approved') && Boolean(brand.name?.trim());
@@ -155,18 +136,6 @@ export default function BrandStartScreen({
         return;
       }
 
-      // Check if local brand matches (fallback)
-      const matchedBrand = allBrands.find(b => 
-        (b.email && b.email.toLowerCase().trim() === emailTrimmed) ||
-        (b.inquiriesEmail && b.inquiriesEmail.toLowerCase().trim() === emailTrimmed)
-      );
-
-      if (matchedBrand && onSelectBrand) {
-        onSelectBrand(matchedBrand);
-        setShowLoginModal(false);
-        return;
-      }
-
       setLoginError(data.message || 'Incorrect email or password. Please try again or reset your password.');
     } catch {
       setLoginError('Network error authenticating. Please try again.');
@@ -174,35 +143,6 @@ export default function BrandStartScreen({
       setIsSubmittingLogin(false);
     }
   };
-
-  const handleSelectSearchedBrand = async (b: BrandProfile) => {
-    setIsOpeningBrand(true);
-    try {
-      const fullBrand = await supabaseFetchBrandById(b.id || b.name);
-      const prods = await supabaseFetchBrandProducts(b.id || b.name, b.name);
-      const mapped = mapDbBrandToBrandProfile(fullBrand || b, prods || []);
-      if (onSelectBrand) {
-        onSelectBrand(mapped);
-      }
-      setShowLoginModal(false);
-    } catch {
-      if (onSelectBrand) {
-        onSelectBrand(b);
-      }
-      setShowLoginModal(false);
-    } finally {
-      setIsOpeningBrand(false);
-    }
-  };
-
-  const filteredBrands = searchQuery.trim().length === 0
-    ? allBrands.slice(0, 15)
-    : allBrands.filter(b => 
-        b.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.basedOutOf?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.founderName?.toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, 20);
 
   const slide = CAROUSEL_SLIDES[activeSlide] || CAROUSEL_SLIDES[0];
 
@@ -239,7 +179,6 @@ export default function BrandStartScreen({
         <button
           type="button"
           onClick={() => {
-            setModalTab('login');
             setShowLoginModal(true);
           }}
           className={styles.obTopLoginBtn}
@@ -432,7 +371,6 @@ export default function BrandStartScreen({
             <button
               type="button"
               onClick={() => {
-                setModalTab('login');
                 setShowLoginModal(true);
               }}
               className={styles.obBtnSecondary}
@@ -475,7 +413,6 @@ export default function BrandStartScreen({
             <button
               type="button"
               onClick={() => {
-                setModalTab('login');
                 setShowLoginModal(true);
               }}
               className={styles.obBtnSecondary}
@@ -517,18 +454,16 @@ export default function BrandStartScreen({
             overflowY: 'auto'
           }}>
             {/* Modal Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
               <div>
                 <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2F69FE', fontWeight: 800 }}>
                   PARTNER PORTAL
                 </span>
                 <h3 style={{ fontSize: '21px', fontWeight: 850, color: '#0F172A', margin: '3px 0 2px 0', letterSpacing: '-0.025em' }}>
-                  {modalTab === 'claim' ? 'Find & Claim Your Brand' : 'Sign In to Portal'}
+                  Sign In to Partner Portal
                 </h3>
                 <p style={{ fontSize: '13px', color: '#64748B', margin: 0 }}>
-                  {modalTab === 'claim' 
-                    ? 'Search verified partner brands on DROBE to enter your store.'
-                    : 'Sign in with your email and password to access your brand store.'}
+                  Enter your brand email and password to access your dashboard.
                 </p>
               </div>
 
@@ -552,62 +487,6 @@ export default function BrandStartScreen({
                 }}
               >
                 <X size={18} />
-              </button>
-            </div>
-
-            {/* Segmented Tab Switcher */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '6px',
-              marginBottom: '18px',
-              background: '#F4F6FB',
-              padding: '4px',
-              borderRadius: '16px'
-            }}>
-              <button
-                type="button"
-                onClick={() => setModalTab('claim')}
-                style={{
-                  padding: '9px 12px',
-                  borderRadius: '12px',
-                  border: 'none',
-                  background: modalTab === 'claim' ? '#FFFFFF' : 'transparent',
-                  color: modalTab === 'claim' ? '#2F69FE' : '#64748B',
-                  fontWeight: 800,
-                  fontSize: '12.5px',
-                  cursor: 'pointer',
-                  boxShadow: modalTab === 'claim' ? '0 2px 8px rgba(24, 39, 75, 0.06)' : 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px'
-                }}
-              >
-                <Search size={13} />
-                <span>Find Brand ({allBrands.length})</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setModalTab('login')}
-                style={{
-                  padding: '9px 12px',
-                  borderRadius: '12px',
-                  border: 'none',
-                  background: modalTab === 'login' ? '#FFFFFF' : 'transparent',
-                  color: modalTab === 'login' ? '#2F69FE' : '#64748B',
-                  fontWeight: 800,
-                  fontSize: '12.5px',
-                  cursor: 'pointer',
-                  boxShadow: modalTab === 'login' ? '0 2px 8px rgba(24, 39, 75, 0.06)' : 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px'
-                }}
-              >
-                <Lock size={13} />
-                <span>Password Sign In</span>
               </button>
             </div>
 
@@ -653,127 +532,7 @@ export default function BrandStartScreen({
               </div>
             )}
 
-            {/* TAB 1: CLAIM / SEARCH BRANDS FROM SUPABASE */}
-            {modalTab === 'claim' && (
-              <div>
-                <div style={{ position: 'relative', marginBottom: '14px' }}>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search brand name (e.g. Jihi, Underrated Club...)"
-                    className={styles.obInputField}
-                    style={{ paddingLeft: '40px', color: '#0F172A' }}
-                    autoFocus
-                  />
-                  <Search size={16} color="#94A3B8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      onClick={() => setSearchQuery('')}
-                      style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}
-                    >
-                      <X size={15} />
-                    </button>
-                  )}
-                </div>
-
-                {isLoadingBrands ? (
-                  <div style={{ padding: '36px', textAlign: 'center', color: '#64748B', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <Loader2 size={16} className="animate-spin" />
-                    <span>Loading verified partner brands...</span>
-                  </div>
-                ) : (
-                  <div style={{ maxHeight: '260px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', paddingRight: '4px' }}>
-                    {filteredBrands.map((b) => (
-                      <div
-                        key={b.id || b.name}
-                        onClick={() => handleSelectSearchedBrand(b)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '12px 14px',
-                          borderRadius: '16px',
-                          border: '1.5px solid rgba(148, 163, 184, 0.16)',
-                          background: '#FFFFFF',
-                          cursor: 'pointer',
-                          boxShadow: '0 2px 8px rgba(24, 39, 75, 0.03)',
-                          transition: 'transform 0.15s ease, border-color 0.15s ease'
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-                          {b.profileImage ? (
-                            <img
-                              src={b.profileImage}
-                              alt={b.name}
-                              style={{ width: '36px', height: '36px', borderRadius: '12px', objectFit: 'cover', flexShrink: 0 }}
-                            />
-                          ) : (
-                            <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#EEF3FF', color: '#2F69FE', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                              {b.name.slice(0, 1).toUpperCase()}
-                            </div>
-                          )}
-                          <div style={{ minWidth: 0 }}>
-                            <div style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                              {b.name}
-                            </div>
-                            <div style={{ fontSize: '11.5px', color: '#64748B', fontWeight: 600 }}>
-                              {b.category} · {b.basedOutOf || 'India'}
-                            </div>
-                          </div>
-                        </div>
-
-                        <button
-                          type="button"
-                          disabled={isOpeningBrand}
-                          style={{
-                            fontSize: '12px',
-                            fontWeight: 800,
-                            padding: '7px 14px',
-                            borderRadius: '9999px',
-                            border: 'none',
-                            background: '#2F69FE',
-                            color: '#FFFFFF',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            flexShrink: 0
-                          }}
-                        >
-                          <span>Open</span>
-                          <ArrowRight size={12} />
-                        </button>
-                      </div>
-                    ))}
-
-                    {filteredBrands.length === 0 && (
-                      <div style={{ padding: '28px', textAlign: 'center', color: '#64748B', fontSize: '13px' }}>
-                        No brand found matching &ldquo;{searchQuery}&rdquo;.
-                        <div style={{ marginTop: '10px' }}>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowLoginModal(false);
-                              onStartOnboarding();
-                            }}
-                            className={styles.obBtnPrimary}
-                            style={{ height: '42px', fontSize: '13px' }}
-                          >
-                            + Start New Brand Application
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* TAB 2: EMAIL & PASSWORD SIGN IN */}
-            {modalTab === 'login' && (
-              <form onSubmit={handleLoginSubmit}>
+            <form onSubmit={handleLoginSubmit}>
                 <div className={styles.obInputGroup}>
                   <label className={styles.obInputLabel} style={{ display: 'block', marginBottom: '6px', color: '#0F172A' }}>
                     Brand Email
@@ -862,7 +621,6 @@ export default function BrandStartScreen({
                   )}
                 </button>
               </form>
-            )}
           </div>
         </div>
       )}
@@ -876,7 +634,6 @@ export default function BrandStartScreen({
           setLoginEmail(email);
           setShowForgotPasswordModal(false);
           setShowLoginModal(true);
-          setModalTab('login');
         }}
       />
     </div>

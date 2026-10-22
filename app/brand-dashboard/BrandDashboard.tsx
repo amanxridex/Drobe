@@ -18,9 +18,9 @@ import {
   supabaseFetchOrders,
   supabaseFetchShipments,
   supabaseFetchBrandProducts,
-  supabaseFetchBrands,
   supabaseUpsertBrand
 } from '../lib/supabaseClient';
+import BrandProfileSheet from './BrandProfileSheet';
 import styles from './brand-mobile.module.css';
 
 export interface BrandDashboardProps {
@@ -43,17 +43,7 @@ export default function BrandDashboard({
   // Navigation & View State
   const [activeTab, setActiveTab] = useState<'overview' | 'catalog' | 'orders' | 'hub' | 'payouts'>('overview');
   const [selectedRange, setSelectedRange] = useState<'today' | '7d' | '30d' | 'all'>('today');
-  const [showBrandModal, setShowBrandModal] = useState(false);
-
-  // Available brands loaded dynamically from real Supabase DB
-  const [availableBrands, setAvailableBrands] = useState<{ id: string; name: string; logo?: string; category?: string }[]>([
-    {
-      id: brand.id || 'current-brand',
-      name: brand.name || 'Your Brand',
-      logo: brand.profileImage,
-      category: brand.category || 'Designer Label'
-    }
-  ]);
+  const [showProfileSheet, setShowProfileSheet] = useState(false);
 
   // Drawers
   const [showDispatchDrawer, setShowDispatchDrawer] = useState(false);
@@ -184,30 +174,7 @@ export default function BrandDashboard({
   useEffect(() => {
     setSyncStatus('syncing');
 
-    // 1. Fetch real brands from Supabase to populate brand switcher
-    supabaseFetchBrands().then((dbBrands) => {
-      if (dbBrands && dbBrands.length > 0) {
-        const mapped = dbBrands.map((b: any) => ({
-          id: b.id,
-          name: b.name,
-          logo: b.profileImage || b.coverImage || '',
-          category: b.category || 'Designer Label'
-        }));
-        // Ensure current brand is included
-        const exists = mapped.some((m) => m.id === brand.id || m.name === brand.name);
-        if (!exists && brand.name) {
-          mapped.unshift({
-            id: brand.id || 'curr',
-            name: brand.name,
-            logo: brand.profileImage,
-            category: brand.category || 'Designer Label'
-          });
-        }
-        setAvailableBrands(mapped);
-      }
-    }).catch(() => {});
-
-    // 2. Fetch real orders, shipments, and brand pieces
+    // Fetch real orders, shipments, and brand pieces
     Promise.all([
       supabaseFetchOrders(),
       supabaseFetchShipments(),
@@ -377,8 +344,8 @@ export default function BrandDashboard({
         <header className={styles.bdTopNav}>
           <button
             className={styles.bdBrandSwitcherPill}
-            onClick={() => setShowBrandModal(true)}
-            aria-label="Switch brand profile"
+            onClick={() => setShowProfileSheet(true)}
+            aria-label="Open brand profile"
           >
             {brand.profileImage ? (
               <img
@@ -1214,63 +1181,17 @@ export default function BrandDashboard({
       </AnimatePresence>
 
       {/* ========================================================
-          BRAND SWITCHER MODAL (REAL SUPABASE BRANDS)
+          BRAND PROFILE & SETTINGS SHEET (NAME, FOUNDER, SETTINGS, SESSIONS)
           ======================================================== */}
-      <AnimatePresence>
-        {showBrandModal && (
-          <div className={styles.bdDrawerOverlay} onClick={() => setShowBrandModal(false)}>
-            <motion.div
-              className={styles.bdModalBox}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className={styles.bdDrawerHead}>
-                <h3 className={styles.bdDrawerTitle}>Switch Brand</h3>
-                <button
-                  className={styles.bdDrawerCloseBtn}
-                  onClick={() => setShowBrandModal(false)}
-                >
-                  ✕
-                </button>
-              </div>
-
-              {availableBrands.map((b) => (
-                <button
-                  key={b.id}
-                  className={`${styles.bdBrandChoiceItem} ${brand.id === b.id || brand.name === b.name ? styles.bdBrandChoiceItemActive : ''}`}
-                  onClick={() => {
-                    setShowBrandModal(false);
-                    if (onUpdateBrand) {
-                      onUpdateBrand({
-                        ...brand,
-                        id: b.id,
-                        name: b.name,
-                        profileImage: b.logo || brand.profileImage,
-                        category: b.category || brand.category
-                      });
-                    }
-                    if (onToast) onToast(`Switched active view to ${b.name}`);
-                  }}
-                >
-                  {b.logo ? (
-                    <img src={b.logo} alt={b.name} className={styles.bdBrandAvatar} />
-                  ) : (
-                    <div className={styles.bdBrandAvatar} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontWeight: 800, fontSize: '11px' }}>
-                      {b.name.slice(0, 2).toUpperCase()}
-                    </div>
-                  )}
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '14px', color: '#0F172A' }}>{b.name}</div>
-                    <div style={{ fontSize: '11.5px', color: '#64748B' }}>{b.category || 'Designer Label'}</div>
-                  </div>
-                </button>
-              ))}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <BrandProfileSheet
+        isOpen={showProfileSheet}
+        onClose={() => setShowProfileSheet(false)}
+        brand={brand}
+        onUpdateBrand={onUpdateBrand}
+        onEditClick={onEditClick}
+        onSignOut={onSignOut}
+        onToast={onToast}
+      />
     </div>
   );
 }
