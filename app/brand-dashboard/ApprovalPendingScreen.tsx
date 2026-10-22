@@ -4,26 +4,21 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Clock, 
-  CheckCircle2, 
-  ShieldCheck, 
-  Building2, 
-  Warehouse, 
-  ArrowRight, 
   RotateCw, 
   Edit3, 
   LogOut, 
   Sparkles, 
-  AlertCircle, 
-  ExternalLink,
-  ChevronRight,
-  Mail,
   Zap,
-  Check
+  Check,
+  Building2,
+  Warehouse,
+  ShieldCheck,
+  ArrowRight
 } from 'lucide-react';
 import { BrandProfile } from './types';
 import { supabaseFetchBrandById, supabaseUpsertBrand } from '../lib/supabaseClient';
 import EditBrandProfileSheet from './EditBrandProfileSheet';
-import styles from './brand-dashboard.module.css';
+import styles from './brand-mobile.module.css';
 
 interface ApprovalPendingScreenProps {
   brand: BrandProfile;
@@ -57,7 +52,7 @@ export default function ApprovalPendingScreen({
           onToast?.('🎉 Application Approved! Welcome to DROBE Partner Network.');
           onApproveSuccess();
         }
-      } catch (err) {
+      } catch {
         // Silent background polling error handling
       }
     }, 8000);
@@ -86,7 +81,7 @@ export default function ApprovalPendingScreen({
         }
       }
       onToast?.('⏳ Application is still undergoing verification by the curation team.');
-    } catch (err) {
+    } catch {
       onToast?.('Status verified: Application currently under review.');
     } finally {
       setIsCheckingStatus(false);
@@ -113,7 +108,7 @@ export default function ApprovalPendingScreen({
           particleCount: 100,
           spread: 80,
           origin: { y: 0.55 },
-          colors: ['#0284c7', '#38bdf8', '#10b981', '#f59e0b']
+          colors: ['#2F69FE', '#38BDF8', '#10B981', '#FF6B00']
         });
       } catch {
         // fallback
@@ -139,47 +134,15 @@ export default function ApprovalPendingScreen({
     : 'Ahmedabad Mega Darkstore #01';
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#f8fafc',
-      color: '#0f172a',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-      paddingBottom: '60px'
-    }}>
+    <div className={styles.obPendingContainer}>
+      {/* Ambient Lighting Mesh Glow */}
+      <div className={styles.bdMeshGlow} />
+
       {/* 1. TOP NAVIGATION BAR */}
-      <header style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 40,
-        backgroundColor: 'rgba(255, 255, 255, 0.85)',
-        backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid #e2e8f0',
-        padding: '12px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img
-            src="/drobe-logo-full.png"
-            alt="DROBE"
-            style={{ height: '24px', width: 'auto', objectFit: 'contain' }}
-            onError={(e) => {
-              (e.currentTarget as HTMLElement).style.display = 'none';
-            }}
-          />
-          <span style={{
-            fontSize: '11px',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-            color: '#64748b',
-            backgroundColor: '#f1f5f9',
-            padding: '3px 8px',
-            borderRadius: '6px'
-          }}>
-            Partner Portal
-          </span>
+      <header className={styles.obTopNav}>
+        <div className={styles.obBrandEmblemGroup}>
+          <span className={styles.obBrandWordmark}>DROBE</span>
+          <span className={styles.obPartnerTag}>PORTAL</span>
         </div>
 
         <button
@@ -190,14 +153,15 @@ export default function ApprovalPendingScreen({
             alignItems: 'center',
             gap: '6px',
             fontSize: '12.5px',
-            fontWeight: 600,
-            color: '#64748b',
-            backgroundColor: '#ffffff',
-            border: '1px solid #e2e8f0',
-            padding: '6px 12px',
-            borderRadius: '8px',
+            fontWeight: 700,
+            color: '#64748B',
+            backgroundColor: '#FFFFFF',
+            border: '1.5px solid rgba(148, 163, 184, 0.2)',
+            padding: '7px 14px',
+            borderRadius: '9999px',
             cursor: 'pointer',
-            transition: 'all 0.15s ease'
+            boxShadow: '0 2px 8px rgba(24, 39, 75, 0.04)',
+            fontFamily: 'inherit'
           }}
         >
           <LogOut size={13} />
@@ -207,119 +171,105 @@ export default function ApprovalPendingScreen({
 
       {/* 2. MAIN CENTER STAGE */}
       <main style={{
-        maxWidth: '680px',
+        maxWidth: '560px',
         margin: '0 auto',
-        padding: '32px 18px'
+        padding: '24px 18px',
+        width: '100%',
+        boxSizing: 'border-box',
+        position: 'relative',
+        zIndex: 2
       }}>
-        {/* Animated Status Pill */}
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            backgroundColor: '#fef3c7',
-            border: '1px solid #fde68a',
-            color: '#b45309',
-            padding: '6px 14px',
-            borderRadius: '24px',
-            fontSize: '12.5px',
-            fontWeight: 700,
-            letterSpacing: '0.01em',
-            boxShadow: '0 2px 8px rgba(245, 158, 11, 0.08)'
-          }}>
-            <span style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: '#f59e0b',
-              display: 'inline-block',
-              animation: 'pulse 1.8s infinite'
-            }} />
-            <span>Application Status: Pending Approval</span>
+        {/* HERO STATUS CARD */}
+        <div className={styles.obPendingHeroCard}>
+          {/* Live Breathing Pulse Pill */}
+          <div className={styles.obLiveStatusPill}>
+            <span className={styles.obPulseDotAmber} />
+            <span>APPLICATION UNDER REVIEW</span>
           </div>
 
           <h1 style={{
-            fontSize: '28px',
-            fontWeight: 800,
+            fontSize: '26px',
+            fontWeight: 850,
             letterSpacing: '-0.03em',
-            color: '#0f172a',
-            marginTop: '14px',
-            marginBottom: '8px'
+            color: '#0F172A',
+            margin: '0 0 8px 0'
           }}>
             Dossier Under Curation Review
           </h1>
 
           <p style={{
-            fontSize: '14px',
-            color: '#64748b',
-            maxWidth: '520px',
-            margin: '0 auto',
+            fontSize: '13.5px',
+            color: '#64748B',
+            maxWidth: '440px',
+            margin: '0 auto 20px auto',
             lineHeight: 1.5
           }}>
-            Thank you for applying to the DROBE 30-minute luxury network. Your brand dossier has been submitted and is undergoing curation verification.
+            Your brand dossier has been submitted and is undergoing verification by the DROBE merchant curation committee.
           </p>
-        </div>
 
-        {/* Brand Overview Card */}
-        <div style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '18px',
-          border: '1px solid #e2e8f0',
-          padding: '20px 22px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
-          marginBottom: '20px'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '18px' }}>
+          {/* Brand Profile Quick View */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px',
+            background: '#F8FAFD',
+            borderRadius: '22px',
+            padding: '14px 16px',
+            border: '1.5px solid rgba(148, 163, 184, 0.16)',
+            marginBottom: '18px',
+            textAlign: 'left'
+          }}>
             {brand.profileImage ? (
               <img
                 src={brand.profileImage}
                 alt={brand.name}
                 style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '14px',
-                  objectFit: 'contain',
-                  border: '1px solid #e2e8f0',
-                  backgroundColor: '#ffffff',
-                  padding: '3px'
+                  width: '52px',
+                  height: '52px',
+                  borderRadius: '16px',
+                  objectFit: 'cover',
+                  border: '1px solid rgba(148, 163, 184, 0.2)',
+                  backgroundColor: '#FFFFFF',
+                  flexShrink: 0
                 }}
               />
             ) : (
               <div style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '14px',
-                backgroundColor: '#eff6ff',
-                color: '#2563eb',
+                width: '52px',
+                height: '52px',
+                borderRadius: '16px',
+                backgroundColor: '#EEF3FF',
+                color: '#2F69FE',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '22px',
-                fontWeight: 800
+                fontSize: '20px',
+                fontWeight: 900,
+                flexShrink: 0
               }}>
                 {brand.name ? brand.name.slice(0, 1).toUpperCase() : 'B'}
               </div>
             )}
 
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {brand.name || 'Your Brand'}
                 </h3>
                 <span style={{
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  backgroundColor: '#f1f5f9',
-                  color: '#475569',
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  backgroundColor: '#EEF3FF',
+                  color: '#2F69FE',
                   padding: '2px 8px',
-                  borderRadius: '6px'
+                  borderRadius: '9999px',
+                  textTransform: 'uppercase'
                 }}>
-                  {brand.category || 'Luxury Apparel'}
+                  {brand.category || 'Luxury'}
                 </span>
               </div>
-
-              <div style={{ fontSize: '12px', color: '#64748b', marginTop: '3px' }}>
-                {brand.basedOutOf ? `${brand.basedOutOf} · ` : ''}Est. {brand.establishedYear || '2024'} · Directed by {brand.founderName || 'Creative Director'}
+              <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>
+                {brand.basedOutOf ? `${brand.basedOutOf} · ` : ''}Est. {brand.establishedYear || '2024'}
               </div>
             </div>
 
@@ -331,272 +281,196 @@ export default function ApprovalPendingScreen({
                 alignItems: 'center',
                 gap: '5px',
                 fontSize: '12px',
-                fontWeight: 600,
-                color: '#2563eb',
-                backgroundColor: '#eff6ff',
-                border: '1px solid #bfdbfe',
-                padding: '6px 12px',
-                borderRadius: '8px',
-                cursor: 'pointer'
+                fontWeight: 700,
+                color: '#2F69FE',
+                backgroundColor: '#EEF3FF',
+                border: '1px solid rgba(47, 105, 254, 0.2)',
+                padding: '7px 12px',
+                borderRadius: '9999px',
+                cursor: 'pointer',
+                flexShrink: 0
               }}
             >
               <Edit3 size={12} />
-              <span>Edit Dossier</span>
+              <span>Edit</span>
             </button>
           </div>
 
-          {/* Quick Specifications */}
+          {/* Quick Bento Specs */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: '10px',
-            borderTop: '1px solid #f1f5f9',
-            paddingTop: '14px'
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '8px'
           }}>
-            <div style={{ backgroundColor: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '10.5px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', display: 'block' }}>
+            <div style={{ background: '#F8FAFD', padding: '10px', borderRadius: '16px', border: '1px solid rgba(148, 163, 184, 0.14)', textAlign: 'left' }}>
+              <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block' }}>
                 Fulfillment Hub
               </span>
-              <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#0f172a', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <Warehouse size={13} color="#16a34a" />
-                <span>{warehouseName}</span>
+              <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {warehouseName}
               </div>
             </div>
 
-            <div style={{ backgroundColor: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '10.5px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', display: 'block' }}>
+            <div style={{ background: '#F8FAFD', padding: '10px', borderRadius: '16px', border: '1px solid rgba(148, 163, 184, 0.14)', textAlign: 'left' }}>
+              <span style={{ fontSize: '10px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block' }}>
                 Payout Destination
               </span>
-              <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#0f172a', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                {isUpiPayout ? <Zap size={13} color="#7c3aed" /> : <Building2 size={13} color="#2563eb" />}
-                <span>
-                  {isUpiPayout 
-                    ? (brand.bankAccount?.upiId || 'UPI Settlement') 
-                    : (brand.bankAccount?.bankName || 'Direct Bank')}
-                </span>
+              <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {isUpiPayout ? 'UPI Settlement' : 'Direct Bank'}
               </div>
             </div>
 
-            <div style={{ backgroundColor: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '10.5px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', display: 'block' }}>
-                Onboarding Activation
+            <div style={{ background: '#ECFDF5', padding: '10px', borderRadius: '16px', border: '1px solid rgba(16, 185, 129, 0.2)', textAlign: 'left' }}>
+              <span style={{ fontSize: '10px', color: '#065F46', fontWeight: 700, textTransform: 'uppercase', display: 'block' }}>
+                Activation Fee
               </span>
-              <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#15803d', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <Check size={13} color="#16a34a" strokeWidth={2.6} />
-                <span>₹99 Fee Paid (Razorpay)</span>
+              <div style={{ fontSize: '12px', fontWeight: 800, color: '#065F46', marginTop: '3px' }}>
+                ✓ ₹99 Paid
               </div>
             </div>
           </div>
         </div>
 
-        {/* 4-Stage Verification Roadmap */}
-        <div style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '18px',
-          border: '1px solid #e2e8f0',
-          padding: '20px 22px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
-          marginBottom: '20px'
-        }}>
-          <h3 style={{ fontSize: '14px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748b', marginBottom: '16px' }}>
+        {/* 4-STAGE TACTILE VERIFICATION ROADMAP */}
+        <div className={styles.obTimelineStageCard}>
+          <h3 style={{ fontSize: '12px', fontWeight: 850, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', margin: '0 0 16px 0' }}>
             Verification Stages
           </h3>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             {/* Stage 1: Done */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-              <div style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                backgroundColor: '#dcfce7',
-                color: '#15803d',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                <Check size={15} strokeWidth={3} />
+            <div className={styles.obTimelineStep}>
+              <div className={styles.obTimelineNum} style={{ background: '#ECFDF5', color: '#065F46' }}>
+                <Check size={16} strokeWidth={3} />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0f172a' }}>
-                  1. Brand Dossier &amp; ₹99 Onboarding Activation Paid
+                <div style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A' }}>
+                  1. Brand Dossier &amp; ₹99 Activation Paid
                 </div>
-                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
-                  Commercial terms agreed (1% sales commission &amp; 5% user markup fee), ₹99 fee paid via Razorpay, and KYC banking registered.
+                <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px', lineHeight: 1.4 }}>
+                  Commercial terms agreed (1% brand sales fee), ₹99 fee paid via Razorpay, and payout banking registered.
                 </div>
               </div>
-              <span style={{ fontSize: '11px', fontWeight: 700, color: '#15803d', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 8px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '10.5px', fontWeight: 800, color: '#065F46', background: '#ECFDF5', padding: '3px 8px', borderRadius: '9999px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
                 Passed
               </span>
             </div>
 
-            {/* Stage 2: In Progress */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-              <div style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                backgroundColor: '#fef3c7',
-                color: '#b45309',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                <Clock size={15} strokeWidth={2.5} />
+            {/* Stage 2: In Review */}
+            <div className={styles.obTimelineStep}>
+              <div className={styles.obTimelineNum} style={{ background: '#FFFBEB', color: '#B45309' }}>
+                <Clock size={16} strokeWidth={2.5} />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#b45309' }}>
+                <div style={{ fontSize: '14px', fontWeight: 800, color: '#B45309' }}>
                   2. Merchant Curation &amp; Quality Standards Review
                 </div>
-                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
-                  The DROBE curation committee is verifying brand aesthetic, craftsmanship tier, and catalog readiness.
+                <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px', lineHeight: 1.4 }}>
+                  The curation team is verifying aesthetic standards, craftsmanship tier, and catalog readiness.
                 </div>
               </div>
-              <span style={{ fontSize: '11px', fontWeight: 700, color: '#b45309', backgroundColor: '#fffbeb', border: '1px solid #fde68a', padding: '2px 8px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '10.5px', fontWeight: 800, color: '#B45309', background: '#FFFBEB', padding: '3px 8px', borderRadius: '9999px', border: '1px solid #FDE68A' }}>
                 In Review
               </span>
             </div>
 
             {/* Stage 3: Upcoming */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', opacity: 0.65 }}>
-              <div style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                backgroundColor: '#f1f5f9',
-                color: '#94a3b8',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                <Warehouse size={14} />
+            <div className={styles.obTimelineStep} style={{ opacity: 0.6 }}>
+              <div className={styles.obTimelineNum} style={{ background: '#F1F5F9', color: '#94A3B8' }}>
+                3
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#475569' }}>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#475569' }}>
                   3. Ahmedabad Darkstore Shelf Allocation
                 </div>
-                <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
+                <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px' }}>
                   Climate-controlled garment racks and barcode serialization reserved at Hub #01.
                 </div>
               </div>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#94A3B8', background: '#F1F5F9', padding: '3px 8px', borderRadius: '9999px' }}>
                 Pending
               </span>
             </div>
 
             {/* Stage 4: Upcoming */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', opacity: 0.65 }}>
-              <div style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                backgroundColor: '#f1f5f9',
-                color: '#94a3b8',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                <Sparkles size={14} />
+            <div className={styles.obTimelineStep} style={{ opacity: 0.6 }}>
+              <div className={styles.obTimelineNum} style={{ background: '#F1F5F9', color: '#94A3B8' }}>
+                4
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#475569' }}>
-                  4. Live Storefront &amp; 30-Min Doorstep Dispatch
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#475569' }}>
+                  4. Live Storefront &amp; 10-Min Doorstep Dispatch
                 </div>
-                <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
+                <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px' }}>
                   Main admin dashboard unlocks and products become available for instant doorstep trial.
                 </div>
               </div>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', backgroundColor: '#f1f5f9', padding: '2px 8px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#94A3B8', background: '#F1F5F9', padding: '3px 8px', borderRadius: '9999px' }}>
                 Pending
               </span>
             </div>
           </div>
         </div>
 
-        {/* Action Controls */}
+        {/* ACTION CONTROLS */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
           <button
             type="button"
             onClick={handleManualCheckStatus}
             disabled={isCheckingStatus}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              backgroundColor: '#0f172a',
-              color: '#ffffff',
-              padding: '14px 20px',
-              borderRadius: '12px',
-              fontSize: '13.5px',
-              fontWeight: 700,
-              cursor: isCheckingStatus ? 'not-allowed' : 'pointer',
-              border: 'none',
-              boxShadow: '0 4px 14px rgba(15, 23, 42, 0.15)',
-              transition: 'all 0.15s ease'
-            }}
+            className={styles.obBtnPrimary}
+            style={{ height: '52px' }}
           >
             <RotateCw size={15} className={isCheckingStatus ? 'animate-spin' : ''} />
             <span>{isCheckingStatus ? 'Querying Live Database...' : 'Check Live Approval Status'}</span>
           </button>
 
-          <div style={{ textAlign: 'center', fontSize: '11.5px', color: '#94a3b8' }}>
-            Auto-checking every few seconds · Last checked: {lastCheckedTime}
+          <div style={{ textAlign: 'center', fontSize: '11.5px', color: '#94A3B8' }}>
+            Auto-checking every 8s · Last checked: {lastCheckedTime}
           </div>
         </div>
 
-        {/* Developer / Admin Instant Simulation Toggle */}
+        {/* DEVELOPER / ADMIN SIMULATION CARD */}
         <div style={{
-          backgroundColor: '#eff6ff',
-          border: '1px dashed #93c5fd',
-          borderRadius: '14px',
-          padding: '16px',
+          background: 'linear-gradient(135deg, #EEF3FF 0%, #F4F6FB 100%)',
+          border: '1.5px dashed rgba(47, 105, 254, 0.35)',
+          borderRadius: '24px',
+          padding: '18px',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#1e40af', marginBottom: '4px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 800, color: '#2F69FE', marginBottom: '4px' }}>
             🛠️ Brand Admin Fast-Track Simulation
           </div>
-          <p style={{ fontSize: '11.5px', color: '#3b82f6', margin: '0 0 12px', lineHeight: 1.4 }}>
-            For testing and evaluation: Click below to simulate instant approval and reveal the live admin dashboard immediately.
+          <p style={{ fontSize: '12px', color: '#64748B', margin: '0 0 14px 0', lineHeight: 1.4 }}>
+            For evaluation &amp; preview: Click below to simulate instant approval and unlock the live brand dashboard immediately.
           </p>
           <button
             type="button"
             onClick={handleSimulateApproval}
             disabled={isFastTracking}
+            className={styles.obBtnPrimary}
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: '#2563eb',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '9px 18px',
-              fontSize: '12.5px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(37, 99, 235, 0.25)'
+              height: '44px',
+              fontSize: '13.5px',
+              maxWidth: '320px',
+              margin: '0 auto'
             }}
           >
             <Sparkles size={14} />
-            <span>{isFastTracking ? 'Activating...' : 'Simulate Instant Approval → Unlock Dashboard'}</span>
+            <span>{isFastTracking ? 'Activating...' : 'Simulate Approval → Unlock Dashboard'}</span>
           </button>
         </div>
 
-        {/* Support & Concierge Footer */}
-        <div style={{ textAlign: 'center', marginTop: '28px', fontSize: '12px', color: '#64748b' }}>
-          <span>Have questions regarding your brand application? Contact luxury merchant support at </span>
-          <a href="mailto:concierge@drobe.one" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>
+        {/* Support Footer */}
+        <div style={{ textAlign: 'center', marginTop: '28px', fontSize: '12px', color: '#64748B' }}>
+          <span>Have questions regarding your brand application? Contact </span>
+          <a href="mailto:concierge@drobe.one" style={{ color: '#2F69FE', fontWeight: 700, textDecoration: 'none' }}>
             concierge@drobe.one
           </a>
         </div>
       </main>
 
-      {/* Profile Edit Drawer if requested */}
+      {/* Profile Edit Drawer */}
       <EditBrandProfileSheet
         brand={brand}
         isOpen={isEditingDossier}
