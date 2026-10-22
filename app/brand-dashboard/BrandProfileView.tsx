@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { BrandProfile } from './types';
-import BrandDashboard from './BrandDashboard';
+import BrandProfilePage from './BrandProfilePage';
 
 export interface BrandProfileViewProps {
   brand: BrandProfile;
+  onBack?: () => void;
   onEditClick?: () => void;
   onShareClick?: () => void;
   onUpdateBrand?: (updated: BrandProfile) => void;
@@ -16,17 +18,28 @@ export interface BrandProfileViewProps {
 
 export default function BrandProfileView({
   brand,
+  onBack,
   onEditClick,
   onShareClick,
   onUpdateBrand,
   onToast,
   onSignOut
 }: BrandProfileViewProps) {
+  const router = useRouter();
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      router.push('/brand-dashboard');
+    }
+  };
+
   return (
-    <BrandDashboard
+    <BrandProfilePage
       brand={brand}
+      onBack={handleBack}
       onEditClick={onEditClick}
-      onShareClick={onShareClick}
       onUpdateBrand={onUpdateBrand}
       onToast={onToast}
       onSignOut={onSignOut}

@@ -103,9 +103,13 @@ export default function StandaloneProfilePage() {
     <div style={{ width: '100%', height: '100%', minHeight: 'var(--app-height, 100dvh)', flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <BrandProfileView
         brand={brand}
-        onEditClick={() => {
+        onBack={() => {
           const isBrands = typeof window !== 'undefined' && window.location.hostname.startsWith('brands.');
           router.push(isBrands ? '/' : '/brand-dashboard');
+        }}
+        onEditClick={() => {
+          const isBrands = typeof window !== 'undefined' && window.location.hostname.startsWith('brands.');
+          router.push(isBrands ? '/?edit=true' : '/brand-dashboard?edit=true');
         }}
         onShareClick={() => {
           if (typeof window !== 'undefined' && navigator.clipboard) {

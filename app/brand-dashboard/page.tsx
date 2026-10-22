@@ -248,8 +248,7 @@ export default function BrandDashboardPage() {
             setActiveView('profile');
           }}
           onEditLiveBrand={() => {
-            setOpenEditOnProfile(true);
-            setActiveView('profile');
+            setActiveView('filing');
           }}
           onResetBrand={handleResetBrand}
           onLoginSuccess={handleLoginSuccess}
@@ -294,7 +293,7 @@ export default function BrandDashboardPage() {
           <BrandDashboard
             brand={brand}
             onUpdateBrand={handleBrandChange}
-            onEditClick={() => setOpenEditOnProfile(true)}
+            onEditClick={() => setActiveView('filing')}
             onSignOut={() => setActiveView('start')}
             onToast={triggerToast}
           />

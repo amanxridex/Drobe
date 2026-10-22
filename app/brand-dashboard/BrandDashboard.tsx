@@ -20,7 +20,7 @@ import {
   supabaseFetchBrandProducts,
   supabaseUpsertBrand
 } from '../lib/supabaseClient';
-import BrandProfileSheet from './BrandProfileSheet';
+import BrandProfilePage from './BrandProfilePage';
 import styles from './brand-mobile.module.css';
 
 export interface BrandDashboardProps {
@@ -43,7 +43,7 @@ export default function BrandDashboard({
   // Navigation & View State
   const [activeTab, setActiveTab] = useState<'overview' | 'catalog' | 'orders' | 'hub' | 'payouts'>('overview');
   const [selectedRange, setSelectedRange] = useState<'today' | '7d' | '30d' | 'all'>('today');
-  const [showProfileSheet, setShowProfileSheet] = useState(false);
+  const [isProfilePageOpen, setIsProfilePageOpen] = useState(false);
 
   // Drawers
   const [showDispatchDrawer, setShowDispatchDrawer] = useState(false);
@@ -334,6 +334,23 @@ export default function BrandDashboard({
   const currentBrandName = brand.name && brand.name.trim().length > 0 ? brand.name : 'Brand';
   const hasBankAccount = Boolean(brand.bankAccount?.accountNumber || brand.bankAccount?.upiId);
 
+  // Dedicated Full-Page Brand Profile View (Not a drawer)
+  if (isProfilePageOpen) {
+    return (
+      <BrandProfilePage
+        brand={brand}
+        onBack={() => setIsProfilePageOpen(false)}
+        onUpdateBrand={onUpdateBrand}
+        onEditClick={() => {
+          setIsProfilePageOpen(false);
+          if (onEditClick) onEditClick();
+        }}
+        onSignOut={onSignOut}
+        onToast={onToast}
+      />
+    );
+  }
+
   return (
     <div className={styles.mobileContainer}>
       <div className={styles.bdMeshGlow} />
@@ -344,7 +361,7 @@ export default function BrandDashboard({
         <header className={styles.bdTopNav}>
           <button
             className={styles.bdBrandSwitcherPill}
-            onClick={() => setShowProfileSheet(true)}
+            onClick={() => setIsProfilePageOpen(true)}
             aria-label="Open brand profile"
           >
             {brand.profileImage ? (
@@ -1180,18 +1197,6 @@ export default function BrandDashboard({
         )}
       </AnimatePresence>
 
-      {/* ========================================================
-          BRAND PROFILE & SETTINGS SHEET (NAME, FOUNDER, SETTINGS, SESSIONS)
-          ======================================================== */}
-      <BrandProfileSheet
-        isOpen={showProfileSheet}
-        onClose={() => setShowProfileSheet(false)}
-        brand={brand}
-        onUpdateBrand={onUpdateBrand}
-        onEditClick={onEditClick}
-        onSignOut={onSignOut}
-        onToast={onToast}
-      />
     </div>
   );
 }
