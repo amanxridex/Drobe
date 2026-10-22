@@ -293,6 +293,8 @@ export default function BrandDashboardPage() {
         ) : (
           <BrandDashboard
             brand={brand}
+            onUpdateBrand={handleBrandChange}
+            onEditClick={() => setOpenEditOnProfile(true)}
             onSignOut={() => setActiveView('start')}
             onToast={triggerToast}
           />

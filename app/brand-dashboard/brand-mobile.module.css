@@ -1,0 +1,1041 @@
+/* ==========================================================
+   DROBE MASTER MOBILE BRAND DASHBOARD (TACTILE SOFT UI & CLAY)
+   Inspired by Apple HIG, Claymorphism, Squircle Bento & Floating Docks
+   ========================================================== */
+
+.mobileContainer {
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  
+  --c-bg: #F4F6FB;
+  --c-card: #FFFFFF;
+  --c-card-subtle: #F8FAFD;
+  --c-text-primary: #0F172A;
+  --c-text-secondary: #475569;
+  --c-text-muted: #94A3B8;
+  --c-border-subtle: rgba(148, 163, 184, 0.15);
+  
+  --c-accent-blue: #2F69FE;
+  --c-accent-blue-soft: #EEF3FF;
+  --c-accent-orange: #FF6B00;
+  --c-accent-orange-soft: #FFF2EA;
+  --c-accent-purple: #7C3AED;
+  --c-accent-purple-soft: #F5F3FF;
+  --c-accent-emerald: #10B981;
+  --c-accent-emerald-soft: #ECFDF5;
+  --c-accent-rose: #F43F5E;
+  
+  --shadow-card: 0 10px 30px -4px rgba(24, 39, 75, 0.06), 0 4px 12px -2px rgba(24, 39, 75, 0.04);
+  --shadow-card-elevated: 0 18px 40px -6px rgba(24, 39, 75, 0.10), 0 8px 18px -4px rgba(24, 39, 75, 0.06);
+  --shadow-blue-glow: 0 16px 36px -6px rgba(47, 105, 254, 0.32), 0 6px 16px -4px rgba(47, 105, 254, 0.20);
+  --shadow-orange-glow: 0 16px 36px -6px rgba(255, 107, 0, 0.32), 0 6px 16px -4px rgba(255, 107, 0, 0.18);
+  --shadow-purple-glow: 0 16px 36px -6px rgba(124, 58, 237, 0.30), 0 6px 16px -4px rgba(124, 58, 237, 0.18);
+
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  background: var(--c-bg);
+  color: var(--c-text-primary);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient Radial Mesh Behind Content */
+.bdMeshGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 380px;
+  background: radial-gradient(circle at 15% 10%, rgba(47, 105, 254, 0.10) 0%, transparent 60%),
+              radial-gradient(circle at 85% 20%, rgba(255, 107, 0, 0.09) 0%, transparent 55%),
+              radial-gradient(circle at 50% 35%, rgba(124, 58, 237, 0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scrollable Body Canvas */
+.bdScrollBody {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 16px 110px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.bdScrollBody::-webkit-scrollbar {
+  display: none;
+}
+.bdScrollBody {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* --- 1. Top Navigation & Brand Header --- */
+.bdTopNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px 16px 4px;
+}
+
+.bdBrandSwitcherPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #FFFFFF;
+  padding: 6px 14px 6px 8px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px rgba(24, 39, 75, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bdBrandSwitcherPill:active {
+  transform: scale(0.96);
+}
+
+.bdBrandAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  object-fit: cover;
+  background: #0F172A;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.bdBrandNameText {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text-primary);
+  letter-spacing: -0.01em;
+}
+
+.bdChevronIcon {
+  opacity: 0.5;
+  transition: transform 0.2s ease;
+}
+
+.bdTopNavRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bdLiveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #FFFFFF;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-accent-emerald);
+  box-shadow: 0 4px 14px rgba(24, 39, 75, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+.bdLiveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--c-accent-emerald);
+  box-shadow: 0 0 8px var(--c-accent-emerald);
+  animation: bdPulseAnim 2.2s infinite ease-in-out;
+}
+
+@keyframes bdPulseAnim {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.6; }
+}
+
+.bdRoundBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  background: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-text-primary);
+  box-shadow: 0 4px 14px rgba(24, 39, 75, 0.05);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bdRoundBtn:active {
+  transform: scale(0.92);
+}
+
+/* --- 2. Dual-Weight Hero Greeting --- */
+.bdGreetingWrap {
+  margin: 4px 0 20px 4px;
+}
+
+.bdGreetingTitle {
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--c-text-primary);
+  margin: 0;
+}
+
+.bdGreetingTitle strong {
+  font-weight: 800;
+}
+
+.bdGreetingTitle span {
+  font-weight: 400;
+  color: var(--c-text-secondary);
+}
+
+.bdGreetingSub {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-text-muted);
+  margin-top: 5px;
+  letter-spacing: -0.01em;
+}
+
+/* --- 3. Bento Metric Cards (Reference Image 1 & 4 Style) --- */
+.bdBentoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.bdBentoCard {
+  border-radius: 26px;
+  padding: 18px 16px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 136px;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+  user-select: none;
+}
+
+.bdBentoCard:active {
+  transform: scale(0.97);
+}
+
+/* Card Themes with Ambient Glows */
+.bdCardHeroRevenue {
+  background: linear-gradient(145deg, #2F69FE 0%, #1A4ED8 100%);
+  color: #FFFFFF;
+  box-shadow: var(--shadow-blue-glow);
+}
+
+.bdCardHeroOrders {
+  background: linear-gradient(145deg, #FF6B00 0%, #EA580C 100%);
+  color: #FFFFFF;
+  box-shadow: var(--shadow-orange-glow);
+}
+
+.bdCardSoftWhite {
+  background: #FFFFFF;
+  color: var(--c-text-primary);
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.bdBentoTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bdBentoLabel {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  opacity: 0.88;
+}
+
+.bdBentoChip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(10px);
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+}
+
+.bdBentoChipDark {
+  background: var(--c-accent-emerald-soft);
+  color: var(--c-accent-emerald);
+}
+
+.bdBentoValueRow {
+  margin-top: 10px;
+}
+
+.bdBentoValue {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.bdBentoSub {
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 4px;
+  opacity: 0.78;
+}
+
+/* 3D Decorative Decals inside Bento Cards */
+.bdBentoDecal {
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+  width: 64px;
+  height: 64px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+/* --- 4. Interactive Extended Date & Range Pills (Reference 1 Style) --- */
+.bdFilterTrack {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 2px 18px 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.bdFilterTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.bdFilterPill {
+  flex-shrink: 0;
+  padding: 9px 16px;
+  border-radius: 9999px;
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-text-secondary);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(24, 39, 75, 0.03);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bdFilterPillActive {
+  background: var(--c-accent-blue);
+  color: #FFFFFF;
+  border-color: var(--c-accent-blue);
+  box-shadow: 0 8px 20px -2px rgba(47, 105, 254, 0.38);
+  transform: translateY(-1px);
+}
+
+/* Extended Date Pill Effect (Image 1 '24 Mon' downward pill) */
+.bdExtendedPill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 14px;
+  border-radius: 20px;
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  cursor: pointer;
+  min-width: 54px;
+  transition: all 0.2s ease;
+}
+
+.bdExtendedPillActive {
+  background: var(--c-accent-purple);
+  color: #FFFFFF;
+  border-color: var(--c-accent-purple);
+  box-shadow: var(--shadow-purple-glow);
+  transform: translateY(-2px);
+}
+
+.bdExtendedPillNum {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.bdExtendedPillSub {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* --- 5. Spline Revenue Trajectory Card --- */
+.bdChartCard {
+  background: #FFFFFF;
+  border-radius: 28px;
+  padding: 20px 18px 14px 18px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  margin-bottom: 20px;
+}
+
+.bdChartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.bdChartTitle {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--c-text-primary);
+}
+
+.bdChartTotalBadge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-accent-blue);
+  background: var(--c-accent-blue-soft);
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
+
+.bdChartSvgWrap {
+  width: 100%;
+  overflow: visible;
+  position: relative;
+  touch-action: none;
+}
+
+.bdChartTooltip {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+/* --- 6. Quick Action Dock (Image 3 Cart Pill & Image 4 Button Style) --- */
+.bdQuickActionRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.bdBtnPrimaryGlow {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--c-accent-blue);
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 14px 20px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-blue-glow);
+  transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bdBtnPrimaryGlow:active {
+  transform: scale(0.96);
+}
+
+.bdBtnSecondarySoft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #FFFFFF;
+  color: var(--c-text-primary);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 14px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(24, 39, 75, 0.04);
+  transition: all 0.15s ease;
+}
+
+.bdBtnSecondarySoft:active {
+  transform: scale(0.96);
+}
+
+/* --- 7. Section Titles --- */
+.bdSectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 4px 12px 4px;
+}
+
+.bdSectionTitle {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--c-text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.bdSectionLink {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-accent-blue);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* --- 8. Recent Doorstep Trial Activity Cards --- */
+.bdActivityList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.bdActivityCard {
+  background: #FFFFFF;
+  border-radius: 22px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  transition: transform 0.15s ease;
+}
+
+.bdActivityCard:active {
+  transform: scale(0.98);
+}
+
+.bdActivityThumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  object-fit: cover;
+  background: #F1F5F9;
+  flex-shrink: 0;
+}
+
+.bdActivityMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.bdActivityTitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bdActivitySub {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--c-text-muted);
+  margin-top: 2px;
+}
+
+.bdStatusTag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.bdTagEmerald {
+  background: var(--c-accent-emerald-soft);
+  color: var(--c-accent-emerald);
+}
+
+.bdTagOrange {
+  background: var(--c-accent-orange-soft);
+  color: var(--c-accent-orange);
+}
+
+.bdTagPurple {
+  background: var(--c-accent-purple-soft);
+  color: var(--c-accent-purple);
+}
+
+.bdTagBlue {
+  background: var(--c-accent-blue-soft);
+  color: var(--c-accent-blue);
+}
+
+/* --- 9. Catalog Tab (Image 3 Swimwear & Image 4 Fashora Style) --- */
+.bdProductGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.bdProductCard {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+  position: relative;
+}
+
+.bdProductCard:active {
+  transform: scale(0.97);
+}
+
+.bdProductImgWrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #F1F5F9;
+  position: relative;
+}
+
+.bdProductImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.bdProductStockBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+  color: #FFFFFF;
+}
+
+.bdProductInfo {
+  padding: 10px 4px 4px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bdProductName {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.bdProductPriceRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.bdProductPrice {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--c-accent-blue);
+  font-variant-numeric: tabular-nums;
+}
+
+.bdProductStatusText {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-accent-emerald);
+}
+
+.bdQuickDispatchMiniBtn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 7px 0;
+  border-radius: 12px;
+  border: 1px solid rgba(47, 105, 254, 0.2);
+  background: var(--c-accent-blue-soft);
+  color: var(--c-accent-blue);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.bdQuickDispatchMiniBtn:active {
+  background: var(--c-accent-blue);
+  color: #FFFFFF;
+}
+
+/* --- 10. Warehouse & Darkstore Hub Tab --- */
+.bdHubCard {
+  background: linear-gradient(145deg, #0F172A 0%, #1E293B 100%);
+  color: #FFFFFF;
+  border-radius: 28px;
+  padding: 22px 20px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.2);
+  margin-bottom: 20px;
+}
+
+.bdHubCardTitle {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.bdHubCardSub {
+  font-size: 12.5px;
+  color: #94A3B8;
+  margin-top: 4px;
+}
+
+.bdHubShelfGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.bdHubShelfItem {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+
+.bdHubShelfLabel {
+  font-size: 11px;
+  color: #94A3B8;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.bdHubShelfVal {
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-top: 4px;
+}
+
+/* Consignment Shipments List */
+.bdShipmentCard {
+  background: #FFFFFF;
+  border-radius: 22px;
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+}
+
+.bdShipmentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.bdShipmentId {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--c-text-primary);
+  font-family: var(--font-mono);
+}
+
+.bdShipmentUnits {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-text-primary);
+}
+
+.bdShipmentTrackRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--c-text-muted);
+  margin-top: 6px;
+}
+
+/* --- 11. Payouts & Finance Tab --- */
+.bdBankCardVisual {
+  background: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4338CA 100%);
+  color: #FFFFFF;
+  border-radius: 28px;
+  padding: 22px 20px;
+  box-shadow: 0 18px 40px -8px rgba(67, 56, 202, 0.4);
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bdBankCardChip {
+  width: 40px;
+  height: 30px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+  margin-bottom: 20px;
+}
+
+.bdBankCardNumber {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  font-family: var(--font-mono);
+  margin-bottom: 14px;
+}
+
+.bdBankCardMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+/* --- 12. Floating Bottom Pill Dock (Reference Images 1, 2, 3) --- */
+.bdBottomDock {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  max-width: 440px;
+  margin: 0 auto;
+  height: 64px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  box-shadow: 0 20px 42px -6px rgba(15, 23, 42, 0.14), 0 8px 18px -4px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+  z-index: 40;
+}
+
+.bdDockItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748B;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bdDockItemActive {
+  color: var(--c-accent-blue);
+  background: var(--c-accent-blue-soft);
+  transform: translateY(-2px);
+}
+
+.bdDockItemText {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 2px;
+}
+
+.bdDockPip {
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--c-accent-blue);
+  position: absolute;
+  bottom: 4px;
+}
+
+/* --- 13. Tactile Slide-Up Drawers (Reference Image 4 Style) --- */
+.bdDrawerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bdDrawerSheet {
+  width: 100%;
+  max-width: 480px;
+  background: #FFFFFF;
+  border-radius: 34px 34px 0 0;
+  padding: 12px 20px 32px 20px;
+  box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.18);
+  max-height: 88vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.bdDrawerHandle {
+  width: 42px;
+  height: 5px;
+  border-radius: 9999px;
+  background: #CBD5E1;
+  margin: 0 auto 16px auto;
+}
+
+.bdDrawerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.bdDrawerTitle {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--c-text-primary);
+}
+
+.bdDrawerCloseBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: #F1F5F9;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--c-text-secondary);
+}
+
+.bdFormGroup {
+  margin-bottom: 16px;
+}
+
+.bdFormLabel {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-text-secondary);
+  margin-bottom: 6px;
+}
+
+.bdFormInput {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 16px;
+  border: 1.5px solid #E2E8F0;
+  background: #F8FAFC;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--c-text-primary);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.bdFormInput:focus {
+  border-color: var(--c-accent-blue);
+  background: #FFFFFF;
+}
+
+.bdDrawerSubmitBtn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 20px;
+  border: none;
+  background: var(--c-accent-blue);
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: var(--shadow-blue-glow);
+  margin-top: 10px;
+  transition: all 0.18s ease;
+}
+
+.bdDrawerSubmitBtn:active {
+  transform: scale(0.97);
+}
+
+/* Brand Switcher Modal Dialog */
+.bdModalBox {
+  background: #FFFFFF;
+  border-radius: 28px;
+  padding: 22px;
+  width: 90%;
+  max-width: 380px;
+  margin: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+}
+
+.bdBrandChoiceItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1.5px solid #F1F5F9;
+  background: #F8FAFC;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 8px;
+  transition: all 0.15s ease;
+}
+
+.bdBrandChoiceItem:hover, .bdBrandChoiceItemActive {
+  border-color: var(--c-accent-blue);
+  background: var(--c-accent-blue-soft);
+}

@@ -121,6 +121,10 @@ export default function StandaloneProfilePage() {
             registerBrandApplication(updated);
           }
         }}
+        onSignOut={() => {
+          const isBrands = typeof window !== 'undefined' && window.location.hostname.startsWith('brands.');
+          router.push(isBrands ? '/' : '/brand-dashboard');
+        }}
       />
     </div>
   );
